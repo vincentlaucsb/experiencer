@@ -1,5 +1,6 @@
 import * as React from 'react';
-import Editable, { EditableProps, EditableState } from "./Editable";
+import Editable, { EditableProps, EditableState } from "./components/Editable";
+import Entry from './components/Entry';
 
 interface FlexibleRowProps {
     children?: any;
@@ -151,6 +152,9 @@ class Resume extends React.Component<{}, PageState> {
                 </FlexibleRow>,
                 <Section title="Objective">
                     <Paragraph value="To conquer the world." />
+                </Section>,
+                <Section title="Education">
+                    <Entry />
                 </Section>
             ]
         };

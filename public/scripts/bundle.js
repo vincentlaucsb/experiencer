@@ -155,41 +155,6 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/Editable.tsx":
-/*!**************************!*\
-  !*** ./src/Editable.tsx ***!
-  \**************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-// Represents an editable resume component
-class Editable extends React.Component {
-    constructor(props) {
-        super(props);
-        this.toggleEdit = this.toggleEdit.bind(this);
-        this.updateValue = this.updateValue.bind(this);
-    }
-    toggleEdit() {
-        this.setState({
-            isEditing: !this.state.isEditing
-        });
-    }
-    updateValue(event) {
-        this.setState({ value: event.target.value });
-    }
-    render() {
-        return this.state.isEditing ? this.renderEditing() : this.renderViewing();
-    }
-}
-exports.default = Editable;
-
-
-/***/ }),
-
 /***/ "./src/Resume.tsx":
 /*!************************!*\
   !*** ./src/Resume.tsx ***!
@@ -201,7 +166,8 @@ exports.default = Editable;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const Editable_1 = __webpack_require__(/*! ./Editable */ "./src/Editable.tsx");
+const Editable_1 = __webpack_require__(/*! ./components/Editable */ "./src/components/Editable.tsx");
+const Entry_1 = __webpack_require__(/*! ./components/Entry */ "./src/components/Entry.tsx");
 class FlexibleRow extends React.Component {
     constructor(props) {
         super(props);
@@ -287,7 +253,9 @@ class Resume extends React.Component {
                     React.createElement(Title, { value: "Vincent La" }),
                     React.createElement(Paragraph, { value: "Email: vincela9@hotmail.com\r\n                        Phone: 123-456-7890" })),
                 React.createElement(Section, { title: "Objective" },
-                    React.createElement(Paragraph, { value: "To conquer the world." }))
+                    React.createElement(Paragraph, { value: "To conquer the world." })),
+                React.createElement(Section, { title: "Education" },
+                    React.createElement(Entry_1.default, null))
             ]
         };
     }
@@ -296,6 +264,98 @@ class Resume extends React.Component {
     }
 }
 exports.default = Resume;
+
+
+/***/ }),
+
+/***/ "./src/components/Editable.tsx":
+/*!*************************************!*\
+  !*** ./src/components/Editable.tsx ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+class EditableBase extends React.Component {
+    constructor(props) {
+        super(props);
+        this.toggleEdit = this.toggleEdit.bind(this);
+    }
+    toggleEdit() {
+        this.setState({
+            isEditing: !this.state.isEditing
+        });
+    }
+}
+// Represents an editable resume component
+class Editable extends EditableBase {
+    constructor(props) {
+        super(props);
+        this.updateValue = this.updateValue.bind(this);
+    }
+    updateValue(event) {
+        this.setState({ value: event.target.value });
+    }
+    render() {
+        return this.state.isEditing ? this.renderEditing() : this.renderViewing();
+    }
+}
+exports.default = Editable;
+class MultiEditable extends EditableBase {
+    constructor(props) {
+        super(props);
+        this.updateValue = this.updateValue.bind(this);
+    }
+    updateValue(key, event) {
+        this.state.values.set(key, event.target.value);
+        this.setState({
+            values: this.state.values
+        });
+    }
+}
+exports.MultiEditable = MultiEditable;
+
+
+/***/ }),
+
+/***/ "./src/components/Entry.tsx":
+/*!**********************************!*\
+  !*** ./src/components/Entry.tsx ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const Editable_1 = __webpack_require__(/*! ./Editable */ "./src/components/Editable.tsx");
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+class Entry extends Editable_1.MultiEditable {
+    constructor(props) {
+        super(props);
+        this.state = {
+            value: "",
+            isEditing: false,
+            values: new Map()
+        };
+    }
+    render() {
+        if (this.state.isEditing) {
+            return React.createElement("div", null,
+                React.createElement("input", { onChange: this.updateValue.bind(this, "title"), value: this.state.values.get("title") || "" }),
+                React.createElement("input", { onChange: this.updateValue.bind(this, "subtitle"), value: this.state.values.get("subtitle") || "" }),
+                React.createElement("button", { onClick: this.toggleEdit }, "Done"));
+        }
+        return React.createElement("div", null,
+            React.createElement("h3", null, this.state.values.get("title")),
+            React.createElement("p", null, this.state.values.get("subtitle")),
+            React.createElement("button", { onClick: this.toggleEdit }, "Edit"));
+    }
+}
+exports.default = Entry;
 
 
 /***/ }),

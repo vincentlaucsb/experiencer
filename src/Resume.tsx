@@ -25,33 +25,54 @@ class FlexibleRow extends React.Component<FlexibleRowProps> {
 
 interface SectionProps {
     children?: any;
+    defaultChild?: JSX.Element;
     title: string;
 }
 
 interface SectionState {
-
+    children: Array<JSX.Element>;
 }
 
-class Section extends React.Component<SectionProps> {
+class Section extends React.Component<SectionProps, SectionState> {
     constructor(props) {
         super(props);
+
+        if (Array.isArray(this.props.children)) {
+            this.state = {
+                children: this.props.children
+            };
+        } else {
+            if (this.props.children) {
+                this.state = {
+                    children: [this.props.children]
+                };
+            }
+        }
 
         this.addChild = this.addChild.bind(this);
     }
 
     addChild() {
-
+        this.state.children.push(React.cloneElement(this.props.defaultChild));
+        this.setState({
+            children: this.state.children
+        });
     }
 
     render() {
+        let addButton = null;
+        if (this.props.defaultChild) {
+            addButton = <div style={{ float: "right" }}>
+                <button onClick={this.addChild}>Add</button>
+            </div>;
+        }
+
         return <section>
             <h2>
                 {this.props.title}
-                <div style={{ float: "right" }}>
-                    <button onClick={this.addChild}>Add</button>
-                </div>
+                {addButton}
             </h2>
-                {this.props.children}
+            {this.state.children.map(x => <React.Fragment>{x}</React.Fragment>)}
             </section>;
     }
 }
@@ -153,7 +174,7 @@ class Resume extends React.Component<{}, PageState> {
                 <Section title="Objective">
                     <Paragraph value="To conquer the world." />
                 </Section>,
-                <Section title="Education">
+                <Section title="Education" defaultChild={<Entry />}>
                     <Entry />
                 </Section>
             ]

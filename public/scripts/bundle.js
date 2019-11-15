@@ -184,17 +184,37 @@ class FlexibleRow extends React.Component {
 class Section extends React.Component {
     constructor(props) {
         super(props);
+        if (Array.isArray(this.props.children)) {
+            this.state = {
+                children: this.props.children
+            };
+        }
+        else {
+            if (this.props.children) {
+                this.state = {
+                    children: [this.props.children]
+                };
+            }
+        }
         this.addChild = this.addChild.bind(this);
     }
     addChild() {
+        this.state.children.push(React.cloneElement(this.props.defaultChild));
+        this.setState({
+            children: this.state.children
+        });
     }
     render() {
+        let addButton = null;
+        if (this.props.defaultChild) {
+            addButton = React.createElement("div", { style: { float: "right" } },
+                React.createElement("button", { onClick: this.addChild }, "Add"));
+        }
         return React.createElement("section", null,
             React.createElement("h2", null,
                 this.props.title,
-                React.createElement("div", { style: { float: "right" } },
-                    React.createElement("button", { onClick: this.addChild }, "Add"))),
-            this.props.children);
+                addButton),
+            this.state.children.map(x => React.createElement(React.Fragment, null, x)));
     }
 }
 class Title extends Editable_1.default {
@@ -254,7 +274,7 @@ class Resume extends React.Component {
                     React.createElement(Paragraph, { value: "Email: vincela9@hotmail.com\r\n                        Phone: 123-456-7890" })),
                 React.createElement(Section, { title: "Objective" },
                     React.createElement(Paragraph, { value: "To conquer the world." })),
-                React.createElement(Section, { title: "Education" },
+                React.createElement(Section, { title: "Education", defaultChild: React.createElement(Entry_1.default, null) },
                     React.createElement(Entry_1.default, null))
             ]
         };

@@ -147,7 +147,7 @@ class Paragraph extends Editable<ParagraphProps, EditableState> {
 }
 
 interface PageState {
-    children?: Array<any>;
+    children: ChildHolder;
 }
 
 class Resume extends React.Component<{}, PageState> {
@@ -155,7 +155,7 @@ class Resume extends React.Component<{}, PageState> {
         super(props);
 
         this.state = {
-            children: [
+            children: new ChildHolder([
                 <FlexibleRow>
                     <Title value="Vincent La" />
                     <Paragraph value="Email: vincela9@hotmail.com
@@ -167,13 +167,23 @@ class Resume extends React.Component<{}, PageState> {
                 <Section title="Education" defaultChild={<Entry />}>
                     <Entry />
                 </Section>
-            ]
+            ])
         };
+
+        this.addSection = this.addSection.bind(this);
+    }
+
+    addSection() {
+        this.setState({
+            children: this.state.children.addChild(<Section title="Add title here" defaultChild={<Entry />} />)
+        });
     }
 
     render() {
         return <React.Fragment>
-            {this.state.children.map((elem, i) => <React.Fragment key={i}>{elem}</React.Fragment>)}
+            {this.state.children.render()}
+
+            <button onClick={this.addSection}>Add Section</button>
         </React.Fragment>
     }
 }

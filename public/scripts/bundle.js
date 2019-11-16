@@ -259,7 +259,7 @@ class Resume extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            children: [
+            children: new ChildHolder_1.default([
                 React.createElement(FlexibleRow, null,
                     React.createElement(Title, { value: "Vincent La" }),
                     React.createElement(Paragraph, { value: "Email: vincela9@hotmail.com\r\n                        Phone: 123-456-7890" })),
@@ -267,11 +267,19 @@ class Resume extends React.Component {
                     React.createElement(Paragraph, { value: "To conquer the world." })),
                 React.createElement(Section, { title: "Education", defaultChild: React.createElement(Entry_1.default, null) },
                     React.createElement(Entry_1.default, null))
-            ]
+            ])
         };
+        this.addSection = this.addSection.bind(this);
+    }
+    addSection() {
+        this.setState({
+            children: this.state.children.addChild(React.createElement(Section, { title: "Add title here", defaultChild: React.createElement(Entry_1.default, null) }))
+        });
     }
     render() {
-        return React.createElement(React.Fragment, null, this.state.children.map((elem, i) => React.createElement(React.Fragment, { key: i }, elem)));
+        return React.createElement(React.Fragment, null,
+            this.state.children.render(),
+            React.createElement("button", { onClick: this.addSection }, "Add Section"));
     }
 }
 exports.default = Resume;

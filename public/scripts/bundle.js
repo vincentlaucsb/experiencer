@@ -170,6 +170,8 @@ const Editable_1 = __webpack_require__(/*! ./components/Editable */ "./src/compo
 const Entry_1 = __webpack_require__(/*! ./components/Entry */ "./src/components/Entry.tsx");
 const ChildHolder_1 = __webpack_require__(/*! ./components/ChildHolder */ "./src/components/ChildHolder.tsx");
 const EditButton_1 = __webpack_require__(/*! ./components/EditButton */ "./src/components/EditButton.tsx");
+const Section_1 = __webpack_require__(/*! ./components/Section */ "./src/components/Section.tsx");
+const Title_1 = __webpack_require__(/*! ./components/Title */ "./src/components/Title.tsx");
 class FlexibleRow extends React.Component {
     constructor(props) {
         super(props);
@@ -183,52 +185,6 @@ class FlexibleRow extends React.Component {
             } }, this.props.children);
     }
 }
-class Section extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            children: new ChildHolder_1.default(props.children)
-        };
-        this.addChild = this.addChild.bind(this);
-    }
-    addChild() {
-        this.setState({
-            children: this.state.children.addChild(React.cloneElement(this.props.defaultChild))
-        });
-    }
-    render() {
-        let addButton = null;
-        if (this.props.defaultChild) {
-            addButton = React.createElement("div", { style: { float: "right" } },
-                React.createElement("button", { onClick: this.addChild }, "Add"));
-        }
-        return React.createElement("section", null,
-            React.createElement("h2", null,
-                this.props.title,
-                addButton),
-            this.state.children.render());
-    }
-}
-class Title extends Editable_1.default {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isEditing: false,
-            value: props.value
-        };
-    }
-    renderEditing() {
-        return React.createElement(React.Fragment, null,
-            React.createElement("input", { onChange: this.updateValue, value: this.state.value, type: "text" }),
-            React.createElement(EditButton_1.default, { parent: this }));
-    }
-    renderViewing() {
-        return React.createElement("h1", null,
-            this.state.value,
-            React.createElement("div", { style: { display: "inline-block" } },
-                React.createElement(EditButton_1.default, { parent: this })));
-    }
-}
 class Paragraph extends Editable_1.default {
     constructor(props) {
         super(props);
@@ -240,16 +196,16 @@ class Paragraph extends Editable_1.default {
     // Convert newlines ('\n') into HTML line breaks
     processTextArea() {
         let textArea = this.state.value.split("\n");
-        return React.createElement(React.Fragment, null, textArea.map(x => React.createElement(React.Fragment, null,
+        return React.createElement(React.Fragment, null, textArea.map((x, idx) => React.createElement(React.Fragment, { key: idx },
             x,
             React.createElement("br", null))));
     }
-    renderEditing() {
-        return React.createElement(React.Fragment, null,
-            React.createElement("textarea", { onChange: this.updateValue, value: this.state.value }),
-            React.createElement(EditButton_1.default, { parent: this }));
-    }
-    renderViewing() {
+    render() {
+        if (this.state.isEditing) {
+            return React.createElement(React.Fragment, null,
+                React.createElement("textarea", { onChange: this.updateValue, value: this.state.value }),
+                React.createElement(EditButton_1.default, { parent: this }));
+        }
         return React.createElement("p", null,
             this.processTextArea(),
             React.createElement("span", { style: { display: "inline-block" } },
@@ -262,11 +218,11 @@ class Resume extends React.Component {
         this.state = {
             children: new ChildHolder_1.default([
                 React.createElement(FlexibleRow, null,
-                    React.createElement(Title, { value: "Vincent La" }),
+                    React.createElement(Title_1.default, { value: "Vincent La" }),
                     React.createElement(Paragraph, { value: "Email: vincela9@hotmail.com\r\n                        Phone: 123-456-7890" })),
-                React.createElement(Section, { title: "Objective" },
+                React.createElement(Section_1.default, { title: "Objective" },
                     React.createElement(Paragraph, { value: "To conquer the world." })),
-                React.createElement(Section, { title: "Education", defaultChild: React.createElement(Entry_1.default, null) },
+                React.createElement(Section_1.default, { title: "Education" },
                     React.createElement(Entry_1.default, null))
             ])
         };
@@ -274,7 +230,7 @@ class Resume extends React.Component {
     }
     addSection() {
         this.setState({
-            children: this.state.children.addChild(React.createElement(Section, { title: "Add title here", defaultChild: React.createElement(Entry_1.default, null) }))
+            children: this.state.children.addChild(React.createElement(Section_1.default, { title: "Add title here" }))
         });
     }
     render() {
@@ -314,7 +270,7 @@ class ChildHolder {
         return this;
     }
     render() {
-        return React.createElement(React.Fragment, null, this.children.map(x => React.createElement(React.Fragment, null, x)));
+        return React.createElement(React.Fragment, null, this.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, elem)));
     }
 }
 exports.default = ChildHolder;
@@ -384,9 +340,6 @@ class Editable extends EditableBase {
     }
     updateValue(event) {
         this.setState({ value: event.target.value });
-    }
-    render() {
-        return this.state.isEditing ? this.renderEditing() : this.renderViewing();
     }
 }
 exports.default = Editable;
@@ -513,6 +466,94 @@ class List extends React.Component {
     }
 }
 exports.default = List;
+
+
+/***/ }),
+
+/***/ "./src/components/Section.tsx":
+/*!************************************!*\
+  !*** ./src/components/Section.tsx ***!
+  \************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const ChildHolder_1 = __webpack_require__(/*! ./ChildHolder */ "./src/components/ChildHolder.tsx");
+const Editable_1 = __webpack_require__(/*! ./Editable */ "./src/components/Editable.tsx");
+const Entry_1 = __webpack_require__(/*! ./Entry */ "./src/components/Entry.tsx");
+const EditButton_1 = __webpack_require__(/*! ./EditButton */ "./src/components/EditButton.tsx");
+class Section extends Editable_1.default {
+    constructor(props) {
+        super(props);
+        this.state = {
+            children: new ChildHolder_1.default(props.children),
+            value: props.title,
+            isEditing: false
+        };
+        this.addChild = this.addChild.bind(this);
+    }
+    addChild() {
+        this.setState({
+            children: this.state.children.addChild(React.createElement(Entry_1.default, null))
+        });
+    }
+    render() {
+        let addButton = React.createElement("div", { style: { float: "right" } },
+            React.createElement("button", { onClick: this.addChild }, "Add"));
+        let title = this.state.value;
+        if (this.state.isEditing) {
+            title = React.createElement("input", { onChange: this.updateValue, type: "text", value: this.state.value });
+        }
+        return React.createElement("section", null,
+            React.createElement("h2", null,
+                title,
+                addButton,
+                React.createElement(EditButton_1.default, { parent: this })),
+            this.state.children.render());
+    }
+}
+exports.default = Section;
+
+
+/***/ }),
+
+/***/ "./src/components/Title.tsx":
+/*!**********************************!*\
+  !*** ./src/components/Title.tsx ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const Editable_1 = __webpack_require__(/*! ./Editable */ "./src/components/Editable.tsx");
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const EditButton_1 = __webpack_require__(/*! ./EditButton */ "./src/components/EditButton.tsx");
+class Title extends Editable_1.default {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isEditing: false,
+            value: props.value
+        };
+    }
+    render() {
+        if (this.state.isEditing) {
+            return React.createElement(React.Fragment, null,
+                React.createElement("input", { onChange: this.updateValue, value: this.state.value, type: "text" }),
+                React.createElement(EditButton_1.default, { parent: this }));
+        }
+        return React.createElement("h1", null,
+            this.state.value,
+            React.createElement("div", { style: { display: "inline-block" } },
+                React.createElement(EditButton_1.default, { parent: this })));
+    }
+}
+exports.default = Title;
 
 
 /***/ }),

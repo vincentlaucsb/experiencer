@@ -3,6 +3,8 @@ import Editable, { EditableProps, EditableState } from "./components/Editable";
 import Entry from './components/Entry';
 import ChildHolder from './components/ChildHolder';
 import EditButton from './components/EditButton';
+import Section from './components/Section';
+import Title from './components/Title';
 
 interface FlexibleRowProps {
     children?: any;
@@ -25,84 +27,6 @@ class FlexibleRow extends React.Component<FlexibleRowProps> {
     }
 }
 
-interface SectionProps {
-    children?: any;
-    defaultChild?: JSX.Element;
-    title: string;
-}
-
-interface SectionState {
-    children: ChildHolder;
-}
-
-class Section extends React.Component<SectionProps, SectionState> {
-    constructor(props) {
-        super(props);
-        this.state = {
-            children: new ChildHolder(props.children)
-        };
-        this.addChild = this.addChild.bind(this);
-    }
-
-    addChild() {
-        this.setState({
-            children: this.state.children.addChild(React.cloneElement(this.props.defaultChild))
-        });
-    }
-
-    render() {
-        let addButton = null;
-        if (this.props.defaultChild) {
-            addButton = <div style={{ float: "right" }}>
-                <button onClick={this.addChild}>Add</button>
-            </div>;
-        }
-
-        return <section>
-            <h2>
-                {this.props.title}
-                {addButton}
-            </h2>
-            {this.state.children.render()}
-            </section>;
-    }
-}
-
-interface TitleProps extends EditableProps {
-    value: string;
-}
-
-interface TitleState extends EditableState {
-}
-
-class Title extends Editable<TitleProps, TitleState> {
-    constructor(props: TitleProps) {
-        super(props);
-
-        this.state = {
-            isEditing: false,
-            value: props.value
-        };
-    }
-
-    renderEditing(): JSX.Element {
-        return <React.Fragment>
-            <input onChange={this.updateValue}
-                value={this.state.value} type="text" />
-            <EditButton parent={this} />
-        </React.Fragment>;
-    }
-
-    renderViewing(): JSX.Element {
-        return <h1>
-                {this.state.value}
-                <div style={{ display: "inline-block" }}>
-                <EditButton parent={this} />
-            </div>
-        </h1>;
-    }
-}
-
 interface ParagraphProps extends EditableProps {
     value?: string;
 }
@@ -122,23 +46,23 @@ class Paragraph extends Editable<ParagraphProps> {
         let textArea = this.state.value.split("\n");
 
         return <React.Fragment>
-            {textArea.map(x => <React.Fragment>{x}<br /></React.Fragment>)}
+            {textArea.map((x, idx) => <React.Fragment key={idx}>{x}<br /></React.Fragment>)}
             </React.Fragment>;
     }
 
-    renderEditing(): JSX.Element {
-        return <React.Fragment>
-            <textarea onChange={this.updateValue} value={this.state.value} />
-            <EditButton parent={this} />
-        </React.Fragment>;
-    }
+    render(): JSX.Element {
+        if (this.state.isEditing) {
+            return <React.Fragment>
+                <textarea onChange={this.updateValue} value={this.state.value} />
+                <EditButton parent={this} />
+            </React.Fragment>;
+        }
 
-    renderViewing(): JSX.Element {
         return <p>
             {this.processTextArea()}
             <span style={{ display: "inline-block" }}>
                 <EditButton parent={this} />
-        </span></p>;
+            </span></p>;
     }
 }
 
@@ -160,7 +84,7 @@ class Resume extends React.Component<{}, PageState> {
                 <Section title="Objective">
                     <Paragraph value="To conquer the world." />
                 </Section>,
-                <Section title="Education" defaultChild={<Entry />}>
+                <Section title="Education">
                     <Entry />
                 </Section>
             ])
@@ -171,7 +95,7 @@ class Resume extends React.Component<{}, PageState> {
 
     addSection() {
         this.setState({
-            children: this.state.children.addChild(<Section title="Add title here" defaultChild={<Entry />} />)
+            children: this.state.children.addChild(<Section title="Add title here" />)
         });
     }
 

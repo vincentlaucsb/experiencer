@@ -20,7 +20,7 @@ export default class ChildHolder {
 
     render(): JSX.Element {
         return <React.Fragment>
-            {this.children.map(x => <React.Fragment>{x}</React.Fragment>)}
+            {this.children.map((elem, idx) => <React.Fragment key={idx}>{elem}</React.Fragment>)}
         </React.Fragment>
     }
 }

@@ -43,13 +43,6 @@ export default abstract class Editable<
     updateValue<T extends HTMLValueElement>(event: React.ChangeEvent<T>) {
         this.setState({ value: event.target.value });
     }
-
-    abstract renderEditing(): JSX.Element;
-    abstract renderViewing(): JSX.Element;
-
-    render() {
-        return this.state.isEditing ? this.renderEditing() : this.renderViewing();
-    }
 }
 
 export interface MultiEditableState extends EditableState {

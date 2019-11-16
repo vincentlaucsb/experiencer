@@ -106,12 +106,7 @@ interface ParagraphProps extends EditableProps {
     value?: string;
 }
 
-interface ParagraphState {
-    isEditing: boolean;
-    value: string;
-}
-
-class Paragraph extends Editable<ParagraphProps, EditableState> {
+class Paragraph extends Editable<ParagraphProps> {
     constructor(props) {
         super(props);
 

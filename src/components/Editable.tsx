@@ -31,7 +31,8 @@ abstract class EditableBase<P, S extends EditableState> extends React.Component<
 
 // Represents an editable resume component
 export default abstract class Editable<
-    Props extends EditableProps, State extends EditableState>
+    Props extends EditableProps = {},
+    State extends EditableState = EditableState>
     extends EditableBase<Props, State> {
     constructor(props: Props) {
         super(props);

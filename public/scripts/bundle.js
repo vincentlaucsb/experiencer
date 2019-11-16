@@ -378,14 +378,23 @@ exports.MultiEditable = MultiEditable;
 Object.defineProperty(exports, "__esModule", { value: true });
 const Editable_1 = __webpack_require__(/*! ./Editable */ "./src/components/Editable.tsx");
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const ChildHolder_1 = __webpack_require__(/*! ./ChildHolder */ "./src/components/ChildHolder.tsx");
+const List_1 = __webpack_require__(/*! ./List */ "./src/components/List.tsx");
 class Entry extends Editable_1.MultiEditable {
     constructor(props) {
         super(props);
         this.state = {
+            children: new ChildHolder_1.default(props.children),
             value: "",
             isEditing: false,
             values: new Map()
         };
+        this.addChild = this.addChild.bind(this);
+    }
+    addChild() {
+        this.setState({
+            children: this.state.children.addChild(React.createElement(List_1.default, null))
+        });
     }
     render() {
         if (this.state.isEditing) {
@@ -395,12 +404,74 @@ class Entry extends Editable_1.MultiEditable {
                 React.createElement("button", { onClick: this.toggleEdit }, "Done"));
         }
         return React.createElement("div", null,
-            React.createElement("h3", null, this.state.values.get("title")),
-            React.createElement("p", null, this.state.values.get("subtitle")),
+            React.createElement("h3", null, this.state.values.get("title") || "Enter a title"),
+            React.createElement("p", null, this.state.values.get("subtitle") || "Enter a subtitle"),
+            this.state.children.render(),
+            React.createElement("button", { onClick: this.addChild }, "Add"),
             React.createElement("button", { onClick: this.toggleEdit }, "Edit"));
     }
 }
 exports.default = Entry;
+
+
+/***/ }),
+
+/***/ "./src/components/List.tsx":
+/*!*********************************!*\
+  !*** ./src/components/List.tsx ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const ChildHolder_1 = __webpack_require__(/*! ./ChildHolder */ "./src/components/ChildHolder.tsx");
+const Editable_1 = __webpack_require__(/*! ./Editable */ "./src/components/Editable.tsx");
+class ListItem extends Editable_1.default {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isEditing: false,
+            value: ""
+        };
+    }
+    renderEditing() {
+        return React.createElement(React.Fragment, null,
+            React.createElement("input", { onChange: this.updateValue, value: this.state.value, type: "text" }),
+            React.createElement("div", { style: { float: "right" } },
+                React.createElement("button", { onClick: this.toggleEdit }, "Done")));
+    }
+    renderViewing() {
+        return React.createElement("li", null,
+            this.state.value,
+            React.createElement("div", { style: { float: "right" } },
+                React.createElement("button", { onClick: this.toggleEdit }, "Edit")));
+    }
+}
+exports.ListItem = ListItem;
+class List extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            children: new ChildHolder_1.default(props.children)
+        };
+        this.addChild = this.addChild.bind(this);
+    }
+    addChild() {
+        this.setState({
+            children: this.state.children.addChild(React.createElement(ListItem, null))
+        });
+    }
+    render() {
+        return React.createElement(React.Fragment, null,
+            React.createElement("div", { style: { float: "right" } },
+                React.createElement("button", { onClick: this.addChild }, "Add")),
+            React.createElement("ul", null, this.state.children.render()));
+    }
+}
+exports.default = List;
 
 
 /***/ }),

@@ -45,7 +45,7 @@ class Section extends React.Component<SectionProps, SectionState> {
 
     addChild() {
         this.setState({
-            children: this.state.children.addChild(React.cloneElement(this.props.defaultChild));
+            children: this.state.children.addChild(React.cloneElement(this.props.defaultChild))
         });
     }
 

@@ -169,6 +169,7 @@ const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const Editable_1 = __webpack_require__(/*! ./components/Editable */ "./src/components/Editable.tsx");
 const Entry_1 = __webpack_require__(/*! ./components/Entry */ "./src/components/Entry.tsx");
 const ChildHolder_1 = __webpack_require__(/*! ./components/ChildHolder */ "./src/components/ChildHolder.tsx");
+const EditButton_1 = __webpack_require__(/*! ./components/EditButton */ "./src/components/EditButton.tsx");
 class FlexibleRow extends React.Component {
     constructor(props) {
         super(props);
@@ -219,13 +220,13 @@ class Title extends Editable_1.default {
     renderEditing() {
         return React.createElement(React.Fragment, null,
             React.createElement("input", { onChange: this.updateValue, value: this.state.value, type: "text" }),
-            React.createElement("button", { onClick: this.toggleEdit }, "Done"));
+            React.createElement(EditButton_1.default, { parent: this }));
     }
     renderViewing() {
         return React.createElement("h1", null,
             this.state.value,
             React.createElement("div", { style: { display: "inline-block" } },
-                React.createElement("button", { onClick: this.toggleEdit }, "Edit")));
+                React.createElement(EditButton_1.default, { parent: this })));
     }
 }
 class Paragraph extends Editable_1.default {
@@ -246,13 +247,13 @@ class Paragraph extends Editable_1.default {
     renderEditing() {
         return React.createElement(React.Fragment, null,
             React.createElement("textarea", { onChange: this.updateValue, value: this.state.value }),
-            React.createElement("button", { onClick: this.toggleEdit }, "Done"));
+            React.createElement(EditButton_1.default, { parent: this }));
     }
     renderViewing() {
         return React.createElement("p", null,
             this.processTextArea(),
             React.createElement("span", { style: { display: "inline-block" } },
-                React.createElement("button", { onClick: this.toggleEdit }, "Edit")));
+                React.createElement(EditButton_1.default, { parent: this })));
     }
 }
 class Resume extends React.Component {
@@ -321,6 +322,37 @@ exports.default = ChildHolder;
 
 /***/ }),
 
+/***/ "./src/components/EditButton.tsx":
+/*!***************************************!*\
+  !*** ./src/components/EditButton.tsx ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+class EditButtonProps {
+}
+exports.EditButtonProps = EditButtonProps;
+class EditButton extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        const isEditing = this.props.parent.state.isEditing;
+        if (isEditing) {
+            return React.createElement("button", { onClick: this.props.parent.toggleEdit }, "Done");
+        }
+        return React.createElement("button", { onClick: this.props.parent.toggleEdit }, "Edit");
+    }
+}
+exports.default = EditButton;
+
+
+/***/ }),
+
 /***/ "./src/components/Editable.tsx":
 /*!*************************************!*\
   !*** ./src/components/Editable.tsx ***!
@@ -343,6 +375,7 @@ class EditableBase extends React.Component {
         });
     }
 }
+exports.EditableBase = EditableBase;
 // Represents an editable resume component
 class Editable extends EditableBase {
     constructor(props) {

@@ -16,7 +16,7 @@ interface HTMLValueElement extends HTMLElement {
     value: string;
 }
 
-abstract class EditableBase<P, S extends EditableState> extends React.Component<P, S> {
+export abstract class EditableBase<P = {}, S extends EditableState = EditableState> extends React.Component<P, S> {
     constructor(props: P) {
         super(props);
         this.toggleEdit = this.toggleEdit.bind(this);

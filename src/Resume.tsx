@@ -2,6 +2,7 @@ import * as React from 'react';
 import Editable, { EditableProps, EditableState } from "./components/Editable";
 import Entry from './components/Entry';
 import ChildHolder from './components/ChildHolder';
+import EditButton from './components/EditButton';
 
 interface FlexibleRowProps {
     children?: any;
@@ -88,7 +89,7 @@ class Title extends Editable<TitleProps, TitleState> {
         return <React.Fragment>
             <input onChange={this.updateValue}
                 value={this.state.value} type="text" />
-            <button onClick={this.toggleEdit}>Done</button>
+            <EditButton parent={this} />
         </React.Fragment>;
     }
 
@@ -96,7 +97,7 @@ class Title extends Editable<TitleProps, TitleState> {
         return <h1>
                 {this.state.value}
                 <div style={{ display: "inline-block" }}>
-                <button onClick={this.toggleEdit}>Edit</button>
+                <EditButton parent={this} />
             </div>
         </h1>;
     }
@@ -128,7 +129,7 @@ class Paragraph extends Editable<ParagraphProps> {
     renderEditing(): JSX.Element {
         return <React.Fragment>
             <textarea onChange={this.updateValue} value={this.state.value} />
-            <button onClick={this.toggleEdit}>Done</button>
+            <EditButton parent={this} />
         </React.Fragment>;
     }
 
@@ -136,7 +137,7 @@ class Paragraph extends Editable<ParagraphProps> {
         return <p>
             {this.processTextArea()}
             <span style={{ display: "inline-block" }}>
-            <button onClick={this.toggleEdit}>Edit</button>
+                <EditButton parent={this} />
         </span></p>;
     }
 }

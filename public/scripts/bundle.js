@@ -168,6 +168,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const Editable_1 = __webpack_require__(/*! ./components/Editable */ "./src/components/Editable.tsx");
 const Entry_1 = __webpack_require__(/*! ./components/Entry */ "./src/components/Entry.tsx");
+const ChildHolder_1 = __webpack_require__(/*! ./components/ChildHolder */ "./src/components/ChildHolder.tsx");
 class FlexibleRow extends React.Component {
     constructor(props) {
         super(props);
@@ -184,24 +185,14 @@ class FlexibleRow extends React.Component {
 class Section extends React.Component {
     constructor(props) {
         super(props);
-        if (Array.isArray(this.props.children)) {
-            this.state = {
-                children: this.props.children
-            };
-        }
-        else {
-            if (this.props.children) {
-                this.state = {
-                    children: [this.props.children]
-                };
-            }
-        }
+        this.state = {
+            children: new ChildHolder_1.default(props.children)
+        };
         this.addChild = this.addChild.bind(this);
     }
     addChild() {
-        this.state.children.push(React.cloneElement(this.props.defaultChild));
         this.setState({
-            children: this.state.children
+            children: this.state.children.addChild(React.cloneElement(this.props.defaultChild))
         });
     }
     render() {
@@ -214,7 +205,7 @@ class Section extends React.Component {
             React.createElement("h2", null,
                 this.props.title,
                 addButton),
-            this.state.children.map(x => React.createElement(React.Fragment, null, x)));
+            this.state.children.render());
     }
 }
 class Title extends Editable_1.default {
@@ -284,6 +275,40 @@ class Resume extends React.Component {
     }
 }
 exports.default = Resume;
+
+
+/***/ }),
+
+/***/ "./src/components/ChildHolder.tsx":
+/*!****************************************!*\
+  !*** ./src/components/ChildHolder.tsx ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+class ChildHolder {
+    constructor(children) {
+        this.children = new Array();
+        if (Array.isArray(children)) {
+            this.children = children;
+        }
+        else if (this.children) {
+            this.children = [children];
+        }
+    }
+    addChild(child) {
+        this.children.push(child);
+        return this;
+    }
+    render() {
+        return React.createElement(React.Fragment, null, this.children.map(x => React.createElement(React.Fragment, null, x)));
+    }
+}
+exports.default = ChildHolder;
 
 
 /***/ }),

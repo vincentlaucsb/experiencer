@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Editable, { EditableProps, EditableState } from "./components/Editable";
 import Entry from './components/Entry';
+import ChildHolder from './components/ChildHolder';
 
 interface FlexibleRowProps {
     children?: any;
@@ -30,32 +31,21 @@ interface SectionProps {
 }
 
 interface SectionState {
-    children: Array<JSX.Element>;
+    children: ChildHolder;
 }
 
 class Section extends React.Component<SectionProps, SectionState> {
     constructor(props) {
         super(props);
-
-        if (Array.isArray(this.props.children)) {
-            this.state = {
-                children: this.props.children
-            };
-        } else {
-            if (this.props.children) {
-                this.state = {
-                    children: [this.props.children]
-                };
-            }
-        }
-
+        this.state = {
+            children: new ChildHolder(props.children)
+        };
         this.addChild = this.addChild.bind(this);
     }
 
     addChild() {
-        this.state.children.push(React.cloneElement(this.props.defaultChild));
         this.setState({
-            children: this.state.children
+            children: this.state.children.addChild(React.cloneElement(this.props.defaultChild));
         });
     }
 
@@ -72,7 +62,7 @@ class Section extends React.Component<SectionProps, SectionState> {
                 {this.props.title}
                 {addButton}
             </h2>
-            {this.state.children.map(x => <React.Fragment>{x}</React.Fragment>)}
+            {this.state.children.render()}
             </section>;
     }
 }

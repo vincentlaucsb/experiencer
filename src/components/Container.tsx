@@ -5,15 +5,20 @@ import IContainer from "./IContainer";
 
 export interface EditableContainerState extends ContainerState, EditableState { }
 
-export interface MultiEditableContainerState extends ContainerState, MultiEditableState { }
-
 export interface ContainerState {
     children: ChildHolder;
 }
 
-function deleteChild<P, S extends ContainerState>(this: IContainer<P, S>, idx: number) {
-    this.setState({
-        children: this.state.children.deleteChild(idx)
+function _addChild<P, S extends ContainerState>(obj: IContainer<P, S>) {
+    obj.setState({
+        children: obj.state.children.addChild(
+            React.cloneElement(obj.defaultChild))
+    });
+}
+
+function _deleteChild<P, S extends ContainerState>(obj: IContainer<P, S>, idx: number) {
+    obj.setState({
+        children: obj.state.children.deleteChild(idx)
     });
 }
 
@@ -33,17 +38,10 @@ export class Container<
     }
 
     addChild() {
-        this.setState({
-            children: this.state.children.addChild(
-                React.cloneElement(this.defaultChild))
-        });
+        _addChild(this);
     }
 
-    deleteChild(idx: number) {
-        this.setState({
-            children: this.state.children.deleteChild(idx)
-        });
-    }
+    deleteChild(idx: number) { _deleteChild(this, idx); }
 }
 
 export class EditableContainer<
@@ -63,18 +61,13 @@ export class EditableContainer<
     }
 
     addChild() {
-        this.setState({
-            children: this.state.children.addChild(
-                React.cloneElement(this.defaultChild))
-        });
+        _addChild(this);
     }
 
-    deleteChild(idx: number) {
-        this.setState({
-            children: this.state.children.deleteChild(idx)
-        });
-    }
+    deleteChild(idx: number) { _deleteChild(this, idx); }
 }
+
+export interface MultiEditableContainerState extends ContainerState, MultiEditableState { }
 
 export class MultiEditableContainer<
     Props = {},
@@ -92,15 +85,8 @@ export class MultiEditableContainer<
     }
 
     addChild() {
-        this.setState({
-            children: this.state.children.addChild(
-                React.cloneElement(this.defaultChild))
-        });
+        _addChild(this);
     }
 
-    deleteChild(idx: number) {
-        this.setState({
-            children: this.state.children.deleteChild(idx)
-        });
-    }
+    deleteChild(idx: number) { _deleteChild(this, idx); }
 }

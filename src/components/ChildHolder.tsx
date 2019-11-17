@@ -29,7 +29,6 @@ export default class ChildHolder {
     }
 
     deleteChild(key: number) {
-        console.log("BALEETING");
         let newChildren = new Array<React.ReactNode>();
         for (let i = 0; i < this.children.length; i++) {
             if (i != key) {

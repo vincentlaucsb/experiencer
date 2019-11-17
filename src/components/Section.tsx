@@ -3,20 +3,18 @@ import ChildHolder from "./ChildHolder";
 import Editable, { EditableState, EditableProps } from "./Editable";
 import EditButton from "./EditButton";
 import { EditableContainer } from "./Container";
+import Entry from "./Entry";
 
 interface SectionProps extends EditableProps {
     children?: any;
     title: string;
 }
 
-interface SectionState extends EditableState {
-    children: ChildHolder;
-}
-
-export default class Section extends EditableContainer<SectionProps, SectionState> {
+export default class Section extends EditableContainer<SectionProps> {
     constructor(props: SectionProps) {
         super(props);
 
+        this.defaultChild = <Entry />;
         this.state = {
             children: new ChildHolder(this),
             value: props.title,

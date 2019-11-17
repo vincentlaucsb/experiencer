@@ -1,18 +1,13 @@
-﻿import { MultiEditable, MultiEditableState } from "./Editable";
+﻿import { MultiEditableState } from "./Editable";
 import * as React from "react";
 import ChildHolder from "./ChildHolder";
-import List from "./List";
 import { MultiEditableContainer } from "./Container";
 
 interface EntryProps {
     children?: any;
 }
 
-interface EntryState extends MultiEditableState {
-    children: ChildHolder;
-}
-
-export default class Entry extends MultiEditableContainer<EntryProps, EntryState> {
+export default class Entry extends MultiEditableContainer<EntryProps> {
     constructor(props) {
         super(props);
 

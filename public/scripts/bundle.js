@@ -289,7 +289,6 @@ class ChildHolder {
         return this;
     }
     deleteChild(key) {
-        console.log("BALEETING");
         let newChildren = new Array();
         for (let i = 0; i < this.children.length; i++) {
             if (i != key) {
@@ -325,9 +324,14 @@ exports.default = ChildHolder;
 Object.defineProperty(exports, "__esModule", { value: true });
 const Editable_1 = __webpack_require__(/*! ./Editable */ "./src/components/Editable.tsx");
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-function deleteChild(idx) {
-    this.setState({
-        children: this.state.children.deleteChild(idx)
+function _addChild(obj) {
+    obj.setState({
+        children: obj.state.children.addChild(React.cloneElement(obj.defaultChild))
+    });
+}
+function _deleteChild(obj, idx) {
+    obj.setState({
+        children: obj.state.children.deleteChild(idx)
     });
 }
 class Container extends React.Component {
@@ -337,15 +341,9 @@ class Container extends React.Component {
         this.deleteChild = this.deleteChild.bind(this);
     }
     addChild() {
-        this.setState({
-            children: this.state.children.addChild(React.cloneElement(this.defaultChild))
-        });
+        _addChild(this);
     }
-    deleteChild(idx) {
-        this.setState({
-            children: this.state.children.deleteChild(idx)
-        });
-    }
+    deleteChild(idx) { _deleteChild(this, idx); }
 }
 exports.Container = Container;
 class EditableContainer extends Editable_1.default {
@@ -355,15 +353,9 @@ class EditableContainer extends Editable_1.default {
         this.deleteChild = this.deleteChild.bind(this);
     }
     addChild() {
-        this.setState({
-            children: this.state.children.addChild(React.cloneElement(this.defaultChild))
-        });
+        _addChild(this);
     }
-    deleteChild(idx) {
-        this.setState({
-            children: this.state.children.deleteChild(idx)
-        });
-    }
+    deleteChild(idx) { _deleteChild(this, idx); }
 }
 exports.EditableContainer = EditableContainer;
 class MultiEditableContainer extends Editable_1.MultiEditable {
@@ -373,15 +365,9 @@ class MultiEditableContainer extends Editable_1.MultiEditable {
         this.deleteChild = this.deleteChild.bind(this);
     }
     addChild() {
-        this.setState({
-            children: this.state.children.addChild(React.cloneElement(this.defaultChild))
-        });
+        _addChild(this);
     }
-    deleteChild(idx) {
-        this.setState({
-            children: this.state.children.deleteChild(idx)
-        });
-    }
+    deleteChild(idx) { _deleteChild(this, idx); }
 }
 exports.MultiEditableContainer = MultiEditableContainer;
 
@@ -572,9 +558,11 @@ const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const ChildHolder_1 = __webpack_require__(/*! ./ChildHolder */ "./src/components/ChildHolder.tsx");
 const EditButton_1 = __webpack_require__(/*! ./EditButton */ "./src/components/EditButton.tsx");
 const Container_1 = __webpack_require__(/*! ./Container */ "./src/components/Container.tsx");
+const Entry_1 = __webpack_require__(/*! ./Entry */ "./src/components/Entry.tsx");
 class Section extends Container_1.EditableContainer {
     constructor(props) {
         super(props);
+        this.defaultChild = React.createElement(Entry_1.default, null);
         this.state = {
             children: new ChildHolder_1.default(this),
             value: props.title,

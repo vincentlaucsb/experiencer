@@ -166,12 +166,11 @@
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const Editable_1 = __webpack_require__(/*! ./components/Editable */ "./src/components/Editable.tsx");
 const Entry_1 = __webpack_require__(/*! ./components/Entry */ "./src/components/Entry.tsx");
 const ChildHolder_1 = __webpack_require__(/*! ./components/ChildHolder */ "./src/components/ChildHolder.tsx");
-const EditButton_1 = __webpack_require__(/*! ./components/EditButton */ "./src/components/EditButton.tsx");
 const Section_1 = __webpack_require__(/*! ./components/Section */ "./src/components/Section.tsx");
 const Title_1 = __webpack_require__(/*! ./components/Title */ "./src/components/Title.tsx");
+const Paragraph_1 = __webpack_require__(/*! ./components/Paragraph */ "./src/components/Paragraph.tsx");
 class FlexibleRow extends React.Component {
     constructor(props) {
         super(props);
@@ -185,58 +184,73 @@ class FlexibleRow extends React.Component {
             } }, this.props.children);
     }
 }
-class Paragraph extends Editable_1.default {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isEditing: false,
-            value: props.value ? props.value : ""
-        };
-    }
-    // Convert newlines ('\n') into HTML line breaks
-    processTextArea() {
-        let textArea = this.state.value.split("\n");
-        return React.createElement(React.Fragment, null, textArea.map((x, idx) => React.createElement(React.Fragment, { key: idx },
-            x,
-            React.createElement("br", null))));
-    }
-    render() {
-        if (this.state.isEditing) {
-            return React.createElement(React.Fragment, null,
-                React.createElement("textarea", { onChange: this.updateValue, value: this.state.value }),
-                React.createElement(EditButton_1.default, { parent: this }));
-        }
-        return React.createElement("p", null,
-            this.processTextArea(),
-            React.createElement("span", { style: { display: "inline-block" } },
-                React.createElement(EditButton_1.default, { parent: this })));
-    }
-}
 class Resume extends React.Component {
     constructor(props) {
         super(props);
+        // Custom CSS
+        const head = document.getElementsByTagName("head")[0];
+        this.style = document.createElement("style");
+        this.style.innerHTML = "";
+        head.appendChild(this.style);
         this.state = {
             children: new ChildHolder_1.default([
                 React.createElement(FlexibleRow, null,
                     React.createElement(Title_1.default, { value: "Vincent La" }),
-                    React.createElement(Paragraph, { value: "Email: vincela9@hotmail.com\r\n                        Phone: 123-456-7890" })),
+                    React.createElement(Paragraph_1.default, { value: "Email: vincela9@hotmail.com\r\n                        Phone: 123-456-7890" })),
                 React.createElement(Section_1.default, { title: "Objective" },
-                    React.createElement(Paragraph, { value: "To conquer the world." })),
+                    React.createElement(Paragraph_1.default, { value: "To conquer the world." })),
                 React.createElement(Section_1.default, { title: "Education" },
                     React.createElement(Entry_1.default, null))
-            ])
+            ]),
+            customCss: `body {
+    width: 70vw;
+    margin: 1em auto 1em auto;
+    font-family: Tahoma, sans-serif;
+    font-size: 10pt;
+}
+
+body * {
+    margin: 0;
+}
+
+h1, h2, h3, h4 {
+    font-family: Georgia, serif;
+}
+
+h2 { border-bottom: 1px solid; }
+
+section {
+    margin-bottom: 1.5em;
+}`
         };
+        this.renderStyle();
         this.addSection = this.addSection.bind(this);
+        this.renderStyle = this.renderStyle.bind(this);
+        this.onStyleChange = this.onStyleChange.bind(this);
     }
     addSection() {
         this.setState({
             children: this.state.children.addChild(React.createElement(Section_1.default, { title: "Add title here" }))
         });
     }
+    // Update custom CSS
+    onStyleChange(event) {
+        this.setState({
+            customCss: event.target.value,
+        });
+    }
+    // Push style changes to browser
+    renderStyle() {
+        this.style.innerHTML = this.state.customCss;
+    }
     render() {
         return React.createElement(React.Fragment, null,
             this.state.children.render(),
-            React.createElement("button", { onClick: this.addSection }, "Add Section"));
+            React.createElement("button", { style: {}, onClick: this.addSection }, "Add Section"),
+            React.createElement("div", null,
+                React.createElement("h2", null, "Style Editor"),
+                React.createElement("textarea", { onChange: this.onStyleChange, value: this.state.customCss }),
+                React.createElement("button", { onClick: this.renderStyle }, "Update")));
     }
 }
 exports.default = Resume;
@@ -431,13 +445,13 @@ class ListItem extends Editable_1.default {
             value: ""
         };
     }
-    renderEditing() {
-        return React.createElement(React.Fragment, null,
-            React.createElement("input", { onChange: this.updateValue, value: this.state.value, type: "text" }),
-            React.createElement("div", { style: { float: "right" } },
-                React.createElement("button", { onClick: this.toggleEdit }, "Done")));
-    }
-    renderViewing() {
+    render() {
+        if (this.state.isEditing) {
+            return React.createElement(React.Fragment, null,
+                React.createElement("input", { onChange: this.updateValue, value: this.state.value, type: "text" }),
+                React.createElement("div", { style: { float: "right" } },
+                    React.createElement("button", { onClick: this.toggleEdit }, "Done")));
+        }
         return React.createElement("li", null,
             this.state.value,
             React.createElement("div", { style: { float: "right" } },
@@ -466,6 +480,51 @@ class List extends React.Component {
     }
 }
 exports.default = List;
+
+
+/***/ }),
+
+/***/ "./src/components/Paragraph.tsx":
+/*!**************************************!*\
+  !*** ./src/components/Paragraph.tsx ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const Editable_1 = __webpack_require__(/*! ./Editable */ "./src/components/Editable.tsx");
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const EditButton_1 = __webpack_require__(/*! ./EditButton */ "./src/components/EditButton.tsx");
+class Paragraph extends Editable_1.default {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isEditing: false,
+            value: props.value ? props.value : ""
+        };
+    }
+    // Convert newlines ('\n') into HTML line breaks
+    processTextArea() {
+        let textArea = this.state.value.split("\n");
+        return React.createElement(React.Fragment, null, textArea.map((x, idx) => React.createElement(React.Fragment, { key: idx },
+            x,
+            React.createElement("br", null))));
+    }
+    render() {
+        if (this.state.isEditing) {
+            return React.createElement(React.Fragment, null,
+                React.createElement("textarea", { onChange: this.updateValue, value: this.state.value }),
+                React.createElement(EditButton_1.default, { parent: this }));
+        }
+        return React.createElement("p", null,
+            this.processTextArea(),
+            React.createElement("span", { style: { display: "inline-block" } },
+                React.createElement(EditButton_1.default, { parent: this })));
+    }
+}
+exports.default = Paragraph;
 
 
 /***/ }),

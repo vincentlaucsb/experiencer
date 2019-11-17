@@ -12,14 +12,14 @@ export class ListItem extends Editable {
         };
     }
 
-    renderEditing() {
-        return <React.Fragment>
-            <input onChange={this.updateValue} value={this.state.value} type="text" />
-            <div style={{ float: "right" }}><button onClick={this.toggleEdit}>Done</button></div>
-        </React.Fragment>
-    }
+    render() {
+        if (this.state.isEditing) {
+            return <React.Fragment>
+                <input onChange={this.updateValue} value={this.state.value} type="text" />
+                <div style={{ float: "right" }}><button onClick={this.toggleEdit}>Done</button></div>
+            </React.Fragment>
+        }
 
-    renderViewing() {
         return <li>
             {this.state.value}
             <div style={{ float: "right" }}><button onClick={this.toggleEdit}>Edit</button></div>

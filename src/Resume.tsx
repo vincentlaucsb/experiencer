@@ -5,6 +5,7 @@ import ChildHolder from './components/ChildHolder';
 import EditButton from './components/EditButton';
 import Section from './components/Section';
 import Title from './components/Title';
+import Paragraph from './components/Paragraph';
 
 interface FlexibleRowProps {
     children?: any;
@@ -27,52 +28,22 @@ class FlexibleRow extends React.Component<FlexibleRowProps> {
     }
 }
 
-interface ParagraphProps extends EditableProps {
-    value?: string;
-}
-
-class Paragraph extends Editable<ParagraphProps> {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            isEditing: false,
-            value: props.value ? props.value : ""
-        };
-    }
-
-    // Convert newlines ('\n') into HTML line breaks
-    processTextArea() : JSX.Element {
-        let textArea = this.state.value.split("\n");
-
-        return <React.Fragment>
-            {textArea.map((x, idx) => <React.Fragment key={idx}>{x}<br /></React.Fragment>)}
-            </React.Fragment>;
-    }
-
-    render(): JSX.Element {
-        if (this.state.isEditing) {
-            return <React.Fragment>
-                <textarea onChange={this.updateValue} value={this.state.value} />
-                <EditButton parent={this} />
-            </React.Fragment>;
-        }
-
-        return <p>
-            {this.processTextArea()}
-            <span style={{ display: "inline-block" }}>
-                <EditButton parent={this} />
-            </span></p>;
-    }
-}
-
 interface PageState {
     children: ChildHolder;
+    customCss: string;
 }
 
 class Resume extends React.Component<{}, PageState> {
+    style: HTMLStyleElement;
+
     constructor(props) {
         super(props);
+
+        // Custom CSS
+        const head = document.getElementsByTagName("head")[0];
+        this.style = document.createElement("style");
+        this.style.innerHTML = "";
+        head.appendChild(this.style);
 
         this.state = {
             children: new ChildHolder([
@@ -87,10 +58,34 @@ class Resume extends React.Component<{}, PageState> {
                 <Section title="Education">
                     <Entry />
                 </Section>
-            ])
+            ]),
+            customCss: `body {
+    width: 70vw;
+    margin: 1em auto 1em auto;
+    font-family: Tahoma, sans-serif;
+    font-size: 10pt;
+}
+
+body * {
+    margin: 0;
+}
+
+h1, h2, h3, h4 {
+    font-family: Georgia, serif;
+}
+
+h2 { border-bottom: 1px solid; }
+
+section {
+    margin-bottom: 1.5em;
+}`
         };
 
+        this.renderStyle();
+
         this.addSection = this.addSection.bind(this);
+        this.renderStyle = this.renderStyle.bind(this);
+        this.onStyleChange = this.onStyleChange.bind(this);
     }
 
     addSection() {
@@ -99,11 +94,29 @@ class Resume extends React.Component<{}, PageState> {
         });
     }
 
+    // Update custom CSS
+    onStyleChange(event) {
+        this.setState({
+            customCss: event.target.value,
+        });
+    }
+
+    // Push style changes to browser
+    renderStyle() {
+        this.style.innerHTML = this.state.customCss;
+    }
+
     render() {
         return <React.Fragment>
             {this.state.children.render()}
 
-            <button onClick={this.addSection}>Add Section</button>
+            <button style={{}} onClick={this.addSection}>Add Section</button>
+
+            <div>
+                <h2>Style Editor</h2>
+                <textarea onChange={this.onStyleChange} value={this.state.customCss} />
+                <button onClick={this.renderStyle}>Update</button>
+            </div>
         </React.Fragment>
     }
 }

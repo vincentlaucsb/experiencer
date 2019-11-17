@@ -171,6 +171,7 @@ const ChildHolder_1 = __webpack_require__(/*! ./components/ChildHolder */ "./src
 const Section_1 = __webpack_require__(/*! ./components/Section */ "./src/components/Section.tsx");
 const Title_1 = __webpack_require__(/*! ./components/Title */ "./src/components/Title.tsx");
 const Paragraph_1 = __webpack_require__(/*! ./components/Paragraph */ "./src/components/Paragraph.tsx");
+const Container_1 = __webpack_require__(/*! ./components/Container */ "./src/components/Container.tsx");
 class FlexibleRow extends React.Component {
     constructor(props) {
         super(props);
@@ -184,7 +185,7 @@ class FlexibleRow extends React.Component {
             } }, this.props.children);
     }
 }
-class Resume extends React.Component {
+class Resume extends Container_1.Container {
     constructor(props) {
         super(props);
         // Custom CSS
@@ -193,7 +194,7 @@ class Resume extends React.Component {
         this.style.innerHTML = "";
         head.appendChild(this.style);
         this.state = {
-            children: new ChildHolder_1.default([
+            children: new ChildHolder_1.default(this, [
                 React.createElement(FlexibleRow, null,
                     React.createElement(Title_1.default, { value: "Vincent La" }),
                     React.createElement(Paragraph_1.default, { value: "Email: vincela9@hotmail.com\r\n                        Phone: 123-456-7890" })),
@@ -270,8 +271,12 @@ exports.default = Resume;
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 class ChildHolder {
-    constructor(children) {
+    constructor(parent, children = null) {
         this.children = new Array();
+        this.parent = parent;
+        if (children == null) {
+            children = parent.props.children;
+        }
         if (Array.isArray(children)) {
             this.children = children;
         }
@@ -283,11 +288,102 @@ class ChildHolder {
         this.children.push(child);
         return this;
     }
+    deleteChild(key) {
+        console.log("BALEETING");
+        let newChildren = new Array();
+        for (let i = 0; i < this.children.length; i++) {
+            if (i != key) {
+                newChildren.push(this.children[i]);
+            }
+            else {
+                console.log("Deleting ", i);
+            }
+        }
+        this.children = newChildren;
+        return this;
+    }
     render() {
-        return React.createElement(React.Fragment, null, this.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, elem)));
+        return React.createElement(React.Fragment, null, this.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx },
+            elem,
+            React.createElement("button", { onClick: this.parent.deleteChild.bind(this.parent, idx) }, "Delete"))));
     }
 }
 exports.default = ChildHolder;
+
+
+/***/ }),
+
+/***/ "./src/components/Container.tsx":
+/*!**************************************!*\
+  !*** ./src/components/Container.tsx ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const Editable_1 = __webpack_require__(/*! ./Editable */ "./src/components/Editable.tsx");
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+function deleteChild(idx) {
+    this.setState({
+        children: this.state.children.deleteChild(idx)
+    });
+}
+class Container extends React.Component {
+    constructor(props) {
+        super(props);
+        this.addChild = this.addChild.bind(this);
+        this.deleteChild = this.deleteChild.bind(this);
+    }
+    addChild() {
+        this.setState({
+            children: this.state.children.addChild(React.cloneElement(this.defaultChild))
+        });
+    }
+    deleteChild(idx) {
+        this.setState({
+            children: this.state.children.deleteChild(idx)
+        });
+    }
+}
+exports.Container = Container;
+class EditableContainer extends Editable_1.default {
+    constructor(props) {
+        super(props);
+        this.addChild = this.addChild.bind(this);
+        this.deleteChild = this.deleteChild.bind(this);
+    }
+    addChild() {
+        this.setState({
+            children: this.state.children.addChild(React.cloneElement(this.defaultChild))
+        });
+    }
+    deleteChild(idx) {
+        this.setState({
+            children: this.state.children.deleteChild(idx)
+        });
+    }
+}
+exports.EditableContainer = EditableContainer;
+class MultiEditableContainer extends Editable_1.MultiEditable {
+    constructor(props) {
+        super(props);
+        this.addChild = this.addChild.bind(this);
+        this.deleteChild = this.deleteChild.bind(this);
+    }
+    addChild() {
+        this.setState({
+            children: this.state.children.addChild(React.cloneElement(this.defaultChild))
+        });
+    }
+    deleteChild(idx) {
+        this.setState({
+            children: this.state.children.deleteChild(idx)
+        });
+    }
+}
+exports.MultiEditableContainer = MultiEditableContainer;
 
 
 /***/ }),
@@ -384,25 +480,18 @@ exports.MultiEditable = MultiEditable;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const Editable_1 = __webpack_require__(/*! ./Editable */ "./src/components/Editable.tsx");
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const ChildHolder_1 = __webpack_require__(/*! ./ChildHolder */ "./src/components/ChildHolder.tsx");
-const List_1 = __webpack_require__(/*! ./List */ "./src/components/List.tsx");
-class Entry extends Editable_1.MultiEditable {
+const Container_1 = __webpack_require__(/*! ./Container */ "./src/components/Container.tsx");
+class Entry extends Container_1.MultiEditableContainer {
     constructor(props) {
         super(props);
         this.state = {
-            children: new ChildHolder_1.default(props.children),
+            children: new ChildHolder_1.default(this, props.children),
             value: "",
             isEditing: false,
             values: new Map()
         };
-        this.addChild = this.addChild.bind(this);
-    }
-    addChild() {
-        this.setState({
-            children: this.state.children.addChild(React.createElement(List_1.default, null))
-        });
     }
     render() {
         if (this.state.isEditing) {
@@ -420,66 +509,6 @@ class Entry extends Editable_1.MultiEditable {
     }
 }
 exports.default = Entry;
-
-
-/***/ }),
-
-/***/ "./src/components/List.tsx":
-/*!*********************************!*\
-  !*** ./src/components/List.tsx ***!
-  \*********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const ChildHolder_1 = __webpack_require__(/*! ./ChildHolder */ "./src/components/ChildHolder.tsx");
-const Editable_1 = __webpack_require__(/*! ./Editable */ "./src/components/Editable.tsx");
-class ListItem extends Editable_1.default {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isEditing: false,
-            value: ""
-        };
-    }
-    render() {
-        if (this.state.isEditing) {
-            return React.createElement(React.Fragment, null,
-                React.createElement("input", { onChange: this.updateValue, value: this.state.value, type: "text" }),
-                React.createElement("div", { style: { float: "right" } },
-                    React.createElement("button", { onClick: this.toggleEdit }, "Done")));
-        }
-        return React.createElement("li", null,
-            this.state.value,
-            React.createElement("div", { style: { float: "right" } },
-                React.createElement("button", { onClick: this.toggleEdit }, "Edit")));
-    }
-}
-exports.ListItem = ListItem;
-class List extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            children: new ChildHolder_1.default(props.children)
-        };
-        this.addChild = this.addChild.bind(this);
-    }
-    addChild() {
-        this.setState({
-            children: this.state.children.addChild(React.createElement(ListItem, null))
-        });
-    }
-    render() {
-        return React.createElement(React.Fragment, null,
-            React.createElement("div", { style: { float: "right" } },
-                React.createElement("button", { onClick: this.addChild }, "Add")),
-            React.createElement("ul", null, this.state.children.render()));
-    }
-}
-exports.default = List;
 
 
 /***/ }),
@@ -541,23 +570,16 @@ exports.default = Paragraph;
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const ChildHolder_1 = __webpack_require__(/*! ./ChildHolder */ "./src/components/ChildHolder.tsx");
-const Editable_1 = __webpack_require__(/*! ./Editable */ "./src/components/Editable.tsx");
-const Entry_1 = __webpack_require__(/*! ./Entry */ "./src/components/Entry.tsx");
 const EditButton_1 = __webpack_require__(/*! ./EditButton */ "./src/components/EditButton.tsx");
-class Section extends Editable_1.default {
+const Container_1 = __webpack_require__(/*! ./Container */ "./src/components/Container.tsx");
+class Section extends Container_1.EditableContainer {
     constructor(props) {
         super(props);
         this.state = {
-            children: new ChildHolder_1.default(props.children),
+            children: new ChildHolder_1.default(this),
             value: props.title,
             isEditing: false
         };
-        this.addChild = this.addChild.bind(this);
-    }
-    addChild() {
-        this.setState({
-            children: this.state.children.addChild(React.createElement(Entry_1.default, null))
-        });
     }
     render() {
         let addButton = React.createElement("div", { style: { float: "right" } },

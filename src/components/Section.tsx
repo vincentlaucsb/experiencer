@@ -1,8 +1,8 @@
 ﻿import * as React from "react";
 import ChildHolder from "./ChildHolder";
 import Editable, { EditableState, EditableProps } from "./Editable";
-import Entry from "./Entry";
 import EditButton from "./EditButton";
+import { EditableContainer } from "./Container";
 
 interface SectionProps extends EditableProps {
     children?: any;
@@ -13,23 +13,15 @@ interface SectionState extends EditableState {
     children: ChildHolder;
 }
 
-export default class Section extends Editable<SectionProps, SectionState> {
+export default class Section extends EditableContainer<SectionProps, SectionState> {
     constructor(props: SectionProps) {
         super(props);
 
         this.state = {
-            children: new ChildHolder(props.children),
+            children: new ChildHolder(this),
             value: props.title,
             isEditing: false
         };
-
-        this.addChild = this.addChild.bind(this);
-    }
-
-    addChild() {
-        this.setState({
-            children: this.state.children.addChild(<Entry />)
-        });
     }
 
     render() {

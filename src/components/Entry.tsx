@@ -2,6 +2,7 @@
 import * as React from "react";
 import ChildHolder from "./ChildHolder";
 import List from "./List";
+import { MultiEditableContainer } from "./Container";
 
 interface EntryProps {
     children?: any;
@@ -11,24 +12,16 @@ interface EntryState extends MultiEditableState {
     children: ChildHolder;
 }
 
-export default class Entry extends MultiEditable<EntryProps, EntryState> {
+export default class Entry extends MultiEditableContainer<EntryProps, EntryState> {
     constructor(props) {
         super(props);
 
         this.state = {
-            children: new ChildHolder(props.children),
+            children: new ChildHolder(this, props.children),
             value: "",
             isEditing: false,
             values: new Map<string, string>()
         };
-
-        this.addChild = this.addChild.bind(this);
-    }
-
-    addChild() {
-        this.setState({
-            children: this.state.children.addChild(<List />)
-        });
     }
     
     render() {

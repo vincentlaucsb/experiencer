@@ -1,11 +1,10 @@
 import * as React from 'react';
-import Editable, { EditableProps, EditableState } from "./components/Editable";
 import Entry from './components/Entry';
 import ChildHolder from './components/ChildHolder';
-import EditButton from './components/EditButton';
 import Section from './components/Section';
 import Title from './components/Title';
 import Paragraph from './components/Paragraph';
+import { Container, ContainerState } from './components/Container';
 
 interface FlexibleRowProps {
     children?: any;
@@ -28,12 +27,11 @@ class FlexibleRow extends React.Component<FlexibleRowProps> {
     }
 }
 
-interface PageState {
-    children: ChildHolder;
+interface PageState extends ContainerState {
     customCss: string;
 }
 
-class Resume extends React.Component<{}, PageState> {
+class Resume extends Container<{}, PageState> {
     style: HTMLStyleElement;
 
     constructor(props) {
@@ -46,7 +44,9 @@ class Resume extends React.Component<{}, PageState> {
         head.appendChild(this.style);
 
         this.state = {
-            children: new ChildHolder([
+            children: new ChildHolder(
+                this,
+                [
                 <FlexibleRow>
                     <Title value="Vincent La" />
                     <Paragraph value="Email: vincela9@hotmail.com
@@ -109,7 +109,6 @@ section {
     render() {
         return <React.Fragment>
             {this.state.children.render()}
-
             <button style={{}} onClick={this.addSection}>Add Section</button>
 
             <div>

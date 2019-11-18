@@ -30,9 +30,12 @@ export default class Section extends React.Component<SectionProps> {
 
     toggleEdit(idx: number) {
         let currentChildData = this.props.children[idx]['isEditing'];
-        let newChildren = this.props.children;
-        newChildren[idx]['isEditing'] = !currentChildData;
+        this.updateNestedData(idx, "isEditing", !currentChildData);
+    }
 
+    updateNestedData(idx: number, key: string, data: any) {
+        let newChildren = this.props.children;
+        newChildren[idx][key] = data;
         this.props.updateData("children", newChildren);
     }
 

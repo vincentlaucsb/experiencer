@@ -768,8 +768,11 @@ class Section extends React.Component {
     }
     toggleEdit(idx) {
         let currentChildData = this.props.children[idx]['isEditing'];
+        this.updateNestedData(idx, "isEditing", !currentChildData);
+    }
+    updateNestedData(idx, key, data) {
         let newChildren = this.props.children;
-        newChildren[idx]['isEditing'] = !currentChildData;
+        newChildren[idx][key] = data;
         this.props.updateData("children", newChildren);
     }
     updateData(key, event) {

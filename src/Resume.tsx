@@ -137,8 +137,8 @@ section {
         });
     }
 
-    updateData(idx: number, key: string, event: any) {
-        this.state.children[idx][key] = event.target.value;
+    updateData(idx: number, key: string, data: any) {
+        this.state.children[idx][key] = data;
 
         this.setState({
             children: this.state.children

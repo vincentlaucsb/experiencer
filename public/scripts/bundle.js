@@ -278,8 +278,8 @@ section {
             children: this.state.children
         });
     }
-    updateData(idx, key, event) {
-        this.state.children[idx][key] = event.target.value;
+    updateData(idx, key, data) {
+        this.state.children[idx][key] = data;
         this.setState({
             children: this.state.children
         });
@@ -757,6 +757,8 @@ class Section extends React.Component {
     constructor(props) {
         super(props);
         this.addChild = this.addChild.bind(this);
+        this.toggleEdit = this.toggleEdit.bind(this);
+        this.updateData = this.updateData.bind(this);
     }
     addChild() {
         this.props.addChild({
@@ -764,19 +766,31 @@ class Section extends React.Component {
             value: "Enter value here"
         });
     }
+    toggleEdit(idx) {
+        let currentChildData = this.props.children[idx]['isEditing'];
+        let newChildren = this.props.children;
+        newChildren[idx]['isEditing'] = !currentChildData;
+        this.props.updateData("children", newChildren);
+    }
+    updateData(key, event) {
+        this.props.updateData(key, event.target.value);
+    }
     render() {
         let addButton = React.createElement("div", { style: { float: "right" } },
             React.createElement("button", { onClick: this.addChild }, "Add"));
         let title = this.props.title;
         if (this.props.isEditing) {
-            title = React.createElement("input", { onChange: this.props.updateData.bind(this, "title"), type: "text", value: this.props.title });
+            title = React.createElement("input", { onChange: this.updateData.bind(this, "title"), type: "text", value: this.props.title });
         }
         return React.createElement("section", null,
             React.createElement("h2", null,
                 title,
                 addButton,
                 React.createElement("button", { onClick: this.props.toggleEdit }, "Edit")),
-            this.props.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, LoadComponent_1.default(elem))));
+            this.props.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, LoadComponent_1.default(elem, {
+                toggleEdit: this.toggleEdit.bind(this, idx),
+                updateData: this.updateData.bind(this, idx)
+            }))));
     }
 }
 exports.default = Section;

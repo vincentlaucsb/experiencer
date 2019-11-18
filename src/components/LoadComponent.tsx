@@ -8,7 +8,7 @@ import Title, { TitleProps } from "./Title";
 import { EditableProps } from "./Editable";
 
 interface ExtraProps {
-    addChild: (idx: number, node: object) => void;
+    addChild?: (idx: number, node: object) => void;
     toggleEdit?: (idx: number) => void;
     updateData?: (idx: number, key: string, data: any) => void;
 }

@@ -17,6 +17,8 @@ export default class Section extends React.Component<SectionProps> {
         super(props);
 
         this.addChild = this.addChild.bind(this);
+        this.toggleEdit = this.toggleEdit.bind(this);
+        this.updateData = this.updateData.bind(this);
     }
 
     addChild() {
@@ -24,6 +26,18 @@ export default class Section extends React.Component<SectionProps> {
             type: "Paragraph",
             value: "Enter value here"
         });
+    }
+
+    toggleEdit(idx: number) {
+        let currentChildData = this.props.children[idx]['isEditing'];
+        let newChildren = this.props.children;
+        newChildren[idx]['isEditing'] = !currentChildData;
+
+        this.props.updateData("children", newChildren);
+    }
+
+    updateData(key: string, event: any) {
+        this.props.updateData(key, event.target.value);
     }
 
     render() {
@@ -34,7 +48,7 @@ export default class Section extends React.Component<SectionProps> {
         let title: string | JSX.Element = this.props.title;
 
         if (this.props.isEditing) {
-            title = <input onChange={this.props.updateData.bind(this, "title")} type="text" value={this.props.title} />;
+            title = <input onChange={this.updateData.bind(this, "title")} type="text" value={this.props.title} />;
         }
         
         return <section>
@@ -46,7 +60,12 @@ export default class Section extends React.Component<SectionProps> {
 
             {this.props.children.map((elem, idx) =>
                 <React.Fragment key={idx}>
-                    {loadComponent(elem)}
+                    {loadComponent(elem,
+                        {
+                        toggleEdit: this.toggleEdit.bind(this, idx),
+                        updateData: this.updateData.bind(this, idx)
+                    })
+                    }
                 </React.Fragment>)
             }
         </section>;

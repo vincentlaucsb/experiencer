@@ -1,9 +1,5 @@
 ﻿import * as React from "react";
-import ChildHolder from "./ChildHolder";
 import Editable, { EditableState, EditableProps } from "./Editable";
-import EditButton from "./EditButton";
-import { EditableContainer } from "./Container";
-import Entry from "./Entry";
 import loadComponent from "./LoadComponent";
 
 export interface SectionProps extends EditableProps {
@@ -53,8 +49,10 @@ export default class Section extends React.Component<SectionProps> {
     }
 
     render() {
-        let addButton = <div style={{ float: "right" }}>
+        let buttons = <div style={{ float: "right" }}>
             <button onClick={this.addChild}>Add</button>
+            <button onClick={this.props.toggleEdit}>Edit</button>
+            <button onClick={this.props.deleteChild}>Delete</button>
         </div>
 
         let title: string | JSX.Element = this.props.title;
@@ -66,8 +64,7 @@ export default class Section extends React.Component<SectionProps> {
         return <section>
             <h2>
                 {title}
-                {addButton}
-                <button onClick={this.props.toggleEdit}>Edit</button>
+                {buttons}
             </h2>
 
             {this.props.children.map((elem, idx) =>

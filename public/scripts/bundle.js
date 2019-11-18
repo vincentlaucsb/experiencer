@@ -278,6 +278,17 @@ section {
             children: this.state.children
         });
     }
+    deleteChild(idx) {
+        let newChildren = new Array();
+        for (let i = 0; i < this.state.children.length; i++) {
+            if (i != idx) {
+                newChildren.push(this.state.children[i]);
+            }
+        }
+        this.setState({
+            children: newChildren
+        });
+    }
     updateData(idx, key, data) {
         this.state.children[idx][key] = data;
         this.setState({
@@ -298,6 +309,7 @@ section {
         return React.createElement(React.Fragment, null,
             this.state.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, LoadComponent_1.default(elem, {
                 addChild: this.addChild.bind(this, idx),
+                deleteChild: this.deleteChild.bind(this, idx),
                 toggleEdit: this.toggleEdit.bind(this, idx),
                 updateData: this.updateData.bind(this, idx)
             }))),
@@ -626,7 +638,7 @@ const Entry_1 = __webpack_require__(/*! ./Entry */ "./src/components/Entry.tsx")
 const List_1 = __webpack_require__(/*! ./List */ "./src/components/List.tsx");
 const Paragraph_1 = __webpack_require__(/*! ./Paragraph */ "./src/components/Paragraph.tsx");
 const Title_1 = __webpack_require__(/*! ./Title */ "./src/components/Title.tsx");
-function loadComponent(data, extraProps, stopRecurse = false) {
+function loadComponent(data, extraProps) {
     // Load prop data
     let props = {};
     for (let key in data) {
@@ -636,12 +648,13 @@ function loadComponent(data, extraProps, stopRecurse = false) {
     }
     if (extraProps) {
         props['addChild'] = extraProps.addChild;
+        props['deleteChild'] = extraProps.deleteChild;
         props['toggleEdit'] = extraProps.toggleEdit;
         props['updateData'] = extraProps.updateData;
     }
     props['children'] = new Array();
     // Load children
-    if (data['children'] && !stopRecurse) {
+    if (data['children']) {
         props['children'] = data['children'];
     }
     switch (data['type']) {
@@ -756,8 +769,10 @@ class Section extends React.Component {
         this.props.updateData(key, event.target.value);
     }
     render() {
-        let addButton = React.createElement("div", { style: { float: "right" } },
-            React.createElement("button", { onClick: this.addChild }, "Add"));
+        let buttons = React.createElement("div", { style: { float: "right" } },
+            React.createElement("button", { onClick: this.addChild }, "Add"),
+            React.createElement("button", { onClick: this.props.toggleEdit }, "Edit"),
+            React.createElement("button", { onClick: this.props.deleteChild }, "Delete"));
         let title = this.props.title;
         if (this.props.isEditing) {
             title = React.createElement("input", { onChange: this.updateData.bind(this, "title"), type: "text", value: this.props.title });
@@ -765,8 +780,7 @@ class Section extends React.Component {
         return React.createElement("section", null,
             React.createElement("h2", null,
                 title,
-                addButton,
-                React.createElement("button", { onClick: this.props.toggleEdit }, "Edit")),
+                buttons),
             this.props.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, LoadComponent_1.default(elem, {
                 addChild: this.addNestedChild.bind(this, idx),
                 toggleEdit: this.toggleNestedEdit.bind(this, idx),

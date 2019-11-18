@@ -137,6 +137,19 @@ section {
         });
     }
 
+    deleteChild(idx: number) {
+        let newChildren = new Array<object>();
+        for (let i = 0; i < this.state.children.length; i++) {
+            if (i != idx) {
+                newChildren.push(this.state.children[i]);
+            }
+        }
+
+        this.setState({
+            children: newChildren
+        });
+    }
+
     updateData(idx: number, key: string, data: any) {
         this.state.children[idx][key] = data;
 
@@ -164,6 +177,7 @@ section {
                 <React.Fragment key={idx}>
                     {loadComponent(elem, {
                         addChild: this.addChild.bind(this, idx),
+                        deleteChild: this.deleteChild.bind(this, idx),
                         toggleEdit: this.toggleEdit.bind(this, idx),
                         updateData: this.updateData.bind(this, idx)
                     })}

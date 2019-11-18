@@ -5,6 +5,7 @@ export interface EditableProps {
     toggleEdit: () => void;
     updateData: (key: string, data: any) => void;
     addChild: (node: object) => void;
+    deleteChild: () => void;
 }
 
 export interface EditableStateBase {

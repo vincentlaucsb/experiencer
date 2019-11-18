@@ -9,11 +9,12 @@ import { EditableProps } from "./Editable";
 
 interface ExtraProps {
     addChild?: (idx: number, node: object) => void;
+    deleteChild?: (idx: number) => void;
     toggleEdit?: (idx: number) => void;
     updateData?: (idx: number, key: string, data: any) => void;
 }
 
-export default function loadComponent(data: object, extraProps?: ExtraProps, stopRecurse = false) {
+export default function loadComponent(data: object, extraProps?: ExtraProps) {
     // Load prop data
     let props = {};
     for (let key in data) {
@@ -24,6 +25,7 @@ export default function loadComponent(data: object, extraProps?: ExtraProps, sto
 
     if (extraProps) {
         props['addChild'] = extraProps.addChild;
+        props['deleteChild'] = extraProps.deleteChild;
         props['toggleEdit'] = extraProps.toggleEdit;
         props['updateData'] = extraProps.updateData;
     }
@@ -31,7 +33,7 @@ export default function loadComponent(data: object, extraProps?: ExtraProps, sto
     props['children'] = new Array();
 
     // Load children
-    if (data['children'] && !stopRecurse) {
+    if (data['children']) {
         props['children'] = data['children'];
     }
 

@@ -166,9 +166,7 @@
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const ChildHolder_1 = __webpack_require__(/*! ./components/ChildHolder */ "./src/components/ChildHolder.tsx");
-const Section_1 = __webpack_require__(/*! ./components/Section */ "./src/components/Section.tsx");
-const Container_1 = __webpack_require__(/*! ./components/Container */ "./src/components/Container.tsx");
+const LoadComponent_1 = __webpack_require__(/*! ./components/LoadComponent */ "./src/components/LoadComponent.tsx");
 const resumeData = [
     {
         type: 'FlexibleRow',
@@ -180,6 +178,25 @@ const resumeData = [
             {
                 type: 'Paragraph',
                 value: 'Email: vincela9@hotmail.com\nPhone: 123-456-7890'
+            }
+        ]
+    },
+    {
+        type: 'Section',
+        title: 'Objective',
+        children: [
+            {
+                type: 'Paragraph',
+                value: 'To conquer the world.'
+            }
+        ]
+    },
+    {
+        type: 'Section',
+        title: 'Education',
+        children: [
+            {
+                type: 'Entry'
             }
         ]
     }
@@ -196,7 +213,7 @@ const resumeData = [
                     <Entry />
                 </Section>
 */
-class Resume extends Container_1.Container {
+class Resume extends React.Component {
     constructor(props) {
         super(props);
         // Custom CSS
@@ -205,7 +222,7 @@ class Resume extends Container_1.Container {
         this.style.innerHTML = "";
         head.appendChild(this.style);
         this.state = {
-            children: new ChildHolder_1.default(this),
+            children: resumeData,
             customCss: `body {
     width: 70vw;
     margin: 1em auto 1em auto;
@@ -228,19 +245,23 @@ section {
 }`
         };
         this.renderStyle();
-        this.addSection = this.addSection.bind(this);
+        // this.addSection = this.addSection.bind(this);
+        this.addChild = this.addChild.bind(this);
+        this.updateData = this.updateData.bind(this);
+        this.toggleEdit = this.toggleEdit.bind(this);
         this.renderStyle = this.renderStyle.bind(this);
         this.onStyleChange = this.onStyleChange.bind(this);
-        for (let i in resumeData) {
-            this.state.children.addChild(resumeData[i]);
-            // this.addChild(resumeData[i]);
-        }
     }
+    /*
     addSection() {
         this.setState({
-            children: this.state.children.addChild(React.createElement(Section_1.default, { title: "Add title here" }))
+            children: this.state.children.addChild({
+                type: 'Section',
+                title: 'Add title here'
+            })
         });
     }
+    */
     // Update custom CSS
     onStyleChange(event) {
         this.setState({
@@ -251,11 +272,35 @@ section {
     renderStyle() {
         this.style.innerHTML = this.state.customCss;
     }
+    addChild(idx, node) {
+        this.state.children[idx]['children'].push(node);
+        this.setState({
+            children: this.state.children
+        });
+    }
+    updateData(idx, key, event) {
+        this.state.children[idx][key] = event.target.value;
+        this.setState({
+            children: this.state.children
+        });
+    }
+    toggleEdit(idx) {
+        console.log("Toggle edit received", idx);
+        let currentValue = this.state.children[idx]['isEditing'];
+        this.state.children[idx]['isEditing'] = !currentValue;
+        this.setState({
+            children: this.state.children
+        });
+    }
     render() {
         console.log(this.state.children);
+        // <button style={{}} onClick={this.addSection}>Add Section</button>
         return React.createElement(React.Fragment, null,
-            this.state.children.render(),
-            React.createElement("button", { style: {}, onClick: this.addSection }, "Add Section"),
+            this.state.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, LoadComponent_1.default(elem, {
+                addChild: this.addChild.bind(this, idx),
+                toggleEdit: this.toggleEdit.bind(this, idx),
+                updateData: this.updateData.bind(this, idx)
+            }))),
             React.createElement("div", null,
                 React.createElement("h2", null, "Style Editor"),
                 React.createElement("textarea", { onChange: this.onStyleChange, value: this.state.customCss }),
@@ -574,7 +619,9 @@ class List extends React.Component {
     }
     addChild() {
         this.setState({
-            children: this.state.children.addChild(React.createElement(ListItem, null))
+            children: this.state.children.addChild({
+                type: 'ListItem'
+            })
         });
     }
     render() {
@@ -606,7 +653,7 @@ const Entry_1 = __webpack_require__(/*! ./Entry */ "./src/components/Entry.tsx")
 const List_1 = __webpack_require__(/*! ./List */ "./src/components/List.tsx");
 const Paragraph_1 = __webpack_require__(/*! ./Paragraph */ "./src/components/Paragraph.tsx");
 const Title_1 = __webpack_require__(/*! ./Title */ "./src/components/Title.tsx");
-function loadComponent(data) {
+function loadComponent(data, extraProps) {
     // Load prop data
     let props = {};
     for (let key in data) {
@@ -614,15 +661,18 @@ function loadComponent(data) {
             props[key] = data[key];
         }
     }
+    if (extraProps) {
+        props['addChild'] = extraProps.addChild;
+        props['toggleEdit'] = extraProps.toggleEdit;
+        props['updateData'] = extraProps.updateData;
+    }
     // Load children
     if (data['children']) {
         props['children'] = new Array();
         for (let child of data['children']) {
-            console.log("LOADING CHILD", child);
-            props['children'].push(loadComponent(child));
+            props['children'].push(loadComponent(child, extraProps));
         }
     }
-    console.log("loadComponent() called", data);
     switch (data['type']) {
         case 'FlexibleRow':
             return React.createElement(FlexibleRow_1.default, Object.assign({}, props));
@@ -637,8 +687,9 @@ function loadComponent(data) {
         case 'Paragraph':
             return React.createElement(Paragraph_1.default, Object.assign({}, props));
         case 'Title':
-            console.log("TITLE PROPS", props);
-            return React.createElement(Title_1.default, Object.assign({}, props));
+            let title = new Title_1.default(props);
+            return title.render();
+        // return <Title {...props as TitleProps} />;
     }
 }
 exports.default = loadComponent;
@@ -702,33 +753,30 @@ exports.default = Paragraph;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const ChildHolder_1 = __webpack_require__(/*! ./ChildHolder */ "./src/components/ChildHolder.tsx");
-const EditButton_1 = __webpack_require__(/*! ./EditButton */ "./src/components/EditButton.tsx");
-const Container_1 = __webpack_require__(/*! ./Container */ "./src/components/Container.tsx");
-const Entry_1 = __webpack_require__(/*! ./Entry */ "./src/components/Entry.tsx");
-class Section extends Container_1.EditableContainer {
+class Section extends React.Component {
     constructor(props) {
         super(props);
-        this.defaultChild = React.createElement(Entry_1.default, null);
-        this.state = {
-            children: new ChildHolder_1.default(this),
-            value: props.title,
-            isEditing: false
-        };
+        this.addChild = this.addChild.bind(this);
+    }
+    addChild() {
+        this.props.addChild({
+            type: "Paragraph",
+            value: "Enter value here"
+        });
     }
     render() {
         let addButton = React.createElement("div", { style: { float: "right" } },
             React.createElement("button", { onClick: this.addChild }, "Add"));
-        let title = this.state.value;
-        if (this.state.isEditing) {
-            title = React.createElement("input", { onChange: this.updateValue, type: "text", value: this.state.value });
+        let title = this.props.title;
+        if (this.props.isEditing) {
+            title = React.createElement("input", { onChange: this.props.updateData.bind(this, "title"), type: "text", value: this.props.title });
         }
         return React.createElement("section", null,
             React.createElement("h2", null,
                 title,
                 addButton,
-                React.createElement(EditButton_1.default, { parent: this })),
-            this.state.children.render());
+                React.createElement("button", { onClick: this.props.toggleEdit }, "Edit")),
+            this.props.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, elem)));
     }
 }
 exports.default = Section;

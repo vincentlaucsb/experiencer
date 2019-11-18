@@ -48,7 +48,9 @@ export default class List extends React.Component<ListProps, ListState> {
 
     addChild() {
         this.setState({
-            children: this.state.children.addChild(<ListItem />)
+            children: this.state.children.addChild({
+                type: 'ListItem'
+            })
         });
     }
 

@@ -4,42 +4,51 @@ import Editable, { EditableState, EditableProps } from "./Editable";
 import EditButton from "./EditButton";
 import { EditableContainer } from "./Container";
 import Entry from "./Entry";
+import loadComponent from "./LoadComponent";
 
 export interface SectionProps extends EditableProps {
+    isEditing?: boolean;
     children?: any;
     title: string;
 }
 
-export default class Section extends EditableContainer<SectionProps> {
+export default class Section extends React.Component<SectionProps> {
     constructor(props: SectionProps) {
         super(props);
 
-        this.defaultChild = <Entry />;
-        this.state = {
-            children: new ChildHolder(this),
-            value: props.title,
-            isEditing: false
-        };
+        this.addChild = this.addChild.bind(this);
+    }
+
+    addChild() {
+        this.props.addChild({
+            type: "Paragraph",
+            value: "Enter value here"
+        });
     }
 
     render() {
         let addButton = <div style={{ float: "right" }}>
             <button onClick={this.addChild}>Add</button>
-        </div>;
+        </div>
 
-        let title: string | JSX.Element = this.state.value;
+        let title: string | JSX.Element = this.props.title;
 
-        if (this.state.isEditing) {
-            title = <input onChange={this.updateValue} type="text" value={this.state.value} />;
+        if (this.props.isEditing) {
+            title = <input onChange={this.props.updateData.bind(this, "title")} type="text" value={this.props.title} />;
         }
-
+        
         return <section>
             <h2>
                 {title}
                 {addButton}
-                <EditButton parent={this} />
+                <button onClick={this.props.toggleEdit}>Edit</button>
             </h2>
-            {this.state.children.render()}
+
+            {this.props.children.map((elem, idx) =>
+                <React.Fragment key={idx}>
+                    {elem}
+                </React.Fragment>)
+            }
         </section>;
     }
 }

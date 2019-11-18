@@ -1,7 +1,9 @@
 ﻿import * as React from "react";
 
 export interface EditableProps {
-
+    toggleEdit: () => void;
+    updateData: (key: string, data: any) => void;
+    addChild: (node: object) => void;
 }
 
 export interface EditableStateBase {
@@ -31,7 +33,7 @@ export abstract class EditableBase<P = {}, S extends EditableState = EditableSta
 
 // Represents an editable resume component
 export default abstract class Editable<
-    Props extends EditableProps = {},
+    Props extends EditableProps = EditableProps,
     State extends EditableState = EditableState>
     extends EditableBase<Props, State> {
     constructor(props: Props) {

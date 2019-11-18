@@ -5,8 +5,10 @@ import Section from './components/Section';
 import Title from './components/Title';
 import Paragraph from './components/Paragraph';
 import { Container, ContainerState } from './components/Container';
+import loadComponent from './components/LoadComponent';
 
-interface PageState extends ContainerState {
+interface PageState {
+    children: Array<object>;
     customCss: string;
 }
 
@@ -23,7 +25,27 @@ const resumeData = [
                 value: 'Email: vincela9@hotmail.com\nPhone: 123-456-7890'
             }
         ]
+    },
+    {
+        type: 'Section',
+        title: 'Objective',
+        children: [
+            {
+                type: 'Paragraph',
+                value: 'To conquer the world.'
+            }
+        ]
+    },
+    {
+        type: 'Section',
+        title: 'Education',
+        children: [
+            {
+                type: 'Entry'
+            }
+        ]
     }
+    
 ];
 /*
                     <Title value="Vincent La" />
@@ -38,7 +60,7 @@ const resumeData = [
                 </Section>
 */
 
-class Resume extends Container<{}, PageState> {
+class Resume extends React.Component<{}, PageState> {
     style: HTMLStyleElement;
 
     constructor(props) {
@@ -51,7 +73,7 @@ class Resume extends Container<{}, PageState> {
         head.appendChild(this.style);
 
         this.state = {
-            children: new ChildHolder(this),
+            children: resumeData,
             customCss: `body {
     width: 70vw;
     margin: 1em auto 1em auto;
@@ -76,21 +98,24 @@ section {
 
         this.renderStyle();
 
-        this.addSection = this.addSection.bind(this);
+        // this.addSection = this.addSection.bind(this);
+        this.addChild = this.addChild.bind(this);
+        this.updateData = this.updateData.bind(this);
+        this.toggleEdit = this.toggleEdit.bind(this);
         this.renderStyle = this.renderStyle.bind(this);
         this.onStyleChange = this.onStyleChange.bind(this);
-
-        for (let i in resumeData) {
-            this.state.children.addChild(resumeData[i]);
-            // this.addChild(resumeData[i]);
-        }
     }
 
+    /*
     addSection() {
         this.setState({
-            children: this.state.children.addChild(<Section title="Add title here" />)
+            children: this.state.children.addChild({
+                type: 'Section',
+                title: 'Add title here'
+            })
         });
     }
+    */
 
     // Update custom CSS
     onStyleChange(event) {
@@ -104,12 +129,46 @@ section {
         this.style.innerHTML = this.state.customCss;
     }
 
+    addChild(idx: number, node: object) {
+        this.state.children[idx]['children'].push(node);
+
+        this.setState({
+            children: this.state.children
+        });
+    }
+
+    updateData(idx: number, key: string, event: any) {
+        this.state.children[idx][key] = event.target.value;
+
+        this.setState({
+            children: this.state.children
+        });
+    }
+
+    toggleEdit(idx: number) {
+        console.log("Toggle edit received", idx);
+        let currentValue = this.state.children[idx]['isEditing'];
+        this.state.children[idx]['isEditing'] = !currentValue;
+
+        this.setState({
+            children: this.state.children
+        });
+    }
+
     render() {
         console.log(this.state.children);
+        // <button style={{}} onClick={this.addSection}>Add Section</button>
 
         return <React.Fragment>
-            {this.state.children.render()}
-            <button style={{}} onClick={this.addSection}>Add Section</button>
+            {this.state.children.map((elem, idx) =>
+                <React.Fragment key={idx}>
+                    {loadComponent(elem, {
+                        addChild: this.addChild.bind(this, idx),
+                        toggleEdit: this.toggleEdit.bind(this, idx),
+                        updateData: this.updateData.bind(this, idx)
+                    })}
+                </React.Fragment>)
+            }
 
             <div>
                 <h2>Style Editor</h2>

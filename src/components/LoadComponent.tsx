@@ -3,10 +3,17 @@ import React = require("react");
 import Section, { SectionProps } from "./Section";
 import Entry from "./Entry";
 import List, { ListItem } from "./List";
-import Paragraph from "./Paragraph";
+import Paragraph, { ParagraphProps } from "./Paragraph";
 import Title, { TitleProps } from "./Title";
+import { EditableProps } from "./Editable";
 
-export default function loadComponent(data: object) {
+interface ExtraProps {
+    addChild: (idx: number, node: object) => void;
+    toggleEdit?: (idx: number) => void;
+    updateData?: (idx: number, key: string, data: any) => void;
+}
+
+export default function loadComponent(data: object, extraProps?: ExtraProps) {
     // Load prop data
     let props = {};
     for (let key in data) {
@@ -15,17 +22,21 @@ export default function loadComponent(data: object) {
         }
     }
 
+    if (extraProps) {
+        props['addChild'] = extraProps.addChild;
+        props['toggleEdit'] = extraProps.toggleEdit;
+        props['updateData'] = extraProps.updateData;
+    }
+
     // Load children
     if (data['children']) {
         props['children'] = new Array();
 
         for (let child of data['children']) {
-            console.log("LOADING CHILD", child);
-            props['children'].push(loadComponent(child));
+            props['children'].push(loadComponent(child, extraProps));
         }
     }
 
-    console.log("loadComponent() called", data);
     switch (data['type']) {
         case 'FlexibleRow':
             return <FlexibleRow {...props as FlexibleRowProps } />;
@@ -36,11 +47,12 @@ export default function loadComponent(data: object) {
         case 'List':
             return <List {...props} />;
         case 'ListItem':
-            return <ListItem {...props} />;
+            return <ListItem {...props as EditableProps} />;
         case 'Paragraph':
-            return <Paragraph {...props} />;
+            return <Paragraph {...props as ParagraphProps} />;
         case 'Title':
-            console.log("TITLE PROPS", props);
-            return <Title {...props as TitleProps} />;
+            let title = new Title(props as TitleProps);
+            return title.render();
+            // return <Title {...props as TitleProps} />;
     }
 }

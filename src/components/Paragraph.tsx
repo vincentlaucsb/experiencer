@@ -2,7 +2,7 @@
 import React = require("react");
 import EditButton from "./EditButton";
 
-interface ParagraphProps extends EditableProps {
+export interface ParagraphProps extends EditableProps {
     value?: string;
 }
 

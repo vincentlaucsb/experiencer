@@ -44,7 +44,7 @@ export class Container<
 }
 
 export class EditableContainer<
-    Props extends EditableProps = {},
+    Props extends EditableProps = EditableProps,
     State extends EditableContainerState = EditableContainerState>
     extends Editable<Props, State>
     implements IContainer

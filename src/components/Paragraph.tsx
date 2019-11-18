@@ -30,14 +30,14 @@ export default class Paragraph extends React.Component<ParagraphProps> {
         if (this.props.isEditing) {
             return <React.Fragment>
                 <textarea onChange={this.updateData.bind(this, "value")} value={this.props.value} />
-                <button onClick={this.props.toggleEdit}>Edit</button>
+                <EditButton {...this.props} />
             </React.Fragment>;
         }
 
         return <p>
             {this.processTextArea()}
             <span style={{ display: "inline-block" }}>
-                <button onClick={this.props.toggleEdit}>Edit</button>
+                <EditButton {...this.props} />
             </span></p>;
     }
 }

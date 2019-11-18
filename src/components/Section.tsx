@@ -1,6 +1,7 @@
 ﻿import * as React from "react";
 import Editable, { EditableState, EditableProps } from "./Editable";
 import loadComponent from "./LoadComponent";
+import EditButton from "./EditButton";
 
 export interface SectionProps extends EditableProps {
     isEditing?: boolean;
@@ -51,7 +52,7 @@ export default class Section extends React.Component<SectionProps> {
     render() {
         let buttons = <div style={{ float: "right" }}>
             <button onClick={this.addChild}>Add</button>
-            <button onClick={this.props.toggleEdit}>Edit</button>
+            <EditButton {...this.props} />
             <button onClick={this.props.deleteChild}>Delete</button>
         </div>
 

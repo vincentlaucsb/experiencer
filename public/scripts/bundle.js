@@ -380,20 +380,11 @@ exports.default = ChildHolder;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-class EditButtonProps {
-}
-exports.EditButtonProps = EditButtonProps;
-class EditButton extends React.Component {
-    constructor(props) {
-        super(props);
+function EditButton(props) {
+    if (props.isEditing) {
+        return React.createElement("button", { onClick: props.toggleEdit }, "Done");
     }
-    render() {
-        const isEditing = this.props.parent.state.isEditing;
-        if (isEditing) {
-            return React.createElement("button", { onClick: this.props.parent.toggleEdit }, "Done");
-        }
-        return React.createElement("button", { onClick: this.props.parent.toggleEdit }, "Edit");
-    }
+    return React.createElement("button", { onClick: props.toggleEdit }, "Edit");
 }
 exports.default = EditButton;
 
@@ -692,6 +683,7 @@ exports.default = loadComponent;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const EditButton_1 = __webpack_require__(/*! ./EditButton */ "./src/components/EditButton.tsx");
 class Paragraph extends React.Component {
     constructor(props) {
         super(props);
@@ -711,12 +703,12 @@ class Paragraph extends React.Component {
         if (this.props.isEditing) {
             return React.createElement(React.Fragment, null,
                 React.createElement("textarea", { onChange: this.updateData.bind(this, "value"), value: this.props.value }),
-                React.createElement("button", { onClick: this.props.toggleEdit }, "Edit"));
+                React.createElement(EditButton_1.default, Object.assign({}, this.props)));
         }
         return React.createElement("p", null,
             this.processTextArea(),
             React.createElement("span", { style: { display: "inline-block" } },
-                React.createElement("button", { onClick: this.props.toggleEdit }, "Edit")));
+                React.createElement(EditButton_1.default, Object.assign({}, this.props))));
     }
 }
 exports.default = Paragraph;
@@ -736,6 +728,7 @@ exports.default = Paragraph;
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const LoadComponent_1 = __webpack_require__(/*! ./LoadComponent */ "./src/components/LoadComponent.tsx");
+const EditButton_1 = __webpack_require__(/*! ./EditButton */ "./src/components/EditButton.tsx");
 class Section extends React.Component {
     constructor(props) {
         super(props);
@@ -771,7 +764,7 @@ class Section extends React.Component {
     render() {
         let buttons = React.createElement("div", { style: { float: "right" } },
             React.createElement("button", { onClick: this.addChild }, "Add"),
-            React.createElement("button", { onClick: this.props.toggleEdit }, "Edit"),
+            React.createElement(EditButton_1.default, Object.assign({}, this.props)),
             React.createElement("button", { onClick: this.props.deleteChild }, "Delete"));
         let title = this.props.title;
         if (this.props.isEditing) {
@@ -805,7 +798,6 @@ exports.default = Section;
 Object.defineProperty(exports, "__esModule", { value: true });
 const Editable_1 = __webpack_require__(/*! ./Editable */ "./src/components/Editable.tsx");
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const EditButton_1 = __webpack_require__(/*! ./EditButton */ "./src/components/EditButton.tsx");
 class Title extends Editable_1.default {
     constructor(props) {
         super(props);
@@ -817,13 +809,11 @@ class Title extends Editable_1.default {
     render() {
         if (this.state.isEditing) {
             return React.createElement(React.Fragment, null,
-                React.createElement("input", { onChange: this.updateValue, value: this.state.value, type: "text" }),
-                React.createElement(EditButton_1.default, { parent: this }));
+                React.createElement("input", { onChange: this.updateValue, value: this.state.value, type: "text" }));
         }
         return React.createElement("h1", null,
             this.state.value,
-            React.createElement("div", { style: { display: "inline-block" } },
-                React.createElement(EditButton_1.default, { parent: this })));
+            React.createElement("div", { style: { display: "inline-block" } }));
     }
 }
 exports.default = Title;

@@ -21,14 +21,12 @@ export default class Title extends Editable<TitleProps, EditableState> {
             return <React.Fragment>
                 <input onChange={this.updateValue}
                     value={this.state.value} type="text" />
-                <EditButton parent={this} />
             </React.Fragment>;
         }
 
         return <h1>
             {this.state.value}
             <div style={{ display: "inline-block" }}>
-                <EditButton parent={this} />
             </div>
         </h1>;
     }

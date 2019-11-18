@@ -1,21 +1,10 @@
 ﻿import * as React from "react";
-import { EditableBase } from "./Editable";
+import { EditableProps } from "./Editable";
 
-export class EditButtonProps {
-    parent: EditableBase;
-}
-
-export default class EditButton extends React.Component<EditButtonProps> {
-    constructor(props: EditButtonProps) {
-        super(props);
+export default function EditButton<P extends EditableProps>(props: P) {
+    if (props.isEditing) {
+        return <button onClick={props.toggleEdit}>Done</button>
     }
 
-    render() {
-        const isEditing = this.props.parent.state.isEditing;
-        if (isEditing) {
-            return <button onClick={this.props.parent.toggleEdit}>Done</button>
-        }
-
-        return <button onClick={this.props.parent.toggleEdit}>Edit</button>
-    }
+    return <button onClick={props.toggleEdit}>Edit</button>
 }

@@ -1,57 +1,57 @@
 ﻿import * as React from "react";
-import ChildHolder from "./ChildHolder";
-import Editable from "./Editable";
+import Editable, { EditableProps } from "./Editable";
+import loadComponent from "./LoadComponent";
 
-export class ListItem extends Editable {
+export interface ListItemProps extends EditableProps {
+    value?: string;
+}
+
+export class ListItem extends React.Component<ListItemProps> {
     constructor(props) {
         super(props);
-
-        this.state = {
-            isEditing: false,
-            value: ""
-        };
     }
 
     render() {
-        if (this.state.isEditing) {
+        if (this.props.isEditing) {
             return <React.Fragment>
-                <input onChange={this.updateValue} value={this.state.value} type="text" />
-                <div style={{ float: "right" }}><button onClick={this.toggleEdit}>Done</button></div>
+                <input onChange={this.props.updateData.bind(this, "value")} value={this.props.value} type="text" />
+                <div style={{ float: "right" }}><button onClick={this.props.toggleEdit}>Done</button></div>
             </React.Fragment>
         }
 
         return <li>
-            {this.state.value}
-            <div style={{ float: "right" }}><button onClick={this.toggleEdit}>Edit</button></div>
+            {this.props.value}
+            <div style={{ float: "right" }}><button onClick={this.props.toggleEdit}>Edit</button></div>
         </li>
     }
 }
 
-interface ListProps {
+export interface ListProps extends EditableProps {
     children?: any;
 }
 
-interface ListState {
-    children: ChildHolder;
-}
-
-export default class List extends React.Component<ListProps, ListState> {
+export default class List extends React.Component<ListProps> {
     constructor(props) {
         super(props);
-
-        this.state = {
-            children: new ChildHolder(props.children)
-        };
 
         this.addChild = this.addChild.bind(this);
     }
 
     addChild() {
-        this.setState({
-            children: this.state.children.addChild({
-                type: 'ListItem'
-            })
+        this.props.addChild({
+            type: 'ListItem'
         });
+    }
+
+    toggleNestedEdit(idx: number) {
+        let currentChildData = this.props.children[idx]['isEditing'];
+        this.updateNestedData(idx, "isEditing", !currentChildData);
+    }
+
+    updateNestedData(idx: number, key: string, data: any) {
+        let newChildren = this.props.children;
+        newChildren[idx][key] = data;
+        this.props.updateData("children", newChildren);
     }
 
     render() {
@@ -60,7 +60,16 @@ export default class List extends React.Component<ListProps, ListState> {
                 <button onClick={this.addChild}>Add</button>
             </div>
             <ul>
-            {this.state.children.render()}
+                {this.props.children.map((elem, idx) =>
+                    <React.Fragment key={idx}>
+                        {loadComponent(elem,
+                            {
+                                toggleEdit: this.toggleNestedEdit.bind(this, idx),
+                                updateData: this.updateNestedData.bind(this, idx)
+                            })
+                        }
+                    </React.Fragment>)
+                }
             </ul>
             </React.Fragment>
     }

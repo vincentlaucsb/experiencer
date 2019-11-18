@@ -1,10 +1,4 @@
 import * as React from 'react';
-import Entry from './components/Entry';
-import ChildHolder from './components/ChildHolder';
-import Section from './components/Section';
-import Title from './components/Title';
-import Paragraph from './components/Paragraph';
-import { Container, ContainerState } from './components/Container';
 import loadComponent from './components/LoadComponent';
 
 interface PageState {
@@ -47,18 +41,6 @@ const resumeData = [
     }
     
 ];
-/*
-                    <Title value="Vincent La" />
-                    <Paragraph value="Email: vincela9@hotmail.com
-                        Phone: 123-456-7890" />
-                </FlexibleRow>,
-                <Section title="Objective">
-                    <Paragraph value="To conquer the world." />
-                </Section>,
-                <Section title="Education">
-                    <Entry />
-                </Section>
-*/
 
 class Resume extends React.Component<{}, PageState> {
     style: HTMLStyleElement;

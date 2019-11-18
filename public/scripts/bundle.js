@@ -201,18 +201,6 @@ const resumeData = [
         ]
     }
 ];
-/*
-                    <Title value="Vincent La" />
-                    <Paragraph value="Email: vincela9@hotmail.com
-                        Phone: 123-456-7890" />
-                </FlexibleRow>,
-                <Section title="Objective">
-                    <Paragraph value="To conquer the world." />
-                </Section>,
-                <Section title="Education">
-                    <Entry />
-                </Section>
-*/
 class Resume extends React.Component {
     constructor(props) {
         super(props);
@@ -324,51 +312,6 @@ exports.default = Resume;
 
 /***/ }),
 
-/***/ "./src/components/ChildHolder.tsx":
-/*!****************************************!*\
-  !*** ./src/components/ChildHolder.tsx ***!
-  \****************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const LoadComponent_1 = __webpack_require__(/*! ./LoadComponent */ "./src/components/LoadComponent.tsx");
-class ChildHolder {
-    constructor(parent) {
-        this.children = new Array();
-        this.parent = parent;
-    }
-    addChild(child) {
-        this.children.push(child);
-        return this;
-    }
-    deleteChild(key) {
-        let newChildren = new Array();
-        for (let i = 0; i < this.children.length; i++) {
-            if (i != key) {
-                newChildren.push(this.children[i]);
-            }
-            else {
-                console.log("Deleting ", i);
-            }
-        }
-        this.children = newChildren;
-        return this;
-    }
-    render() {
-        return React.createElement(React.Fragment, null, this.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx },
-            LoadComponent_1.default(elem),
-            React.createElement("button", { onClick: this.parent.deleteChild.bind(this.parent, idx) }, "Delete"))));
-    }
-}
-exports.default = ChildHolder;
-
-
-/***/ }),
-
 /***/ "./src/components/EditButton.tsx":
 /*!***************************************!*\
   !*** ./src/components/EditButton.tsx ***!
@@ -387,57 +330,6 @@ function EditButton(props) {
     return React.createElement("button", { onClick: props.toggleEdit }, "Edit");
 }
 exports.default = EditButton;
-
-
-/***/ }),
-
-/***/ "./src/components/Editable.tsx":
-/*!*************************************!*\
-  !*** ./src/components/Editable.tsx ***!
-  \*************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-class EditableBase extends React.Component {
-    constructor(props) {
-        super(props);
-        this.toggleEdit = this.toggleEdit.bind(this);
-    }
-    toggleEdit() {
-        this.setState({
-            isEditing: !this.state.isEditing
-        });
-    }
-}
-exports.EditableBase = EditableBase;
-// Represents an editable resume component
-class Editable extends EditableBase {
-    constructor(props) {
-        super(props);
-        this.updateValue = this.updateValue.bind(this);
-    }
-    updateValue(event) {
-        this.setState({ value: event.target.value });
-    }
-}
-exports.default = Editable;
-class MultiEditable extends EditableBase {
-    constructor(props) {
-        super(props);
-        this.updateValue = this.updateValue.bind(this);
-    }
-    updateValue(key, event) {
-        this.state.values.set(key, event.target.value);
-        this.setState({
-            values: this.state.values
-        });
-    }
-}
-exports.MultiEditable = MultiEditable;
 
 
 /***/ }),
@@ -561,50 +453,52 @@ exports.default = FlexibleRow;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const ChildHolder_1 = __webpack_require__(/*! ./ChildHolder */ "./src/components/ChildHolder.tsx");
-const Editable_1 = __webpack_require__(/*! ./Editable */ "./src/components/Editable.tsx");
-class ListItem extends Editable_1.default {
+const LoadComponent_1 = __webpack_require__(/*! ./LoadComponent */ "./src/components/LoadComponent.tsx");
+class ListItem extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            isEditing: false,
-            value: ""
-        };
     }
     render() {
-        if (this.state.isEditing) {
+        if (this.props.isEditing) {
             return React.createElement(React.Fragment, null,
-                React.createElement("input", { onChange: this.updateValue, value: this.state.value, type: "text" }),
+                React.createElement("input", { onChange: this.props.updateData.bind(this, "value"), value: this.props.value, type: "text" }),
                 React.createElement("div", { style: { float: "right" } },
-                    React.createElement("button", { onClick: this.toggleEdit }, "Done")));
+                    React.createElement("button", { onClick: this.props.toggleEdit }, "Done")));
         }
         return React.createElement("li", null,
-            this.state.value,
+            this.props.value,
             React.createElement("div", { style: { float: "right" } },
-                React.createElement("button", { onClick: this.toggleEdit }, "Edit")));
+                React.createElement("button", { onClick: this.props.toggleEdit }, "Edit")));
     }
 }
 exports.ListItem = ListItem;
 class List extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            children: new ChildHolder_1.default(props.children)
-        };
         this.addChild = this.addChild.bind(this);
     }
     addChild() {
-        this.setState({
-            children: this.state.children.addChild({
-                type: 'ListItem'
-            })
+        this.props.addChild({
+            type: 'ListItem'
         });
+    }
+    toggleNestedEdit(idx) {
+        let currentChildData = this.props.children[idx]['isEditing'];
+        this.updateNestedData(idx, "isEditing", !currentChildData);
+    }
+    updateNestedData(idx, key, data) {
+        let newChildren = this.props.children;
+        newChildren[idx][key] = data;
+        this.props.updateData("children", newChildren);
     }
     render() {
         return React.createElement(React.Fragment, null,
             React.createElement("div", { style: { float: "right" } },
                 React.createElement("button", { onClick: this.addChild }, "Add")),
-            React.createElement("ul", null, this.state.children.render()));
+            React.createElement("ul", null, this.props.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, LoadComponent_1.default(elem, {
+                toggleEdit: this.toggleNestedEdit.bind(this, idx),
+                updateData: this.updateNestedData.bind(this, idx)
+            })))));
     }
 }
 exports.default = List;
@@ -796,24 +690,25 @@ exports.default = Section;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const Editable_1 = __webpack_require__(/*! ./Editable */ "./src/components/Editable.tsx");
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-class Title extends Editable_1.default {
+const EditButton_1 = __webpack_require__(/*! ./EditButton */ "./src/components/EditButton.tsx");
+class Title extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            isEditing: false,
-            value: props.value
-        };
+    }
+    updateData(key, event) {
+        this.props.updateData(key, event.target.value);
     }
     render() {
-        if (this.state.isEditing) {
+        if (this.props.isEditing) {
             return React.createElement(React.Fragment, null,
-                React.createElement("input", { onChange: this.updateValue, value: this.state.value, type: "text" }));
+                React.createElement("input", { onChange: this.updateData.bind(this, "value"), value: this.props.value, type: "text" }),
+                React.createElement(EditButton_1.default, Object.assign({}, this.props)));
         }
         return React.createElement("h1", null,
-            this.state.value,
-            React.createElement("div", { style: { display: "inline-block" } }));
+            this.props.value,
+            React.createElement("div", { style: { display: "inline-block" } },
+                React.createElement(EditButton_1.default, Object.assign({}, this.props))));
     }
 }
 exports.default = Title;

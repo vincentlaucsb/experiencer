@@ -2,7 +2,7 @@
 import React = require("react");
 import Section, { SectionProps } from "./Section";
 import Entry, { EntryProps } from "./Entry";
-import List, { ListItem } from "./List";
+import List, { ListItem, ListProps } from "./List";
 import Paragraph, { ParagraphProps } from "./Paragraph";
 import Title, { TitleProps } from "./Title";
 import { EditableProps } from "./Editable";
@@ -45,7 +45,7 @@ export default function loadComponent(data: object, extraProps?: ExtraProps) {
         case 'Entry':
             return <Entry {...props as EntryProps} />;
         case 'List':
-            return <List {...props} />;
+            return <List {...props as ListProps} />;
         case 'ListItem':
             return <ListItem {...props as EditableProps} />;
         case 'Paragraph':

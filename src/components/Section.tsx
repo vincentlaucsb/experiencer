@@ -17,7 +17,6 @@ export default class Section extends React.Component<SectionProps> {
         super(props);
 
         this.addChild = this.addChild.bind(this);
-        this.toggleEdit = this.toggleEdit.bind(this);
         this.updateData = this.updateData.bind(this);
     }
 
@@ -28,7 +27,7 @@ export default class Section extends React.Component<SectionProps> {
         });
     }
 
-    toggleEdit(idx: number) {
+    toggleNestedEdit(idx: number) {
         let currentChildData = this.props.children[idx]['isEditing'];
         this.updateNestedData(idx, "isEditing", !currentChildData);
     }
@@ -65,8 +64,8 @@ export default class Section extends React.Component<SectionProps> {
                 <React.Fragment key={idx}>
                     {loadComponent(elem,
                         {
-                        toggleEdit: this.toggleEdit.bind(this, idx),
-                        updateData: this.updateData.bind(this, idx)
+                        toggleEdit: this.toggleNestedEdit.bind(this, idx),
+                        updateData: this.updateNestedData.bind(this, idx)
                     })
                     }
                 </React.Fragment>)

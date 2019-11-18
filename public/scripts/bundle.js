@@ -716,6 +716,7 @@ const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 class Paragraph extends React.Component {
     constructor(props) {
         super(props);
+        this.updateData = this.updateData.bind(this);
     }
     // Convert newlines ('\n') into HTML line breaks
     processTextArea() {
@@ -724,10 +725,13 @@ class Paragraph extends React.Component {
             x,
             React.createElement("br", null))));
     }
+    updateData(key, event) {
+        this.props.updateData(key, event.target.value);
+    }
     render() {
         if (this.props.isEditing) {
             return React.createElement(React.Fragment, null,
-                React.createElement("textarea", { onChange: this.props.updateData.bind(this, "value"), value: this.props.value }),
+                React.createElement("textarea", { onChange: this.updateData.bind(this, "value"), value: this.props.value }),
                 React.createElement("button", { onClick: this.props.toggleEdit }, "Edit"));
         }
         return React.createElement("p", null,
@@ -757,7 +761,6 @@ class Section extends React.Component {
     constructor(props) {
         super(props);
         this.addChild = this.addChild.bind(this);
-        this.toggleEdit = this.toggleEdit.bind(this);
         this.updateData = this.updateData.bind(this);
     }
     addChild() {
@@ -766,7 +769,7 @@ class Section extends React.Component {
             value: "Enter value here"
         });
     }
-    toggleEdit(idx) {
+    toggleNestedEdit(idx) {
         let currentChildData = this.props.children[idx]['isEditing'];
         this.updateNestedData(idx, "isEditing", !currentChildData);
     }
@@ -791,8 +794,8 @@ class Section extends React.Component {
                 addButton,
                 React.createElement("button", { onClick: this.props.toggleEdit }, "Edit")),
             this.props.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, LoadComponent_1.default(elem, {
-                toggleEdit: this.toggleEdit.bind(this, idx),
-                updateData: this.updateData.bind(this, idx)
+                toggleEdit: this.toggleNestedEdit.bind(this, idx),
+                updateData: this.updateNestedData.bind(this, idx)
             }))));
     }
 }

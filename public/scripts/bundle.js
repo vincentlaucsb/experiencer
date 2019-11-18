@@ -521,13 +521,25 @@ class FlexibleRow extends React.Component {
     constructor(props) {
         super(props);
     }
+    toggleNestedEdit(idx) {
+        let currentChildData = this.props.children[idx]['isEditing'];
+        this.updateNestedData(idx, "isEditing", !currentChildData);
+    }
+    updateNestedData(idx, key, data) {
+        let newChildren = this.props.children;
+        newChildren[idx][key] = data;
+        this.props.updateData("children", newChildren);
+    }
     render() {
         return React.createElement("div", { style: {
                 display: "flex",
                 justifyContent: "space-between",
                 flexDirection: "row",
                 width: "100%"
-            } }, this.props.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, LoadComponent_1.default(elem))));
+            } }, this.props.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, LoadComponent_1.default(elem, {
+            toggleEdit: this.toggleNestedEdit.bind(this, idx),
+            updateData: this.updateNestedData.bind(this, idx)
+        }))));
     }
 }
 exports.default = FlexibleRow;

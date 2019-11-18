@@ -1,5 +1,4 @@
-﻿import { MultiEditableState } from "./Editable";
-import * as React from "react";
+﻿import * as React from "react";
 import ChildHolder from "./ChildHolder";
 import { MultiEditableContainer } from "./Container";
 
@@ -12,7 +11,7 @@ export default class Entry extends MultiEditableContainer<EntryProps> {
         super(props);
 
         this.state = {
-            children: new ChildHolder(this, props.children),
+            children: new ChildHolder(this),
             value: "",
             isEditing: false,
             values: new Map<string, string>()

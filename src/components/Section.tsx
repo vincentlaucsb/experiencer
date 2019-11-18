@@ -5,7 +5,7 @@ import EditButton from "./EditButton";
 import { EditableContainer } from "./Container";
 import Entry from "./Entry";
 
-interface SectionProps extends EditableProps {
+export interface SectionProps extends EditableProps {
     children?: any;
     title: string;
 }

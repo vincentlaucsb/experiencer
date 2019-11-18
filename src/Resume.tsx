@@ -6,30 +6,37 @@ import Title from './components/Title';
 import Paragraph from './components/Paragraph';
 import { Container, ContainerState } from './components/Container';
 
-interface FlexibleRowProps {
-    children?: any;
-}
-
-class FlexibleRow extends React.Component<FlexibleRowProps> {
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        return <div style={{
-            display: "flex",
-            justifyContent: "space-between",
-            flexDirection: "row",
-            width: "100%"
-        }}>
-            {this.props.children}
-        </div>
-    }
-}
-
 interface PageState extends ContainerState {
     customCss: string;
 }
+
+const resumeData = [
+    {
+        type: 'FlexibleRow',
+        children: [
+            {
+                type: 'Title',
+                value: 'Vincent La'
+            },
+            {
+                type: 'Paragraph',
+                value: 'Email: vincela9@hotmail.com\nPhone: 123-456-7890'
+            }
+        ]
+    }
+];
+/*
+                    <Title value="Vincent La" />
+                    <Paragraph value="Email: vincela9@hotmail.com
+                        Phone: 123-456-7890" />
+                </FlexibleRow>,
+                <Section title="Objective">
+                    <Paragraph value="To conquer the world." />
+                </Section>,
+                <Section title="Education">
+                    <Entry />
+                </Section>
+*/
 
 class Resume extends Container<{}, PageState> {
     style: HTMLStyleElement;
@@ -44,21 +51,7 @@ class Resume extends Container<{}, PageState> {
         head.appendChild(this.style);
 
         this.state = {
-            children: new ChildHolder(
-                this,
-                [
-                <FlexibleRow>
-                    <Title value="Vincent La" />
-                    <Paragraph value="Email: vincela9@hotmail.com
-                        Phone: 123-456-7890" />
-                </FlexibleRow>,
-                <Section title="Objective">
-                    <Paragraph value="To conquer the world." />
-                </Section>,
-                <Section title="Education">
-                    <Entry />
-                </Section>
-            ]),
+            children: new ChildHolder(this),
             customCss: `body {
     width: 70vw;
     margin: 1em auto 1em auto;
@@ -86,6 +79,11 @@ section {
         this.addSection = this.addSection.bind(this);
         this.renderStyle = this.renderStyle.bind(this);
         this.onStyleChange = this.onStyleChange.bind(this);
+
+        for (let i in resumeData) {
+            this.state.children.addChild(resumeData[i]);
+            // this.addChild(resumeData[i]);
+        }
     }
 
     addSection() {
@@ -107,6 +105,8 @@ section {
     }
 
     render() {
+        console.log(this.state.children);
+
         return <React.Fragment>
             {this.state.children.render()}
             <button style={{}} onClick={this.addSection}>Add Section</button>

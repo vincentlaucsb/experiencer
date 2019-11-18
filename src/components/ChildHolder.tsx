@@ -1,35 +1,23 @@
 ﻿import * as React from "react";
 import IContainer from "./IContainer";
+import loadComponent from "./LoadComponent";
 
 export default class ChildHolder {
-    children: Array<React.ReactNode>;
+    children: Array<object>;
     parent: IContainer;
 
-    constructor(
-        parent: IContainer,
-        children: Array<React.ReactNode> | React.ReactNode | null = null) {
-        this.children = new Array<JSX.Element>();
+    constructor(parent: IContainer) {
+        this.children = new Array<object>();
         this.parent = parent;
-
-        if (children == null) {
-            children = parent.props.children;
-        }
-        
-        if (Array.isArray(children)) {
-            this.children = children;
-        } else if (this.children) {
-            this.children = [ children ];
-        }
-        
     }
 
-    addChild(child: JSX.Element) {
+    addChild(child: object) {
         this.children.push(child);
         return this;
     }
 
     deleteChild(key: number) {
-        let newChildren = new Array<React.ReactNode>();
+        let newChildren = new Array<object>();
         for (let i = 0; i < this.children.length; i++) {
             if (i != key) {
                 newChildren.push(this.children[i]);
@@ -46,7 +34,7 @@ export default class ChildHolder {
         return <React.Fragment>
             {this.children.map((elem, idx) =>
                 <React.Fragment key={idx}>
-                    {elem}
+                    {loadComponent(elem)}
                     <button onClick={this.parent.deleteChild.bind(this.parent, idx)}>Delete</button>
                 </React.Fragment>)
             }

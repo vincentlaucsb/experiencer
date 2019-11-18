@@ -1,6 +1,6 @@
 ﻿export default interface IContainer<P = {}, S = {}> extends React.Component<P, S> {
     defaultChild: JSX.Element;
 
-    addChild: () => void;
+    addChild: (data: object) => void;
     deleteChild: (idx: number) => void;
 }

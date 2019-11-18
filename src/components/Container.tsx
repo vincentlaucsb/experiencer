@@ -2,17 +2,16 @@
 import ChildHolder from "./ChildHolder";
 import React = require("react");
 import IContainer from "./IContainer";
-
 export interface EditableContainerState extends ContainerState, EditableState { }
 
 export interface ContainerState {
     children: ChildHolder;
 }
 
-function _addChild<P, S extends ContainerState>(obj: IContainer<P, S>) {
+function _addChild<P, S extends ContainerState>(obj: IContainer<P, S>, data: object) {
+    console.log("Add Child called", obj);
     obj.setState({
-        children: obj.state.children.addChild(
-            React.cloneElement(obj.defaultChild))
+        children: obj.state.children.addChild(data)
     });
 }
 
@@ -37,8 +36,8 @@ export class Container<
         this.deleteChild = this.deleteChild.bind(this);
     }
 
-    addChild() {
-        _addChild(this);
+    addChild(data: object) {
+        _addChild(this, data);
     }
 
     deleteChild(idx: number) { _deleteChild(this, idx); }
@@ -60,8 +59,8 @@ export class EditableContainer<
         this.deleteChild = this.deleteChild.bind(this);
     }
 
-    addChild() {
-        _addChild(this);
+    addChild(data: object) {
+        _addChild(this, data);
     }
 
     deleteChild(idx: number) { _deleteChild(this, idx); }
@@ -84,8 +83,8 @@ export class MultiEditableContainer<
         this.deleteChild = this.deleteChild.bind(this);
     }
 
-    addChild() {
-        _addChild(this);
+    addChild(data: object) {
+        _addChild(this, data);
     }
 
     deleteChild(idx: number) { _deleteChild(this, idx); }

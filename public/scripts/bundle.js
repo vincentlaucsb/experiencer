@@ -166,25 +166,36 @@
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const Entry_1 = __webpack_require__(/*! ./components/Entry */ "./src/components/Entry.tsx");
 const ChildHolder_1 = __webpack_require__(/*! ./components/ChildHolder */ "./src/components/ChildHolder.tsx");
 const Section_1 = __webpack_require__(/*! ./components/Section */ "./src/components/Section.tsx");
-const Title_1 = __webpack_require__(/*! ./components/Title */ "./src/components/Title.tsx");
-const Paragraph_1 = __webpack_require__(/*! ./components/Paragraph */ "./src/components/Paragraph.tsx");
 const Container_1 = __webpack_require__(/*! ./components/Container */ "./src/components/Container.tsx");
-class FlexibleRow extends React.Component {
-    constructor(props) {
-        super(props);
+const resumeData = [
+    {
+        type: 'FlexibleRow',
+        children: [
+            {
+                type: 'Title',
+                value: 'Vincent La'
+            },
+            {
+                type: 'Paragraph',
+                value: 'Email: vincela9@hotmail.com\nPhone: 123-456-7890'
+            }
+        ]
     }
-    render() {
-        return React.createElement("div", { style: {
-                display: "flex",
-                justifyContent: "space-between",
-                flexDirection: "row",
-                width: "100%"
-            } }, this.props.children);
-    }
-}
+];
+/*
+                    <Title value="Vincent La" />
+                    <Paragraph value="Email: vincela9@hotmail.com
+                        Phone: 123-456-7890" />
+                </FlexibleRow>,
+                <Section title="Objective">
+                    <Paragraph value="To conquer the world." />
+                </Section>,
+                <Section title="Education">
+                    <Entry />
+                </Section>
+*/
 class Resume extends Container_1.Container {
     constructor(props) {
         super(props);
@@ -194,15 +205,7 @@ class Resume extends Container_1.Container {
         this.style.innerHTML = "";
         head.appendChild(this.style);
         this.state = {
-            children: new ChildHolder_1.default(this, [
-                React.createElement(FlexibleRow, null,
-                    React.createElement(Title_1.default, { value: "Vincent La" }),
-                    React.createElement(Paragraph_1.default, { value: "Email: vincela9@hotmail.com\r\n                        Phone: 123-456-7890" })),
-                React.createElement(Section_1.default, { title: "Objective" },
-                    React.createElement(Paragraph_1.default, { value: "To conquer the world." })),
-                React.createElement(Section_1.default, { title: "Education" },
-                    React.createElement(Entry_1.default, null))
-            ]),
+            children: new ChildHolder_1.default(this),
             customCss: `body {
     width: 70vw;
     margin: 1em auto 1em auto;
@@ -228,6 +231,10 @@ section {
         this.addSection = this.addSection.bind(this);
         this.renderStyle = this.renderStyle.bind(this);
         this.onStyleChange = this.onStyleChange.bind(this);
+        for (let i in resumeData) {
+            this.state.children.addChild(resumeData[i]);
+            // this.addChild(resumeData[i]);
+        }
     }
     addSection() {
         this.setState({
@@ -245,6 +252,7 @@ section {
         this.style.innerHTML = this.state.customCss;
     }
     render() {
+        console.log(this.state.children);
         return React.createElement(React.Fragment, null,
             this.state.children.render(),
             React.createElement("button", { style: {}, onClick: this.addSection }, "Add Section"),
@@ -270,19 +278,11 @@ exports.default = Resume;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const LoadComponent_1 = __webpack_require__(/*! ./LoadComponent */ "./src/components/LoadComponent.tsx");
 class ChildHolder {
-    constructor(parent, children = null) {
+    constructor(parent) {
         this.children = new Array();
         this.parent = parent;
-        if (children == null) {
-            children = parent.props.children;
-        }
-        if (Array.isArray(children)) {
-            this.children = children;
-        }
-        else if (this.children) {
-            this.children = [children];
-        }
     }
     addChild(child) {
         this.children.push(child);
@@ -303,7 +303,7 @@ class ChildHolder {
     }
     render() {
         return React.createElement(React.Fragment, null, this.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx },
-            elem,
+            LoadComponent_1.default(elem),
             React.createElement("button", { onClick: this.parent.deleteChild.bind(this.parent, idx) }, "Delete"))));
     }
 }
@@ -324,9 +324,10 @@ exports.default = ChildHolder;
 Object.defineProperty(exports, "__esModule", { value: true });
 const Editable_1 = __webpack_require__(/*! ./Editable */ "./src/components/Editable.tsx");
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-function _addChild(obj) {
+function _addChild(obj, data) {
+    console.log("Add Child called", obj);
     obj.setState({
-        children: obj.state.children.addChild(React.cloneElement(obj.defaultChild))
+        children: obj.state.children.addChild(data)
     });
 }
 function _deleteChild(obj, idx) {
@@ -340,8 +341,8 @@ class Container extends React.Component {
         this.addChild = this.addChild.bind(this);
         this.deleteChild = this.deleteChild.bind(this);
     }
-    addChild() {
-        _addChild(this);
+    addChild(data) {
+        _addChild(this, data);
     }
     deleteChild(idx) { _deleteChild(this, idx); }
 }
@@ -352,8 +353,8 @@ class EditableContainer extends Editable_1.default {
         this.addChild = this.addChild.bind(this);
         this.deleteChild = this.deleteChild.bind(this);
     }
-    addChild() {
-        _addChild(this);
+    addChild(data) {
+        _addChild(this, data);
     }
     deleteChild(idx) { _deleteChild(this, idx); }
 }
@@ -364,8 +365,8 @@ class MultiEditableContainer extends Editable_1.MultiEditable {
         this.addChild = this.addChild.bind(this);
         this.deleteChild = this.deleteChild.bind(this);
     }
-    addChild() {
-        _addChild(this);
+    addChild(data) {
+        _addChild(this, data);
     }
     deleteChild(idx) { _deleteChild(this, idx); }
 }
@@ -473,7 +474,7 @@ class Entry extends Container_1.MultiEditableContainer {
     constructor(props) {
         super(props);
         this.state = {
-            children: new ChildHolder_1.default(this, props.children),
+            children: new ChildHolder_1.default(this),
             value: "",
             isEditing: false,
             values: new Map()
@@ -495,6 +496,152 @@ class Entry extends Container_1.MultiEditableContainer {
     }
 }
 exports.default = Entry;
+
+
+/***/ }),
+
+/***/ "./src/components/FlexibleRow.tsx":
+/*!****************************************!*\
+  !*** ./src/components/FlexibleRow.tsx ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+class FlexibleRow extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        return React.createElement("div", { style: {
+                display: "flex",
+                justifyContent: "space-between",
+                flexDirection: "row",
+                width: "100%"
+            } }, this.props.children);
+    }
+}
+exports.default = FlexibleRow;
+
+
+/***/ }),
+
+/***/ "./src/components/List.tsx":
+/*!*********************************!*\
+  !*** ./src/components/List.tsx ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const ChildHolder_1 = __webpack_require__(/*! ./ChildHolder */ "./src/components/ChildHolder.tsx");
+const Editable_1 = __webpack_require__(/*! ./Editable */ "./src/components/Editable.tsx");
+class ListItem extends Editable_1.default {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isEditing: false,
+            value: ""
+        };
+    }
+    render() {
+        if (this.state.isEditing) {
+            return React.createElement(React.Fragment, null,
+                React.createElement("input", { onChange: this.updateValue, value: this.state.value, type: "text" }),
+                React.createElement("div", { style: { float: "right" } },
+                    React.createElement("button", { onClick: this.toggleEdit }, "Done")));
+        }
+        return React.createElement("li", null,
+            this.state.value,
+            React.createElement("div", { style: { float: "right" } },
+                React.createElement("button", { onClick: this.toggleEdit }, "Edit")));
+    }
+}
+exports.ListItem = ListItem;
+class List extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            children: new ChildHolder_1.default(props.children)
+        };
+        this.addChild = this.addChild.bind(this);
+    }
+    addChild() {
+        this.setState({
+            children: this.state.children.addChild(React.createElement(ListItem, null))
+        });
+    }
+    render() {
+        return React.createElement(React.Fragment, null,
+            React.createElement("div", { style: { float: "right" } },
+                React.createElement("button", { onClick: this.addChild }, "Add")),
+            React.createElement("ul", null, this.state.children.render()));
+    }
+}
+exports.default = List;
+
+
+/***/ }),
+
+/***/ "./src/components/LoadComponent.tsx":
+/*!******************************************!*\
+  !*** ./src/components/LoadComponent.tsx ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const FlexibleRow_1 = __webpack_require__(/*! ./FlexibleRow */ "./src/components/FlexibleRow.tsx");
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const Section_1 = __webpack_require__(/*! ./Section */ "./src/components/Section.tsx");
+const Entry_1 = __webpack_require__(/*! ./Entry */ "./src/components/Entry.tsx");
+const List_1 = __webpack_require__(/*! ./List */ "./src/components/List.tsx");
+const Paragraph_1 = __webpack_require__(/*! ./Paragraph */ "./src/components/Paragraph.tsx");
+const Title_1 = __webpack_require__(/*! ./Title */ "./src/components/Title.tsx");
+function loadComponent(data) {
+    // Load prop data
+    let props = {};
+    for (let key in data) {
+        if (data[key] != 'children' && data[key] != 'type') {
+            props[key] = data[key];
+        }
+    }
+    // Load children
+    if (data['children']) {
+        props['children'] = new Array();
+        for (let child of data['children']) {
+            console.log("LOADING CHILD", child);
+            props['children'].push(loadComponent(child));
+        }
+    }
+    console.log("loadComponent() called", data);
+    switch (data['type']) {
+        case 'FlexibleRow':
+            return React.createElement(FlexibleRow_1.default, Object.assign({}, props));
+        case 'Section':
+            return React.createElement(Section_1.default, Object.assign({}, props));
+        case 'Entry':
+            return React.createElement(Entry_1.default, Object.assign({}, props));
+        case 'List':
+            return React.createElement(List_1.default, Object.assign({}, props));
+        case 'ListItem':
+            return React.createElement(List_1.ListItem, Object.assign({}, props));
+        case 'Paragraph':
+            return React.createElement(Paragraph_1.default, Object.assign({}, props));
+        case 'Title':
+            console.log("TITLE PROPS", props);
+            return React.createElement(Title_1.default, Object.assign({}, props));
+    }
+}
+exports.default = loadComponent;
 
 
 /***/ }),

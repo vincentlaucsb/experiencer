@@ -2,7 +2,7 @@
 import React = require("react");
 import EditButton from "./EditButton";
 
-interface TitleProps extends EditableProps {
+export interface TitleProps extends EditableProps {
     value: string;
 }
 

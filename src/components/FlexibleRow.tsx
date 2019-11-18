@@ -1,7 +1,7 @@
 ﻿import React = require("react");
 
 export interface FlexibleRowProps {
-    children?: any;
+    children?: Array<object>;
 }
 
 export default class FlexibleRow extends React.Component<FlexibleRowProps> {

@@ -6,19 +6,14 @@ export interface ParagraphProps extends EditableProps {
     value?: string;
 }
 
-export default class Paragraph extends Editable<ParagraphProps> {
+export default class Paragraph extends React.Component<ParagraphProps> {
     constructor(props) {
         super(props);
-
-        this.state = {
-            isEditing: false,
-            value: props.value ? props.value : ""
-        };
     }
 
     // Convert newlines ('\n') into HTML line breaks
     processTextArea() : JSX.Element {
-        let textArea = this.state.value.split("\n");
+        let textArea = this.props.value.split("\n");
 
         return <React.Fragment>
             {textArea.map((x, idx) => <React.Fragment key={idx}>{x}<br /></React.Fragment>)}
@@ -26,17 +21,17 @@ export default class Paragraph extends Editable<ParagraphProps> {
     }
 
     render(): JSX.Element {
-        if (this.state.isEditing) {
+        if (this.props.isEditing) {
             return <React.Fragment>
-                <textarea onChange={this.updateValue} value={this.state.value} />
-                <EditButton parent={this} />
+                <textarea onChange={this.props.updateData.bind(this, "value")} value={this.props.value} />
+                <button onClick={this.props.toggleEdit}>Edit</button>
             </React.Fragment>;
         }
 
         return <p>
             {this.processTextArea()}
             <span style={{ display: "inline-block" }}>
-                <EditButton parent={this} />
+                <button onClick={this.props.toggleEdit}>Edit</button>
             </span></p>;
     }
 }

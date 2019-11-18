@@ -13,7 +13,7 @@ interface ExtraProps {
     updateData?: (idx: number, key: string, data: any) => void;
 }
 
-export default function loadComponent(data: object, extraProps?: ExtraProps) {
+export default function loadComponent(data: object, extraProps?: ExtraProps, stopRecurse = false) {
     // Load prop data
     let props = {};
     for (let key in data) {
@@ -29,12 +29,16 @@ export default function loadComponent(data: object, extraProps?: ExtraProps) {
     }
 
     // Load children
-    if (data['children']) {
-        props['children'] = new Array();
+    if (data['type'] != 'Section') {
+        if (data['children'] && !stopRecurse) {
+            props['children'] = new Array();
 
-        for (let child of data['children']) {
-            props['children'].push(loadComponent(child, extraProps));
+            for (let child of data['children']) {
+                props['children'].push(loadComponent(child, extraProps, true));
+            }
         }
+    } else {
+        props['children'] = data['children'];
     }
 
     switch (data['type']) {

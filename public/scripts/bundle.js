@@ -653,7 +653,7 @@ const Entry_1 = __webpack_require__(/*! ./Entry */ "./src/components/Entry.tsx")
 const List_1 = __webpack_require__(/*! ./List */ "./src/components/List.tsx");
 const Paragraph_1 = __webpack_require__(/*! ./Paragraph */ "./src/components/Paragraph.tsx");
 const Title_1 = __webpack_require__(/*! ./Title */ "./src/components/Title.tsx");
-function loadComponent(data, extraProps) {
+function loadComponent(data, extraProps, stopRecurse = false) {
     // Load prop data
     let props = {};
     for (let key in data) {
@@ -667,11 +667,16 @@ function loadComponent(data, extraProps) {
         props['updateData'] = extraProps.updateData;
     }
     // Load children
-    if (data['children']) {
-        props['children'] = new Array();
-        for (let child of data['children']) {
-            props['children'].push(loadComponent(child, extraProps));
+    if (data['type'] != 'Section') {
+        if (data['children'] && !stopRecurse) {
+            props['children'] = new Array();
+            for (let child of data['children']) {
+                props['children'].push(loadComponent(child, extraProps, true));
+            }
         }
+    }
+    else {
+        props['children'] = data['children'];
     }
     switch (data['type']) {
         case 'FlexibleRow':
@@ -707,34 +712,28 @@ exports.default = loadComponent;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const Editable_1 = __webpack_require__(/*! ./Editable */ "./src/components/Editable.tsx");
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const EditButton_1 = __webpack_require__(/*! ./EditButton */ "./src/components/EditButton.tsx");
-class Paragraph extends Editable_1.default {
+class Paragraph extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            isEditing: false,
-            value: props.value ? props.value : ""
-        };
     }
     // Convert newlines ('\n') into HTML line breaks
     processTextArea() {
-        let textArea = this.state.value.split("\n");
+        let textArea = this.props.value.split("\n");
         return React.createElement(React.Fragment, null, textArea.map((x, idx) => React.createElement(React.Fragment, { key: idx },
             x,
             React.createElement("br", null))));
     }
     render() {
-        if (this.state.isEditing) {
+        if (this.props.isEditing) {
             return React.createElement(React.Fragment, null,
-                React.createElement("textarea", { onChange: this.updateValue, value: this.state.value }),
-                React.createElement(EditButton_1.default, { parent: this }));
+                React.createElement("textarea", { onChange: this.props.updateData.bind(this, "value"), value: this.props.value }),
+                React.createElement("button", { onClick: this.props.toggleEdit }, "Edit"));
         }
         return React.createElement("p", null,
             this.processTextArea(),
             React.createElement("span", { style: { display: "inline-block" } },
-                React.createElement(EditButton_1.default, { parent: this })));
+                React.createElement("button", { onClick: this.props.toggleEdit }, "Edit")));
     }
 }
 exports.default = Paragraph;
@@ -753,6 +752,7 @@ exports.default = Paragraph;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const LoadComponent_1 = __webpack_require__(/*! ./LoadComponent */ "./src/components/LoadComponent.tsx");
 class Section extends React.Component {
     constructor(props) {
         super(props);
@@ -776,7 +776,7 @@ class Section extends React.Component {
                 title,
                 addButton,
                 React.createElement("button", { onClick: this.props.toggleEdit }, "Edit")),
-            this.props.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, elem)));
+            this.props.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, LoadComponent_1.default(elem))));
     }
 }
 exports.default = Section;

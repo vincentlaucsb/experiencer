@@ -1,6 +1,7 @@
 ﻿import * as React from "react";
 
 export interface EditableProps {
+    isEditing?: boolean;
     toggleEdit: () => void;
     updateData: (key: string, data: any) => void;
     addChild: (node: object) => void;

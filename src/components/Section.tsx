@@ -8,7 +8,7 @@ import loadComponent from "./LoadComponent";
 
 export interface SectionProps extends EditableProps {
     isEditing?: boolean;
-    children?: any;
+    children?: Array<object>;
     title: string;
 }
 
@@ -46,7 +46,7 @@ export default class Section extends React.Component<SectionProps> {
 
             {this.props.children.map((elem, idx) =>
                 <React.Fragment key={idx}>
-                    {elem}
+                    {loadComponent(elem)}
                 </React.Fragment>)
             }
         </section>;

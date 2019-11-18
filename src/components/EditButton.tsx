@@ -1,10 +1,10 @@
 ﻿import * as React from "react";
-import { EditableProps } from "./Editable";
+import { ResumeComponentProps, Action } from "./ResumeComponent";
 
-export default function EditButton<P extends EditableProps>(props: P) {
-    if (props.isEditing) {
-        return <button onClick={props.toggleEdit}>Done</button>
+export default function EditButton<P extends ResumeComponentProps>(props: P) {
+    if (props.isEditing && props.toggleEdit as Action) {
+        return <button onClick={props.toggleEdit as Action}>Done</button>
     }
 
-    return <button onClick={props.toggleEdit}>Edit</button>
+    return <button onClick={props.toggleEdit as Action}>Edit</button>
 }

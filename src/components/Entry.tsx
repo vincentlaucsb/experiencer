@@ -1,14 +1,13 @@
 ﻿import * as React from "react";
-import { EditableProps } from "./Editable";
 import loadComponent from "./LoadComponent";
+import ResumeComponent, { ResumeComponentProps, AddChild } from "./ResumeComponent";
 
-export interface EntryProps extends EditableProps {
-    children?: Array<object>;
+export interface EntryProps extends ResumeComponentProps {
     title?: string;
     subtitle?: string;
 }
 
-export default class Entry extends React.Component<EntryProps> {
+export default class Entry extends ResumeComponent<EntryProps> {
     constructor(props) {
         super(props);
 
@@ -16,34 +15,11 @@ export default class Entry extends React.Component<EntryProps> {
     }
 
     addChild() {
-        this.props.addChild({
-            type: 'List'
-        });
-    }
-
-    updateData(key: string, event: any) {
-        this.props.updateData(key, event.target.value);
-    }
-
-    addNestedChild(idx: number, node: object) {
-        let newChildren = this.props.children;
-        if (!newChildren[idx]['children']) {
-            newChildren[idx]['children'] = new Array<object>();
+        if (this.props.addChild as AddChild) {
+            (this.props.addChild as AddChild)({
+                type: 'List'
+            });
         }
-
-        newChildren[idx]['children'].push(node);
-        this.props.updateData("children", newChildren);
-    }
-
-    toggleNestedEdit(idx: number) {
-        let currentChildData = this.props.children[idx]['isEditing'];
-        this.updateNestedData(idx, "isEditing", !currentChildData);
-    }
-
-    updateNestedData(idx: number, key: string, data: any) {
-        let newChildren = this.props.children;
-        newChildren[idx][key] = data;
-        this.props.updateData("children", newChildren);
     }
 
     render() {
@@ -51,7 +27,7 @@ export default class Entry extends React.Component<EntryProps> {
             return <div>
                 <input onChange={this.updateData.bind(this, "title")} value={this.props.title || ""} />
                 <input onChange={this.updateData.bind(this, "subtitle")} value={this.props.subtitle || ""} />
-                <button onClick={this.props.toggleEdit}>Done</button>
+                <button onClick={this.toggleEdit}>Done</button>
             </div>
         }
 
@@ -71,7 +47,7 @@ export default class Entry extends React.Component<EntryProps> {
                 </React.Fragment>)}
 
             <button onClick={this.addChild}>Add</button>
-            <button onClick={this.props.toggleEdit}>Edit</button>
+            <button onClick={this.toggleEdit}>Edit</button>
         </div>
     }
 }

@@ -1,12 +1,8 @@
-﻿import Editable, { EditableProps } from "./Editable";
-import React = require("react");
+﻿import React = require("react");
 import EditButton from "./EditButton";
+import ResumeComponent from "./ResumeComponent";
 
-export interface ParagraphProps extends EditableProps {
-    value?: string;
-}
-
-export default class Paragraph extends React.Component<ParagraphProps> {
+export default class Paragraph extends ResumeComponent {
     constructor(props) {
         super(props);
 
@@ -20,10 +16,6 @@ export default class Paragraph extends React.Component<ParagraphProps> {
         return <React.Fragment>
             {textArea.map((x, idx) => <React.Fragment key={idx}>{x}<br /></React.Fragment>)}
             </React.Fragment>;
-    }
-
-    updateData(key: string, event: any) {
-        this.props.updateData(key, event.target.value);
     }
 
     render(): JSX.Element {

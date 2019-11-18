@@ -1,18 +1,11 @@
 ﻿import { EditableProps } from "./Editable";
 import React = require("react");
 import EditButton from "./EditButton";
+import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
 
-export interface TitleProps extends EditableProps {
-    value: string;
-}
-
-export default class Title extends React.Component<TitleProps> {
-    constructor(props: TitleProps) {
+export default class Title extends ResumeComponent {
+    constructor(props: ResumeComponentProps) {
         super(props);
-    }
-
-    updateData(key: string, event: any) {
-        this.props.updateData(key, event.target.value);
     }
 
     render() {

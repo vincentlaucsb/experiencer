@@ -1,11 +1,11 @@
-﻿import FlexibleRow, { FlexibleRowProps } from "./FlexibleRow";
+﻿import FlexibleRow from "./FlexibleRow";
 import React = require("react");
 import Section, { SectionProps } from "./Section";
 import Entry, { EntryProps } from "./Entry";
-import List, { ListItem, ListProps } from "./List";
-import Paragraph, { ParagraphProps } from "./Paragraph";
-import Title, { TitleProps } from "./Title";
-import { EditableProps } from "./Editable";
+import List, { ListItem } from "./List";
+import Paragraph from "./Paragraph";
+import Title from "./Title";
+import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
 
 interface ExtraProps {
     addChild?: (idx: number, node: object) => void;
@@ -16,7 +16,7 @@ interface ExtraProps {
 
 export default function loadComponent(data: object, extraProps?: ExtraProps) {
     // Load prop data
-    let props = {};
+    let props: ResumeComponentProps = {};
     for (let key in data) {
         if (data[key] != 'children' && data[key] != 'type') {
             props[key] = data[key];
@@ -39,20 +39,18 @@ export default function loadComponent(data: object, extraProps?: ExtraProps) {
 
     switch (data['type']) {
         case 'FlexibleRow':
-            return <FlexibleRow {...props as FlexibleRowProps } />;
+            return <FlexibleRow {...props} />;
         case 'Section':
             return <Section {...props as SectionProps} />;
         case 'Entry':
             return <Entry {...props as EntryProps} />;
         case 'List':
-            return <List {...props as ListProps} />;
+            return <List {...props} />;
         case 'ListItem':
-            return <ListItem {...props as EditableProps} />;
+            return <ListItem {...props} />;
         case 'Paragraph':
-            return <Paragraph {...props as ParagraphProps} />;
+            return <Paragraph {...props} />;
         case 'Title':
-            let title = new Title(props as TitleProps);
-            return title.render();
-            // return <Title {...props as TitleProps} />;
+            return <Title {...props} />;
     }
 }

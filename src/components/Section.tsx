@@ -1,59 +1,33 @@
 ﻿import * as React from "react";
-import Editable, { EditableState, EditableProps } from "./Editable";
 import loadComponent from "./LoadComponent";
 import EditButton from "./EditButton";
+import ResumeComponent, { ResumeComponentProps, AddChild, Action } from "./ResumeComponent";
 
-export interface SectionProps extends EditableProps {
-    isEditing?: boolean;
-    children?: Array<object>;
+export interface SectionProps extends ResumeComponentProps {
     title: string;
 }
 
-export default class Section extends React.Component<SectionProps> {
+export default class Section extends ResumeComponent<SectionProps> {
     constructor(props: SectionProps) {
         super(props);
 
         this.addChild = this.addChild.bind(this);
-        this.updateData = this.updateData.bind(this);
     }
 
     addChild() {
-        this.props.addChild({
-            type: "Paragraph",
-            value: "Enter value here"
-        });
-    }
-
-    addNestedChild(idx: number, node: object) {
-        let newChildren = this.props.children;
-        if (!newChildren[idx]['children']) {
-            newChildren[idx]['children'] = new Array<object>();
+        if (this.props.addChild as AddChild) {
+            (this.props.addChild as AddChild)({
+                type: "Paragraph",
+                value: "Enter value here"
+            });
         }
-
-        newChildren[idx]['children'].push(node);
-        this.props.updateData("children", newChildren);
-    }
-    
-    toggleNestedEdit(idx: number) {
-        let currentChildData = this.props.children[idx]['isEditing'];
-        this.updateNestedData(idx, "isEditing", !currentChildData);
-    }
-
-    updateNestedData(idx: number, key: string, data: any) {
-        let newChildren = this.props.children;
-        newChildren[idx][key] = data;
-        this.props.updateData("children", newChildren);
-    }
-
-    updateData(key: string, event: any) {
-        this.props.updateData(key, event.target.value);
     }
 
     render() {
         let buttons = <div style={{ float: "right" }}>
             <button onClick={this.addChild}>Add</button>
             <EditButton {...this.props} />
-            <button onClick={this.props.deleteChild}>Delete</button>
+            <button onClick={this.props.deleteChild as Action}>Delete</button>
         </div>
 
         let title: string | JSX.Element = this.props.title;

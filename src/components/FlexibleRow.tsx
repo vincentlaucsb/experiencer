@@ -1,27 +1,12 @@
 ﻿import React = require("react");
 import loadComponent from "./LoadComponent";
-import { EditableState, EditableProps } from "./Editable";
+import ResumeComponent from "./ResumeComponent";
 
-export interface FlexibleRowProps extends EditableProps {
-    children?: Array<object>;
-}
-
-export default class FlexibleRow extends React.Component<FlexibleRowProps> {
+export default class FlexibleRow extends ResumeComponent {
     constructor(props) {
         super(props);
     }
-
-    toggleNestedEdit(idx: number) {
-        let currentChildData = this.props.children[idx]['isEditing'];
-        this.updateNestedData(idx, "isEditing", !currentChildData);
-    }
-
-    updateNestedData(idx: number, key: string, data: any) {
-        let newChildren = this.props.children;
-        newChildren[idx][key] = data;
-        this.props.updateData("children", newChildren);
-    }
-
+    
     render() {
         return <div style={{
             display: "flex",

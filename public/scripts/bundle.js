@@ -324,7 +324,7 @@ exports.default = Resume;
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 function EditButton(props) {
-    if (props.isEditing) {
+    if (props.isEditing && props.toggleEdit) {
         return React.createElement("button", { onClick: props.toggleEdit }, "Done");
     }
     return React.createElement("button", { onClick: props.toggleEdit }, "Edit");
@@ -346,42 +346,25 @@ exports.default = EditButton;
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const LoadComponent_1 = __webpack_require__(/*! ./LoadComponent */ "./src/components/LoadComponent.tsx");
-class Entry extends React.Component {
+const ResumeComponent_1 = __webpack_require__(/*! ./ResumeComponent */ "./src/components/ResumeComponent.tsx");
+class Entry extends ResumeComponent_1.default {
     constructor(props) {
         super(props);
         this.addChild = this.addChild.bind(this);
     }
     addChild() {
-        this.props.addChild({
-            type: 'List'
-        });
-    }
-    updateData(key, event) {
-        this.props.updateData(key, event.target.value);
-    }
-    addNestedChild(idx, node) {
-        let newChildren = this.props.children;
-        if (!newChildren[idx]['children']) {
-            newChildren[idx]['children'] = new Array();
+        if (this.props.addChild) {
+            this.props.addChild({
+                type: 'List'
+            });
         }
-        newChildren[idx]['children'].push(node);
-        this.props.updateData("children", newChildren);
-    }
-    toggleNestedEdit(idx) {
-        let currentChildData = this.props.children[idx]['isEditing'];
-        this.updateNestedData(idx, "isEditing", !currentChildData);
-    }
-    updateNestedData(idx, key, data) {
-        let newChildren = this.props.children;
-        newChildren[idx][key] = data;
-        this.props.updateData("children", newChildren);
     }
     render() {
         if (this.props.isEditing) {
             return React.createElement("div", null,
                 React.createElement("input", { onChange: this.updateData.bind(this, "title"), value: this.props.title || "" }),
                 React.createElement("input", { onChange: this.updateData.bind(this, "subtitle"), value: this.props.subtitle || "" }),
-                React.createElement("button", { onClick: this.props.toggleEdit }, "Done"));
+                React.createElement("button", { onClick: this.toggleEdit }, "Done"));
         }
         return React.createElement("div", null,
             React.createElement("h3", null, this.props.title || "Enter a title"),
@@ -392,7 +375,7 @@ class Entry extends React.Component {
                 updateData: this.updateNestedData.bind(this, idx)
             }))),
             React.createElement("button", { onClick: this.addChild }, "Add"),
-            React.createElement("button", { onClick: this.props.toggleEdit }, "Edit"));
+            React.createElement("button", { onClick: this.toggleEdit }, "Edit"));
     }
 }
 exports.default = Entry;
@@ -412,18 +395,10 @@ exports.default = Entry;
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const LoadComponent_1 = __webpack_require__(/*! ./LoadComponent */ "./src/components/LoadComponent.tsx");
-class FlexibleRow extends React.Component {
+const ResumeComponent_1 = __webpack_require__(/*! ./ResumeComponent */ "./src/components/ResumeComponent.tsx");
+class FlexibleRow extends ResumeComponent_1.default {
     constructor(props) {
         super(props);
-    }
-    toggleNestedEdit(idx) {
-        let currentChildData = this.props.children[idx]['isEditing'];
-        this.updateNestedData(idx, "isEditing", !currentChildData);
-    }
-    updateNestedData(idx, key, data) {
-        let newChildren = this.props.children;
-        newChildren[idx][key] = data;
-        this.props.updateData("children", newChildren);
     }
     render() {
         return React.createElement("div", { style: {
@@ -454,7 +429,8 @@ exports.default = FlexibleRow;
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const LoadComponent_1 = __webpack_require__(/*! ./LoadComponent */ "./src/components/LoadComponent.tsx");
-class ListItem extends React.Component {
+const ResumeComponent_1 = __webpack_require__(/*! ./ResumeComponent */ "./src/components/ResumeComponent.tsx");
+class ListItem extends ResumeComponent_1.default {
     constructor(props) {
         super(props);
     }
@@ -463,33 +439,26 @@ class ListItem extends React.Component {
             return React.createElement(React.Fragment, null,
                 React.createElement("input", { onChange: this.props.updateData.bind(this, "value"), value: this.props.value, type: "text" }),
                 React.createElement("div", { style: { float: "right" } },
-                    React.createElement("button", { onClick: this.props.toggleEdit }, "Done")));
+                    React.createElement("button", { onClick: this.toggleEdit }, "Done")));
         }
         return React.createElement("li", null,
             this.props.value,
             React.createElement("div", { style: { float: "right" } },
-                React.createElement("button", { onClick: this.props.toggleEdit }, "Edit")));
+                React.createElement("button", { onClick: this.toggleEdit }, "Edit")));
     }
 }
 exports.ListItem = ListItem;
-class List extends React.Component {
+class List extends ResumeComponent_1.default {
     constructor(props) {
         super(props);
         this.addChild = this.addChild.bind(this);
     }
     addChild() {
-        this.props.addChild({
-            type: 'ListItem'
-        });
-    }
-    toggleNestedEdit(idx) {
-        let currentChildData = this.props.children[idx]['isEditing'];
-        this.updateNestedData(idx, "isEditing", !currentChildData);
-    }
-    updateNestedData(idx, key, data) {
-        let newChildren = this.props.children;
-        newChildren[idx][key] = data;
-        this.props.updateData("children", newChildren);
+        if (this.props.addChild) {
+            this.props.addChild({
+                type: 'ListItem'
+            });
+        }
     }
     render() {
         return React.createElement(React.Fragment, null,
@@ -556,9 +525,7 @@ function loadComponent(data, extraProps) {
         case 'Paragraph':
             return React.createElement(Paragraph_1.default, Object.assign({}, props));
         case 'Title':
-            let title = new Title_1.default(props);
-            return title.render();
-        // return <Title {...props as TitleProps} />;
+            return React.createElement(Title_1.default, Object.assign({}, props));
     }
 }
 exports.default = loadComponent;
@@ -578,7 +545,8 @@ exports.default = loadComponent;
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const EditButton_1 = __webpack_require__(/*! ./EditButton */ "./src/components/EditButton.tsx");
-class Paragraph extends React.Component {
+const ResumeComponent_1 = __webpack_require__(/*! ./ResumeComponent */ "./src/components/ResumeComponent.tsx");
+class Paragraph extends ResumeComponent_1.default {
     constructor(props) {
         super(props);
         this.updateData = this.updateData.bind(this);
@@ -589,9 +557,6 @@ class Paragraph extends React.Component {
         return React.createElement(React.Fragment, null, textArea.map((x, idx) => React.createElement(React.Fragment, { key: idx },
             x,
             React.createElement("br", null))));
-    }
-    updateData(key, event) {
-        this.props.updateData(key, event.target.value);
     }
     render() {
         if (this.props.isEditing) {
@@ -610,6 +575,64 @@ exports.default = Paragraph;
 
 /***/ }),
 
+/***/ "./src/components/ResumeComponent.tsx":
+/*!********************************************!*\
+  !*** ./src/components/ResumeComponent.tsx ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+// Represents a component that is part of the user's resume
+class ResumeComponent extends React.Component {
+    constructor(props) {
+        super(props);
+        this.updateData = this.updateData.bind(this);
+        this.addNestedChild = this.addNestedChild.bind(this);
+        this.toggleEdit = this.toggleEdit.bind(this);
+        this.toggleNestedEdit = this.toggleNestedEdit.bind(this);
+        this.updateNestedData = this.updateNestedData.bind(this);
+    }
+    addNestedChild(idx, node) {
+        let newChildren = this.props.children;
+        if (!newChildren[idx]['children']) {
+            newChildren[idx]['children'] = new Array();
+        }
+        newChildren[idx]['children'].push(node);
+        if (this.props.updateData) {
+            this.props.updateData("children", newChildren);
+        }
+    }
+    toggleEdit(event) {
+        if (this.props.toggleEdit) {
+            this.props.toggleEdit();
+        }
+    }
+    toggleNestedEdit(idx) {
+        let currentChildData = this.props.children[idx]['isEditing'];
+        this.updateNestedData(idx, "isEditing", !currentChildData);
+    }
+    updateNestedData(idx, key, data) {
+        let newChildren = this.props.children;
+        newChildren[idx][key] = data;
+        if (this.props.updateData) {
+            this.props.updateData("children", newChildren);
+        }
+    }
+    updateData(key, event) {
+        if (this.props.updateData) {
+            this.props.updateData(key, event.target.value);
+        }
+    }
+}
+exports.default = ResumeComponent;
+
+
+/***/ }),
+
 /***/ "./src/components/Section.tsx":
 /*!************************************!*\
   !*** ./src/components/Section.tsx ***!
@@ -623,37 +646,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const LoadComponent_1 = __webpack_require__(/*! ./LoadComponent */ "./src/components/LoadComponent.tsx");
 const EditButton_1 = __webpack_require__(/*! ./EditButton */ "./src/components/EditButton.tsx");
-class Section extends React.Component {
+const ResumeComponent_1 = __webpack_require__(/*! ./ResumeComponent */ "./src/components/ResumeComponent.tsx");
+class Section extends ResumeComponent_1.default {
     constructor(props) {
         super(props);
         this.addChild = this.addChild.bind(this);
-        this.updateData = this.updateData.bind(this);
     }
     addChild() {
-        this.props.addChild({
-            type: "Paragraph",
-            value: "Enter value here"
-        });
-    }
-    addNestedChild(idx, node) {
-        let newChildren = this.props.children;
-        if (!newChildren[idx]['children']) {
-            newChildren[idx]['children'] = new Array();
+        if (this.props.addChild) {
+            this.props.addChild({
+                type: "Paragraph",
+                value: "Enter value here"
+            });
         }
-        newChildren[idx]['children'].push(node);
-        this.props.updateData("children", newChildren);
-    }
-    toggleNestedEdit(idx) {
-        let currentChildData = this.props.children[idx]['isEditing'];
-        this.updateNestedData(idx, "isEditing", !currentChildData);
-    }
-    updateNestedData(idx, key, data) {
-        let newChildren = this.props.children;
-        newChildren[idx][key] = data;
-        this.props.updateData("children", newChildren);
-    }
-    updateData(key, event) {
-        this.props.updateData(key, event.target.value);
     }
     render() {
         let buttons = React.createElement("div", { style: { float: "right" } },
@@ -692,12 +697,10 @@ exports.default = Section;
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const EditButton_1 = __webpack_require__(/*! ./EditButton */ "./src/components/EditButton.tsx");
-class Title extends React.Component {
+const ResumeComponent_1 = __webpack_require__(/*! ./ResumeComponent */ "./src/components/ResumeComponent.tsx");
+class Title extends ResumeComponent_1.default {
     constructor(props) {
         super(props);
-    }
-    updateData(key, event) {
-        this.props.updateData(key, event.target.value);
     }
     render() {
         if (this.props.isEditing) {

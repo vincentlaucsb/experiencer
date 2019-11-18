@@ -1,12 +1,8 @@
 ﻿import * as React from "react";
-import Editable, { EditableProps } from "./Editable";
 import loadComponent from "./LoadComponent";
+import ResumeComponent, { AddChild } from "./ResumeComponent";
 
-export interface ListItemProps extends EditableProps {
-    value?: string;
-}
-
-export class ListItem extends React.Component<ListItemProps> {
+export class ListItem extends ResumeComponent {
     constructor(props) {
         super(props);
     }
@@ -15,22 +11,18 @@ export class ListItem extends React.Component<ListItemProps> {
         if (this.props.isEditing) {
             return <React.Fragment>
                 <input onChange={this.props.updateData.bind(this, "value")} value={this.props.value} type="text" />
-                <div style={{ float: "right" }}><button onClick={this.props.toggleEdit}>Done</button></div>
+                <div style={{ float: "right" }}><button onClick={this.toggleEdit}>Done</button></div>
             </React.Fragment>
         }
 
         return <li>
             {this.props.value}
-            <div style={{ float: "right" }}><button onClick={this.props.toggleEdit}>Edit</button></div>
+            <div style={{ float: "right" }}><button onClick={this.toggleEdit}>Edit</button></div>
         </li>
     }
 }
 
-export interface ListProps extends EditableProps {
-    children?: any;
-}
-
-export default class List extends React.Component<ListProps> {
+export default class List extends ResumeComponent {
     constructor(props) {
         super(props);
 
@@ -38,20 +30,11 @@ export default class List extends React.Component<ListProps> {
     }
 
     addChild() {
-        this.props.addChild({
-            type: 'ListItem'
-        });
-    }
-
-    toggleNestedEdit(idx: number) {
-        let currentChildData = this.props.children[idx]['isEditing'];
-        this.updateNestedData(idx, "isEditing", !currentChildData);
-    }
-
-    updateNestedData(idx: number, key: string, data: any) {
-        let newChildren = this.props.children;
-        newChildren[idx][key] = data;
-        this.props.updateData("children", newChildren);
+        if (this.props.addChild as AddChild) {
+            (this.props.addChild as AddChild)({
+                type: 'ListItem'
+            });
+        }
     }
 
     render() {

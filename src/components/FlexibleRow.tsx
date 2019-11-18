@@ -1,4 +1,5 @@
 ﻿import React = require("react");
+import loadComponent from "./LoadComponent";
 
 export interface FlexibleRowProps {
     children?: Array<object>;
@@ -16,7 +17,11 @@ export default class FlexibleRow extends React.Component<FlexibleRowProps> {
             flexDirection: "row",
             width: "100%"
         }}>
-            {this.props.children}
+            {this.props.children.map((elem, idx) =>
+                <React.Fragment key={idx}>
+                    {loadComponent(elem)}
+                </React.Fragment>)
+            }
         </div>
     }
 }

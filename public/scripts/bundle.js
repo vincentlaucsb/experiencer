@@ -357,69 +357,6 @@ exports.default = ChildHolder;
 
 /***/ }),
 
-/***/ "./src/components/Container.tsx":
-/*!**************************************!*\
-  !*** ./src/components/Container.tsx ***!
-  \**************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const Editable_1 = __webpack_require__(/*! ./Editable */ "./src/components/Editable.tsx");
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-function _addChild(obj, data) {
-    console.log("Add Child called", obj);
-    obj.setState({
-        children: obj.state.children.addChild(data)
-    });
-}
-function _deleteChild(obj, idx) {
-    obj.setState({
-        children: obj.state.children.deleteChild(idx)
-    });
-}
-class Container extends React.Component {
-    constructor(props) {
-        super(props);
-        this.addChild = this.addChild.bind(this);
-        this.deleteChild = this.deleteChild.bind(this);
-    }
-    addChild(data) {
-        _addChild(this, data);
-    }
-    deleteChild(idx) { _deleteChild(this, idx); }
-}
-exports.Container = Container;
-class EditableContainer extends Editable_1.default {
-    constructor(props) {
-        super(props);
-        this.addChild = this.addChild.bind(this);
-        this.deleteChild = this.deleteChild.bind(this);
-    }
-    addChild(data) {
-        _addChild(this, data);
-    }
-    deleteChild(idx) { _deleteChild(this, idx); }
-}
-exports.EditableContainer = EditableContainer;
-class MultiEditableContainer extends Editable_1.MultiEditable {
-    constructor(props) {
-        super(props);
-        this.addChild = this.addChild.bind(this);
-        this.deleteChild = this.deleteChild.bind(this);
-    }
-    addChild(data) {
-        _addChild(this, data);
-    }
-    deleteChild(idx) { _deleteChild(this, idx); }
-}
-exports.MultiEditableContainer = MultiEditableContainer;
-
-
-/***/ }),
-
 /***/ "./src/components/EditButton.tsx":
 /*!***************************************!*\
   !*** ./src/components/EditButton.tsx ***!
@@ -513,31 +450,54 @@ exports.MultiEditable = MultiEditable;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const ChildHolder_1 = __webpack_require__(/*! ./ChildHolder */ "./src/components/ChildHolder.tsx");
-const Container_1 = __webpack_require__(/*! ./Container */ "./src/components/Container.tsx");
-class Entry extends Container_1.MultiEditableContainer {
+const LoadComponent_1 = __webpack_require__(/*! ./LoadComponent */ "./src/components/LoadComponent.tsx");
+class Entry extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            children: new ChildHolder_1.default(this),
-            value: "",
-            isEditing: false,
-            values: new Map()
-        };
+        this.addChild = this.addChild.bind(this);
+    }
+    addChild() {
+        this.props.addChild({
+            type: 'List'
+        });
+    }
+    updateData(key, event) {
+        this.props.updateData(key, event.target.value);
+    }
+    addNestedChild(idx, node) {
+        let newChildren = this.props.children;
+        if (!newChildren[idx]['children']) {
+            newChildren[idx]['children'] = new Array();
+        }
+        newChildren[idx]['children'].push(node);
+        this.props.updateData("children", newChildren);
+    }
+    toggleNestedEdit(idx) {
+        let currentChildData = this.props.children[idx]['isEditing'];
+        this.updateNestedData(idx, "isEditing", !currentChildData);
+    }
+    updateNestedData(idx, key, data) {
+        let newChildren = this.props.children;
+        newChildren[idx][key] = data;
+        this.props.updateData("children", newChildren);
     }
     render() {
-        if (this.state.isEditing) {
+        if (this.props.isEditing) {
             return React.createElement("div", null,
-                React.createElement("input", { onChange: this.updateValue.bind(this, "title"), value: this.state.values.get("title") || "" }),
-                React.createElement("input", { onChange: this.updateValue.bind(this, "subtitle"), value: this.state.values.get("subtitle") || "" }),
-                React.createElement("button", { onClick: this.toggleEdit }, "Done"));
+                React.createElement("input", { onChange: this.updateData.bind(this, "title"), value: this.props.title || "" }),
+                React.createElement("input", { onChange: this.updateData.bind(this, "subtitle"), value: this.props.subtitle || "" }),
+                React.createElement("button", { onClick: this.props.toggleEdit }, "Done"));
         }
         return React.createElement("div", null,
-            React.createElement("h3", null, this.state.values.get("title") || "Enter a title"),
-            React.createElement("p", null, this.state.values.get("subtitle") || "Enter a subtitle"),
-            this.state.children.render(),
+            React.createElement("h3", null, this.props.title || "Enter a title"),
+            React.createElement("p", null, this.props.subtitle || "Enter a subtitle"),
+            this.props.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, LoadComponent_1.default(elem, {
+                addChild: this.addNestedChild.bind(this, idx),
+                toggleEdit: this.toggleNestedEdit.bind(this, idx),
+                updateData: this.updateNestedData.bind(this, idx)
+            }))),
             React.createElement("button", { onClick: this.addChild }, "Add"),
-            React.createElement("button", { onClick: this.toggleEdit }, "Edit"));
+            React.createElement("button", { onClick: this.props.toggleEdit }, "Edit"));
     }
 }
 exports.default = Entry;
@@ -556,6 +516,7 @@ exports.default = Entry;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const LoadComponent_1 = __webpack_require__(/*! ./LoadComponent */ "./src/components/LoadComponent.tsx");
 class FlexibleRow extends React.Component {
     constructor(props) {
         super(props);
@@ -566,7 +527,7 @@ class FlexibleRow extends React.Component {
                 justifyContent: "space-between",
                 flexDirection: "row",
                 width: "100%"
-            } }, this.props.children);
+            } }, this.props.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, LoadComponent_1.default(elem))));
     }
 }
 exports.default = FlexibleRow;
@@ -666,16 +627,9 @@ function loadComponent(data, extraProps, stopRecurse = false) {
         props['toggleEdit'] = extraProps.toggleEdit;
         props['updateData'] = extraProps.updateData;
     }
+    props['children'] = new Array();
     // Load children
-    if (data['type'] != 'Section') {
-        if (data['children'] && !stopRecurse) {
-            props['children'] = new Array();
-            for (let child of data['children']) {
-                props['children'].push(loadComponent(child, extraProps, true));
-            }
-        }
-    }
-    else {
+    if (data['children'] && !stopRecurse) {
         props['children'] = data['children'];
     }
     switch (data['type']) {
@@ -769,6 +723,14 @@ class Section extends React.Component {
             value: "Enter value here"
         });
     }
+    addNestedChild(idx, node) {
+        let newChildren = this.props.children;
+        if (!newChildren[idx]['children']) {
+            newChildren[idx]['children'] = new Array();
+        }
+        newChildren[idx]['children'].push(node);
+        this.props.updateData("children", newChildren);
+    }
     toggleNestedEdit(idx) {
         let currentChildData = this.props.children[idx]['isEditing'];
         this.updateNestedData(idx, "isEditing", !currentChildData);
@@ -794,6 +756,7 @@ class Section extends React.Component {
                 addButton,
                 React.createElement("button", { onClick: this.props.toggleEdit }, "Edit")),
             this.props.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, LoadComponent_1.default(elem, {
+                addChild: this.addNestedChild.bind(this, idx),
                 toggleEdit: this.toggleNestedEdit.bind(this, idx),
                 updateData: this.updateNestedData.bind(this, idx)
             }))));

@@ -1,7 +1,7 @@
 ﻿import FlexibleRow, { FlexibleRowProps } from "./FlexibleRow";
 import React = require("react");
 import Section, { SectionProps } from "./Section";
-import Entry from "./Entry";
+import Entry, { EntryProps } from "./Entry";
 import List, { ListItem } from "./List";
 import Paragraph, { ParagraphProps } from "./Paragraph";
 import Title, { TitleProps } from "./Title";
@@ -28,16 +28,10 @@ export default function loadComponent(data: object, extraProps?: ExtraProps, sto
         props['updateData'] = extraProps.updateData;
     }
 
-    // Load children
-    if (data['type'] != 'Section') {
-        if (data['children'] && !stopRecurse) {
-            props['children'] = new Array();
+    props['children'] = new Array();
 
-            for (let child of data['children']) {
-                props['children'].push(loadComponent(child, extraProps, true));
-            }
-        }
-    } else {
+    // Load children
+    if (data['children'] && !stopRecurse) {
         props['children'] = data['children'];
     }
 
@@ -47,7 +41,7 @@ export default function loadComponent(data: object, extraProps?: ExtraProps, sto
         case 'Section':
             return <Section {...props as SectionProps} />;
         case 'Entry':
-            return <Entry {...props} />;
+            return <Entry {...props as EntryProps} />;
         case 'List':
             return <List {...props} />;
         case 'ListItem':

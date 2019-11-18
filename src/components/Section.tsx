@@ -27,6 +27,16 @@ export default class Section extends React.Component<SectionProps> {
         });
     }
 
+    addNestedChild(idx: number, node: object) {
+        let newChildren = this.props.children;
+        if (!newChildren[idx]['children']) {
+            newChildren[idx]['children'] = new Array<object>();
+        }
+
+        newChildren[idx]['children'].push(node);
+        this.props.updateData("children", newChildren);
+    }
+    
     toggleNestedEdit(idx: number) {
         let currentChildData = this.props.children[idx]['isEditing'];
         this.updateNestedData(idx, "isEditing", !currentChildData);
@@ -64,9 +74,10 @@ export default class Section extends React.Component<SectionProps> {
                 <React.Fragment key={idx}>
                     {loadComponent(elem,
                         {
-                        toggleEdit: this.toggleNestedEdit.bind(this, idx),
-                        updateData: this.updateNestedData.bind(this, idx)
-                    })
+                            addChild: this.addNestedChild.bind(this, idx),
+                            toggleEdit: this.toggleNestedEdit.bind(this, idx),
+                            updateData: this.updateNestedData.bind(this, idx)
+                        })
                     }
                 </React.Fragment>)
             }

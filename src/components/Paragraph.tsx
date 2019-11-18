@@ -1,6 +1,6 @@
 ﻿import React = require("react");
 import EditButton from "./EditButton";
-import ResumeComponent from "./ResumeComponent";
+import ResumeComponent, { Action } from "./ResumeComponent";
 
 export default class Paragraph extends ResumeComponent {
     constructor(props) {
@@ -30,6 +30,7 @@ export default class Paragraph extends ResumeComponent {
             {this.processTextArea()}
             <span style={{ display: "inline-block" }}>
                 <EditButton {...this.props} />
+                <button onClick={this.props.deleteChild as Action}>Delete</button>
             </span></p>;
     }
 }

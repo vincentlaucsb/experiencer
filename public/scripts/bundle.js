@@ -167,6 +167,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const LoadComponent_1 = __webpack_require__(/*! ./components/LoadComponent */ "./src/components/LoadComponent.tsx");
+const SideMenu_1 = __webpack_require__(/*! ./components/SideMenu */ "./src/components/SideMenu.tsx");
+__webpack_require__(/*! bootstrap/dist/css/bootstrap.min.css */ "./node_modules/bootstrap/dist/css/bootstrap.min.css");
 const resumeData = [
     {
         type: 'FlexibleRow',
@@ -294,17 +296,22 @@ section {
     render() {
         console.log(this.state.children);
         // <button style={{}} onClick={this.addSection}>Add Section</button>
-        return React.createElement(React.Fragment, null,
-            this.state.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, LoadComponent_1.default(elem, {
+        /*<div>
+                <h2>Style Editor</h2>
+                <textarea onChange={this.onStyleChange} value={this.state.customCss} />
+                <button onClick={this.renderStyle}>Update</button>
+            </div>*/
+        return React.createElement("div", { style: {
+                display: 'flex',
+                flexDirection: 'row'
+            } },
+            React.createElement("div", { id: "resume" }, this.state.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, LoadComponent_1.default(elem, {
                 addChild: this.addChild.bind(this, idx),
                 deleteChild: this.deleteChild.bind(this, idx),
                 toggleEdit: this.toggleEdit.bind(this, idx),
                 updateData: this.updateData.bind(this, idx)
-            }))),
-            React.createElement("div", null,
-                React.createElement("h2", null, "Style Editor"),
-                React.createElement("textarea", { onChange: this.onStyleChange, value: this.state.customCss }),
-                React.createElement("button", { onClick: this.renderStyle }, "Update")));
+            })))),
+            React.createElement(SideMenu_1.SideMenu, null));
     }
 }
 exports.default = Resume;
@@ -567,7 +574,8 @@ class Paragraph extends ResumeComponent_1.default {
         return React.createElement("p", null,
             this.processTextArea(),
             React.createElement("span", { style: { display: "inline-block" } },
-                React.createElement(EditButton_1.default, Object.assign({}, this.props))));
+                React.createElement(EditButton_1.default, Object.assign({}, this.props)),
+                React.createElement("button", { onClick: this.props.deleteChild }, "Delete")));
     }
 }
 exports.default = Paragraph;
@@ -681,6 +689,31 @@ class Section extends ResumeComponent_1.default {
     }
 }
 exports.default = Section;
+
+
+/***/ }),
+
+/***/ "./src/components/SideMenu.tsx":
+/*!*************************************!*\
+  !*** ./src/components/SideMenu.tsx ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const react_bootstrap_1 = __webpack_require__(/*! react-bootstrap */ "./node_modules/react-bootstrap/esm/index.js");
+const react_1 = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+function SideMenu() {
+    const [open, setOpen] = react_1.useState(false);
+    return (React.createElement(React.Fragment, null,
+        React.createElement(react_bootstrap_1.Button, { onClick: () => setOpen(!open), "aria-controls": "side-bar", "aria-expanded": open }, "Click"),
+        React.createElement(react_bootstrap_1.Collapse, { in: open },
+            React.createElement("div", null, "Test test test testse testse"))));
+}
+exports.SideMenu = SideMenu;
 
 
 /***/ }),

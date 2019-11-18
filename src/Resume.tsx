@@ -1,5 +1,8 @@
 import * as React from 'react';
 import loadComponent from './components/LoadComponent';
+import { SideMenu } from './components/SideMenu';
+
+import "bootstrap/dist/css/bootstrap.min.css";
 
 interface PageState {
     children: Array<object>;
@@ -153,25 +156,31 @@ section {
     render() {
         console.log(this.state.children);
         // <button style={{}} onClick={this.addSection}>Add Section</button>
-
-        return <React.Fragment>
-            {this.state.children.map((elem, idx) =>
-                <React.Fragment key={idx}>
-                    {loadComponent(elem, {
-                        addChild: this.addChild.bind(this, idx),
-                        deleteChild: this.deleteChild.bind(this, idx),
-                        toggleEdit: this.toggleEdit.bind(this, idx),
-                        updateData: this.updateData.bind(this, idx)
-                    })}
-                </React.Fragment>)
-            }
-
-            <div>
+        /*<div>
                 <h2>Style Editor</h2>
                 <textarea onChange={this.onStyleChange} value={this.state.customCss} />
                 <button onClick={this.renderStyle}>Update</button>
+            </div>*/
+
+        return <div style={{
+            display: 'flex',
+            flexDirection: 'row'
+        }}>
+            <div id="resume">
+                {this.state.children.map((elem, idx) =>
+                    <React.Fragment key={idx}>
+                        {loadComponent(elem, {
+                            addChild: this.addChild.bind(this, idx),
+                            deleteChild: this.deleteChild.bind(this, idx),
+                            toggleEdit: this.toggleEdit.bind(this, idx),
+                            updateData: this.updateData.bind(this, idx)
+                        })}
+                    </React.Fragment>)
+                }
             </div>
-        </React.Fragment>
+            
+            <SideMenu />
+        </div>
     }
 }
 

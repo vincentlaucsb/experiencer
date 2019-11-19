@@ -2,6 +2,7 @@ import * as React from 'react';
 import loadComponent from './components/LoadComponent';
 import { SideMenu } from './components/SideMenu';
 
+import "./css/index.css"
 import "bootstrap/dist/css/bootstrap.min.css";
 
 interface PageState {
@@ -60,7 +61,6 @@ class Resume extends React.Component<{}, PageState> {
         this.state = {
             children: resumeData,
             customCss: `body {
-    width: 70vw;
     margin: 1em auto 1em auto;
     font-family: Tahoma, sans-serif;
     font-size: 10pt;
@@ -156,17 +156,12 @@ section {
     render() {
         console.log(this.state.children);
         // <button style={{}} onClick={this.addSection}>Add Section</button>
-        /*<div>
-                <h2>Style Editor</h2>
-                <textarea onChange={this.onStyleChange} value={this.state.customCss} />
-                <button onClick={this.renderStyle}>Update</button>
-            </div>*/
 
         return <div style={{
             display: 'flex',
             flexDirection: 'row'
         }}>
-            <div id="resume">
+            <div id="resume" style={{ width: "100%" }}>
                 {this.state.children.map((elem, idx) =>
                     <React.Fragment key={idx}>
                         {loadComponent(elem, {
@@ -178,8 +173,21 @@ section {
                     </React.Fragment>)
                 }
             </div>
-            
-            <SideMenu />
+
+            <div style={{
+                maxWidth: "500px",
+                paddingLeft: "1em"
+            }}>
+                <SideMenu>
+                    <h2>Style Editor</h2>
+                    <textarea style={{
+                        minWidth: "400px",
+                        minHeight: "400px",
+                        width: "100%"
+                    }} onChange={this.onStyleChange} value={this.state.customCss} />
+                    <button onClick={this.renderStyle}>Update</button>
+                </SideMenu>
+            </div>
         </div>
     }
 }

@@ -2,7 +2,7 @@
 import { Button, Collapse } from "react-bootstrap";
 import { useState } from "react";
 
-export function SideMenu() {
+export function SideMenu(props: any) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -12,11 +12,11 @@ export function SideMenu() {
                 aria-controls="side-bar"
                 aria-expanded={open}
             >
-                Click
+                {open ? "Collapse" : "Expand"}
             </Button>
             <Collapse in={open}>
                 <div>
-                    Test test test testse testse
+                    {props.children}
                 </div>
             </Collapse>
         </>

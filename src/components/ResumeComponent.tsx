@@ -1,4 +1,5 @@
 ﻿import * as React from "react";
+import loadComponent from "./LoadComponent";
 
 export interface ResumeComponentProps {
     isEditing?: boolean;
@@ -13,6 +14,7 @@ export interface ResumeComponentProps {
 
 export type Action = (() => void);
 export type AddChild = ((node: object) => void);
+export type UpdateChild = ((key: string, data: any) => void);
 
 // Represents a component that is part of the user's resume
 export default class ResumeComponent<
@@ -64,5 +66,25 @@ export default class ResumeComponent<
         if (this.props.updateData as ((key: string, data: any) => void)) {
             (this.props.updateData as ((key: string, data: any) => void))(key, event.target.value);
         }
+    }
+
+    renderChildren() {
+        if (this.props.children as Array<object>) {
+            return <React.Fragment>{
+                (this.props.children as Array<object>).map((elem, idx) =>
+                    <React.Fragment key={idx}>
+                        {loadComponent(elem,
+                            {
+                                addChild: (this.addNestedChild.bind(this, idx) as (node: object) => void),
+                                toggleEdit: (this.toggleNestedEdit.bind(this, idx) as () => void),
+                                updateData: (this.updateNestedData.bind(this, idx) as (key: string, data: any) => void)
+                            })
+                        }
+                    </React.Fragment>)
+            }
+            </React.Fragment>
+        }
+
+        return <React.Fragment />
     }
 }

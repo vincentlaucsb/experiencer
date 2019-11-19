@@ -1,5 +1,5 @@
-﻿import { EditableProps } from "./Editable";
-import React = require("react");
+﻿import * as React from "react";
+import { EditableProps } from "./Editable";
 import EditButton from "./EditButton";
 import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
 

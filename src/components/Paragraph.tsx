@@ -1,4 +1,4 @@
-﻿import React = require("react");
+﻿import * as React from "react";
 import EditButton from "./EditButton";
 import ResumeComponent, { Action } from "./ResumeComponent";
 
@@ -11,7 +11,7 @@ export default class Paragraph extends ResumeComponent {
 
     // Convert newlines ('\n') into HTML line breaks
     processTextArea() : JSX.Element {
-        let textArea = this.props.value.split("\n");
+        let textArea = (this.props.value as string).split("\n");
 
         return <React.Fragment>
             {textArea.map((x, idx) => <React.Fragment key={idx}>{x}<br /></React.Fragment>)}

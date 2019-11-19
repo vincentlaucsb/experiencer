@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
 import loadComponent from "./LoadComponent";
-import ResumeComponent, { AddChild } from "./ResumeComponent";
+import ResumeComponent, { AddChild, UpdateChild } from "./ResumeComponent";
 
 export class ListItem extends ResumeComponent {
     constructor(props) {
@@ -10,7 +10,7 @@ export class ListItem extends ResumeComponent {
     render() {
         if (this.props.isEditing) {
             return <React.Fragment>
-                <input onChange={this.props.updateData.bind(this, "value")} value={this.props.value} type="text" />
+                <input onChange={(this.props.updateData as UpdateChild).bind(this, "value")} value={this.props.value} type="text" />
                 <div style={{ float: "right" }}><button onClick={this.toggleEdit}>Done</button></div>
             </React.Fragment>
         }
@@ -43,16 +43,7 @@ export default class List extends ResumeComponent {
                 <button onClick={this.addChild}>Add</button>
             </div>
             <ul>
-                {this.props.children.map((elem, idx) =>
-                    <React.Fragment key={idx}>
-                        {loadComponent(elem,
-                            {
-                                toggleEdit: this.toggleNestedEdit.bind(this, idx),
-                                updateData: this.updateNestedData.bind(this, idx)
-                            })
-                        }
-                    </React.Fragment>)
-                }
+                {this.renderChildren()}
             </ul>
             </React.Fragment>
     }

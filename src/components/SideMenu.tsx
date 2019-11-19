@@ -1,6 +1,6 @@
-﻿import { Button, Collapse } from "react-bootstrap";
+﻿import * as React from "react";
+import { Button, Collapse } from "react-bootstrap";
 import { useState } from "react";
-import React = require("react");
 
 export function SideMenu() {
     const [open, setOpen] = useState(false);

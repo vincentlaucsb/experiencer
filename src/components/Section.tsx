@@ -42,17 +42,7 @@ export default class Section extends ResumeComponent<SectionProps> {
                 {buttons}
             </h2>
 
-            {this.props.children.map((elem, idx) =>
-                <React.Fragment key={idx}>
-                    {loadComponent(elem,
-                        {
-                            addChild: this.addNestedChild.bind(this, idx),
-                            toggleEdit: this.toggleNestedEdit.bind(this, idx),
-                            updateData: this.updateNestedData.bind(this, idx)
-                        })
-                    }
-                </React.Fragment>)
-            }
+            {this.renderChildren()}
         </section>;
     }
 }

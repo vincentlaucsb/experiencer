@@ -44,7 +44,6 @@
     "source-map-loader": "^0.2.4",
     "typescript": "^3.7.2",
     "typings-for-css-modules-loader": "^1.7.0",
-    "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"
   }
 }

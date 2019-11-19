@@ -1,5 +1,5 @@
-﻿import FlexibleRow from "./FlexibleRow";
-import React = require("react");
+﻿import * as React from "react";
+import FlexibleRow from "./FlexibleRow";
 import Section, { SectionProps } from "./Section";
 import Entry, { EntryProps } from "./Entry";
 import List, { ListItem } from "./List";
@@ -8,10 +8,10 @@ import Title from "./Title";
 import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
 
 interface ExtraProps {
-    addChild?: (idx: number, node: object) => void;
+    addChild?: (node: object) => void;
     deleteChild?: (idx: number) => void;
-    toggleEdit?: (idx: number) => void;
-    updateData?: (idx: number, key: string, data: any) => void;
+    toggleEdit?: () => void;
+    updateData?: (key: string, data: any) => void;
 }
 
 export default function loadComponent(data: object, extraProps?: ExtraProps) {

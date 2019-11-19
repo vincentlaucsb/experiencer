@@ -35,16 +35,7 @@ export default class Entry extends ResumeComponent<EntryProps> {
             <h3>{this.props.title || "Enter a title"}</h3>
             <p>{this.props.subtitle || "Enter a subtitle"}</p>
 
-            {this.props.children.map((elem, idx) =>
-                <React.Fragment key={idx}>
-                    {loadComponent(elem,
-                        {
-                            addChild: this.addNestedChild.bind(this, idx),
-                            toggleEdit: this.toggleNestedEdit.bind(this, idx),
-                            updateData: this.updateNestedData.bind(this, idx)
-                        })
-                    }
-                </React.Fragment>)}
+            {this.renderChildren()}
 
             <button onClick={this.addChild}>Add</button>
             <button onClick={this.toggleEdit}>Edit</button>

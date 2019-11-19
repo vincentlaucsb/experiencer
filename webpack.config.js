@@ -33,7 +33,13 @@ module.exports = {
 
             // Process CSS and SASS with 'typings-for-css-modules'
             { test: /\.css$/, loader: 'typings-for-css-modules-loader?modules' },
-            { test: /\.scss$/, loader: 'typings-for-css-modules-loader?modules&sass' }
+            { test: /\.scss$/, loader: 'typings-for-css-modules-loader?modules&sass' },
+
+            // Process SVG with 'svg-inline-loader'
+            {
+                test: /\.svg$/,
+                loader: 'svg-inline-loader'
+            }
         ]
     },
 

@@ -159,16 +159,31 @@
 /*!************************!*\
   !*** ./src/Resume.tsx ***!
   \************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _components_LoadComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/LoadComponent */ "./src/components/LoadComponent.tsx");
+/* harmony import */ var file_saver__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! file-saver */ "./node_modules/file-saver/dist/FileSaver.min.js");
+/* harmony import */ var file_saver__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(file_saver__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _components_SideMenu__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/SideMenu */ "./src/components/SideMenu.tsx");
+/* harmony import */ var _css_index_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./css/index.css */ "./src/css/index.css");
+/* harmony import */ var _css_index_css__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_css_index_css__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var bootstrap_dist_css_bootstrap_min_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! bootstrap/dist/css/bootstrap.min.css */ "./node_modules/bootstrap/dist/css/bootstrap.min.css");
+/* harmony import */ var bootstrap_dist_css_bootstrap_min_css__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(bootstrap_dist_css_bootstrap_min_css__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react-bootstrap */ "./node_modules/react-bootstrap/esm/index.js");
+/* harmony import */ var _components_FileLoader__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/FileLoader */ "./src/components/FileLoader.tsx");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const LoadComponent_1 = __webpack_require__(/*! ./components/LoadComponent */ "./src/components/LoadComponent.tsx");
-const SideMenu_1 = __webpack_require__(/*! ./components/SideMenu */ "./src/components/SideMenu.tsx");
-__webpack_require__(/*! bootstrap/dist/css/bootstrap.min.css */ "./node_modules/bootstrap/dist/css/bootstrap.min.css");
+
+
+
+
+
+
+
 const resumeData = [
     {
         type: 'FlexibleRow',
@@ -203,7 +218,7 @@ const resumeData = [
         ]
     }
 ];
-class Resume extends React.Component {
+class Resume extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     constructor(props) {
         super(props);
         // Custom CSS
@@ -214,7 +229,6 @@ class Resume extends React.Component {
         this.state = {
             children: resumeData,
             customCss: `body {
-    width: 70vw;
     margin: 1em auto 1em auto;
     font-family: Tahoma, sans-serif;
     font-size: 10pt;
@@ -241,6 +255,7 @@ section {
         this.toggleEdit = this.toggleEdit.bind(this);
         this.renderStyle = this.renderStyle.bind(this);
         this.onStyleChange = this.onStyleChange.bind(this);
+        this.saveFile = this.saveFile.bind(this);
     }
     /*
     addSection() {
@@ -293,50 +308,91 @@ section {
             children: this.state.children
         });
     }
+    loadData(data) {
+        this.setState({ children: data });
+    }
+    // Save data to an external file
+    saveFile() {
+        var blob = new Blob([JSON.stringify(this.state.children)], {
+            type: "text/plain;charset=utf-8"
+        });
+        // TODO: Allow user to change filename
+        Object(file_saver__WEBPACK_IMPORTED_MODULE_2__["saveAs"])(blob, "resume.json");
+    }
     render() {
         console.log(this.state.children);
         // <button style={{}} onClick={this.addSection}>Add Section</button>
-        /*<div>
-                <h2>Style Editor</h2>
-                <textarea onChange={this.onStyleChange} value={this.state.customCss} />
-                <button onClick={this.renderStyle}>Update</button>
-            </div>*/
-        return React.createElement("div", { style: {
+        return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { style: {
                 display: 'flex',
                 flexDirection: 'row'
             } },
-            React.createElement("div", { id: "resume" }, this.state.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, LoadComponent_1.default(elem, {
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { id: "resume", style: { width: "100%" } }, this.state.children.map((elem, idx) => react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], { key: idx }, Object(_components_LoadComponent__WEBPACK_IMPORTED_MODULE_1__["default"])(elem, {
                 addChild: this.addChild.bind(this, idx),
                 deleteChild: this.deleteChild.bind(this, idx),
                 toggleEdit: this.toggleEdit.bind(this, idx),
                 updateData: this.updateData.bind(this, idx)
             })))),
-            React.createElement(SideMenu_1.SideMenu, null));
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { style: {
+                    maxWidth: "500px",
+                    paddingLeft: "1em"
+                } },
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_components_SideMenu__WEBPACK_IMPORTED_MODULE_3__["SideMenu"], null,
+                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_components_FileLoader__WEBPACK_IMPORTED_MODULE_7__["FileLoader"], { loadData: this.loadData }),
+                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react_bootstrap__WEBPACK_IMPORTED_MODULE_6__["Button"], { onClick: this.saveFile }, "Save Data"),
+                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("h2", null, "Style Editor"),
+                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("textarea", { style: {
+                            minWidth: "400px",
+                            minHeight: "400px",
+                            width: "100%"
+                        }, onChange: this.onStyleChange, value: this.state.customCss }),
+                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("button", { onClick: this.renderStyle }, "Update"))));
     }
 }
-exports.default = Resume;
+/* harmony default export */ __webpack_exports__["default"] = (Resume);
 
 
 /***/ }),
 
-/***/ "./src/components/EditButton.tsx":
-/*!***************************************!*\
-  !*** ./src/components/EditButton.tsx ***!
-  \***************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ "./src/components/Buttons.tsx":
+/*!************************************!*\
+  !*** ./src/components/Buttons.tsx ***!
+  \************************************/
+/*! exports provided: AddButton, default, DeleteButton */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AddButton", function() { return AddButton; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EditButton; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DeleteButton", function() { return DeleteButton; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _icons_add_24px_svg__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../icons/add-24px.svg */ "./src/icons/add-24px.svg");
+/* harmony import */ var _icons_add_24px_svg__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_icons_add_24px_svg__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _icons_delete_24px_svg__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../icons/delete-24px.svg */ "./src/icons/delete-24px.svg");
+/* harmony import */ var _icons_delete_24px_svg__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_icons_delete_24px_svg__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _icons_edit_24px_svg__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../icons/edit-24px.svg */ "./src/icons/edit-24px.svg");
+/* harmony import */ var _icons_edit_24px_svg__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_icons_edit_24px_svg__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _icons_done_24px_svg__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../icons/done-24px.svg */ "./src/icons/done-24px.svg");
+/* harmony import */ var _icons_done_24px_svg__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_icons_done_24px_svg__WEBPACK_IMPORTED_MODULE_4__);
 
-Object.defineProperty(exports, "__esModule", { value: true });
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-function EditButton(props) {
-    if (props.isEditing && props.toggleEdit) {
-        return React.createElement("button", { onClick: props.toggleEdit }, "Done");
-    }
-    return React.createElement("button", { onClick: props.toggleEdit }, "Edit");
+
+
+
+
+function AddButton(props) {
+    return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("img", { onClick: props.action, src: _icons_add_24px_svg__WEBPACK_IMPORTED_MODULE_1___default.a, alt: 'Add' });
 }
-exports.default = EditButton;
+function EditButton(props) {
+    const editIcon = react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("img", { src: _icons_edit_24px_svg__WEBPACK_IMPORTED_MODULE_3___default.a, alt: 'Edit' });
+    if (props.isEditing && props.toggleEdit) {
+        return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("img", { onClick: props.toggleEdit, src: _icons_done_24px_svg__WEBPACK_IMPORTED_MODULE_4___default.a, alt: 'Edit' });
+    }
+    return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("img", { onClick: props.toggleEdit, src: _icons_edit_24px_svg__WEBPACK_IMPORTED_MODULE_3___default.a, alt: 'Edit' });
+}
+function DeleteButton(props) {
+    return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("img", { onClick: props.deleteChild, src: _icons_delete_24px_svg__WEBPACK_IMPORTED_MODULE_2___default.a, alt: 'Delete' });
+}
 
 
 /***/ }),
@@ -345,16 +401,20 @@ exports.default = EditButton;
 /*!**********************************!*\
   !*** ./src/components/Entry.tsx ***!
   \**********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Entry; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _ResumeComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ResumeComponent */ "./src/components/ResumeComponent.tsx");
+/* harmony import */ var _Buttons__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Buttons */ "./src/components/Buttons.tsx");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const LoadComponent_1 = __webpack_require__(/*! ./LoadComponent */ "./src/components/LoadComponent.tsx");
-const ResumeComponent_1 = __webpack_require__(/*! ./ResumeComponent */ "./src/components/ResumeComponent.tsx");
-class Entry extends ResumeComponent_1.default {
+
+
+class Entry extends _ResumeComponent__WEBPACK_IMPORTED_MODULE_1__["default"] {
     constructor(props) {
         super(props);
         this.addChild = this.addChild.bind(this);
@@ -368,24 +428,76 @@ class Entry extends ResumeComponent_1.default {
     }
     render() {
         if (this.props.isEditing) {
-            return React.createElement("div", null,
-                React.createElement("input", { onChange: this.updateData.bind(this, "title"), value: this.props.title || "" }),
-                React.createElement("input", { onChange: this.updateData.bind(this, "subtitle"), value: this.props.subtitle || "" }),
-                React.createElement("button", { onClick: this.toggleEdit }, "Done"));
+            return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", null,
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("input", { onChange: this.updateData.bind(this, "title"), value: this.props.title || "" }),
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("input", { onChange: this.updateData.bind(this, "subtitle"), value: this.props.subtitle || "" }),
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_2__["default"], Object.assign({}, this.props)));
         }
-        return React.createElement("div", null,
-            React.createElement("h3", null, this.props.title || "Enter a title"),
-            React.createElement("p", null, this.props.subtitle || "Enter a subtitle"),
-            this.props.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, LoadComponent_1.default(elem, {
-                addChild: this.addNestedChild.bind(this, idx),
-                toggleEdit: this.toggleNestedEdit.bind(this, idx),
-                updateData: this.updateNestedData.bind(this, idx)
-            }))),
-            React.createElement("button", { onClick: this.addChild }, "Add"),
-            React.createElement("button", { onClick: this.toggleEdit }, "Edit"));
+        return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", null,
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("h3", null,
+                this.props.title || "Enter a title",
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_2__["AddButton"], { action: this.addChild }),
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_2__["default"], Object.assign({}, this.props))),
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("p", null, this.props.subtitle || "Enter a subtitle"),
+            this.renderChildren());
     }
 }
-exports.default = Entry;
+
+
+/***/ }),
+
+/***/ "./src/components/FileLoader.tsx":
+/*!***************************************!*\
+  !*** ./src/components/FileLoader.tsx ***!
+  \***************************************/
+/*! exports provided: FileLoader */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FileLoader", function() { return FileLoader; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+// Form used for reading Auto Cost Calculator saved files
+class FileLoader extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
+    constructor(props) {
+        super(props);
+        this.state = {
+            filename: ''
+        };
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.readFile = this.readFile.bind(this);
+        // See: https://reactjs.org/docs/uncontrolled-components.html#the-file-input-tag
+        this.fileInput = react__WEBPACK_IMPORTED_MODULE_0__["createRef"]();
+    }
+    readFile(file) {
+        /*
+         * Ref:
+         * https://stackoverflow.com/questions/750032/reading-file-contents-on-the-client-side-in-javascript-in-various-browsers
+         */
+        const reader = new FileReader();
+        reader.onload = (fileLoadedEvent) => {
+            var text = reader.result;
+            if (text) {
+                this.props.loadData(JSON.parse(text.toString()));
+            }
+        };
+        reader.readAsText(file, "UTF-8");
+    }
+    handleSubmit(event) {
+        event.preventDefault(); // Prevent page refresh
+        let userFile = this.fileInput.current.files[0];
+        this.readFile(userFile);
+    }
+    render() {
+        return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("form", { onSubmit: this.handleSubmit, id: "loadFile" },
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { className: "form-group" },
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("label", null,
+                    "File",
+                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("input", { className: "form-control", type: "file", ref: this.fileInput }))));
+    }
+}
 
 
 /***/ }),
@@ -394,32 +506,30 @@ exports.default = Entry;
 /*!****************************************!*\
   !*** ./src/components/FlexibleRow.tsx ***!
   \****************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return FlexibleRow; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _ResumeComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ResumeComponent */ "./src/components/ResumeComponent.tsx");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const LoadComponent_1 = __webpack_require__(/*! ./LoadComponent */ "./src/components/LoadComponent.tsx");
-const ResumeComponent_1 = __webpack_require__(/*! ./ResumeComponent */ "./src/components/ResumeComponent.tsx");
-class FlexibleRow extends ResumeComponent_1.default {
+
+class FlexibleRow extends _ResumeComponent__WEBPACK_IMPORTED_MODULE_1__["default"] {
     constructor(props) {
         super(props);
     }
     render() {
-        return React.createElement("div", { style: {
+        return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { style: {
                 display: "flex",
                 justifyContent: "space-between",
                 flexDirection: "row",
                 width: "100%"
-            } }, this.props.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, LoadComponent_1.default(elem, {
-            toggleEdit: this.toggleNestedEdit.bind(this, idx),
-            updateData: this.updateNestedData.bind(this, idx)
-        }))));
+            } }, this.renderChildren());
     }
 }
-exports.default = FlexibleRow;
 
 
 /***/ }),
@@ -428,34 +538,36 @@ exports.default = FlexibleRow;
 /*!*********************************!*\
   !*** ./src/components/List.tsx ***!
   \*********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: ListItem, default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ListItem", function() { return ListItem; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return List; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _ResumeComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ResumeComponent */ "./src/components/ResumeComponent.tsx");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const LoadComponent_1 = __webpack_require__(/*! ./LoadComponent */ "./src/components/LoadComponent.tsx");
-const ResumeComponent_1 = __webpack_require__(/*! ./ResumeComponent */ "./src/components/ResumeComponent.tsx");
-class ListItem extends ResumeComponent_1.default {
+
+class ListItem extends _ResumeComponent__WEBPACK_IMPORTED_MODULE_1__["default"] {
     constructor(props) {
         super(props);
     }
     render() {
         if (this.props.isEditing) {
-            return React.createElement(React.Fragment, null,
-                React.createElement("input", { onChange: this.props.updateData.bind(this, "value"), value: this.props.value, type: "text" }),
-                React.createElement("div", { style: { float: "right" } },
-                    React.createElement("button", { onClick: this.toggleEdit }, "Done")));
+            return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null,
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("input", { onChange: this.props.updateData.bind(this, "value"), value: this.props.value, type: "text" }),
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { style: { float: "right" } },
+                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("button", { onClick: this.toggleEdit }, "Done")));
         }
-        return React.createElement("li", null,
+        return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("li", null,
             this.props.value,
-            React.createElement("div", { style: { float: "right" } },
-                React.createElement("button", { onClick: this.toggleEdit }, "Edit")));
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { style: { float: "right" } },
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("button", { onClick: this.toggleEdit }, "Edit")));
     }
 }
-exports.ListItem = ListItem;
-class List extends ResumeComponent_1.default {
+class List extends _ResumeComponent__WEBPACK_IMPORTED_MODULE_1__["default"] {
     constructor(props) {
         super(props);
         this.addChild = this.addChild.bind(this);
@@ -468,16 +580,12 @@ class List extends ResumeComponent_1.default {
         }
     }
     render() {
-        return React.createElement(React.Fragment, null,
-            React.createElement("div", { style: { float: "right" } },
-                React.createElement("button", { onClick: this.addChild }, "Add")),
-            React.createElement("ul", null, this.props.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, LoadComponent_1.default(elem, {
-                toggleEdit: this.toggleNestedEdit.bind(this, idx),
-                updateData: this.updateNestedData.bind(this, idx)
-            })))));
+        return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null,
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { style: { float: "right" } },
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("button", { onClick: this.addChild }, "Add")),
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("ul", null, this.renderChildren()));
     }
 }
-exports.default = List;
 
 
 /***/ }),
@@ -486,19 +594,27 @@ exports.default = List;
 /*!******************************************!*\
   !*** ./src/components/LoadComponent.tsx ***!
   \******************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return loadComponent; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _FlexibleRow__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FlexibleRow */ "./src/components/FlexibleRow.tsx");
+/* harmony import */ var _Section__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Section */ "./src/components/Section.tsx");
+/* harmony import */ var _Entry__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Entry */ "./src/components/Entry.tsx");
+/* harmony import */ var _List__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./List */ "./src/components/List.tsx");
+/* harmony import */ var _Paragraph__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Paragraph */ "./src/components/Paragraph.tsx");
+/* harmony import */ var _Title__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Title */ "./src/components/Title.tsx");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-const FlexibleRow_1 = __webpack_require__(/*! ./FlexibleRow */ "./src/components/FlexibleRow.tsx");
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const Section_1 = __webpack_require__(/*! ./Section */ "./src/components/Section.tsx");
-const Entry_1 = __webpack_require__(/*! ./Entry */ "./src/components/Entry.tsx");
-const List_1 = __webpack_require__(/*! ./List */ "./src/components/List.tsx");
-const Paragraph_1 = __webpack_require__(/*! ./Paragraph */ "./src/components/Paragraph.tsx");
-const Title_1 = __webpack_require__(/*! ./Title */ "./src/components/Title.tsx");
+
+
+
+
+
+
 function loadComponent(data, extraProps) {
     // Load prop data
     let props = {};
@@ -520,22 +636,21 @@ function loadComponent(data, extraProps) {
     }
     switch (data['type']) {
         case 'FlexibleRow':
-            return React.createElement(FlexibleRow_1.default, Object.assign({}, props));
+            return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_FlexibleRow__WEBPACK_IMPORTED_MODULE_1__["default"], Object.assign({}, props));
         case 'Section':
-            return React.createElement(Section_1.default, Object.assign({}, props));
+            return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Section__WEBPACK_IMPORTED_MODULE_2__["default"], Object.assign({}, props));
         case 'Entry':
-            return React.createElement(Entry_1.default, Object.assign({}, props));
+            return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Entry__WEBPACK_IMPORTED_MODULE_3__["default"], Object.assign({}, props));
         case 'List':
-            return React.createElement(List_1.default, Object.assign({}, props));
+            return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_List__WEBPACK_IMPORTED_MODULE_4__["default"], Object.assign({}, props));
         case 'ListItem':
-            return React.createElement(List_1.ListItem, Object.assign({}, props));
+            return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_List__WEBPACK_IMPORTED_MODULE_4__["ListItem"], Object.assign({}, props));
         case 'Paragraph':
-            return React.createElement(Paragraph_1.default, Object.assign({}, props));
+            return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Paragraph__WEBPACK_IMPORTED_MODULE_5__["default"], Object.assign({}, props));
         case 'Title':
-            return React.createElement(Title_1.default, Object.assign({}, props));
+            return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Title__WEBPACK_IMPORTED_MODULE_6__["default"], Object.assign({}, props));
     }
 }
-exports.default = loadComponent;
 
 
 /***/ }),
@@ -544,16 +659,20 @@ exports.default = loadComponent;
 /*!**************************************!*\
   !*** ./src/components/Paragraph.tsx ***!
   \**************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Paragraph; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Buttons__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Buttons */ "./src/components/Buttons.tsx");
+/* harmony import */ var _ResumeComponent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ResumeComponent */ "./src/components/ResumeComponent.tsx");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const EditButton_1 = __webpack_require__(/*! ./EditButton */ "./src/components/EditButton.tsx");
-const ResumeComponent_1 = __webpack_require__(/*! ./ResumeComponent */ "./src/components/ResumeComponent.tsx");
-class Paragraph extends ResumeComponent_1.default {
+
+
+class Paragraph extends _ResumeComponent__WEBPACK_IMPORTED_MODULE_2__["default"] {
     constructor(props) {
         super(props);
         this.updateData = this.updateData.bind(this);
@@ -561,24 +680,23 @@ class Paragraph extends ResumeComponent_1.default {
     // Convert newlines ('\n') into HTML line breaks
     processTextArea() {
         let textArea = this.props.value.split("\n");
-        return React.createElement(React.Fragment, null, textArea.map((x, idx) => React.createElement(React.Fragment, { key: idx },
+        return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null, textArea.map((x, idx) => react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], { key: idx },
             x,
-            React.createElement("br", null))));
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("br", null))));
     }
     render() {
         if (this.props.isEditing) {
-            return React.createElement(React.Fragment, null,
-                React.createElement("textarea", { onChange: this.updateData.bind(this, "value"), value: this.props.value }),
-                React.createElement(EditButton_1.default, Object.assign({}, this.props)));
+            return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null,
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("textarea", { onChange: this.updateData.bind(this, "value"), value: this.props.value }),
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["default"], Object.assign({}, this.props)));
         }
-        return React.createElement("p", null,
+        return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("p", null,
             this.processTextArea(),
-            React.createElement("span", { style: { display: "inline-block" } },
-                React.createElement(EditButton_1.default, Object.assign({}, this.props)),
-                React.createElement("button", { onClick: this.props.deleteChild }, "Delete")));
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("span", { style: { display: "inline-block" } },
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["default"], Object.assign({}, this.props)),
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["DeleteButton"], Object.assign({}, this.props))));
     }
 }
-exports.default = Paragraph;
 
 
 /***/ }),
@@ -587,15 +705,19 @@ exports.default = Paragraph;
 /*!********************************************!*\
   !*** ./src/components/ResumeComponent.tsx ***!
   \********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ResumeComponent; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _LoadComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./LoadComponent */ "./src/components/LoadComponent.tsx");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
 // Represents a component that is part of the user's resume
-class ResumeComponent extends React.Component {
+class ResumeComponent extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     constructor(props) {
         super(props);
         this.updateData = this.updateData.bind(this);
@@ -635,8 +757,17 @@ class ResumeComponent extends React.Component {
             this.props.updateData(key, event.target.value);
         }
     }
+    renderChildren() {
+        if (this.props.children) {
+            return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null, this.props.children.map((elem, idx) => react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], { key: idx }, Object(_LoadComponent__WEBPACK_IMPORTED_MODULE_1__["default"])(elem, {
+                addChild: this.addNestedChild.bind(this, idx),
+                toggleEdit: this.toggleNestedEdit.bind(this, idx),
+                updateData: this.updateNestedData.bind(this, idx)
+            }))));
+        }
+        return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null);
+    }
 }
-exports.default = ResumeComponent;
 
 
 /***/ }),
@@ -645,17 +776,20 @@ exports.default = ResumeComponent;
 /*!************************************!*\
   !*** ./src/components/Section.tsx ***!
   \************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Section; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Buttons__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Buttons */ "./src/components/Buttons.tsx");
+/* harmony import */ var _ResumeComponent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ResumeComponent */ "./src/components/ResumeComponent.tsx");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const LoadComponent_1 = __webpack_require__(/*! ./LoadComponent */ "./src/components/LoadComponent.tsx");
-const EditButton_1 = __webpack_require__(/*! ./EditButton */ "./src/components/EditButton.tsx");
-const ResumeComponent_1 = __webpack_require__(/*! ./ResumeComponent */ "./src/components/ResumeComponent.tsx");
-class Section extends ResumeComponent_1.default {
+
+
+class Section extends _ResumeComponent__WEBPACK_IMPORTED_MODULE_2__["default"] {
     constructor(props) {
         super(props);
         this.addChild = this.addChild.bind(this);
@@ -669,26 +803,21 @@ class Section extends ResumeComponent_1.default {
         }
     }
     render() {
-        let buttons = React.createElement("div", { style: { float: "right" } },
-            React.createElement("button", { onClick: this.addChild }, "Add"),
-            React.createElement(EditButton_1.default, Object.assign({}, this.props)),
-            React.createElement("button", { onClick: this.props.deleteChild }, "Delete"));
+        let buttons = react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { style: { float: "right" } },
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["AddButton"], { action: this.addChild }),
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["default"], Object.assign({}, this.props)),
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["DeleteButton"], Object.assign({}, this.props)));
         let title = this.props.title;
         if (this.props.isEditing) {
-            title = React.createElement("input", { onChange: this.updateData.bind(this, "title"), type: "text", value: this.props.title });
+            title = react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("input", { onChange: this.updateData.bind(this, "title"), type: "text", value: this.props.title });
         }
-        return React.createElement("section", null,
-            React.createElement("h2", null,
+        return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("section", null,
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("h2", null,
                 title,
                 buttons),
-            this.props.children.map((elem, idx) => React.createElement(React.Fragment, { key: idx }, LoadComponent_1.default(elem, {
-                addChild: this.addNestedChild.bind(this, idx),
-                toggleEdit: this.toggleNestedEdit.bind(this, idx),
-                updateData: this.updateNestedData.bind(this, idx)
-            }))));
+            this.renderChildren());
     }
 }
-exports.default = Section;
 
 
 /***/ }),
@@ -697,23 +826,25 @@ exports.default = Section;
 /*!*************************************!*\
   !*** ./src/components/SideMenu.tsx ***!
   \*************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: SideMenu */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SideMenu", function() { return SideMenu; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-bootstrap */ "./node_modules/react-bootstrap/esm/index.js");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-const react_bootstrap_1 = __webpack_require__(/*! react-bootstrap */ "./node_modules/react-bootstrap/esm/index.js");
-const react_1 = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-function SideMenu() {
-    const [open, setOpen] = react_1.useState(false);
-    return (React.createElement(React.Fragment, null,
-        React.createElement(react_bootstrap_1.Button, { onClick: () => setOpen(!open), "aria-controls": "side-bar", "aria-expanded": open }, "Click"),
-        React.createElement(react_bootstrap_1.Collapse, { in: open },
-            React.createElement("div", null, "Test test test testse testse"))));
+
+
+function SideMenu(props) {
+    const [open, setOpen] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(false);
+    return (react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null,
+        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], { onClick: () => setOpen(!open), "aria-controls": "side-bar", "aria-expanded": open }, open ? "Collapse" : "Expand"),
+        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Collapse"], { in: open },
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", null, props.children))));
 }
-exports.SideMenu = SideMenu;
 
 
 /***/ }),
@@ -722,33 +853,99 @@ exports.SideMenu = SideMenu;
 /*!**********************************!*\
   !*** ./src/components/Title.tsx ***!
   \**********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Title; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Buttons__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Buttons */ "./src/components/Buttons.tsx");
+/* harmony import */ var _ResumeComponent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ResumeComponent */ "./src/components/ResumeComponent.tsx");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const EditButton_1 = __webpack_require__(/*! ./EditButton */ "./src/components/EditButton.tsx");
-const ResumeComponent_1 = __webpack_require__(/*! ./ResumeComponent */ "./src/components/ResumeComponent.tsx");
-class Title extends ResumeComponent_1.default {
+
+
+class Title extends _ResumeComponent__WEBPACK_IMPORTED_MODULE_2__["default"] {
     constructor(props) {
         super(props);
     }
     render() {
         if (this.props.isEditing) {
-            return React.createElement(React.Fragment, null,
-                React.createElement("input", { onChange: this.updateData.bind(this, "value"), value: this.props.value, type: "text" }),
-                React.createElement(EditButton_1.default, Object.assign({}, this.props)));
+            return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null,
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("input", { onChange: this.updateData.bind(this, "value"), value: this.props.value, type: "text" }),
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["default"], Object.assign({}, this.props)));
         }
-        return React.createElement("h1", null,
+        return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("h1", null,
             this.props.value,
-            React.createElement("div", { style: { display: "inline-block" } },
-                React.createElement(EditButton_1.default, Object.assign({}, this.props))));
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { style: { display: "inline-block" } },
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["default"], Object.assign({}, this.props))));
     }
 }
-exports.default = Title;
 
+
+/***/ }),
+
+/***/ "./src/css/index.css":
+/*!***************************!*\
+  !*** ./src/css/index.css ***!
+  \***************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "body {\n  margin: 0;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"Roboto\", \"Oxygen\",\n    \"Ubuntu\", \"Cantarell\", \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\",\n    sans-serif;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n\ncode {\n  font-family: source-code-pro, Menlo, Monaco, Consolas, \"Courier New\",\n    monospace;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./src/icons/add-24px.svg":
+/*!********************************!*\
+  !*** ./src/icons/add-24px.svg ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z\"></path><path d=\"M0 0h24v24H0z\" fill=\"none\"></path></svg>"
+
+/***/ }),
+
+/***/ "./src/icons/delete-24px.svg":
+/*!***********************************!*\
+  !*** ./src/icons/delete-24px.svg ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" d=\"M0 0h24v24H0V0z\"></path><path d=\"M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z\"></path></svg>"
+
+/***/ }),
+
+/***/ "./src/icons/done-24px.svg":
+/*!*********************************!*\
+  !*** ./src/icons/done-24px.svg ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" d=\"M0 0h24v24H0V0z\"></path><path d=\"M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z\"></path></svg>"
+
+/***/ }),
+
+/***/ "./src/icons/edit-24px.svg":
+/*!*********************************!*\
+  !*** ./src/icons/edit-24px.svg ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"none\" d=\"M0 0h24v24H0V0z\"></path><path d=\"M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z\"></path></svg>"
 
 /***/ }),
 
@@ -756,17 +953,21 @@ exports.default = Title;
 /*!***********************!*\
   !*** ./src/index.tsx ***!
   \***********************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _Resume__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Resume */ "./src/Resume.tsx");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const ReactDOM = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
-const Resume_1 = __webpack_require__(/*! ./Resume */ "./src/Resume.tsx");
+
+
 // import * as serviceWorker from './serviceWorker';
-ReactDOM.render(React.createElement(Resume_1.default, null), document.getElementById('root'));
+react_dom__WEBPACK_IMPORTED_MODULE_1__["render"](react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Resume__WEBPACK_IMPORTED_MODULE_2__["default"], null), document.getElementById('root'));
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA

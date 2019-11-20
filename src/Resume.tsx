@@ -1,9 +1,12 @@
 import * as React from 'react';
 import loadComponent from './components/LoadComponent';
+import { saveAs } from 'file-saver';
 import { SideMenu } from './components/SideMenu';
 
 import "./css/index.css"
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Button } from 'react-bootstrap';
+import { FileLoader } from './components/FileLoader';
 
 interface PageState {
     children: Array<object>;
@@ -86,9 +89,11 @@ section {
         // this.addSection = this.addSection.bind(this);
         this.addChild = this.addChild.bind(this);
         this.updateData = this.updateData.bind(this);
+        this.loadData = this.loadData.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
         this.renderStyle = this.renderStyle.bind(this);
         this.onStyleChange = this.onStyleChange.bind(this);
+        this.saveFile = this.saveFile.bind(this);
     }
 
     /*
@@ -153,6 +158,22 @@ section {
         });
     }
 
+    loadData(data: Array<object>) {
+        this.setState({ children: data });
+    }
+
+    // Save data to an external file
+    saveFile() {
+        var blob = new Blob([JSON.stringify(this.state.children)],
+            {
+                type: "text/plain;charset=utf-8"
+            }
+        );
+
+        // TODO: Allow user to change filename
+        saveAs(blob, "resume.json");
+    }
+
     render() {
         console.log(this.state.children);
         // <button style={{}} onClick={this.addSection}>Add Section</button>
@@ -179,6 +200,11 @@ section {
                 paddingLeft: "1em"
             }}>
                 <SideMenu>
+                    <FileLoader loadData={this.loadData} />
+                    <Button onClick={this.saveFile}>
+                        Save Data
+                    </Button>
+
                     <h2>Style Editor</h2>
                     <textarea style={{
                         minWidth: "400px",

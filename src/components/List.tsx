@@ -1,6 +1,7 @@
 ﻿import * as React from "react";
-import loadComponent from "./LoadComponent";
 import ResumeComponent, { AddChild, UpdateChild } from "./ResumeComponent";
+import EditButton from "./Buttons";
+import { Button } from "react-bootstrap";
 
 export class ListItem extends ResumeComponent {
     constructor(props) {
@@ -8,16 +9,15 @@ export class ListItem extends ResumeComponent {
     }
 
     render() {
+        let value: any = this.props.value ? this.props.value : "";
         if (this.props.isEditing) {
-            return <React.Fragment>
-                <input onChange={(this.props.updateData as UpdateChild).bind(this, "value")} value={this.props.value} type="text" />
-                <div style={{ float: "right" }}><button onClick={this.toggleEdit}>Done</button></div>
-            </React.Fragment>
+            value = <input onChange={(this.updateData as UpdateChild).bind(this, "value")}
+                value={this.props.value || ""} type="text" />;
         }
 
         return <li>
-            {this.props.value}
-            <div style={{ float: "right" }}><button onClick={this.toggleEdit}>Edit</button></div>
+            {value}
+            <EditButton {...this.props} />
         </li>
     }
 }
@@ -38,13 +38,9 @@ export default class List extends ResumeComponent {
     }
 
     render() {
-        return <React.Fragment>
-            <div style={{ float: "right" }}>
-                <button onClick={this.addChild}>Add</button>
-            </div>
-            <ul>
+        return <ul>
                 {this.renderChildren()}
+                <li><Button onClick={this.addChild}>Add a bullet</Button></li>
             </ul>
-            </React.Fragment>
     }
 }

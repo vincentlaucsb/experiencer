@@ -26,7 +26,7 @@ export default class Section extends ResumeComponent<SectionProps> {
         let buttons = <div style={{ float: "right" }}>
             <AddButton action={this.addChild} />
             <EditButton {...this.props} />
-            <DeleteButton action={(this.props.deleteChild as Action)} />
+            <DeleteButton {...this.props} />
         </div>
 
         let title: string | JSX.Element = this.props.title;

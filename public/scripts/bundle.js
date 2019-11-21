@@ -387,7 +387,7 @@ function EditButton(props) {
     return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("img", { onClick: props.toggleEdit, src: _icons_edit_24px_svg__WEBPACK_IMPORTED_MODULE_3___default.a, alt: 'Edit' });
 }
 function DeleteButton(props) {
-    return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("img", { onClick: props.action, src: _icons_delete_24px_svg__WEBPACK_IMPORTED_MODULE_2___default.a, alt: 'Delete' });
+    return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("img", { onClick: props.deleteChild, src: _icons_delete_24px_svg__WEBPACK_IMPORTED_MODULE_2___default.a, alt: 'Delete' });
 }
 
 
@@ -594,7 +594,8 @@ class ListItem extends _ResumeComponent__WEBPACK_IMPORTED_MODULE_1__["default"] 
         }
         return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("li", null,
             value,
-            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_2__["default"], Object.assign({}, this.props)));
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_2__["default"], Object.assign({}, this.props)),
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_2__["DeleteButton"], Object.assign({}, this.props)));
     }
 }
 class List extends _ResumeComponent__WEBPACK_IMPORTED_MODULE_1__["default"] {
@@ -613,7 +614,8 @@ class List extends _ResumeComponent__WEBPACK_IMPORTED_MODULE_1__["default"] {
         return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("ul", null,
             this.renderChildren(),
             react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("li", null,
-                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Button"], { onClick: this.addChild }, "Add a bullet")));
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Button"], { onClick: this.addChild }, "Add a Bullet"),
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_2__["DeleteButton"], Object.assign({}, this.props))));
     }
 }
 
@@ -724,7 +726,7 @@ class Paragraph extends _ResumeComponent__WEBPACK_IMPORTED_MODULE_2__["default"]
             this.processTextArea(),
             react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("span", { style: { display: "inline-block" } },
                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["default"], Object.assign({}, this.props)),
-                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["DeleteButton"], { action: this.props.deleteChild })));
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["DeleteButton"], Object.assign({}, this.props))));
     }
 }
 
@@ -861,7 +863,7 @@ class Section extends _ResumeComponent__WEBPACK_IMPORTED_MODULE_2__["default"] {
         let buttons = react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { style: { float: "right" } },
             react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["AddButton"], { action: this.addChild }),
             react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["default"], Object.assign({}, this.props)),
-            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["DeleteButton"], { action: this.props.deleteChild }));
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["DeleteButton"], Object.assign({}, this.props)));
         let title = this.props.title;
         if (this.props.isEditing) {
             title = react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("input", { onChange: this.updateData.bind(this, "title"), type: "text", value: this.props.title });

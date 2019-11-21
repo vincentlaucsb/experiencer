@@ -103,7 +103,7 @@ export default class ResumeComponent<
                         {loadComponent(elem,
                             {
                                 addChild: (this.addNestedChild.bind(this, idx) as (node: object) => void),
-                                deleteChild: (this.deleteNestedChild.bind(this, idx) as (gChildIdx: number) => void),
+                                deleteChild: (this.deleteNestedChild.bind(this, idx) as (idx: number) => void),
                                 toggleEdit: (this.toggleNestedEdit.bind(this, idx) as () => void),
                                 updateData: (this.updateNestedData.bind(this, idx) as (key: string, data: any) => void)
                             })

@@ -176,6 +176,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var bootstrap_dist_css_bootstrap_min_css__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(bootstrap_dist_css_bootstrap_min_css__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react-bootstrap */ "./node_modules/react-bootstrap/esm/index.js");
 /* harmony import */ var _components_FileLoader__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/FileLoader */ "./src/components/FileLoader.tsx");
+/* harmony import */ var _components_Helpers__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/Helpers */ "./src/components/Helpers.tsx");
+
 
 
 
@@ -285,14 +287,8 @@ section {
         });
     }
     deleteChild(idx) {
-        let newChildren = new Array();
-        for (let i = 0; i < this.state.children.length; i++) {
-            if (i != idx) {
-                newChildren.push(this.state.children[i]);
-            }
-        }
         this.setState({
-            children: newChildren
+            children: Object(_components_Helpers__WEBPACK_IMPORTED_MODULE_8__["deleteAt"])(this.state.children, idx)
         });
     }
     updateData(idx, key, data) {
@@ -302,7 +298,6 @@ section {
         });
     }
     toggleEdit(idx) {
-        console.log("Toggle edit received", idx);
         let currentValue = this.state.children[idx]['isEditing'];
         this.state.children[idx]['isEditing'] = !currentValue;
         this.setState({
@@ -392,7 +387,7 @@ function EditButton(props) {
     return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("img", { onClick: props.toggleEdit, src: _icons_edit_24px_svg__WEBPACK_IMPORTED_MODULE_3___default.a, alt: 'Edit' });
 }
 function DeleteButton(props) {
-    return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("img", { onClick: props.deleteChild, src: _icons_delete_24px_svg__WEBPACK_IMPORTED_MODULE_2___default.a, alt: 'Delete' });
+    return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("img", { onClick: props.action, src: _icons_delete_24px_svg__WEBPACK_IMPORTED_MODULE_2___default.a, alt: 'Delete' });
 }
 
 
@@ -533,6 +528,36 @@ class FlexibleRow extends _ResumeComponent__WEBPACK_IMPORTED_MODULE_1__["default
                 width: "100%"
             } }, this.renderChildren());
     }
+}
+
+
+/***/ }),
+
+/***/ "./src/components/Helpers.tsx":
+/*!************************************!*\
+  !*** ./src/components/Helpers.tsx ***!
+  \************************************/
+/*! exports provided: deleteAt */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteAt", function() { return deleteAt; });
+/**
+ * Return a copy of an array with the i-th element removed
+ * @param i: The index of the item to be deleted, zero-indexed
+ */
+function deleteAt(arr, i) {
+    if (i == 0) {
+        arr.shift();
+    }
+    else if (i == arr.length - 1) {
+        arr.pop();
+    }
+    else {
+        arr.splice(i, 1);
+    }
+    return arr;
 }
 
 
@@ -699,7 +724,7 @@ class Paragraph extends _ResumeComponent__WEBPACK_IMPORTED_MODULE_2__["default"]
             this.processTextArea(),
             react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("span", { style: { display: "inline-block" } },
                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["default"], Object.assign({}, this.props)),
-                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["DeleteButton"], Object.assign({}, this.props))));
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["DeleteButton"], { action: this.props.deleteChild })));
     }
 }
 
@@ -719,6 +744,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _LoadComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./LoadComponent */ "./src/components/LoadComponent.tsx");
+/* harmony import */ var _Helpers__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Helpers */ "./src/components/Helpers.tsx");
+
 
 
 // Represents a component that is part of the user's resume
@@ -727,11 +754,18 @@ class ResumeComponent extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
         super(props);
         this.updateData = this.updateData.bind(this);
         this.addNestedChild = this.addNestedChild.bind(this);
+        this.deleteNestedChild = this.deleteNestedChild.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
         this.toggleNestedEdit = this.toggleNestedEdit.bind(this);
         this.updateNestedData = this.updateNestedData.bind(this);
     }
+    /**
+     * Add a grandchild node to this component
+     * @param idx  The parent of the node to be added (where the parent is a child of this component)
+     * @param node JSON description of the node to be added
+     */
     addNestedChild(idx, node) {
+        console.log(idx);
         let newChildren = this.props.children;
         if (!newChildren[idx]['children']) {
             newChildren[idx]['children'] = new Array();
@@ -739,6 +773,21 @@ class ResumeComponent extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
         newChildren[idx]['children'].push(node);
         if (this.props.updateData) {
             this.props.updateData("children", newChildren);
+        }
+    }
+    /**
+     * Delete a grandchild
+     * @param idx       Index of the parent of the node to be deleted
+     * @param gchildIdx Index of the grandchild to be deleted
+     */
+    deleteNestedChild(idx) {
+        let replChildren = this.props.children;
+        if (replChildren) {
+            replChildren = Object(_Helpers__WEBPACK_IMPORTED_MODULE_2__["deleteAt"])(replChildren, idx);
+        }
+        // Replace node's children with new list of children that excludes deleted node
+        if (this.props.updateData) {
+            this.props.updateData("children", replChildren);
         }
     }
     toggleEdit(event) {
@@ -766,6 +815,7 @@ class ResumeComponent extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
         if (this.props.children) {
             return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null, this.props.children.map((elem, idx) => react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], { key: idx }, Object(_LoadComponent__WEBPACK_IMPORTED_MODULE_1__["default"])(elem, {
                 addChild: this.addNestedChild.bind(this, idx),
+                deleteChild: this.deleteNestedChild.bind(this, idx),
                 toggleEdit: this.toggleNestedEdit.bind(this, idx),
                 updateData: this.updateNestedData.bind(this, idx)
             }))));
@@ -811,7 +861,7 @@ class Section extends _ResumeComponent__WEBPACK_IMPORTED_MODULE_2__["default"] {
         let buttons = react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { style: { float: "right" } },
             react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["AddButton"], { action: this.addChild }),
             react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["default"], Object.assign({}, this.props)),
-            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["DeleteButton"], Object.assign({}, this.props)));
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_1__["DeleteButton"], { action: this.props.deleteChild }));
         let title = this.props.title;
         if (this.props.isEditing) {
             title = react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("input", { onChange: this.updateData.bind(this, "title"), type: "text", value: this.props.title });

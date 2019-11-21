@@ -10,6 +10,10 @@ interface AddButtonProps {
     action: () => void;
 }
 
+interface DeleteButtonProps {
+    action: () => void;
+}
+
 export function AddButton(props: AddButtonProps) {
     return <img onClick={props.action} src={AddIcon} alt='Add' />
 }
@@ -24,6 +28,6 @@ export default function EditButton<P extends ResumeComponentProps>(props: P) {
     return <img onClick={props.toggleEdit as Action} src={EditIcon} alt='Edit' />
 }
 
-export function DeleteButton<P extends ResumeComponentProps>(props: P) {
-    return <img onClick={props.deleteChild as Action} src={DeleteIcon} alt='Delete' />
+export function DeleteButton(props: DeleteButtonProps) {
+    return <img onClick={props.action} src={DeleteIcon} alt='Delete' />
 }

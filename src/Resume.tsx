@@ -7,6 +7,7 @@ import "./css/index.css"
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button } from 'react-bootstrap';
 import { FileLoader } from './components/FileLoader';
+import { deleteAt } from './components/Helpers';
 
 interface PageState {
     children: Array<object>;
@@ -130,15 +131,8 @@ section {
     }
 
     deleteChild(idx: number) {
-        let newChildren = new Array<object>();
-        for (let i = 0; i < this.state.children.length; i++) {
-            if (i != idx) {
-                newChildren.push(this.state.children[i]);
-            }
-        }
-
         this.setState({
-            children: newChildren
+            children: deleteAt(this.state.children, idx)
         });
     }
 
@@ -151,7 +145,6 @@ section {
     }
 
     toggleEdit(idx: number) {
-        console.log("Toggle edit received", idx);
         let currentValue = this.state.children[idx]['isEditing'];
         this.state.children[idx]['isEditing'] = !currentValue;
 

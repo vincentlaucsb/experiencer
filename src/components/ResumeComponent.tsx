@@ -1,5 +1,6 @@
 ﻿import * as React from "react";
 import loadComponent from "./LoadComponent";
+import { deleteAt } from "./Helpers";
 
 export interface ResumeComponentProps {
     isEditing?: boolean;
@@ -25,12 +26,21 @@ export default class ResumeComponent<
 
         this.updateData = this.updateData.bind(this);
         this.addNestedChild = this.addNestedChild.bind(this);
+        this.deleteNestedChild = this.deleteNestedChild.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
         this.toggleNestedEdit = this.toggleNestedEdit.bind(this);
         this.updateNestedData = this.updateNestedData.bind(this);
     }
 
+    /**
+     * Add a grandchild node to this component
+     * @param idx  The parent of the node to be added (where the parent is a child of this component)
+     * @param node JSON description of the node to be added
+     */
     addNestedChild(idx: number, node: object) {
+        console.log(idx);
+
+
         let newChildren = this.props.children;
         if (!newChildren[idx]['children']) {
             newChildren[idx]['children'] = new Array<object>();
@@ -40,6 +50,23 @@ export default class ResumeComponent<
 
         if (this.props.updateData as ((key: string, data: any) => void)) {
             (this.props.updateData as ((key: string, data: any) => void))("children", newChildren);
+        }
+    }
+
+    /**
+     * Delete a grandchild
+     * @param idx       Index of the parent of the node to be deleted
+     * @param gchildIdx Index of the grandchild to be deleted
+     */
+    deleteNestedChild(idx: number) {
+        let replChildren = this.props.children;
+        if (replChildren as Array<object>) {
+           replChildren = deleteAt((replChildren as Array<object>), idx);
+        }
+
+        // Replace node's children with new list of children that excludes deleted node
+        if (this.props.updateData as ((key: string, data: any) => void)) {
+            (this.props.updateData as ((key: string, data: any) => void))("children", replChildren);
         }
     }
 
@@ -76,6 +103,7 @@ export default class ResumeComponent<
                         {loadComponent(elem,
                             {
                                 addChild: (this.addNestedChild.bind(this, idx) as (node: object) => void),
+                                deleteChild: (this.deleteNestedChild.bind(this, idx) as (gChildIdx: number) => void),
                                 toggleEdit: (this.toggleNestedEdit.bind(this, idx) as () => void),
                                 updateData: (this.updateNestedData.bind(this, idx) as (key: string, data: any) => void)
                             })

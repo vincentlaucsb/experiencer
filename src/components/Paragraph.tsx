@@ -30,7 +30,7 @@ export default class Paragraph extends ResumeComponent {
             {this.processTextArea()}
             <span style={{ display: "inline-block" }}>
                 <EditButton {...this.props} />
-                <DeleteButton {...this.props} />
+                <DeleteButton action={this.props.deleteChild as Action} />
             </span></p>;
     }
 }

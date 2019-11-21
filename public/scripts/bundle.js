@@ -249,24 +249,22 @@ section {
 }`
         };
         this.renderStyle();
-        // this.addSection = this.addSection.bind(this);
+        this.addSection = this.addSection.bind(this);
         this.addChild = this.addChild.bind(this);
         this.updateData = this.updateData.bind(this);
+        this.loadData = this.loadData.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
         this.renderStyle = this.renderStyle.bind(this);
         this.onStyleChange = this.onStyleChange.bind(this);
         this.saveFile = this.saveFile.bind(this);
     }
-    /*
     addSection() {
-        this.setState({
-            children: this.state.children.addChild({
-                type: 'Section',
-                title: 'Add title here'
-            })
+        this.state.children.push({
+            type: 'Section',
+            title: 'Add title here'
         });
+        this.setState({ children: this.state.children });
     }
-    */
     // Update custom CSS
     onStyleChange(event) {
         this.setState({
@@ -278,6 +276,9 @@ section {
         this.style.innerHTML = this.state.customCss;
     }
     addChild(idx, node) {
+        if (!this.state.children[idx]['children']) {
+            this.state.children[idx]['children'] = new Array();
+        }
         this.state.children[idx]['children'].push(node);
         this.setState({
             children: this.state.children
@@ -320,18 +321,18 @@ section {
         Object(file_saver__WEBPACK_IMPORTED_MODULE_2__["saveAs"])(blob, "resume.json");
     }
     render() {
-        console.log(this.state.children);
-        // <button style={{}} onClick={this.addSection}>Add Section</button>
         return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { style: {
                 display: 'flex',
                 flexDirection: 'row'
             } },
-            react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { id: "resume", style: { width: "100%" } }, this.state.children.map((elem, idx) => react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], { key: idx }, Object(_components_LoadComponent__WEBPACK_IMPORTED_MODULE_1__["default"])(elem, {
-                addChild: this.addChild.bind(this, idx),
-                deleteChild: this.deleteChild.bind(this, idx),
-                toggleEdit: this.toggleEdit.bind(this, idx),
-                updateData: this.updateData.bind(this, idx)
-            })))),
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { id: "resume", style: { width: "100%" } },
+                this.state.children.map((elem, idx) => react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], { key: idx }, Object(_components_LoadComponent__WEBPACK_IMPORTED_MODULE_1__["default"])(elem, {
+                    addChild: this.addChild.bind(this, idx),
+                    deleteChild: this.deleteChild.bind(this, idx),
+                    toggleEdit: this.toggleEdit.bind(this, idx),
+                    updateData: this.updateData.bind(this, idx)
+                }))),
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react_bootstrap__WEBPACK_IMPORTED_MODULE_6__["Button"], { onClick: this.addSection }, "Add Section")),
             react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { style: {
                     maxWidth: "500px",
                     paddingLeft: "1em"
@@ -458,6 +459,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FileLoader", function() { return FileLoader; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-bootstrap */ "./node_modules/react-bootstrap/esm/index.js");
+
 
 // Form used for reading Auto Cost Calculator saved files
 class FileLoader extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
@@ -495,7 +498,8 @@ class FileLoader extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
             react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { className: "form-group" },
                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("label", null,
                     "File",
-                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("input", { className: "form-control", type: "file", ref: this.fileInput }))));
+                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("input", { className: "form-control", type: "file", ref: this.fileInput }))),
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], { type: "submit" }, "Load"));
     }
 }
 
@@ -548,6 +552,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _ResumeComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ResumeComponent */ "./src/components/ResumeComponent.tsx");
+/* harmony import */ var _Buttons__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Buttons */ "./src/components/Buttons.tsx");
+/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-bootstrap */ "./node_modules/react-bootstrap/esm/index.js");
+
+
 
 
 class ListItem extends _ResumeComponent__WEBPACK_IMPORTED_MODULE_1__["default"] {
@@ -555,16 +563,13 @@ class ListItem extends _ResumeComponent__WEBPACK_IMPORTED_MODULE_1__["default"] 
         super(props);
     }
     render() {
+        let value = this.props.value ? this.props.value : "";
         if (this.props.isEditing) {
-            return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null,
-                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("input", { onChange: this.props.updateData.bind(this, "value"), value: this.props.value, type: "text" }),
-                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { style: { float: "right" } },
-                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("button", { onClick: this.toggleEdit }, "Done")));
+            value = react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("input", { onChange: this.updateData.bind(this, "value"), value: this.props.value || "", type: "text" });
         }
         return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("li", null,
-            this.props.value,
-            react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { style: { float: "right" } },
-                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("button", { onClick: this.toggleEdit }, "Edit")));
+            value,
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_Buttons__WEBPACK_IMPORTED_MODULE_2__["default"], Object.assign({}, this.props)));
     }
 }
 class List extends _ResumeComponent__WEBPACK_IMPORTED_MODULE_1__["default"] {
@@ -580,10 +585,10 @@ class List extends _ResumeComponent__WEBPACK_IMPORTED_MODULE_1__["default"] {
         }
     }
     render() {
-        return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null,
-            react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { style: { float: "right" } },
-                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("button", { onClick: this.addChild }, "Add")),
-            react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("ul", null, this.renderChildren()));
+        return react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("ul", null,
+            this.renderChildren(),
+            react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("li", null,
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react_bootstrap__WEBPACK_IMPORTED_MODULE_3__["Button"], { onClick: this.addChild }, "Add a bullet")));
     }
 }
 

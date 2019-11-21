@@ -86,7 +86,7 @@ section {
 
         this.renderStyle();
 
-        // this.addSection = this.addSection.bind(this);
+        this.addSection = this.addSection.bind(this);
         this.addChild = this.addChild.bind(this);
         this.updateData = this.updateData.bind(this);
         this.loadData = this.loadData.bind(this);
@@ -96,16 +96,14 @@ section {
         this.saveFile = this.saveFile.bind(this);
     }
 
-    /*
     addSection() {
-        this.setState({
-            children: this.state.children.addChild({
-                type: 'Section',
-                title: 'Add title here'
-            })
+        this.state.children.push({
+            type: 'Section',
+            title: 'Add title here'
         });
+
+        this.setState({ children: this.state.children });
     }
-    */
 
     // Update custom CSS
     onStyleChange(event) {
@@ -120,6 +118,10 @@ section {
     }
 
     addChild(idx: number, node: object) {
+        if (!this.state.children[idx]['children']) {
+            this.state.children[idx]['children'] = new Array<object>();
+        }
+
         this.state.children[idx]['children'].push(node);
 
         this.setState({
@@ -175,9 +177,6 @@ section {
     }
 
     render() {
-        console.log(this.state.children);
-        // <button style={{}} onClick={this.addSection}>Add Section</button>
-
         return <div style={{
             display: 'flex',
             flexDirection: 'row'
@@ -193,6 +192,8 @@ section {
                         })}
                     </React.Fragment>)
                 }
+
+                <Button onClick={this.addSection}>Add Section</Button>
             </div>
 
             <div style={{

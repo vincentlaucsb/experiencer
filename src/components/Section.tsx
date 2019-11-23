@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import EditButton, { DeleteButton, AddButton } from "./Buttons";
+import EditButton, { DeleteButton, AddButton, DownButton, UpButton } from "./Buttons";
 import ResumeComponent, { ResumeComponentProps, AddChild, Action } from "./ResumeComponent";
 
 export interface SectionProps extends ResumeComponentProps {
@@ -24,6 +24,8 @@ export default class Section extends ResumeComponent<SectionProps> {
 
     render() {
         let buttons = <div style={{ float: "right" }}>
+            <UpButton {...this.props} />
+            <DownButton {...this.props} />
             <AddButton action={this.addChild} />
             <EditButton {...this.props} />
             <DeleteButton {...this.props} />

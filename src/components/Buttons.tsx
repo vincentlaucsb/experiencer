@@ -5,6 +5,8 @@ import AddIcon from "../icons/add-24px.svg";
 import DeleteIcon from "../icons/delete-24px.svg";
 import EditIcon from "../icons/edit-24px.svg";
 import DoneIcon from "../icons/done-24px.svg";
+import UpIcon from "../icons/keyboard_arrow_up-24px.svg";
+import DownIcon from "../icons/keyboard_arrow_down-24px.svg";
 
 interface AddButtonProps {
     action: () => void;
@@ -26,4 +28,12 @@ export default function EditButton<P extends ResumeComponentProps>(props: P) {
 
 export function DeleteButton<P extends ResumeComponentProps>(props: P) {
     return <img onClick={props.deleteChild as Action} src={DeleteIcon} alt='Delete' />
+}
+
+export function UpButton<P extends ResumeComponentProps>(props: P) {
+    return <img onClick={props.moveUp as Action} src={UpIcon} alt='Move Up' />
+}
+
+export function DownButton<P extends ResumeComponentProps>(props: P) {
+    return <img onClick={props.moveDown as Action} src={DownIcon} alt='Move Down' />
 }

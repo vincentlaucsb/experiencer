@@ -9,6 +9,8 @@ import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
 
 interface ExtraProps {
     addChild?: (node: object) => void;
+    moveUp?: () => void;
+    moveDown?: () => void;
     deleteChild?: () => void;
     toggleEdit?: () => void;
     updateData?: (key: string, data: any) => void;
@@ -26,6 +28,8 @@ export default function loadComponent(data: object, extraProps?: ExtraProps) {
     if (extraProps) {
         props['addChild'] = extraProps.addChild;
         props['deleteChild'] = extraProps.deleteChild;
+        props['moveUp'] = extraProps.moveUp;
+        props['moveDown'] = extraProps.moveDown;
         props['toggleEdit'] = extraProps.toggleEdit;
         props['updateData'] = extraProps.updateData;
     }

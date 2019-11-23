@@ -8,6 +8,8 @@ export interface ResumeComponentProps {
     children?: Array<object>;
 
     addChild?: ((idx: number, node: object) => void) | ((node: object) => void);
+    moveUp?: ((idx: number) => void) | (() => void);
+    moveDown?: ((idx: number) => void) | (() => void);
     deleteChild?: ((idx: number) => void) | (() => void);
     toggleEdit?: ((idx: number) => void) | (() => void);
     updateData?: ((idx: number, key: string, data: any) => void) | ((key: string, data: any) => void);

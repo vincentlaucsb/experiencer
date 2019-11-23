@@ -106,6 +106,30 @@ section {
         this.setState({ children: this.state.children });
     }
 
+    // Move the child at idx up one position
+    moveUp(idx: number) {
+        if (idx > 0) {
+            // Swap places with element above it
+            let willSwap = this.state.children[idx - 1];
+            this.state.children[idx - 1] = this.state.children[idx];
+            this.state.children[idx] = willSwap;
+
+            this.setState({ children: this.state.children });
+        }
+    }
+
+    // Move the child at idx down one position
+    moveDown(idx: number) {
+        if (idx < this.state.children.length - 1) {
+            // Swap places with element below it
+            let willSwap = this.state.children[idx + 1];
+            this.state.children[idx + 1] = this.state.children[idx];
+            this.state.children[idx] = willSwap;
+
+            this.setState({ children: this.state.children });
+        }
+    }
+
     // Update custom CSS
     onStyleChange(event) {
         this.setState({
@@ -179,6 +203,8 @@ section {
                     <React.Fragment key={idx}>
                         {loadComponent(elem, {
                             addChild: this.addChild.bind(this, idx),
+                            moveUp: this.moveUp.bind(this, idx),
+                            moveDown: this.moveDown.bind(this, idx),
                             deleteChild: this.deleteChild.bind(this, idx),
                             toggleEdit: this.toggleEdit.bind(this, idx),
                             updateData: this.updateData.bind(this, idx)

@@ -1,7 +1,7 @@
 ﻿import * as React from "react";
 import loadComponent from "./LoadComponent";
 import ResumeComponent, { ResumeComponentProps, AddChild } from "./ResumeComponent";
-import EditButton, { AddButton } from "./Buttons";
+import EditButton, { AddButton, DownButton, UpButton, DeleteButton } from "./Buttons";
 
 export interface EntryProps extends ResumeComponentProps {
     title?: string;
@@ -33,10 +33,17 @@ export default class Entry extends ResumeComponent<EntryProps> {
             </div>
         }
 
+        let buttons = <div style={{ float: "right" }}>
+            <AddButton action={this.addChild} />
+            <EditButton {...this.props} />
+            <DeleteButton {...this.props} />
+            <UpButton {...this.props} />
+            <DownButton {...this.props} />
+        </div>
+
         return <div>
             <h3>{this.props.title || "Enter a title"}
-                <AddButton action={this.addChild} />
-                <EditButton {...this.props} />
+                {buttons}
             </h3>
             <p>{this.props.subtitle || "Enter a subtitle"}</p>
 

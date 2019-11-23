@@ -24,11 +24,11 @@ export default class Section extends ResumeComponent<SectionProps> {
 
     render() {
         let buttons = <div style={{ float: "right" }}>
-            <UpButton {...this.props} />
-            <DownButton {...this.props} />
             <AddButton action={this.addChild} />
             <EditButton {...this.props} />
             <DeleteButton {...this.props} />
+            <UpButton {...this.props} />
+            <DownButton {...this.props} />
         </div>
 
         let title: string | JSX.Element = this.props.title;

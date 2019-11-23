@@ -7,7 +7,7 @@ import "./css/index.css"
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button } from 'react-bootstrap';
 import { FileLoader } from './components/FileLoader';
-import { deleteAt } from './components/Helpers';
+import { deleteAt, moveUp, moveDown } from './components/Helpers';
 
 interface PageState {
     children: Array<object>;
@@ -108,26 +108,16 @@ section {
 
     // Move the child at idx up one position
     moveUp(idx: number) {
-        if (idx > 0) {
-            // Swap places with element above it
-            let willSwap = this.state.children[idx - 1];
-            this.state.children[idx - 1] = this.state.children[idx];
-            this.state.children[idx] = willSwap;
-
-            this.setState({ children: this.state.children });
-        }
+        this.setState({
+            children: moveUp(this.state.children, idx)
+        });
     }
 
     // Move the child at idx down one position
     moveDown(idx: number) {
-        if (idx < this.state.children.length - 1) {
-            // Swap places with element below it
-            let willSwap = this.state.children[idx + 1];
-            this.state.children[idx + 1] = this.state.children[idx];
-            this.state.children[idx] = willSwap;
-
-            this.setState({ children: this.state.children });
-        }
+        this.setState({
+            children: moveDown(this.state.children, idx)
+        });
     }
 
     // Update custom CSS

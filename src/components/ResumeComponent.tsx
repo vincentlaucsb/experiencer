@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
 import loadComponent from "./LoadComponent";
-import { deleteAt } from "./Helpers";
+import { deleteAt, moveUp, moveDown } from "./Helpers";
 
 export interface ResumeComponentProps {
     isEditing?: boolean;
@@ -40,9 +40,6 @@ export default class ResumeComponent<
      * @param node JSON description of the node to be added
      */
     addNestedChild(idx: number, node: object) {
-        console.log(idx);
-
-
         let newChildren = this.props.children;
         if (!newChildren[idx]['children']) {
             newChildren[idx]['children'] = new Array<object>();
@@ -64,6 +61,30 @@ export default class ResumeComponent<
         let replChildren = this.props.children;
         if (replChildren as Array<object>) {
            replChildren = deleteAt((replChildren as Array<object>), idx);
+        }
+
+        // Replace node's children with new list of children that excludes deleted node
+        if (this.props.updateData as ((key: string, data: any) => void)) {
+            (this.props.updateData as ((key: string, data: any) => void))("children", replChildren);
+        }
+    }
+
+    moveNestedChildUp(idx: number) {
+        let replChildren = this.props.children;
+        if (replChildren as Array<object>) {
+            replChildren = moveUp((replChildren as Array<object>), idx);
+        }
+
+        // Replace node's children with new list of children that excludes deleted node
+        if (this.props.updateData as ((key: string, data: any) => void)) {
+            (this.props.updateData as ((key: string, data: any) => void))("children", replChildren);
+        }
+    }
+
+    moveNestedChildDown(idx: number) {
+        let replChildren = this.props.children;
+        if (replChildren as Array<object>) {
+            replChildren = moveDown((replChildren as Array<object>), idx);
         }
 
         // Replace node's children with new list of children that excludes deleted node
@@ -105,7 +126,9 @@ export default class ResumeComponent<
                         {loadComponent(elem,
                             {
                                 addChild: (this.addNestedChild.bind(this, idx) as (node: object) => void),
-                                deleteChild: (this.deleteNestedChild.bind(this, idx) as () => void),
+                                moveDown: (this.moveNestedChildDown.bind(this, idx) as Action),
+                                moveUp: (this.moveNestedChildUp.bind(this, idx) as Action),
+                                deleteChild: (this.deleteNestedChild.bind(this, idx) as Action),
                                 toggleEdit: (this.toggleNestedEdit.bind(this, idx) as () => void),
                                 updateData: (this.updateNestedData.bind(this, idx) as (key: string, data: any) => void)
                             })

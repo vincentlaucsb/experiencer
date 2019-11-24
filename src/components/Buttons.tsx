@@ -13,21 +13,13 @@ interface AddButtonProps {
     action: () => void;
 }
 
-export function AddButton(props: AddButtonProps) {
-    return <img onClick={props.action} src={AddIcon} alt='Add' />
+interface TooltipProps {
+    onClick: () => void;
+    tooltip: string;
+    imgSrc: string;
 }
 
-export default function EditButton<P extends ResumeComponentProps>(props: P) {
-    const editIcon = <img src={EditIcon} alt='Edit' />
-
-    if (props.isEditing && props.toggleEdit as Action) {
-        return <img onClick={props.toggleEdit as Action} src={DoneIcon} alt='Edit' />
-    }
-
-    return <img onClick={props.toggleEdit as Action} src={EditIcon} alt='Edit' />
-}
-
-export function DeleteButton<P extends ResumeComponentProps>(props: P) {
+function ButtonWithTooltip(props: TooltipProps) {
     const [show, setShow] = React.useState(false);
     const target: any = React.useRef(null);
 
@@ -36,20 +28,33 @@ export function DeleteButton<P extends ResumeComponentProps>(props: P) {
             ref={target}
             onMouseEnter={() => setShow(true)}
             onMouseOut={() => setShow(false)}
-            onClick={props.deleteChild as Action} src={DeleteIcon} alt='Delete' />
+            onClick={props.onClick} src={props.imgSrc} alt={props.tooltip} />
         <Overlay
             target={target.current}
             show={show}
             placement='top'>
-            <div className="button-tooltip">Delete</div>
+            <div className="button-tooltip">{props.tooltip}</div>
         </Overlay>
     </>
 }
 
+export function AddButton(props: AddButtonProps) {
+    return <img onClick={props.action} src={AddIcon} alt='Add' />
+}
+
+export default function EditButton<P extends ResumeComponentProps>(props: P) {
+    let imgSrc = props.isEditing ? DoneIcon : EditIcon;
+    return <ButtonWithTooltip onClick={props.toggleEdit as Action} imgSrc={imgSrc} tooltip="Edit" />
+}
+
+export function DeleteButton<P extends ResumeComponentProps>(props: P) {
+    return <ButtonWithTooltip onClick={props.deleteChild as Action} imgSrc={DeleteIcon} tooltip="Delete" />
+}
+
 export function UpButton<P extends ResumeComponentProps>(props: P) {
-    return <img onClick={props.moveUp as Action} src={UpIcon} alt='Move Up' />
+    return <ButtonWithTooltip onClick={props.moveUp as Action} imgSrc={UpIcon} tooltip="Move Up" />
 }
 
 export function DownButton<P extends ResumeComponentProps>(props: P) {
-    return <img onClick={props.moveDown as Action} src={DownIcon} alt='Move Down' />
+    return <ButtonWithTooltip onClick={props.moveDown as Action} imgSrc={DownIcon} tooltip="Move Down" />
 }

@@ -2,18 +2,45 @@
 import ResumeComponent, { AddChild, UpdateChild, Action } from "./ResumeComponent";
 import EditButton, { DeleteButton, AddButton, DownButton, UpButton } from "./Buttons";
 import { Button, ButtonGroup } from "react-bootstrap";
+import ReactQuill from "react-quill";
 
 export class ListItem extends ResumeComponent {
     constructor(props) {
         super(props);
     }
 
+    static quillModules = {
+        toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            ['link'],
+            [{ 'align': [] }],
+            ['clean']
+        ],
+    };
+
     render() {
-        let value: any = this.props.value ? this.props.value : "";
+        let value: any = "";
+
+        if (this.props.value) {
+            let htmlCode = this.props.value;
+
+            // Strip out parent <p> tags since we don't need them
+            if (htmlCode.slice(0, 3) == '<p>' && htmlCode.slice(-4) == '</p>') {
+                htmlCode = htmlCode.slice(3, htmlCode.length - (3 + 4));
+            }
+            
+            value = <span
+                dangerouslySetInnerHTML={{ __html: htmlCode }}
+            />
+        }
+
         if (this.props.isEditing) {
-            value = <input style={{ maxWidth: "100%" }}
-                onChange={(this.updateData as UpdateChild).bind(this, "value")}
-                value={this.props.value || ""} type="text" />;
+            value = <ReactQuill
+                modules={ListItem.quillModules}
+                value={this.props.value || ""}
+                onChange={((this.props.updateData as (key: string, data: any) => void).bind(this, "value") as (data: any) => void)}
+            />
         }
 
         return <li style={{ minHeight: "24px" }}>

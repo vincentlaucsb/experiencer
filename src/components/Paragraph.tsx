@@ -3,28 +3,27 @@ import ReactQuill from 'react-quill';
 import EditButton, { DeleteButton } from "./Buttons";
 import ResumeComponent, { Action } from "./ResumeComponent";
 
-import 'react-quill/dist/quill.snow.css';
-
 export default class Paragraph extends ResumeComponent {
     constructor(props) {
         super(props);
         this.updateData = this.updateData.bind(this);
     }
 
-    render(): JSX.Element {
-        let modules = {
-            toolbar: [
-                ['bold', 'italic', 'underline', 'strike'],
-                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                ['link'],
-                ['clean']
-            ],
-        };
+    static quillModules = {
+        toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            ['link'],
+            [{ 'align': [] }],
+            ['clean']
+        ],
+    };
 
+    render(): JSX.Element {
         if (this.props.isEditing) {
             return <React.Fragment>
                 <ReactQuill
-                    modules={modules}
+                    modules={Paragraph.quillModules}
                     value={this.props.value}
                     onChange={((this.props.updateData as (key: string, data: any) => void).bind(this, "value") as (data: any) => void)}
                 />

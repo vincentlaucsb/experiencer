@@ -5,6 +5,8 @@ import { SideMenu } from './components/SideMenu';
 
 import "./css/index.css"
 import "bootstrap/dist/css/bootstrap.min.css";
+import 'react-quill/dist/quill.snow.css';
+
 import { Button } from 'react-bootstrap';
 import { FileLoader } from './components/FileLoader';
 import { deleteAt, moveUp, moveDown } from './components/Helpers';

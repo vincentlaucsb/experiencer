@@ -35,7 +35,7 @@ export default class Section extends ResumeComponent<SectionProps> {
         let title: string | JSX.Element = this.props.title;
 
         if (this.props.isEditing) {
-            title = <input onChange={this.updateData.bind(this, "title")} type="text" value={this.props.title} />;
+            title = <input onChange={this.updateDataEvent.bind(this, "title")} type="text" value={this.props.title} />;
         }
         
         return <section>

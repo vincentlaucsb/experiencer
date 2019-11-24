@@ -6,7 +6,7 @@ import ResumeComponent, { Action } from "./ResumeComponent";
 export default class Paragraph extends ResumeComponent {
     constructor(props) {
         super(props);
-        this.updateData = this.updateData.bind(this);
+        this.updateDataEvent = this.updateDataEvent.bind(this);
     }
 
     static quillModules = {

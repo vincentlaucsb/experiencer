@@ -32,7 +32,7 @@ export default class ResumeComponent<
         this.addEntry = this.addEntry.bind(this);
         this.addList = this.addList.bind(this);
 
-        this.updateData = this.updateData.bind(this);
+        this.updateDataEvent = this.updateDataEvent.bind(this);
         this.addNestedChild = this.addNestedChild.bind(this);
         this.deleteNestedChild = this.deleteNestedChild.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
@@ -71,16 +71,14 @@ export default class ResumeComponent<
      * @param node JSON description of the node to be added
      */
     addNestedChild(idx: number, node: object) {
-        let newChildren = this.props.children;
+        let newChildren = this.props.children as Array<object>;
         if (!newChildren[idx]['children']) {
             newChildren[idx]['children'] = new Array<object>();
         }
 
         newChildren[idx]['children'].push(node);
 
-        if (this.props.updateData as ((key: string, data: any) => void)) {
-            (this.props.updateData as ((key: string, data: any) => void))("children", newChildren);
-        }
+        this.updateData("children", newChildren);
     }
 
     /**
@@ -91,36 +89,24 @@ export default class ResumeComponent<
     deleteNestedChild(idx: number) {
         let replChildren = this.props.children;
         if (replChildren as Array<object>) {
-           replChildren = deleteAt((replChildren as Array<object>), idx);
-        }
-
-        // Replace node's children with new list of children that excludes deleted node
-        if (this.props.updateData as ((key: string, data: any) => void)) {
-            (this.props.updateData as ((key: string, data: any) => void))("children", replChildren);
+            // Replace node's children with new list of children that excludes deleted node
+            this.updateData("children", deleteAt((replChildren as Array<object>), idx));
         }
     }
 
     moveNestedChildUp(idx: number) {
-        let replChildren = this.props.children;
-        if (replChildren as Array<object>) {
-            replChildren = moveUp((replChildren as Array<object>), idx);
-        }
-
-        // Replace node's children with new list of children that excludes deleted node
-        if (this.props.updateData as ((key: string, data: any) => void)) {
-            (this.props.updateData as ((key: string, data: any) => void))("children", replChildren);
+        let replChildren = this.props.children as Array<object>;
+        if (replChildren) {
+            // Replace node's children with new list of children that excludes deleted node
+            this.updateData("children", moveUp(replChildren, idx));
         }
     }
 
     moveNestedChildDown(idx: number) {
-        let replChildren = this.props.children;
-        if (replChildren as Array<object>) {
-            replChildren = moveDown((replChildren as Array<object>), idx);
-        }
-
-        // Replace node's children with new list of children that excludes deleted node
-        if (this.props.updateData as ((key: string, data: any) => void)) {
-            (this.props.updateData as ((key: string, data: any) => void))("children", replChildren);
+        let replChildren = this.props.children as Array<object>;
+        if (replChildren) {
+            // Replace node's children with new list of children that excludes deleted node
+            this.updateData("children", moveDown(replChildren, idx));
         }
     }
 
@@ -136,17 +122,20 @@ export default class ResumeComponent<
     }
 
     updateNestedData(idx: number, key: string, data: any) {
-        let newChildren = this.props.children;
+        let newChildren = this.props.children as Array<object>;
         newChildren[idx][key] = data;
-        if (this.props.updateData as ((key: string, data: any) => void)) {
-            (this.props.updateData as ((key: string, data: any) => void))("children", newChildren);
+        this.updateData("children", newChildren);
+    }
+
+    updateData(key: string, data: string | object | Array<any>) {
+        const updater = this.props.updateData as ((key: string, data: any) => void);
+        if (updater) {
+            updater(key, data);
         }
     }
 
-    updateData(key: string, event: any) {
-        if (this.props.updateData as ((key: string, data: any) => void)) {
-            (this.props.updateData as ((key: string, data: any) => void))(key, event.target.value);
-        }
+    updateDataEvent(key: string, event: any) {
+        this.updateData(key, event.target.value);
     }
 
     renderChildren() {

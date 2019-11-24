@@ -25,8 +25,8 @@ export default class Entry extends ResumeComponent<EntryProps> {
         let subtitle: any = this.props.subtitle || "Enter a subtitle";
 
         if (this.props.isEditing) {
-            title = <input onChange={this.updateData.bind(this, "title")} value={this.props.title || ""} />
-            subtitle = <input onChange={this.updateData.bind(this, "subtitle")} value={this.props.subtitle || ""} />
+            title = <input onChange={this.updateDataEvent.bind(this, "title")} value={this.props.title || ""} />
+            subtitle = <input onChange={this.updateDataEvent.bind(this, "subtitle")} value={this.props.subtitle || ""} />
         }
 
         return <div>

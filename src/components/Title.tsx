@@ -11,7 +11,7 @@ export default class Title extends ResumeComponent {
     render() {
         if (this.props.isEditing) {
             return <React.Fragment>
-                <input onChange={this.updateData.bind(this, "value")}
+                <input onChange={this.updateDataEvent.bind(this, "value")}
                     value={this.props.value} type="text" />
                 <EditButton {...this.props} />
             </React.Fragment>;

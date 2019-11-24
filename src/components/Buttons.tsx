@@ -41,7 +41,7 @@ export function DeleteButton<P extends ResumeComponentProps>(props: P) {
             target={target.current}
             show={show}
             placement='top'>
-            <p>Delete</p>
+            <div className="button-tooltip">Delete</div>
         </Overlay>
     </>
 }

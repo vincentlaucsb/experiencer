@@ -1,13 +1,19 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+div#resume {
+    padding: 0 0.5em 0 0.5em;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+div.button-tooltip {
+    border-radius: 3px;
+    background: rgba(15, 15, 15, 1);
+    color: rgba(240, 240, 240, 1);
+    padding: 5px;
+}
+
+li.list-options {
+    list-style-type: none;
+}
+
+/* Adjacent Elements */
+button + button {
+    margin-left: 3px;
 }

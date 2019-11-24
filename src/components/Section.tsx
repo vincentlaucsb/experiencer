@@ -14,7 +14,7 @@ export default class Section extends ResumeComponent<SectionProps> {
 
     render() {
         let addMenu = <Dropdown style={{ fontFamily: "sans-serif", display: "inline" }}>
-            <Dropdown.Toggle id="add">
+            <Dropdown.Toggle id="add" size="sm">
                 Add
             </Dropdown.Toggle>
             <Dropdown.Menu>

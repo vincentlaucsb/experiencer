@@ -1,7 +1,7 @@
 ﻿import * as React from "react";
-import ResumeComponent, { AddChild, UpdateChild } from "./ResumeComponent";
+import ResumeComponent, { AddChild, UpdateChild, Action } from "./ResumeComponent";
 import EditButton, { DeleteButton, AddButton, DownButton, UpButton } from "./Buttons";
-import { Button } from "react-bootstrap";
+import { Button, ButtonGroup } from "react-bootstrap";
 
 export class ListItem extends ResumeComponent {
     constructor(props) {
@@ -47,9 +47,9 @@ export default class List extends ResumeComponent {
     render() {
         return <ul>
                 {this.renderChildren()}
-            <li>
-                <Button onClick={this.addChild}>Add a Bullet</Button>
-                <DeleteButton {...this.props} />
+            <li className="list-options">
+                <Button onClick={this.addChild} size="sm">Add Bullet</Button>
+                <Button onClick={this.props.deleteChild as Action} size="sm" variant="danger">Delete List</Button>
             </li>
             </ul>
     }

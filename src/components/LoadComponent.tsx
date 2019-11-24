@@ -5,7 +5,7 @@ import Entry, { EntryProps } from "./Entry";
 import List, { ListItem } from "./List";
 import Paragraph from "./Paragraph";
 import Title from "./Title";
-import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
+import { ResumeComponentProps } from "./ResumeComponent";
 
 interface ExtraProps {
     addChild?: (node: object) => void;

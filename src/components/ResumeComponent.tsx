@@ -77,7 +77,6 @@ export default class ResumeComponent<
         }
 
         newChildren[idx]['children'].push(node);
-
         this.updateData("children", newChildren);
     }
 
@@ -127,7 +126,7 @@ export default class ResumeComponent<
         this.updateData("children", newChildren);
     }
 
-    updateData(key: string, data: string | object | Array<any>) {
+    updateData(key: string, data: string | boolean | object | Array<any>) {
         const updater = this.props.updateData as ((key: string, data: any) => void);
         if (updater) {
             updater(key, data);

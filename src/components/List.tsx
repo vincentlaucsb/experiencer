@@ -24,7 +24,10 @@ export class ListItem extends ResumeComponent<ListProps> {
 
     render() {
         let value: any = "";
-        let moveButtons: any = "";
+        let moveButtons = this.props.isMoving ? <React.Fragment>
+            <UpButton {...this.props} />
+            <DownButton {...this.props} />
+        </React.Fragment> : "";
 
         if (this.props.value) {
             let htmlCode = this.props.value;
@@ -37,13 +40,6 @@ export class ListItem extends ResumeComponent<ListProps> {
             value = <span
                 dangerouslySetInnerHTML={{ __html: htmlCode }}
             />
-        }
-
-        if (this.props.isMoving) {
-            moveButtons = <React.Fragment>
-                <UpButton {...this.props} />
-                <DownButton {...this.props} />
-            </React.Fragment>
         }
 
         if (this.props.isEditing) {
@@ -84,17 +80,14 @@ export default class List extends ResumeComponent<ListProps> {
 
     moveBullets() {
         let children = this.props.children as Array<object>;
-        let isMoving = this.props.isMoving ? false : true;
-
-        for (let i in children) {
-            children[i]['isMoving'] = isMoving;
-        }
+        let isMoving = this.props.isMoving ? false : true; // Flip
+        children.forEach((node) => {
+            node['isMoving'] = isMoving
+        });
 
         // Replace node's children with new list of children that excludes deleted node
-        if (this.props.updateData as ((key: string, data: any) => void)) {
-            (this.props.updateData as ((key: string, data: any) => void))("isMoving", isMoving);
-            (this.props.updateData as ((key: string, data: any) => void))("children", children);
-        }
+        this.updateData("isMoving", isMoving);
+        this.updateData("children", children);
     }
 
     render() {

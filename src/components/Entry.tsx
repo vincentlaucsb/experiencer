@@ -1,6 +1,5 @@
 ﻿import * as React from "react";
-import loadComponent from "./LoadComponent";
-import ResumeComponent, { ResumeComponentProps, AddChild } from "./ResumeComponent";
+import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
 import EditButton, { AddButton, DownButton, UpButton, DeleteButton } from "./Buttons";
 
 export interface EntryProps extends ResumeComponentProps {
@@ -14,15 +13,6 @@ export default class Entry extends ResumeComponent<EntryProps> {
     }
     
     render() {
-        if (this.props.isEditing) {
-            return <div>
-                <input onChange={this.updateData.bind(this, "title")} value={this.props.title || ""} />
-                <input onChange={this.updateData.bind(this, "subtitle")} value={this.props.subtitle || ""} />
-
-                <EditButton {...this.props} />
-            </div>
-        }
-
         let buttons = <div style={{ float: "right" }}>
             <AddButton action={this.addList} />
             <EditButton {...this.props} />
@@ -31,11 +21,17 @@ export default class Entry extends ResumeComponent<EntryProps> {
             <DownButton {...this.props} />
         </div>
 
+        let title: any = this.props.title || "Enter a title";
+        let subtitle: any = this.props.subtitle || "Enter a subtitle";
+
+        if (this.props.isEditing) {
+            title = <input onChange={this.updateData.bind(this, "title")} value={this.props.title || ""} />
+            subtitle = <input onChange={this.updateData.bind(this, "subtitle")} value={this.props.subtitle || ""} />
+        }
+
         return <div>
-            <h3>{this.props.title || "Enter a title"}
-                {buttons}
-            </h3>
-            <p>{this.props.subtitle || "Enter a subtitle"}</p>
+            <h3>{title} {buttons}</h3>
+            <p className="subtitle">{subtitle}</p>
 
             {this.renderChildren()}
         </div>

@@ -1,36 +1,42 @@
 ﻿import * as React from "react";
+import ReactQuill from 'react-quill';
 import EditButton, { DeleteButton } from "./Buttons";
 import ResumeComponent, { Action } from "./ResumeComponent";
+
+import 'react-quill/dist/quill.snow.css';
 
 export default class Paragraph extends ResumeComponent {
     constructor(props) {
         super(props);
-
         this.updateData = this.updateData.bind(this);
     }
 
-    // Convert newlines ('\n') into HTML line breaks
-    processTextArea() : JSX.Element {
-        let textArea = (this.props.value as string).split("\n");
-
-        return <React.Fragment>
-            {textArea.map((x, idx) => <React.Fragment key={idx}>{x}<br /></React.Fragment>)}
-            </React.Fragment>;
-    }
-
     render(): JSX.Element {
+        let modules = {
+            toolbar: [
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                ['link'],
+                ['clean']
+            ],
+        };
+
         if (this.props.isEditing) {
             return <React.Fragment>
-                <textarea onChange={this.updateData.bind(this, "value")} value={this.props.value} />
+                <ReactQuill
+                    modules={modules}
+                    value={this.props.value}
+                    onChange={((this.props.updateData as (key: string, data: any) => void).bind(this, "value") as (data: any) => void)}
+                />
                 <EditButton {...this.props} />
             </React.Fragment>;
         }
 
-        return <p>
-            {this.processTextArea()}
+        return <div>
+            <div dangerouslySetInnerHTML={{ __html: this.props.value as string }} />
             <span style={{ display: "inline-block" }}>
                 <EditButton {...this.props} />
                 <DeleteButton {...this.props} />
-            </span></p>;
+            </span></div>;
     }
 }

@@ -1,10 +1,14 @@
 ﻿import * as React from "react";
-import ResumeComponent, { AddChild, UpdateChild, Action } from "./ResumeComponent";
+import ResumeComponent, { AddChild, UpdateChild, Action, ResumeComponentProps } from "./ResumeComponent";
 import EditButton, { DeleteButton, AddButton, DownButton, UpButton } from "./Buttons";
 import { Button, ButtonGroup } from "react-bootstrap";
 import ReactQuill from "react-quill";
 
-export class ListItem extends ResumeComponent {
+interface ListProps extends ResumeComponentProps {
+    isMoving?: boolean;
+}
+
+export class ListItem extends ResumeComponent<ListProps> {
     constructor(props) {
         super(props);
     }
@@ -12,7 +16,6 @@ export class ListItem extends ResumeComponent {
     static quillModules = {
         toolbar: [
             ['bold', 'italic', 'underline', 'strike'],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
             ['link'],
             [{ 'align': [] }],
             ['clean']
@@ -21,6 +24,7 @@ export class ListItem extends ResumeComponent {
 
     render() {
         let value: any = "";
+        let moveButtons: any = "";
 
         if (this.props.value) {
             let htmlCode = this.props.value;
@@ -33,6 +37,13 @@ export class ListItem extends ResumeComponent {
             value = <span
                 dangerouslySetInnerHTML={{ __html: htmlCode }}
             />
+        }
+
+        if (this.props.isMoving) {
+            moveButtons = <React.Fragment>
+                <UpButton {...this.props} />
+                <DownButton {...this.props} />
+            </React.Fragment>
         }
 
         if (this.props.isEditing) {
@@ -49,18 +60,18 @@ export class ListItem extends ResumeComponent {
             <div style={{ float: "right" }}>
                 <EditButton {...this.props} />
                 <DeleteButton {...this.props} />
-                <UpButton {...this.props} />
-                <DownButton {...this.props} />
+                {moveButtons}
             </div>
         </li>
     }
 }
 
-export default class List extends ResumeComponent {
+export default class List extends ResumeComponent<ListProps> {
     constructor(props) {
         super(props);
 
         this.addChild = this.addChild.bind(this);
+        this.moveBullets = this.moveBullets.bind(this);
     }
 
     addChild() {
@@ -71,11 +82,32 @@ export default class List extends ResumeComponent {
         }
     }
 
+    moveBullets() {
+        let children = this.props.children as Array<object>;
+        let isMoving = this.props.isMoving ? false : true;
+
+        for (let i in children) {
+            children[i]['isMoving'] = isMoving;
+        }
+
+        // Replace node's children with new list of children that excludes deleted node
+        if (this.props.updateData as ((key: string, data: any) => void)) {
+            (this.props.updateData as ((key: string, data: any) => void))("isMoving", isMoving);
+            (this.props.updateData as ((key: string, data: any) => void))("children", children);
+        }
+    }
+
     render() {
+        let moveText = this.props.isMoving ? "Done Moving" : "Move Bullets";
+
         return <ul>
                 {this.renderChildren()}
             <li className="list-options">
-                <Button onClick={this.addChild} size="sm">Add Bullet</Button>
+                <ButtonGroup>
+                    <Button onClick={this.addChild} size="sm">Add Bullet</Button>
+                    <Button onClick={this.moveBullets} size="sm">{moveText}</Button>
+                </ButtonGroup>
+
                 <Button onClick={this.props.deleteChild as Action} size="sm" variant="danger">Delete List</Button>
             </li>
             </ul>

@@ -1,6 +1,7 @@
 ﻿import * as React from "react";
 import EditButton, { DeleteButton, AddButton, DownButton, UpButton } from "./Buttons";
 import ResumeComponent, { ResumeComponentProps, AddChild, Action } from "./ResumeComponent";
+import { Dropdown, ButtonGroup, Button } from "react-bootstrap";
 
 export interface SectionProps extends ResumeComponentProps {
     title: string;
@@ -9,26 +10,26 @@ export interface SectionProps extends ResumeComponentProps {
 export default class Section extends ResumeComponent<SectionProps> {
     constructor(props: SectionProps) {
         super(props);
-
-        this.addChild = this.addChild.bind(this);
-    }
-
-    addChild() {
-        if (this.props.addChild as AddChild) {
-            (this.props.addChild as AddChild)({
-                type: "Paragraph",
-                value: "Enter value here"
-            });
-        }
     }
 
     render() {
+        let addMenu = <Dropdown style={{ fontFamily: "sans-serif", display: "inline" }}>
+            <Dropdown.Toggle id="add">
+                Add
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+                <Dropdown.Item onClick={this.addEntry}>Entry</Dropdown.Item>
+                <Dropdown.Item onClick={this.addList}>Bulleted List</Dropdown.Item>
+                <Dropdown.Item onClick={this.addParagraph}>Paragraph</Dropdown.Item>
+            </Dropdown.Menu>
+        </Dropdown>
+
         let buttons = <div style={{ float: "right" }}>
-            <AddButton action={this.addChild} />
             <EditButton {...this.props} />
             <DeleteButton {...this.props} />
             <UpButton {...this.props} />
             <DownButton {...this.props} />
+            {addMenu}
         </div>
 
         let title: string | JSX.Element = this.props.title;

@@ -11,18 +11,8 @@ export interface EntryProps extends ResumeComponentProps {
 export default class Entry extends ResumeComponent<EntryProps> {
     constructor(props) {
         super(props);
-
-        this.addChild = this.addChild.bind(this);
     }
-
-    addChild() {
-        if (this.props.addChild as AddChild) {
-            (this.props.addChild as AddChild)({
-                type: 'List'
-            });
-        }
-    }
-
+    
     render() {
         if (this.props.isEditing) {
             return <div>
@@ -34,7 +24,7 @@ export default class Entry extends ResumeComponent<EntryProps> {
         }
 
         let buttons = <div style={{ float: "right" }}>
-            <AddButton action={this.addChild} />
+            <AddButton action={this.addList} />
             <EditButton {...this.props} />
             <DeleteButton {...this.props} />
             <UpButton {...this.props} />

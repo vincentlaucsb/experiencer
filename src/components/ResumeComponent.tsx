@@ -26,12 +26,41 @@ export default class ResumeComponent<
     constructor(props: P) {
         super(props);
 
+        this.addParagraph = this.addParagraph.bind(this);
+        this.addEntry = this.addEntry.bind(this);
+        this.addList = this.addList.bind(this);
+
         this.updateData = this.updateData.bind(this);
         this.addNestedChild = this.addNestedChild.bind(this);
         this.deleteNestedChild = this.deleteNestedChild.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
         this.toggleNestedEdit = this.toggleNestedEdit.bind(this);
         this.updateNestedData = this.updateNestedData.bind(this);
+    }
+    
+    addChild(data: object) {
+        if (this.props.addChild as AddChild) {
+            (this.props.addChild as AddChild)(data);
+        }
+    }
+
+    addParagraph() {
+        this.addChild({
+            type: "Paragraph",
+            value: "Enter value here"
+        });
+    }
+
+    addEntry() {
+        this.addChild({
+            type: "Entry",
+            title: "Enter value here",
+            subtitle: "Enter value here"
+        });
+    }
+
+    addList() {
+        this.addChild({ type: 'List' });
     }
 
     /**

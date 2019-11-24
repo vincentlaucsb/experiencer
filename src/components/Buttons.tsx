@@ -7,6 +7,7 @@ import EditIcon from "../icons/edit-24px.svg";
 import DoneIcon from "../icons/done-24px.svg";
 import UpIcon from "../icons/keyboard_arrow_up-24px.svg";
 import DownIcon from "../icons/keyboard_arrow_down-24px.svg";
+import { Overlay } from "react-bootstrap";
 
 interface AddButtonProps {
     action: () => void;
@@ -27,7 +28,22 @@ export default function EditButton<P extends ResumeComponentProps>(props: P) {
 }
 
 export function DeleteButton<P extends ResumeComponentProps>(props: P) {
-    return <img onClick={props.deleteChild as Action} src={DeleteIcon} alt='Delete' />
+    const [show, setShow] = React.useState(false);
+    const target: any = React.useRef(null);
+
+    return <>
+        <img
+            ref={target}
+            onMouseEnter={() => setShow(true)}
+            onMouseOut={() => setShow(false)}
+            onClick={props.deleteChild as Action} src={DeleteIcon} alt='Delete' />
+        <Overlay
+            target={target.current}
+            show={show}
+            placement='top'>
+            <p>Delete</p>
+        </Overlay>
+    </>
 }
 
 export function UpButton<P extends ResumeComponentProps>(props: P) {

@@ -11,16 +11,20 @@ export class ListItem extends ResumeComponent {
     render() {
         let value: any = this.props.value ? this.props.value : "";
         if (this.props.isEditing) {
-            value = <input onChange={(this.updateData as UpdateChild).bind(this, "value")}
+            value = <input style={{ maxWidth: "100%" }}
+                onChange={(this.updateData as UpdateChild).bind(this, "value")}
                 value={this.props.value || ""} type="text" />;
         }
 
-        return <li>
+        return <li style={{ minHeight: "24px" }}>
             {value}
-            <EditButton {...this.props} />
-            <DeleteButton {...this.props} />
-            <UpButton {...this.props} />
-            <DownButton {...this.props} />
+
+            <div style={{ float: "right" }}>
+                <EditButton {...this.props} />
+                <DeleteButton {...this.props} />
+                <UpButton {...this.props} />
+                <DownButton {...this.props} />
+            </div>
         </li>
     }
 }

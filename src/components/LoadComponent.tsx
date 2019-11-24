@@ -16,7 +16,8 @@ interface ExtraProps {
     updateData?: (key: string, data: any) => void;
 }
 
-export default function loadComponent(data: object, extraProps?: ExtraProps) {
+export default function loadComponent(data: object, extraProps?: ExtraProps,
+isFirst = false, isLast = false) {
     // Load prop data
     let props: ResumeComponentProps = {};
     for (let key in data) {
@@ -24,6 +25,9 @@ export default function loadComponent(data: object, extraProps?: ExtraProps) {
             props[key] = data[key];
         }
     }
+
+    props['isFirst'] = isFirst;
+    props['isLast'] = isLast;
 
     if (extraProps) {
         props['addChild'] = extraProps.addChild;
@@ -37,8 +41,9 @@ export default function loadComponent(data: object, extraProps?: ExtraProps) {
     props['children'] = new Array();
 
     // Load children
-    if (data['children']) {
-        props['children'] = data['children'];
+    const children = data['children'] as Array<object>;
+    if (children) {
+        props['children'] = children;
     }
 
     switch (data['type']) {

@@ -4,6 +4,8 @@ import { deleteAt, moveUp, moveDown } from "./Helpers";
 
 export interface ResumeComponentProps {
     isEditing?: boolean;
+    isFirst?: boolean;
+    isLast?: boolean;
     value?: string;
     children?: Array<object>;
 
@@ -150,7 +152,7 @@ export default class ResumeComponent<
     renderChildren() {
         if (this.props.children as Array<object>) {
             return <React.Fragment>{
-                (this.props.children as Array<object>).map((elem, idx) =>
+                (this.props.children as Array<object>).map((elem, idx, arr) =>
                     <React.Fragment key={idx}>
                         {loadComponent(elem,
                             {
@@ -160,8 +162,10 @@ export default class ResumeComponent<
                                 deleteChild: (this.deleteNestedChild.bind(this, idx) as Action),
                                 toggleEdit: (this.toggleNestedEdit.bind(this, idx) as () => void),
                                 updateData: (this.updateNestedData.bind(this, idx) as (key: string, data: any) => void)
-                            })
-                        }
+                            },
+                            idx == 0,             // isFirst
+                            idx == arr.length - 1 // isLast
+                        )}
                     </React.Fragment>)
             }
             </React.Fragment>

@@ -17,6 +17,8 @@ interface TooltipProps {
     onClick: () => void;
     tooltip: string;
     imgSrc: string;
+
+    imgCls?: string;
 }
 
 function ButtonWithTooltip(props: TooltipProps) {
@@ -25,6 +27,7 @@ function ButtonWithTooltip(props: TooltipProps) {
 
     return <>
         <img
+            className={props.imgCls}
             ref={target}
             onMouseEnter={() => setShow(true)}
             onMouseOut={() => setShow(false)}
@@ -52,9 +55,11 @@ export function DeleteButton<P extends ResumeComponentProps>(props: P) {
 }
 
 export function UpButton<P extends ResumeComponentProps>(props: P) {
-    return <ButtonWithTooltip onClick={props.moveUp as Action} imgSrc={UpIcon} tooltip="Move Up" />
+    let imgCls = props.isFirst ? "button-disabled" : "";
+    return <ButtonWithTooltip imgCls={imgCls} onClick={props.moveUp as Action} imgSrc={UpIcon} tooltip="Move Up" />
 }
 
 export function DownButton<P extends ResumeComponentProps>(props: P) {
-    return <ButtonWithTooltip onClick={props.moveDown as Action} imgSrc={DownIcon} tooltip="Move Down" />
+    let imgCls = props.isLast ? "button-disabled" : "";
+    return <ButtonWithTooltip imgCls={imgCls} onClick={props.moveDown as Action} imgSrc={DownIcon} tooltip="Move Down" />
 }

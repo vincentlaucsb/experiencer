@@ -1,5 +1,6 @@
 {
   "name": "resume-editor",
+  "homepage": "http://vincela.com/resume-editor",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

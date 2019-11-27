@@ -1,7 +1,9 @@
 import * as React from 'react';
 import loadComponent from './components/LoadComponent';
 import { saveAs } from 'file-saver';
+import { HotKeys } from "react-hotkeys";
 import { SideMenu } from './components/SideMenu';
+import { GlobalHotKeys } from 'react-hotkeys';
 
 import "./css/index.css"
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -10,10 +12,12 @@ import 'react-quill/dist/quill.snow.css';
 import { Button } from 'react-bootstrap';
 import { FileLoader } from './components/FileLoader';
 import { deleteAt, moveUp, moveDown } from './components/Helpers';
+import { Nonprintable } from './components/Nonprintable';
 
 interface PageState {
     children: Array<object>;
     customCss: string;
+    isPrinting: boolean;
 }
 
 const resumeData = [
@@ -84,7 +88,8 @@ h2 { border-bottom: 1px solid; }
 
 section {
     margin-bottom: 1.5em;
-}`
+}`,
+            isPrinting: false
         };
 
         this.renderStyle();
@@ -186,10 +191,22 @@ section {
     }
 
     render() {
+        const keyMap = {
+            PRINT_MODE: "shift+p"
+        };
+
+        const handlers = {
+            PRINT_MODE: (event) => {
+                this.setState({ isPrinting: !this.state.isPrinting });
+            }
+        };
+
         return <div style={{
             display: 'flex',
             flexDirection: 'row'
-        }}>
+        }}>        
+            <GlobalHotKeys keyMap={keyMap} handlers={handlers} />;
+            
             <div id="resume" style={{ width: "100%" }}>
                 {this.state.children.map((elem, idx, arr) =>
                     <React.Fragment key={idx}>
@@ -199,7 +216,8 @@ section {
                                 moveDown: this.moveDown.bind(this, idx),
                                 deleteChild: this.deleteChild.bind(this, idx),
                                 toggleEdit: this.toggleEdit.bind(this, idx),
-                                updateData: this.updateData.bind(this, idx)
+                                updateData: this.updateData.bind(this, idx),
+                                isPrinting: this.state.isPrinting
                             },
                             idx == 0,             // isFirst
                             idx == arr.length - 1 // isLast
@@ -207,28 +225,32 @@ section {
                     </React.Fragment>)
                 }
 
-                <Button onClick={this.addSection}>Add Section</Button>
+                <Nonprintable isPrinting={this.state.isPrinting}>
+                    <Button onClick={this.addSection}>Add Section</Button>
+                </Nonprintable>
             </div>
 
-            <div style={{
-                maxWidth: "500px",
-                paddingLeft: "1em"
-            }}>
-                <SideMenu>
-                    <FileLoader loadData={this.loadData} />
-                    <Button onClick={this.saveFile}>
-                        Save Data
-                    </Button>
+            <Nonprintable isPrinting={this.state.isPrinting}>
+                <div style={{
+                    maxWidth: "500px",
+                    paddingLeft: "1em"
+                }}>
+                    <SideMenu>
+                        <FileLoader loadData={this.loadData} />
+                        <Button onClick={this.saveFile}>
+                            Save Data
+                        </Button>
 
-                    <h2>Style Editor</h2>
-                    <textarea style={{
-                        minWidth: "400px",
-                        minHeight: "400px",
-                        width: "100%"
-                    }} onChange={this.onStyleChange} value={this.state.customCss} />
-                    <button onClick={this.renderStyle}>Update</button>
-                </SideMenu>
-            </div>
+                        <h2>Style Editor</h2>
+                        <textarea style={{
+                            minWidth: "400px",
+                            minHeight: "400px",
+                            width: "100%"
+                        }} onChange={this.onStyleChange} value={this.state.customCss} />
+                        <button onClick={this.renderStyle}>Update</button>
+                    </SideMenu>
+                </div>
+            </Nonprintable>
         </div>
     }
 }

@@ -3,6 +3,7 @@ import ResumeComponent, { AddChild, UpdateChild, Action, ResumeComponentProps } 
 import EditButton, { DeleteButton, AddButton, DownButton, UpButton } from "./Buttons";
 import { Button, ButtonGroup } from "react-bootstrap";
 import ReactQuill from "react-quill";
+import { Nonprintable } from "./Nonprintable";
 
 interface ListProps extends ResumeComponentProps {
     isMoving?: boolean;
@@ -53,11 +54,13 @@ export class ListItem extends ResumeComponent<ListProps> {
         return <li style={{ minHeight: "24px" }}>
             {value}
 
-            <div style={{ float: "right" }}>
-                <EditButton {...this.props} />
-                <DeleteButton {...this.props} />
-                {moveButtons}
-            </div>
+            <Nonprintable isPrinting={this.props.isPrinting}>
+                <div style={{ float: "right" }}>
+                    <EditButton {...this.props} />
+                    <DeleteButton {...this.props} />
+                    {moveButtons}
+                </div>
+            </Nonprintable>
         </li>
     }
 }
@@ -94,15 +97,17 @@ export default class List extends ResumeComponent<ListProps> {
         let moveText = this.props.isMoving ? "Done Moving" : "Move Bullets";
 
         return <ul>
-                {this.renderChildren()}
-            <li className="list-options">
-                <ButtonGroup>
-                    <Button onClick={this.addChild} size="sm">Add Bullet</Button>
-                    <Button onClick={this.moveBullets} size="sm">{moveText}</Button>
-                </ButtonGroup>
+            {this.renderChildren()}
+            <Nonprintable isPrinting={this.props.isPrinting}>
+                <li className="list-options">
+                    <ButtonGroup>
+                        <Button onClick={this.addChild} size="sm">Add Bullet</Button>
+                        <Button onClick={this.moveBullets} size="sm">{moveText}</Button>
+                    </ButtonGroup>
 
-                <Button onClick={this.props.deleteChild as Action} size="sm" variant="danger">Delete List</Button>
-            </li>
+                    <Button onClick={this.props.deleteChild as Action} size="sm" variant="danger">Delete List</Button>
+                </li>
+            </Nonprintable>
             </ul>
     }
 }

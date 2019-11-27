@@ -9,19 +9,16 @@ export default class Title extends ResumeComponent {
     }
 
     render() {
-        if (this.props.isEditing) {
-            return <React.Fragment>
-                <input onChange={this.updateDataEvent.bind(this, "value")}
-                    value={this.props.value} type="text" />
-                <EditButton {...this.props} />
-            </React.Fragment>;
-        }
+        let value = this.props.isEditing ? <input onChange={this.updateDataEvent.bind(this, "value")}
+            value={this.props.value} type="text" /> : this.props.value || "Enter a title";
+
+        let buttons = !this.props.isPrinting ? <div style={{ display: "inline-block" }}>
+            <EditButton {...this.props} />
+        </div> : <></>;
 
         return <h1>
-            {this.props.value}
-            <div style={{ display: "inline-block" }}>
-                <EditButton {...this.props} />
-            </div>
+            {value}
+            {buttons}
         </h1>;
     }
 }

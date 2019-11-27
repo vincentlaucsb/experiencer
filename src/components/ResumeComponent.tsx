@@ -4,6 +4,7 @@ import { deleteAt, moveUp, moveDown } from "./Helpers";
 
 export interface ResumeComponentProps {
     isEditing?: boolean;
+    isPrinting?: boolean;
     isFirst?: boolean;
     isLast?: boolean;
     value?: string;
@@ -149,7 +150,8 @@ export default class ResumeComponent<
                                 moveUp: (this.moveNestedChildUp.bind(this, idx) as Action),
                                 deleteChild: (this.deleteNestedChild.bind(this, idx) as Action),
                                 toggleEdit: (this.toggleNestedEdit.bind(this, idx) as () => void),
-                                updateData: (this.updateNestedData.bind(this, idx) as (key: string, data: any) => void)
+                                updateData: (this.updateNestedData.bind(this, idx) as (key: string, data: any) => void),
+                                isPrinting: this.props.isPrinting
                             },
                             idx == 0,             // isFirst
                             idx == arr.length - 1 // isLast

@@ -2,6 +2,7 @@
 import ReactQuill from 'react-quill';
 import EditButton, { DeleteButton } from "./Buttons";
 import ResumeComponent, { Action } from "./ResumeComponent";
+import { Nonprintable } from "./Nonprintable";
 
 export default class Paragraph extends ResumeComponent {
     constructor(props) {
@@ -20,22 +21,20 @@ export default class Paragraph extends ResumeComponent {
     };
 
     render(): JSX.Element {
-        if (this.props.isEditing) {
-            return <React.Fragment>
-                <ReactQuill
-                    modules={Paragraph.quillModules}
-                    value={this.props.value}
-                    onChange={((this.props.updateData as (key: string, data: any) => void).bind(this, "value") as (data: any) => void)}
-                />
-                <EditButton {...this.props} />
-            </React.Fragment>;
-        }
+        let value = this.props.isEditing ? <ReactQuill
+            modules={Paragraph.quillModules}
+            value={this.props.value}
+            onChange={((this.props.updateData as (key: string, data: any) => void).bind(this, "value") as (data: any) => void)}
+        /> : <div dangerouslySetInnerHTML={{ __html: this.props.value as string }} />;
 
         return <div>
-            <div dangerouslySetInnerHTML={{ __html: this.props.value as string }} />
-            <span style={{ display: "inline-block" }}>
-                <EditButton {...this.props} />
-                <DeleteButton {...this.props} />
-            </span></div>;
+            {value}            
+            <Nonprintable isPrinting={this.props.isPrinting}>
+                <span style={{ display: "inline-block" }}>
+                    <EditButton {...this.props} />
+                    <DeleteButton {...this.props} />
+                </span>
+            </Nonprintable>
+        </div>;
     }
 }

@@ -1,6 +1,7 @@
 ﻿import * as React from "react";
 import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
 import EditButton, { AddButton, DownButton, UpButton, DeleteButton } from "./Buttons";
+import { Nonprintable } from "./Nonprintable";
 
 export interface EntryProps extends ResumeComponentProps {
     title?: string;
@@ -13,13 +14,15 @@ export default class Entry extends ResumeComponent<EntryProps> {
     }
     
     render() {
-        let buttons = <div style={{ float: "right" }}>
-            <AddButton action={this.addList} />
-            <EditButton {...this.props} />
-            <DeleteButton {...this.props} />
-            <UpButton {...this.props} />
-            <DownButton {...this.props} />
-        </div>
+        let buttons = <Nonprintable isPrinting={this.props.isPrinting}>
+            <div style={{ float: "right" }}>
+                <AddButton action={this.addList} />
+                <EditButton {...this.props} />
+                <DeleteButton {...this.props} />
+                <UpButton {...this.props} />
+                <DownButton {...this.props} />
+            </div>
+        </Nonprintable>
 
         let title: any = this.props.title || "Enter a title";
         let subtitle: any = this.props.subtitle || "Enter a subtitle";

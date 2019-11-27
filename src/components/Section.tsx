@@ -2,6 +2,7 @@
 import EditButton, { DeleteButton, AddButton, DownButton, UpButton } from "./Buttons";
 import ResumeComponent, { ResumeComponentProps, AddChild, Action } from "./ResumeComponent";
 import { Dropdown, ButtonGroup, Button } from "react-bootstrap";
+import { Nonprintable } from "./Nonprintable";
 
 export interface SectionProps extends ResumeComponentProps {
     title: string;
@@ -24,13 +25,14 @@ export default class Section extends ResumeComponent<SectionProps> {
             </Dropdown.Menu>
         </Dropdown>
 
-        let buttons = <div style={{ float: "right" }}>
-            <EditButton {...this.props} />
-            <DeleteButton {...this.props} />
-            <UpButton {...this.props} />
-            <DownButton {...this.props} />
-            {addMenu}
-        </div>
+        let buttons = <Nonprintable isPrinting={this.props.isPrinting}>
+                <div style={{ float: "right" }}>
+                <EditButton {...this.props} />
+                <DeleteButton {...this.props} />
+                <UpButton {...this.props} />
+                <DownButton {...this.props} />
+                    {addMenu}</div>
+            </Nonprintable>
 
         let title: string | JSX.Element = this.props.title;
 

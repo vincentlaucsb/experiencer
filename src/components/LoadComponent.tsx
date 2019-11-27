@@ -8,6 +8,8 @@ import Title from "./Title";
 import { ResumeComponentProps } from "./ResumeComponent";
 
 interface ExtraProps {
+    isPrinting?: boolean;
+
     addChild?: (node: object) => void;
     moveUp?: () => void;
     moveDown?: () => void;
@@ -36,6 +38,7 @@ isFirst = false, isLast = false) {
         props['moveDown'] = extraProps.moveDown;
         props['toggleEdit'] = extraProps.toggleEdit;
         props['updateData'] = extraProps.updateData;
+        props['isPrinting'] = extraProps.isPrinting;
     }
 
     props['children'] = new Array();

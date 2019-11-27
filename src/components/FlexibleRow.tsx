@@ -8,12 +8,7 @@ export default class FlexibleRow extends ResumeComponent {
     }
     
     render() {
-        return <div style={{
-            display: "flex",
-            justifyContent: "space-between",
-            flexDirection: "row",
-            width: "100%"
-        }}>
+        return <div className="flex-row" style={{ width: "100%" }}>
             {this.renderChildren()}
         </div>
     }

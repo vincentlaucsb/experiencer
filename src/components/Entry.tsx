@@ -5,7 +5,9 @@ import { Nonprintable } from "./Nonprintable";
 
 export interface EntryProps extends ResumeComponentProps {
     title?: string;
+    titleRight?: string;
     subtitle?: string;
+    subtitleRight?: string;
 }
 
 export default class Entry extends ResumeComponent<EntryProps> {
@@ -15,26 +17,28 @@ export default class Entry extends ResumeComponent<EntryProps> {
     
     render() {
         let buttons = <Nonprintable isPrinting={this.props.isPrinting}>
-            <div style={{ float: "right" }}>
                 <AddButton action={this.addList} />
                 <EditButton {...this.props} />
                 <DeleteButton {...this.props} />
                 <UpButton {...this.props} />
                 <DownButton {...this.props} />
-            </div>
         </Nonprintable>
 
         let title: any = this.props.title || "Enter a title";
+        let titleRight: any = this.props.titleRight || "";
         let subtitle: any = this.props.subtitle || "Enter a subtitle";
+        let subtitleRight: any = this.props.subtitleRight || "";
 
         if (this.props.isEditing) {
             title = <input onChange={this.updateDataEvent.bind(this, "title")} value={this.props.title || ""} />
+            titleRight = <input onChange={this.updateDataEvent.bind(this, "titleRight")} value={this.props.subtitleRight || ""} />
             subtitle = <input onChange={this.updateDataEvent.bind(this, "subtitle")} value={this.props.subtitle || ""} />
+            subtitleRight = <input onChange={this.updateDataEvent.bind(this, "subtitleRight")} value={this.props.subtitleRight || ""} />
         }
 
         return <div>
-            <h3>{title} {buttons}</h3>
-            <p className="subtitle">{subtitle}</p>
+            <h3 className="flex-row">{title} <span>{titleRight} {buttons}</span></h3>
+            <p className="flex-row">{subtitle} <span>{subtitleRight}</span></p>
 
             {this.renderChildren()}
         </div>

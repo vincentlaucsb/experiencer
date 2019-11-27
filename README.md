@@ -1,4 +1,8 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Resume Editor
+
+## Live
+
+You can use this app live at [http://vincela.com/resume-editor](http://vincela.com/resume-editor).
 
 ## Available Scripts
 

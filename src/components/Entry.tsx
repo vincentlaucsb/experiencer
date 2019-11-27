@@ -31,14 +31,14 @@ export default class Entry extends ResumeComponent<EntryProps> {
 
         if (this.props.isEditing) {
             title = <input onChange={this.updateDataEvent.bind(this, "title")} value={this.props.title || ""} />
-            titleRight = <input onChange={this.updateDataEvent.bind(this, "titleRight")} value={this.props.subtitleRight || ""} />
+            titleRight = <input onChange={this.updateDataEvent.bind(this, "titleRight")} value={this.props.titleRight || ""} />
             subtitle = <input onChange={this.updateDataEvent.bind(this, "subtitle")} value={this.props.subtitle || ""} />
             subtitleRight = <input onChange={this.updateDataEvent.bind(this, "subtitleRight")} value={this.props.subtitleRight || ""} />
         }
 
         return <div>
-            <h3 className="flex-row">{title} <span>{titleRight} {buttons}</span></h3>
-            <p className="flex-row">{subtitle} <span>{subtitleRight}</span></p>
+            <h3 className="flex-row">{title} <span className="title-right">{titleRight} {buttons}</span></h3>
+            <p className="flex-row subtitle">{subtitle} <span className="subtitle-right">{subtitleRight}</span></p>
 
             {this.renderChildren()}
         </div>

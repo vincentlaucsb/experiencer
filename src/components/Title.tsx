@@ -14,7 +14,7 @@ export default class Title extends ResumeComponent {
 
         let buttons = !this.props.isPrinting ? <div style={{ display: "inline-block" }}>
             <EditButton {...this.props} />
-        </div> : <></>;
+        </div> : <></>
 
         return <h1>
             {value}

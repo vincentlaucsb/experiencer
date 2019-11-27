@@ -207,7 +207,7 @@ section {
             display: 'flex',
             flexDirection: 'row'
         }}>        
-            <GlobalHotKeys keyMap={keyMap} handlers={handlers} />;
+            <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
             
             <div id="resume" style={{ width: "100%" }}>
                 {this.state.children.map((elem, idx, arr) =>

@@ -51,7 +51,7 @@ export class ListItem extends ResumeComponent<ListProps> {
             />
         }
 
-        return <li style={{ minHeight: "24px" }}>
+        return <li>
             {value}
 
             <Nonprintable isPrinting={this.props.isPrinting}>

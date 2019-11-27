@@ -1,1 +1,0 @@
-npx webpack --watch

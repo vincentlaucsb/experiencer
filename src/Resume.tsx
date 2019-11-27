@@ -6,7 +6,9 @@ import { SideMenu } from './components/SideMenu';
 import { GlobalHotKeys } from 'react-hotkeys';
 
 import "./css/index.css"
-import "bootstrap/dist/css/bootstrap.min.css";
+
+import "./scss/custom.scss";
+
 import 'react-quill/dist/quill.snow.css';
 
 import { Button } from 'react-bootstrap';

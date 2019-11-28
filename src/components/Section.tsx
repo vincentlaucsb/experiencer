@@ -26,12 +26,13 @@ export default class Section extends ResumeComponent<SectionProps> {
         </Dropdown>
 
         let buttons = <Nonprintable isPrinting={this.props.isPrinting}>
-                <div style={{ float: "right" }}>
-                <EditButton {...this.props} />
-                <DeleteButton {...this.props} />
-                <UpButton {...this.props} />
-                <DownButton {...this.props} />
-                    {addMenu}</div>
+                <span>
+                    <EditButton {...this.props} />
+                    <DeleteButton {...this.props} />
+                    <UpButton {...this.props} />
+                    <DownButton {...this.props} />
+                    {addMenu}
+                </span>
             </Nonprintable>
 
         let title: string | JSX.Element = this.props.title;
@@ -41,7 +42,7 @@ export default class Section extends ResumeComponent<SectionProps> {
         }
         
         return <section>
-            <h2>
+            <h2 className="flex-row">
                 {title}
                 {buttons}
             </h2>

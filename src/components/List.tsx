@@ -52,15 +52,17 @@ export class ListItem extends ResumeComponent<ListProps> {
         }
 
         return <li>
-            {value}
+            <span className="flex-row">
+                <span>{value}</span>
 
-            <Nonprintable isPrinting={this.props.isPrinting}>
-                <div style={{ float: "right" }}>
-                    <EditButton {...this.props} />
-                    <DeleteButton {...this.props} />
-                    {moveButtons}
-                </div>
-            </Nonprintable>
+                <Nonprintable isPrinting={this.props.isPrinting}>
+                    <span>
+                        <EditButton {...this.props} />
+                        <DeleteButton {...this.props} />
+                        {moveButtons}
+                    </span>
+                </Nonprintable>
+            </span>
         </li>
     }
 }

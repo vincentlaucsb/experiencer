@@ -35,7 +35,7 @@ export class ListItem extends ResumeComponent<ListProps> {
 
             // Strip out parent <p> tags since we don't need them
             if (htmlCode.slice(0, 3) == '<p>' && htmlCode.slice(-4) == '</p>') {
-                htmlCode = htmlCode.slice(3, htmlCode.length - (3 + 4));
+                htmlCode = htmlCode.slice(3, htmlCode.length - 4);
             }
             
             value = <span

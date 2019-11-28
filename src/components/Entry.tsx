@@ -36,7 +36,7 @@ export default class Entry extends ResumeComponent<EntryProps> {
             subtitleRight = <input onChange={this.updateDataEvent.bind(this, "subtitleRight")} value={this.props.subtitleRight || ""} />
         }
 
-        return <div>
+        return <div className="resume-entry">
             <h3 className="flex-row">{title} <span className="title-right">{titleRight} {buttons}</span></h3>
             <p className="flex-row subtitle">{subtitle} <span className="subtitle-right">{subtitleRight}</span></p>
 

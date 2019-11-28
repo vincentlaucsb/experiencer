@@ -5,10 +5,8 @@ import { HotKeys } from "react-hotkeys";
 import { SideMenu } from './components/SideMenu';
 import { GlobalHotKeys } from 'react-hotkeys';
 
-import "./css/index.css"
-
-import "./scss/custom.scss";
-
+import './css/index.css';
+import './scss/custom.scss';
 import 'react-quill/dist/quill.snow.css';
 
 import { Button } from 'react-bootstrap';
@@ -176,13 +174,21 @@ section {
         });
     }
 
-    loadData(data: Array<object>) {
-        this.setState({ children: data });
+    loadData(data: object) {
+        this.setState({
+            children: data['children'] as Array<object>,
+            customCss: data['css'] as string
+        });
     }
 
     // Save data to an external file
     saveFile() {
-        var blob = new Blob([JSON.stringify(this.state.children)],
+        const data = {
+            children: this.state.children,
+            css: this.state.customCss
+        };
+
+        var blob = new Blob([JSON.stringify(data)],
             {
                 type: "text/plain;charset=utf-8"
             }

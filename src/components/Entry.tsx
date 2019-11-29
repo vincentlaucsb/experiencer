@@ -2,7 +2,7 @@
 import ResumeComponent, { ResumeComponentProps, SelectedComponentProps, Action } from "./ResumeComponent";
 import EditButton, { AddButton, DownButton, UpButton, DeleteButton } from "./Buttons";
 import { Nonprintable } from "./Nonprintable";
-import { ButtonGroup, Button, Dropdown } from "react-bootstrap";
+import { ButtonGroup, Button, Dropdown, DropdownButton } from "react-bootstrap";
 import AddIcon from "../icons/add-24px.svg";
 
 export interface EntryProps extends ResumeComponentProps {
@@ -13,6 +13,7 @@ export interface EntryProps extends ResumeComponentProps {
 }
 
 interface EntryState {
+    isHovering: boolean;
     isSelected: boolean;
 }
 
@@ -21,6 +22,7 @@ export default class Entry extends ResumeComponent<EntryProps, EntryState> {
         super(props);
 
         this.state = {
+            isHovering: false,
             isSelected: false
         };
 
@@ -47,6 +49,7 @@ export default class Entry extends ResumeComponent<EntryProps, EntryState> {
     
     render() {
         let buttons = <></>
+        let className = 'resume-entry';
 
         let title: any = this.props.title || "Enter a title";
         let titleRight: any = this.props.titleRight || "";
@@ -60,23 +63,16 @@ export default class Entry extends ResumeComponent<EntryProps, EntryState> {
             subtitleRight = <input onChange={this.updateDataEvent.bind(this, "subtitleRight")} value={this.props.subtitleRight || ""} />
         }
 
-        let style = {};
-        if (this.state.isSelected) {
-            style = {
-                border: "2px solid blue",
-                padding: "0.5rem"
-            };
+        if (this.state.isHovering || this.state.isSelected) {
+            className += ' resume-selected';
+        }
 
+        if (this.state.isSelected) {
             buttons = <ButtonGroup size="sm">
-                <Dropdown style={{ fontFamily: "sans-serif", display: "inline" }}>
-                    <Dropdown.Toggle id="add" size="sm">
-                        <img src={AddIcon} alt='Add' /> Add
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                        <Dropdown.Item onClick={this.addList}>Bulleted List</Dropdown.Item>
-                        <Dropdown.Item onClick={this.addParagraph}>Paragraph</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>
+                <DropdownButton as={ButtonGroup} title="Add" id="add-options" size="sm">
+                    <Dropdown.Item onClick={this.addList}>Bulleted List</Dropdown.Item>
+                    <Dropdown.Item onClick={this.addParagraph}>Paragraph</Dropdown.Item>
+                </DropdownButton>
                 <EditButton {...this.props} extended={true} />
                 <DeleteButton {...this.props} extended={true} />
                 <UpButton {...this.props} extended={true} />
@@ -84,9 +80,14 @@ export default class Entry extends ResumeComponent<EntryProps, EntryState> {
             </ButtonGroup>
         }
 
-        return <div className="resume-entry" style={style}>
+        return <div className={className}>
             {buttons}
-            <h3 className="flex-row" onClick={this.setSelected}><span>{title}</span> <span className="title-right">{titleRight} </span></h3>
+            <h3 className="flex-row" onClick={this.setSelected}
+                onMouseEnter={() => this.setState({ isHovering: true })}
+                onMouseLeave={() => this.setState({ isHovering: false })}
+            >
+                <span>{title}</span> <span className="title-right">{titleRight}</span>
+            </h3>
             <p className="flex-row subtitle">{subtitle} <span className="subtitle-right">{subtitleRight}</span></p>
 
             {this.renderChildren()}

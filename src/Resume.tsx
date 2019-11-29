@@ -32,7 +32,7 @@ const resumeData = [
             },
             {
                 type: 'Paragraph',
-                value: 'Email: vincela9@hotmail.com\nPhone: 123-456-7890'
+                value: '<p>Email: vincela9@hotmail.com</p><p>Phone: 123-456-7890</p>'
             }
         ]
     },

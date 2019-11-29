@@ -18,6 +18,10 @@ li.list-options {
     list-style-type: none;
 }
 
+.resume-selected {
+    border: 1px solid blue;
+}
+
 /* Resume Components */
 .flex-row {
     display: flex;

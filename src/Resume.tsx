@@ -1,7 +1,6 @@
 import * as React from 'react';
 import loadComponent from './components/LoadComponent';
 import { saveAs } from 'file-saver';
-import { HotKeys } from "react-hotkeys";
 import { SideMenu } from './components/SideMenu';
 import { GlobalHotKeys } from 'react-hotkeys';
 
@@ -217,7 +216,7 @@ section {
         });
     }
 
-    render() {
+    renderHotkeys() {
         const keyMap = {
             PRINT_MODE: "shift+p"
         };
@@ -228,29 +227,36 @@ section {
             }
         };
 
+        return <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
+    }
+
+    renderChildren() {
+        return this.state.children.map((elem, idx, arr) =>
+            <React.Fragment key={idx}>
+                {loadComponent(elem, idx, arr.length, {
+                    addChild: this.addChild.bind(this, idx),
+                    moveUp: this.moveUp.bind(this, idx),
+                    moveDown: this.moveDown.bind(this, idx),
+                    deleteChild: this.deleteChild.bind(this, idx),
+                    toggleEdit: this.toggleEdit.bind(this, idx),
+                    updateData: this.updateData.bind(this, idx),
+                    isPrinting: this.state.isPrinting,
+                    unselect: this.unselect,
+                    updateSelected: this.updateSelected.bind(this)
+                }
+                )}
+            </React.Fragment>)
+    }
+
+    render() {
         return <div style={{
             display: 'flex',
             flexDirection: 'row'
         }}>        
-            <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
+            {this.renderHotkeys()}
             
             <div id="resume" style={{ width: "100%" }}>
-                {this.state.children.map((elem, idx, arr) =>
-                    <React.Fragment key={idx}>
-                        {loadComponent(elem, idx, arr.length, {
-                                addChild: this.addChild.bind(this, idx),
-                                moveUp: this.moveUp.bind(this, idx),
-                                moveDown: this.moveDown.bind(this, idx),
-                                deleteChild: this.deleteChild.bind(this, idx),
-                                toggleEdit: this.toggleEdit.bind(this, idx),
-                                updateData: this.updateData.bind(this, idx),
-                                isPrinting: this.state.isPrinting,
-                                unselect: this.unselect,
-                                updateSelected: this.updateSelected.bind(this)
-                            }
-                        )}
-                    </React.Fragment>)
-                }
+                {this.renderChildren()}
 
                 <Nonprintable isPrinting={this.state.isPrinting}>
                     <Button onClick={this.addSection}>Add Section</Button>

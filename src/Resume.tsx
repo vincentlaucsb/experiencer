@@ -8,18 +8,11 @@ import './css/index.css';
 import './scss/custom.scss';
 import 'react-quill/dist/quill.snow.css';
 
-import { Button } from 'react-bootstrap';
+import { Button, ButtonToolbar, ButtonGroup, InputGroup } from 'react-bootstrap';
 import { FileLoader } from './components/FileLoader';
 import { deleteAt, moveUp, moveDown } from './components/Helpers';
 import { Nonprintable } from './components/Nonprintable';
 import { SelectedComponentProps, Action } from './components/ResumeComponent';
-
-interface PageState {
-    children: Array<object>;
-    customCss: string;
-    isPrinting: boolean;
-    selectedNode?: SelectedComponentProps;
-}
 
 const resumeData = [
     {
@@ -27,7 +20,7 @@ const resumeData = [
         children: [
             {
                 type: 'Title',
-                value: 'Vincent La'
+                value: 'Your Name Here'
             },
             {
                 type: 'Paragraph',
@@ -57,21 +50,7 @@ const resumeData = [
     
 ];
 
-class Resume extends React.Component<{}, PageState> {
-    style: HTMLStyleElement;
-
-    constructor(props) {
-        super(props);
-
-        // Custom CSS
-        const head = document.getElementsByTagName("head")[0];
-        this.style = document.createElement("style");
-        this.style.innerHTML = "";
-        head.appendChild(this.style);
-
-        this.state = {
-            children: resumeData,
-            customCss: `body {
+const defaultCss = `body {
     margin: 1em auto 1em auto;
     font-family: Tahoma, sans-serif;
     font-size: 10pt;
@@ -89,7 +68,32 @@ h2 { border-bottom: 1px solid; }
 
 section {
     margin-bottom: 1.5em;
-}`,
+}`;
+
+interface PageState {
+    children: Array<object>;
+    customCss: string;
+    isPrinting: boolean;
+    isEditingStyle: boolean;
+    selectedNode?: SelectedComponentProps;
+}
+
+class Resume extends React.Component<{}, PageState> {
+    style: HTMLStyleElement;
+
+    constructor(props) {
+        super(props);
+
+        // Custom CSS
+        const head = document.getElementsByTagName("head")[0];
+        this.style = document.createElement("style");
+        this.style.innerHTML = "";
+        head.appendChild(this.style);
+
+        this.state = {
+            children: resumeData,
+            customCss: defaultCss,
+            isEditingStyle: false,
             isPrinting: false
         };
 
@@ -104,6 +108,7 @@ section {
         this.onStyleChange = this.onStyleChange.bind(this);
         this.saveFile = this.saveFile.bind(this);
         this.unselect = this.unselect.bind(this);
+        this.toggleStyleEditor = this.toggleStyleEditor.bind(this);
     }
 
     addSection() {
@@ -216,6 +221,12 @@ section {
         });
     }
 
+    toggleStyleEditor() {
+        this.setState({
+            isEditingStyle: !this.state.isEditingStyle
+        });
+    }
+
     renderHotkeys() {
         const keyMap = {
             PRINT_MODE: "shift+p"
@@ -248,13 +259,45 @@ section {
             </React.Fragment>)
     }
 
+    renderStyleEditor() {
+        if (this.state.isEditingStyle) {
+            return <div style={{
+                maxWidth: "500px",
+                paddingLeft: "1em"
+            }}>
+                <h2>Style Editor</h2>
+                <textarea style={{
+                    minWidth: "400px",
+                    minHeight: "400px",
+                    width: "100%"
+                }} onChange={this.onStyleChange} value={this.state.customCss} />
+                <button onClick={this.renderStyle}>Update</button>
+            </div>
+        }
+
+        return <></>
+    }
+
     render() {
-        return <div style={{
+        return <React.Fragment>
+            <ButtonToolbar aria-label="Resume Editor Controls">
+                <FileLoader loadData={this.loadData} />
+
+                <ButtonGroup>
+                    <Button onClick={this.saveFile}>Save to File</Button>
+                </ButtonGroup>
+
+                <ButtonGroup>
+                    <Button onClick={this.toggleStyleEditor}>Edit Style</Button>
+                </ButtonGroup>
+            </ButtonToolbar>
+
+        <div style={{
             display: 'flex',
             flexDirection: 'row'
-        }}>        
+        }}>
             {this.renderHotkeys()}
-            
+
             <div id="resume" style={{ width: "100%" }}>
                 {this.renderChildren()}
 
@@ -264,27 +307,10 @@ section {
             </div>
 
             <Nonprintable isPrinting={this.state.isPrinting}>
-                <div style={{
-                    maxWidth: "500px",
-                    paddingLeft: "1em"
-                }}>
-                    <SideMenu>
-                        <FileLoader loadData={this.loadData} />
-                        <Button onClick={this.saveFile}>
-                            Save Data
-                        </Button>
-
-                        <h2>Style Editor</h2>
-                        <textarea style={{
-                            minWidth: "400px",
-                            minHeight: "400px",
-                            width: "100%"
-                        }} onChange={this.onStyleChange} value={this.state.customCss} />
-                        <button onClick={this.renderStyle}>Update</button>
-                    </SideMenu>
-                </div>
+                {this.renderStyleEditor()}
             </Nonprintable>
-        </div>
+            </div>
+        </React.Fragment>
     }
 }
 

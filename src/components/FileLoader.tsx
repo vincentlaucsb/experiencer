@@ -1,11 +1,13 @@
 ﻿import * as React from "react";
-import { Button } from "react-bootstrap";
+import { Button, InputGroup, Collapse, Form } from "react-bootstrap";
+import { InputGroupAppend } from "react-bootstrap/InputGroup";
 
 interface FileLoaderProps {
     loadData: (data: Array<object>) => void;
 }
 
 interface FileLoaderState {
+    isOpen: boolean;
     filename: string;
 }
 
@@ -17,7 +19,8 @@ export class FileLoader extends React.Component<FileLoaderProps, FileLoaderState
         super(props);
 
         this.state = {
-            filename: ''
+            filename: '',
+            isOpen: false
         };
 
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -48,17 +51,42 @@ export class FileLoader extends React.Component<FileLoaderProps, FileLoaderState
         event.preventDefault(); // Prevent page refresh
 
         let userFile = this.fileInput.current.files[0];
-        this.readFile(userFile);
+        if (userFile) {
+            this.readFile(userFile);
+        }
+    }
+
+    renderExpanded() {
+        if (this.state.isOpen) {
+            return <React.Fragment>
+                <Form onSubmit={this.handleSubmit} id="load-file">
+                    <input className="form-control" type="file" ref={this.fileInput} />
+                </Form>
+                <InputGroup.Append>
+                    <Button form="load-file" type="submit">Open</Button>
+                </InputGroup.Append>
+            </React.Fragment>
+        }
+
+        return <></>
+    }
+
+    renderTrigger() {
+        const button = <Button onClick={() => this.setState({ isOpen: !this.state.isOpen })}>Load</Button>
+
+        if (this.state.isOpen) {
+            return <InputGroup.Prepend>
+                {button}
+            </InputGroup.Prepend>
+        }
+
+        return button;
     }
 
     render() {
-        return <form onSubmit={this.handleSubmit} id="loadFile">
-            <div className="form-group">
-                <label>File
-                    <input className="form-control" type="file" ref={this.fileInput} />
-                    </label>
-            </div>
-            <Button type="submit">Load</Button>
-            </form>
+        return <InputGroup>
+            {this.renderTrigger()}
+            {this.renderExpanded()}
+        </InputGroup>
     }
 }

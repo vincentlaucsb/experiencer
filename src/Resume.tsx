@@ -259,6 +259,24 @@ class Resume extends React.Component<{}, PageState> {
             </React.Fragment>)
     }
 
+    renderToolbar() {
+        if (!this.state.isPrinting) {
+            return <ButtonToolbar aria-label="Resume Editor Controls">
+                <FileLoader loadData={this.loadData} />
+
+                <ButtonGroup>
+                    <Button onClick={this.saveFile}>Save to File</Button>
+                </ButtonGroup>
+
+                <ButtonGroup>
+                    <Button onClick={this.toggleStyleEditor}>Edit Style</Button>
+                </ButtonGroup>
+            </ButtonToolbar>
+        }
+
+        return <></>
+    }
+
     renderStyleEditor() {
         if (this.state.isEditingStyle && !this.state.isPrinting) {
             return <div>
@@ -287,26 +305,15 @@ class Resume extends React.Component<{}, PageState> {
         let mainContent = resume;
 
         // Split resume and style editor
-        if (this.state.isEditingStyle) {
-            mainContent = <SplitPane defaultSize="20%" primary="second">
+        if (this.state.isEditingStyle && !this.state.isPrinting) {
+            mainContent = <SplitPane defaultSize="500px" primary="second">
                 {resume}
                 {this.renderStyleEditor()}
             </SplitPane>
         }
 
         return <React.Fragment>
-            <ButtonToolbar aria-label="Resume Editor Controls">
-                <FileLoader loadData={this.loadData} />
-
-                <ButtonGroup>
-                    <Button onClick={this.saveFile}>Save to File</Button>
-                </ButtonGroup>
-
-                <ButtonGroup>
-                    <Button onClick={this.toggleStyleEditor}>Edit Style</Button>
-                </ButtonGroup>
-            </ButtonToolbar>
-
+            {this.renderToolbar()}
             {this.renderHotkeys()}
             {mainContent}
         </React.Fragment>

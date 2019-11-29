@@ -1,5 +1,4 @@
 ﻿import * as React from "react";
-import { EditableProps } from "./Editable";
 import EditButton from "./Buttons";
 import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
 

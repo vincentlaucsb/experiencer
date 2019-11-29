@@ -55,7 +55,17 @@ export default class ResumeComponent<
         this.setSelected = this.setSelected.bind(this);
         this.unselect = this.unselect.bind(this);
     }
-    
+
+    componentWillUnmount() {
+        // Since the node is being deleted, remove callback to this node's unselect
+        // method from <Resume /> to prevent memory leaks
+        if (this.state && this.state.isSelected) {
+            (this.props.updateSelected as (data: SelectedComponentProps) => void)({
+                unselect: undefined 
+            });
+        }
+    }
+
     addChild(data: object) {
         if (this.props.addChild as AddChild) {
             (this.props.addChild as AddChild)(data);

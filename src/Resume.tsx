@@ -206,7 +206,7 @@ section {
 
     unselect() {
         const prevNode = this.state.selectedNode as SelectedComponentProps;
-        if (prevNode) {
+        if (prevNode && prevNode.unselect as Action) {
             (prevNode.unselect as Action)();
         }
     }

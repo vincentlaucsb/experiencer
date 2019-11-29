@@ -25,12 +25,21 @@ export class ListItem extends ResumeComponent<ListProps> {
         ],
     };
 
-    render() {
-        let value: any = "";
-        let moveButtons = this.props.isMoving ? <React.Fragment>
+    getEditingMenu() {
+        let moveButtons = this.props.isMoving ? <>
             <UpButton {...this.props} />
             <DownButton {...this.props} />
-        </React.Fragment> : "";
+        </> : <></>
+
+        return <React.Fragment>
+            <EditButton {...this.props} />
+            <DeleteButton {...this.props} />
+            {moveButtons}
+        </React.Fragment>
+    }
+
+    render() {
+        let value: any = "";
 
         if (this.props.value) {
             let htmlCode = this.props.value;
@@ -56,15 +65,8 @@ export class ListItem extends ResumeComponent<ListProps> {
         return <li>
             <span className="flex-row">
                 <span>{value}</span>
-
-                <Nonprintable isPrinting={this.props.isPrinting}>
-                    <span>
-                        <EditButton {...this.props} />
-                        <DeleteButton {...this.props} />
-                        {moveButtons}
-                    </span>
-                </Nonprintable>
-                </span>
+                <span>{this.getEditingMenu()}</span>
+            </span>
         </li>
     }
 }

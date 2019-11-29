@@ -74,7 +74,7 @@ export default class Entry extends ResumeComponent<EntryProps> {
     }
 
     getSubtitleExtras() {
-        return this.getExtras('subtitleExtras', this.updateTitleExtras);
+        return this.getExtras('subtitleExtras', this.updateSubtitleExtras);
     }
 
     updateExtras(key: string, idx: number, event: any) {
@@ -110,9 +110,7 @@ export default class Entry extends ResumeComponent<EntryProps> {
         return <div className={className}>
             {this.renderEditingMenu()}
             <div className="entry-title" {...this.getSelectTriggerProps()}>
-                <h3 className="flex-row">
-                    {title} {this.getTitleExtras()}
-                    </h3>
+                <h3 className="flex-row">{title} {this.getTitleExtras()}</h3>
                 <p className="flex-row subtitle">{subtitle} {this.getSubtitleExtras()}</p>
             </div>
 

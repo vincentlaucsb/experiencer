@@ -207,7 +207,6 @@ export default class ResumeComponent<
         });
     }
 
-
     getSelectTriggerProps() {
         return {
             onClick: this.setSelected,

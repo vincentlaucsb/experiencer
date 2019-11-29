@@ -13,6 +13,10 @@ import { FileLoader } from './components/FileLoader';
 import { deleteAt, moveUp, moveDown } from './components/Helpers';
 import { Nonprintable } from './components/Nonprintable';
 import { SelectedComponentProps, Action } from './components/ResumeComponent';
+import AceEditor from "react-ace";
+
+import "ace-builds/src-noconflict/mode-java";
+import "ace-builds/src-noconflict/theme-github";
 
 const resumeData = [
     {
@@ -135,9 +139,9 @@ class Resume extends React.Component<{}, PageState> {
     }
 
     // Update custom CSS
-    onStyleChange(event) {
+    onStyleChange(css: string) {
         this.setState({
-            customCss: event.target.value,
+            customCss: css,
         });
     }
 
@@ -277,15 +281,22 @@ class Resume extends React.Component<{}, PageState> {
         return <></>
     }
 
+    onStyleEditorChange(event) {
+        console.log(event);
+    }
+
     renderStyleEditor() {
         if (this.state.isEditingStyle && !this.state.isPrinting) {
             return <div>
                 <h2>Style Editor</h2>
-                <textarea style={{
-                    minWidth: "400px",
-                    minHeight: "400px",
-                    width: "100%"
-                }} onChange={this.onStyleChange} value={this.state.customCss} />
+                <AceEditor
+                    mode="java"
+                    theme="github"
+                    onChange={this.onStyleChange}
+                    value={this.state.customCss}
+                    name="UNIQUE_ID_OF_DIV"
+                    editorProps={{ $blockScrolling: true }}
+                />
                 <button onClick={this.renderStyle}>Update</button>
             </div>
         }

@@ -4,12 +4,11 @@ import EditButton, { AddButton, DownButton, UpButton, DeleteButton } from "./But
 import { Nonprintable } from "./Nonprintable";
 import { ButtonGroup, Button, Dropdown, DropdownButton } from "react-bootstrap";
 import AddIcon from "../icons/add-24px.svg";
+import { DropdownDivider } from "react-bootstrap/Dropdown";
 
 export interface EntryProps extends ResumeComponentProps {
-    title?: string;
-    titleRight?: string;
-    subtitle?: string;
-    subtitleRight?: string;
+    title?: string[];
+    subtitle?: string[];
 }
 
 interface EntryState {
@@ -26,7 +25,17 @@ export default class Entry extends ResumeComponent<EntryProps, EntryState> {
             isSelected: false
         };
 
+        this.addTitleField = this.addTitleField.bind(this);
         this.setSelected = this.setSelected.bind(this);
+    }
+
+    addTitleField() {
+        let replTitle = this.props.title || [];
+        replTitle.push("");
+
+        console.log(replTitle);
+
+        this.updateData('title', replTitle);
     }
 
     setSelected() {
@@ -46,21 +55,38 @@ export default class Entry extends ResumeComponent<EntryProps, EntryState> {
             isSelected: false
         });
     }
+
+    updateTitle(idx: number, event: any) {
+        let replTitle = this.props.title || [];
+
+        // Replace contents
+        replTitle[idx] = event.target.value;
+
+        console.log(replTitle, event);
+        this.updateData('title', replTitle);
+    }
     
     render() {
         let buttons = <></>
         let className = 'resume-entry';
+        const titleData = this.props.title as string[];
 
-        let title: any = this.props.title || "Enter a title";
-        let titleRight: any = this.props.titleRight || "";
         let subtitle: any = this.props.subtitle || "Enter a subtitle";
-        let subtitleRight: any = this.props.subtitleRight || "";
+        let title: any = "Enter a title";
 
         if (this.props.isEditing) {
-            title = <input onChange={this.updateDataEvent.bind(this, "title")} value={this.props.title || ""} />
-            titleRight = <input onChange={this.updateDataEvent.bind(this, "titleRight")} value={this.props.titleRight || ""} />
+            if (titleData) {
+                title = titleData.map((text, index) =>
+                    <input key={index} onChange={this.updateTitle.bind(this, index)} value={text || ""} />
+                );
+            }
+            else {
+                title = <input onChange={this.updateTitle.bind(this, 0)} value="" />;
+            }
+
             subtitle = <input onChange={this.updateDataEvent.bind(this, "subtitle")} value={this.props.subtitle || ""} />
-            subtitleRight = <input onChange={this.updateDataEvent.bind(this, "subtitleRight")} value={this.props.subtitleRight || ""} />
+        } else if (titleData) {
+            title = titleData.map((text, index) => <span key={index}>{text}</span>);
         }
 
         if (!this.props.isPrinting) {
@@ -73,6 +99,9 @@ export default class Entry extends ResumeComponent<EntryProps, EntryState> {
                     <DropdownButton as={ButtonGroup} title="Add" id="add-options" size="sm">
                         <Dropdown.Item onClick={this.addList}>Bulleted List</Dropdown.Item>
                         <Dropdown.Item onClick={this.addParagraph}>Paragraph</Dropdown.Item>
+                        <Dropdown.Divider />
+                        <Dropdown.Item onClick={this.addTitleField}>Add another title field</Dropdown.Item>
+                        <Dropdown.Item>Add another subtitle field</Dropdown.Item>
                     </DropdownButton>
                     <EditButton {...this.props} extended={true} />
                     <DeleteButton {...this.props} extended={true} />
@@ -88,9 +117,9 @@ export default class Entry extends ResumeComponent<EntryProps, EntryState> {
                 onMouseEnter={() => this.setState({ isHovering: true })}
                 onMouseLeave={() => this.setState({ isHovering: false })}
             >
-                <span>{title}</span> <span className="title-right">{titleRight}</span>
+                {title}
             </h3>
-            <p className="flex-row subtitle">{subtitle} <span className="subtitle-right">{subtitleRight}</span></p>
+            <p className="flex-row subtitle">{subtitle}</p>
 
             {this.renderChildren()}
         </div>

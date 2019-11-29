@@ -182,6 +182,9 @@ section {
             children: data['children'] as Array<object>,
             customCss: data['css'] as string
         });
+
+        // Actually load custom CSS
+        this.renderStyle();
     }
 
     // Save data to an external file

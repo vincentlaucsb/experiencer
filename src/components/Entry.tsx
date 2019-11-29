@@ -63,21 +63,23 @@ export default class Entry extends ResumeComponent<EntryProps, EntryState> {
             subtitleRight = <input onChange={this.updateDataEvent.bind(this, "subtitleRight")} value={this.props.subtitleRight || ""} />
         }
 
-        if (this.state.isHovering || this.state.isSelected) {
-            className += ' resume-selected';
-        }
+        if (!this.props.isPrinting) {
+            if ((this.state.isHovering || this.state.isSelected)) {
+                className += ' resume-selected';
+            }
 
-        if (this.state.isSelected) {
-            buttons = <ButtonGroup size="sm">
-                <DropdownButton as={ButtonGroup} title="Add" id="add-options" size="sm">
-                    <Dropdown.Item onClick={this.addList}>Bulleted List</Dropdown.Item>
-                    <Dropdown.Item onClick={this.addParagraph}>Paragraph</Dropdown.Item>
-                </DropdownButton>
-                <EditButton {...this.props} extended={true} />
-                <DeleteButton {...this.props} extended={true} />
-                <UpButton {...this.props} extended={true} />
-                <DownButton {...this.props} extended={true} />
-            </ButtonGroup>
+            if (this.state.isSelected) {
+                buttons = <ButtonGroup size="sm">
+                    <DropdownButton as={ButtonGroup} title="Add" id="add-options" size="sm">
+                        <Dropdown.Item onClick={this.addList}>Bulleted List</Dropdown.Item>
+                        <Dropdown.Item onClick={this.addParagraph}>Paragraph</Dropdown.Item>
+                    </DropdownButton>
+                    <EditButton {...this.props} extended={true} />
+                    <DeleteButton {...this.props} extended={true} />
+                    <UpButton {...this.props} extended={true} />
+                    <DownButton {...this.props} extended={true} />
+                </ButtonGroup>
+            }
         }
 
         return <div className={className}>

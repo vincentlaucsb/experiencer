@@ -117,32 +117,14 @@ export default class List extends ResumeComponent<ListProps> {
         this.updateData("isMoving", isMoving);
         this.updateData("children", children);
     }
-
-    setSelected() {
-        if (!this.state.isSelected) {
-            this.setState({ isSelected: true });
-            if (this.props.unselect as Action) {
-                (this.props.unselect as Action)();
-            }
-            (this.props.updateSelected as (data: SelectedComponentProps) => void)({
-                unselect: this.unselect.bind(this)
-            });
-        }
-    }
-
-    unselect() {
-        this.setState({
-            isSelected: false
-        });
-    }
-
+    
     render() {
-        let className = this.state.isSelected ? 'resume-selected' : '';
+        let className = (this.state.isSelected || this.state.isHovering) ? 'resume-selected' : '';
         let moveText = this.props.isMoving ? "Done Moving" : "Move Bullets";
 
         return <React.Fragment>
             <MenuProvider id={this.props.id as string}>
-                <ul onClick={this.setSelected} className={className}>
+                <ul className={className} {...this.getSelectTriggerProps()}>
                     {this.renderChildren()}
                     {this.renderEditingMenu()}
                 </ul>

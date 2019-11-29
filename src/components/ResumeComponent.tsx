@@ -52,6 +52,8 @@ export default class ResumeComponent<
         this.toggleEdit = this.toggleEdit.bind(this);
         this.toggleNestedEdit = this.toggleNestedEdit.bind(this);
         this.updateNestedData = this.updateNestedData.bind(this);
+        this.setSelected = this.setSelected.bind(this);
+        this.unselect = this.unselect.bind(this);
     }
     
     addChild(data: object) {
@@ -181,6 +183,37 @@ export default class ResumeComponent<
         }
 
         return <React.Fragment />
+    }
+
+    setSelected() {
+        if (!this.state.isSelected) {
+            this.setState({ isSelected: true });
+
+            // Unselect the previous component
+            if (this.props.unselect as Action) {
+                (this.props.unselect as Action)();
+            }
+
+            // Pass this node's unselect back up to <Resume />
+            (this.props.updateSelected as (data: SelectedComponentProps) => void)({
+                unselect: this.unselect.bind(this)
+            });
+        }
+    }
+
+    unselect() {
+        this.setState({
+            isSelected: false
+        });
+    }
+
+
+    getSelectTriggerProps() {
+        return {
+            onClick: this.setSelected,
+            onMouseEnter: () => this.setState({ isHovering: true }),
+            onMouseLeave: () => this.setState({ isHovering: false })
+        };
     }
 
     // Get the buttons for editing a menu

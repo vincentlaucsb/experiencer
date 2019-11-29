@@ -77,24 +77,6 @@ export default class Entry extends ResumeComponent<EntryProps> {
         return this.getExtras('subtitleExtras', this.updateTitleExtras);
     }
 
-    setSelected() {
-        if (!this.state.isSelected) {
-            this.setState({ isSelected: true });
-            if (this.props.unselect as Action) {
-                (this.props.unselect as Action)();
-            }
-            (this.props.updateSelected as (data: SelectedComponentProps) => void)({
-                unselect: this.unselect.bind(this)
-            });
-        }
-    }
-
-    unselect() {
-        this.setState({
-            isSelected: false
-        });
-    }
-
     updateExtras(key: string, idx: number, event: any) {
         let replTitle = this.props[key] || [];
 
@@ -112,7 +94,7 @@ export default class Entry extends ResumeComponent<EntryProps> {
     }
     
     render() {
-        let className = 'resume-entry';
+        let className = 'entry';
         let title: any = this.props.title || "Enter a title";
         let subtitle: any = this.props.subtitle || "Enter a subtitle";
 
@@ -127,13 +109,12 @@ export default class Entry extends ResumeComponent<EntryProps> {
 
         return <div className={className}>
             {this.renderEditingMenu()}
-            <h3 className="flex-row" onClick={this.setSelected}
-                onMouseEnter={() => this.setState({ isHovering: true })}
-                onMouseLeave={() => this.setState({ isHovering: false })}
-            >
-                {title} {this.getTitleExtras()}
-            </h3>
-            <p className="flex-row subtitle">{subtitle} {this.getSubtitleExtras()}</p>
+            <div className="entry-title" {...this.getSelectTriggerProps()}>
+                <h3 className="flex-row">
+                    {title} {this.getTitleExtras()}
+                    </h3>
+                <p className="flex-row subtitle">{subtitle} {this.getSubtitleExtras()}</p>
+            </div>
 
             {this.renderChildren()}
         </div>

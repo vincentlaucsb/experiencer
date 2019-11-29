@@ -18,6 +18,10 @@ li.list-options {
     list-style-type: none;
 }
 
+input {
+    width: 100%;
+}
+
 .resume-selected {
     border: 1px solid blue;
 }

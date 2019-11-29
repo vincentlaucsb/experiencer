@@ -18,8 +18,8 @@ interface ExtraProps {
     updateData?: (key: string, data: any) => void;
 }
 
-export default function loadComponent(data: object, extraProps?: ExtraProps,
-isFirst = false, isLast = false) {
+export default function loadComponent(data: object,
+    index: number, numChildren: number, extraProps?: ExtraProps, parentIndex?: string) {
     // Load prop data
     let props: ResumeComponentProps = {};
     for (let key in data) {
@@ -28,8 +28,14 @@ isFirst = false, isLast = false) {
         }
     }
 
-    props['isFirst'] = isFirst;
-    props['isLast'] = isLast;
+    // Generate unique IDs for component
+    props['id'] = index.toString();
+    if (parentIndex) {
+        props['id'] = parentIndex + '-' + index.toString();
+    }
+
+    props['isFirst'] = (index == 0);
+    props['isLast'] = (index == numChildren - 1);
 
     if (extraProps) {
         props['addChild'] = extraProps.addChild;

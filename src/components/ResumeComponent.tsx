@@ -3,6 +3,7 @@ import loadComponent from "./LoadComponent";
 import { deleteAt, moveUp, moveDown } from "./Helpers";
 
 export interface ResumeComponentProps {
+    id?: string;
     isEditing?: boolean;
     isPrinting?: boolean;
     isFirst?: boolean;
@@ -63,7 +64,12 @@ export default class ResumeComponent<
     }
 
     addList() {
-        this.addChild({ type: 'List' });
+        this.addChild({
+            type: 'List',
+            children: [{
+                type: 'ListItem'
+            }]
+        });
     }
 
     /**
@@ -143,7 +149,7 @@ export default class ResumeComponent<
             return <React.Fragment>{
                 (this.props.children as Array<object>).map((elem, idx, arr) =>
                     <React.Fragment key={idx}>
-                        {loadComponent(elem,
+                        {loadComponent(elem, idx, arr.length,
                             {
                                 addChild: (this.addNestedChild.bind(this, idx) as (node: object) => void),
                                 moveDown: (this.moveNestedChildDown.bind(this, idx) as Action),
@@ -153,8 +159,7 @@ export default class ResumeComponent<
                                 updateData: (this.updateNestedData.bind(this, idx) as (key: string, data: any) => void),
                                 isPrinting: this.props.isPrinting
                             },
-                            idx == 0,             // isFirst
-                            idx == arr.length - 1 // isLast
+                            this.props.id
                         )}
                     </React.Fragment>)
             }

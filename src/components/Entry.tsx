@@ -37,7 +37,7 @@ export default class Entry extends ResumeComponent<EntryProps> {
         }
 
         return <div className="resume-entry">
-            <h3 className="flex-row">{title} <span className="title-right">{titleRight} {buttons}</span></h3>
+            <h3 className="flex-row"><span>{title}{buttons}</span> <span className="title-right">{titleRight} </span></h3>
             <p className="flex-row subtitle">{subtitle} <span className="subtitle-right">{subtitleRight}</span></p>
 
             {this.renderChildren()}

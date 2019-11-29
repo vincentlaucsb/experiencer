@@ -4,6 +4,8 @@ import EditButton, { DeleteButton, AddButton, DownButton, UpButton } from "./But
 import { Button, ButtonGroup } from "react-bootstrap";
 import ReactQuill from "react-quill";
 import { Nonprintable } from "./Nonprintable";
+import { Menu, Item, Separator, Submenu, MenuProvider } from 'react-contexify';
+import 'react-contexify/dist/ReactContexify.min.css';
 
 interface ListProps extends ResumeComponentProps {
     isMoving?: boolean;
@@ -62,7 +64,7 @@ export class ListItem extends ResumeComponent<ListProps> {
                         {moveButtons}
                     </span>
                 </Nonprintable>
-            </span>
+                </span>
         </li>
     }
 }
@@ -98,18 +100,17 @@ export default class List extends ResumeComponent<ListProps> {
     render() {
         let moveText = this.props.isMoving ? "Done Moving" : "Move Bullets";
 
-        return <ul>
-            {this.renderChildren()}
-            <Nonprintable isPrinting={this.props.isPrinting}>
-                <li className="list-options">
-                    <ButtonGroup>
-                        <Button onClick={this.addChild} size="sm">Add Bullet</Button>
-                        <Button onClick={this.moveBullets} size="sm">{moveText}</Button>
-                    </ButtonGroup>
-
-                    <Button onClick={this.props.deleteChild as Action} size="sm" variant="danger">Delete List</Button>
-                </li>
-            </Nonprintable>
-            </ul>
+        return <React.Fragment>
+            <MenuProvider id={this.props.id as string}>
+                <ul>
+                    {this.renderChildren()}
+                </ul>
+            </MenuProvider>
+            <Menu id={this.props.id as string}>
+                <Item onClick={this.addChild}>Add Bullet</Item>
+                <Item onClick={this.moveBullets}>{moveText}</Item>
+                <Item onClick={this.props.deleteChild as Action}>Delete List</Item>
+            </Menu>
+        </React.Fragment>
     }
 }

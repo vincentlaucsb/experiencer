@@ -218,7 +218,7 @@ section {
             <div id="resume" style={{ width: "100%" }}>
                 {this.state.children.map((elem, idx, arr) =>
                     <React.Fragment key={idx}>
-                        {loadComponent(elem, {
+                        {loadComponent(elem, idx, arr.length, {
                                 addChild: this.addChild.bind(this, idx),
                                 moveUp: this.moveUp.bind(this, idx),
                                 moveDown: this.moveDown.bind(this, idx),
@@ -226,9 +226,7 @@ section {
                                 toggleEdit: this.toggleEdit.bind(this, idx),
                                 updateData: this.updateData.bind(this, idx),
                                 isPrinting: this.state.isPrinting
-                            },
-                            idx == 0,             // isFirst
-                            idx == arr.length - 1 // isLast
+                            }
                         )}
                     </React.Fragment>)
                 }

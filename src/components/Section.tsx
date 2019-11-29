@@ -13,7 +13,7 @@ export default class Section extends ResumeComponent<SectionProps> {
         super(props);
     }
 
-    render() {
+    getEditingMenu() {
         let addMenu = <Dropdown style={{ fontFamily: "sans-serif", display: "inline" }}>
             <Dropdown.Toggle id="add" size="sm">
                 Add
@@ -25,16 +25,16 @@ export default class Section extends ResumeComponent<SectionProps> {
             </Dropdown.Menu>
         </Dropdown>
 
-        let buttons = <Nonprintable isPrinting={this.props.isPrinting}>
-                <span>
-                    <EditButton {...this.props} />
-                    <DeleteButton {...this.props} />
-                    <UpButton {...this.props} />
-                    <DownButton {...this.props} />
-                    {addMenu}
-                </span>
-            </Nonprintable>
+        return <span>
+            <EditButton {...this.props} />
+            <DeleteButton {...this.props} />
+            <UpButton {...this.props} />
+            <DownButton {...this.props} />
+            {addMenu}
+        </span>
+    }
 
+    render() {
         let title: string | JSX.Element = this.props.title;
 
         if (this.props.isEditing) {
@@ -44,7 +44,7 @@ export default class Section extends ResumeComponent<SectionProps> {
         return <section>
             <h2 className="flex-row">
                 {title}
-                {buttons}
+                {this.renderEditingMenu()}
             </h2>
 
             {this.renderChildren()}

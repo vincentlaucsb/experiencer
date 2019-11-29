@@ -2,7 +2,6 @@
 import ResumeComponent, { ResumeComponentProps, SelectedComponentProps, Action } from "./ResumeComponent";
 import EditButton, { AddButton, DownButton, UpButton, DeleteButton } from "./Buttons";
 import { ButtonGroup, Button, Dropdown, DropdownButton } from "react-bootstrap";
-import AddIcon from "../icons/add-24px.svg";
 
 export interface EntryProps extends ResumeComponentProps {
     title?: string;
@@ -11,12 +10,7 @@ export interface EntryProps extends ResumeComponentProps {
     subtitleExtras?: string[];
 }
 
-interface EntryState {
-    isHovering: boolean;
-    isSelected: boolean;
-}
-
-export default class Entry extends ResumeComponent<EntryProps, EntryState> {
+export default class Entry extends ResumeComponent<EntryProps> {
     constructor(props) {
         super(props);
 
@@ -42,8 +36,8 @@ export default class Entry extends ResumeComponent<EntryProps, EntryState> {
         this.updateData('subtitleExtras', replTitle);
     }
 
-    getEditingControls() {
-        if (this.state.isSelected && !this.props.isPrinting) {
+    getEditingMenu() {
+        if (this.state.isSelected) {
             return <ButtonGroup size="sm">
                 <DropdownButton as={ButtonGroup} title="Add" id="add-options" size="sm">
                     <Dropdown.Item onClick={this.addList}>Bulleted List</Dropdown.Item>
@@ -58,8 +52,6 @@ export default class Entry extends ResumeComponent<EntryProps, EntryState> {
                 <DownButton {...this.props} extended={true} />
             </ButtonGroup>
         }
-
-        return <></>
     }
 
     getExtras(key: string, updater: (idx: number, event: any) => void) {
@@ -121,9 +113,6 @@ export default class Entry extends ResumeComponent<EntryProps, EntryState> {
     
     render() {
         let className = 'resume-entry';
-        const titleExtraData = this.props.titleExtras as string[];
-        const subtitleExtraData = this.props.subtitleExtras as string[];
-
         let title: any = this.props.title || "Enter a title";
         let subtitle: any = this.props.subtitle || "Enter a subtitle";
 
@@ -137,7 +126,7 @@ export default class Entry extends ResumeComponent<EntryProps, EntryState> {
         }
 
         return <div className={className}>
-            {this.getEditingControls()}
+            {this.renderEditingMenu()}
             <h3 className="flex-row" onClick={this.setSelected}
                 onMouseEnter={() => this.setState({ isHovering: true })}
                 onMouseLeave={() => this.setState({ isHovering: false })}

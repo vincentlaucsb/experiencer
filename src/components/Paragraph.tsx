@@ -1,8 +1,7 @@
 ﻿import * as React from "react";
 import ReactQuill from 'react-quill';
 import EditButton, { DeleteButton } from "./Buttons";
-import ResumeComponent, { Action } from "./ResumeComponent";
-import { Nonprintable } from "./Nonprintable";
+import ResumeComponent from "./ResumeComponent";
 
 export default class Paragraph extends ResumeComponent {
     constructor(props) {
@@ -20,6 +19,13 @@ export default class Paragraph extends ResumeComponent {
         ],
     };
 
+    getEditingMenu() {
+        return <span style={{ display: "inline-block" }}>
+            <EditButton {...this.props} />
+            <DeleteButton {...this.props} />
+        </span>
+    }
+
     render(): JSX.Element {
         let value = this.props.isEditing ? <ReactQuill
             modules={Paragraph.quillModules}
@@ -29,12 +35,7 @@ export default class Paragraph extends ResumeComponent {
 
         return <div>
             {value}            
-            <Nonprintable isPrinting={this.props.isPrinting}>
-                <span style={{ display: "inline-block" }}>
-                    <EditButton {...this.props} />
-                    <DeleteButton {...this.props} />
-                </span>
-            </Nonprintable>
+            {this.renderEditingMenu()}
         </div>;
     }
 }

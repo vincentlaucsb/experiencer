@@ -69,11 +69,7 @@ export class ListItem extends ResumeComponent<ListProps> {
     }
 }
 
-interface ListState {
-    isSelected: boolean;
-}
-
-export default class List extends ResumeComponent<ListProps, ListState> {
+export default class List extends ResumeComponent<ListProps> {
     constructor(props) {
         super(props);
 
@@ -92,6 +88,21 @@ export default class List extends ResumeComponent<ListProps, ListState> {
             (this.props.addChild as AddChild)({
                 type: 'ListItem'
             });
+        }
+    }
+
+    getEditingMenu() {
+        if (this.state.isSelected) {
+            let moveText = this.props.isMoving ? "Done Moving" : "Move Bullets";
+
+            return <li className="list-options">
+                <ButtonGroup>
+                    <Button onClick={this.addChild} size="sm">Add Bullet</Button>
+                    <Button onClick={this.moveBullets} size="sm">{moveText}</Button>
+                </ButtonGroup>
+
+                <Button onClick={this.props.deleteChild as Action} size="sm" variant="danger">Delete List</Button>
+            </li>
         }
     }
 
@@ -126,31 +137,14 @@ export default class List extends ResumeComponent<ListProps, ListState> {
     }
 
     render() {
+        let className = this.state.isSelected ? 'resume-selected' : '';
         let moveText = this.props.isMoving ? "Done Moving" : "Move Bullets";
-        let style = {};
-        let buttons = <></>
-        if (this.state.isSelected) {
-            style = {
-                border: "2px solid blue"
-            };
-
-            buttons = <Nonprintable isPrinting ={ this.props.isPrinting }>
-                <li className="list-options">
-                    <ButtonGroup>
-                        <Button onClick={this.addChild} size="sm">Add Bullet</Button>
-                        <Button onClick={this.moveBullets} size="sm">{moveText}</Button>
-                    </ButtonGroup>
-
-                    <Button onClick={this.props.deleteChild as Action} size="sm" variant="danger">Delete List</Button>
-                </li>
-            </Nonprintable>
-        }
 
         return <React.Fragment>
             <MenuProvider id={this.props.id as string}>
-                <ul onClick={this.setSelected} style={style}>
+                <ul onClick={this.setSelected} className={className}>
                     {this.renderChildren()}
-                    {buttons}
+                    {this.renderEditingMenu()}
                 </ul>
             </MenuProvider>
             <Menu id={this.props.id as string}>

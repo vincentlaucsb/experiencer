@@ -26,13 +26,18 @@ export interface ResumeComponentProps {
     updateSelected?: (data: SelectedComponentProps) => void;
 }
 
+export interface ResumeState {
+    isHovering?: boolean;
+    isSelected?: boolean;
+}
+
 export type Action = (() => void);
 export type AddChild = ((node: object) => void);
 export type UpdateChild = ((key: string, data: any) => void);
 
 // Represents a component that is part of the user's resume
 export default class ResumeComponent<
-    P extends ResumeComponentProps=ResumeComponentProps, S = {}>
+    P extends ResumeComponentProps=ResumeComponentProps, S extends ResumeState=ResumeState>
     extends React.Component<P, S> {
     constructor(props: P) {
         super(props);
@@ -176,5 +181,23 @@ export default class ResumeComponent<
         }
 
         return <React.Fragment />
+    }
+
+    // Get the buttons for editing a menu
+    getEditingMenu() : any {
+        return <></>
+    }
+
+    // Actually render the editing controls after checking that
+    // they should be rendered
+    renderEditingMenu() {
+        if (!this.props.isPrinting) {
+            const menu = this.getEditingMenu();
+            if (menu) {
+                return this.getEditingMenu();
+            }
+        }
+
+        return <></>
     }
 }

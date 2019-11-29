@@ -26,6 +26,14 @@ input {
     border: 1px solid blue;
 }
 
+/* Resizer */
+.Resizer.vertical {
+    width: 2px;
+    border-left: 2px solid #000000;
+    padding: 0 0.5rem;
+    cursor: col-resize;
+}
+
 /* Resume Components */
 .flex-row {
     display: flex;

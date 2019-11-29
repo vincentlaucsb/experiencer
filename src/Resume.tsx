@@ -1,7 +1,7 @@
 import * as React from 'react';
 import loadComponent from './components/LoadComponent';
 import { saveAs } from 'file-saver';
-import { SideMenu } from './components/SideMenu';
+import SplitPane from 'react-split-pane';
 import { GlobalHotKeys } from 'react-hotkeys';
 
 import './css/index.css';
@@ -260,11 +260,8 @@ class Resume extends React.Component<{}, PageState> {
     }
 
     renderStyleEditor() {
-        if (this.state.isEditingStyle) {
-            return <div style={{
-                maxWidth: "500px",
-                paddingLeft: "1em"
-            }}>
+        if (this.state.isEditingStyle && !this.state.isPrinting) {
+            return <div>
                 <h2>Style Editor</h2>
                 <textarea style={{
                     minWidth: "400px",
@@ -279,6 +276,24 @@ class Resume extends React.Component<{}, PageState> {
     }
 
     render() {
+        const resume = <div id="resume" style={{ width: "100%" }}>
+            {this.renderChildren()}
+
+            <Nonprintable isPrinting={this.state.isPrinting}>
+                <Button onClick={this.addSection}>Add Section</Button>
+            </Nonprintable>
+        </div>
+
+        let mainContent = resume;
+
+        // Split resume and style editor
+        if (this.state.isEditingStyle) {
+            mainContent = <SplitPane defaultSize="20%" primary="second">
+                {resume}
+                {this.renderStyleEditor()}
+            </SplitPane>
+        }
+
         return <React.Fragment>
             <ButtonToolbar aria-label="Resume Editor Controls">
                 <FileLoader loadData={this.loadData} />
@@ -292,24 +307,8 @@ class Resume extends React.Component<{}, PageState> {
                 </ButtonGroup>
             </ButtonToolbar>
 
-        <div style={{
-            display: 'flex',
-            flexDirection: 'row'
-        }}>
             {this.renderHotkeys()}
-
-            <div id="resume" style={{ width: "100%" }}>
-                {this.renderChildren()}
-
-                <Nonprintable isPrinting={this.state.isPrinting}>
-                    <Button onClick={this.addSection}>Add Section</Button>
-                </Nonprintable>
-            </div>
-
-            <Nonprintable isPrinting={this.state.isPrinting}>
-                {this.renderStyleEditor()}
-            </Nonprintable>
-            </div>
+            {mainContent}
         </React.Fragment>
     }
 }

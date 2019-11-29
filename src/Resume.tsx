@@ -13,11 +13,13 @@ import { Button } from 'react-bootstrap';
 import { FileLoader } from './components/FileLoader';
 import { deleteAt, moveUp, moveDown } from './components/Helpers';
 import { Nonprintable } from './components/Nonprintable';
+import { SelectedComponentProps, Action } from './components/ResumeComponent';
 
 interface PageState {
     children: Array<object>;
     customCss: string;
     isPrinting: boolean;
+    selectedNode?: SelectedComponentProps;
 }
 
 const resumeData = [
@@ -102,6 +104,7 @@ section {
         this.renderStyle = this.renderStyle.bind(this);
         this.onStyleChange = this.onStyleChange.bind(this);
         this.saveFile = this.saveFile.bind(this);
+        this.unselect = this.unselect.bind(this);
     }
 
     addSection() {
@@ -198,6 +201,19 @@ section {
         saveAs(blob, "resume.json");
     }
 
+    unselect() {
+        const prevNode = this.state.selectedNode as SelectedComponentProps;
+        if (prevNode) {
+            (prevNode.unselect as Action)();
+        }
+    }
+
+    updateSelected(data: SelectedComponentProps) {
+        this.setState({
+            selectedNode: data
+        });
+    }
+
     render() {
         const keyMap = {
             PRINT_MODE: "shift+p"
@@ -225,7 +241,9 @@ section {
                                 deleteChild: this.deleteChild.bind(this, idx),
                                 toggleEdit: this.toggleEdit.bind(this, idx),
                                 updateData: this.updateData.bind(this, idx),
-                                isPrinting: this.state.isPrinting
+                                isPrinting: this.state.isPrinting,
+                                unselect: this.unselect,
+                                updateSelected: this.updateSelected.bind(this)
                             }
                         )}
                     </React.Fragment>)

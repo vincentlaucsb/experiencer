@@ -5,7 +5,7 @@ import Entry, { EntryProps } from "./Entry";
 import List, { ListItem } from "./List";
 import Paragraph from "./Paragraph";
 import Title from "./Title";
-import { ResumeComponentProps } from "./ResumeComponent";
+import { ResumeComponentProps, SelectedComponentProps } from "./ResumeComponent";
 
 interface ExtraProps {
     isPrinting?: boolean;
@@ -16,6 +16,8 @@ interface ExtraProps {
     deleteChild?: () => void;
     toggleEdit?: () => void;
     updateData?: (key: string, data: any) => void;
+    unselect?: () => void;
+    updateSelected?: (data: SelectedComponentProps) => void;
 }
 
 export default function loadComponent(data: object,
@@ -45,6 +47,8 @@ export default function loadComponent(data: object,
         props['toggleEdit'] = extraProps.toggleEdit;
         props['updateData'] = extraProps.updateData;
         props['isPrinting'] = extraProps.isPrinting;
+        props['unselect'] = extraProps.unselect;
+        props['updateSelected'] = extraProps.updateSelected;
     }
 
     props['children'] = new Array();

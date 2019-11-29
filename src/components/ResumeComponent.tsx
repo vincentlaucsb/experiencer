@@ -2,9 +2,14 @@
 import loadComponent from "./LoadComponent";
 import { deleteAt, moveUp, moveDown } from "./Helpers";
 
+export interface SelectedComponentProps {
+    unselect?: Action;
+}
+
 export interface ResumeComponentProps {
     id?: string;
     isEditing?: boolean;
+    isSelected?: boolean;
     isPrinting?: boolean;
     isFirst?: boolean;
     isLast?: boolean;
@@ -17,6 +22,8 @@ export interface ResumeComponentProps {
     deleteChild?: ((idx: number) => void) | (() => void);
     toggleEdit?: ((idx: number) => void) | (() => void);
     updateData?: ((idx: number, key: string, data: any) => void) | ((key: string, data: any) => void);
+    unselect?: Action;
+    updateSelected?: (data: SelectedComponentProps) => void;
 }
 
 export type Action = (() => void);
@@ -157,7 +164,9 @@ export default class ResumeComponent<
                                 deleteChild: (this.deleteNestedChild.bind(this, idx) as Action),
                                 toggleEdit: (this.toggleNestedEdit.bind(this, idx) as () => void),
                                 updateData: (this.updateNestedData.bind(this, idx) as (key: string, data: any) => void),
-                                isPrinting: this.props.isPrinting
+                                isPrinting: this.props.isPrinting,
+                                unselect: this.props.unselect,
+                                updateSelected: this.props.updateSelected
                             },
                             this.props.id
                         )}

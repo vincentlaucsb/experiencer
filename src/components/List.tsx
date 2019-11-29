@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import ResumeComponent, { AddChild, UpdateChild, Action, ResumeComponentProps } from "./ResumeComponent";
+import ResumeComponent, { AddChild, UpdateChild, Action, ResumeComponentProps, SelectedComponentProps } from "./ResumeComponent";
 import EditButton, { DeleteButton, AddButton, DownButton, UpButton } from "./Buttons";
 import { Button, ButtonGroup } from "react-bootstrap";
 import ReactQuill from "react-quill";
@@ -69,12 +69,22 @@ export class ListItem extends ResumeComponent<ListProps> {
     }
 }
 
-export default class List extends ResumeComponent<ListProps> {
+interface ListState {
+    isSelected: boolean;
+}
+
+export default class List extends ResumeComponent<ListProps, ListState> {
     constructor(props) {
         super(props);
 
+        this.state = {
+            isSelected: false
+        };
+
         this.addChild = this.addChild.bind(this);
         this.moveBullets = this.moveBullets.bind(this);
+        this.setSelected = this.setSelected.bind(this);
+        this.unselect = this.unselect.bind(this);
     }
 
     addChild() {
@@ -97,13 +107,50 @@ export default class List extends ResumeComponent<ListProps> {
         this.updateData("children", children);
     }
 
+    setSelected() {
+        if (!this.state.isSelected) {
+            this.setState({ isSelected: true });
+            if (this.props.unselect as Action) {
+                (this.props.unselect as Action)();
+            }
+            (this.props.updateSelected as (data: SelectedComponentProps) => void)({
+                unselect: this.unselect.bind(this)
+            });
+        }
+    }
+
+    unselect() {
+        this.setState({
+            isSelected: false
+        });
+    }
+
     render() {
         let moveText = this.props.isMoving ? "Done Moving" : "Move Bullets";
+        let style = {};
+        let buttons = <></>
+        if (this.state.isSelected) {
+            style = {
+                border: "2px solid blue"
+            };
+
+            buttons = <Nonprintable isPrinting ={ this.props.isPrinting }>
+                <li className="list-options">
+                    <ButtonGroup>
+                        <Button onClick={this.addChild} size="sm">Add Bullet</Button>
+                        <Button onClick={this.moveBullets} size="sm">{moveText}</Button>
+                    </ButtonGroup>
+
+                    <Button onClick={this.props.deleteChild as Action} size="sm" variant="danger">Delete List</Button>
+                </li>
+            </Nonprintable>
+        }
 
         return <React.Fragment>
             <MenuProvider id={this.props.id as string}>
-                <ul>
+                <ul onClick={this.setSelected} style={style}>
                     {this.renderChildren()}
+                    {buttons}
                 </ul>
             </MenuProvider>
             <Menu id={this.props.id as string}>

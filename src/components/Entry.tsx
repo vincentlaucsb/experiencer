@@ -2,6 +2,8 @@
 import ResumeComponent, { ResumeComponentProps, SelectedComponentProps, Action } from "./ResumeComponent";
 import EditButton, { AddButton, DownButton, UpButton, DeleteButton } from "./Buttons";
 import { Nonprintable } from "./Nonprintable";
+import { ButtonGroup, Button, Dropdown } from "react-bootstrap";
+import AddIcon from "../icons/add-24px.svg";
 
 export interface EntryProps extends ResumeComponentProps {
     title?: string;
@@ -44,13 +46,7 @@ export default class Entry extends ResumeComponent<EntryProps, EntryState> {
     }
     
     render() {
-        let buttons = <Nonprintable isPrinting={this.props.isPrinting}>
-                <AddButton action={this.addList} />
-                <EditButton {...this.props} />
-                <DeleteButton {...this.props} />
-                <UpButton {...this.props} />
-                <DownButton {...this.props} />
-        </Nonprintable>
+        let buttons = <></>
 
         let title: any = this.props.title || "Enter a title";
         let titleRight: any = this.props.titleRight || "";
@@ -67,12 +63,30 @@ export default class Entry extends ResumeComponent<EntryProps, EntryState> {
         let style = {};
         if (this.state.isSelected) {
             style = {
-                border: "2px solid blue"
+                border: "2px solid blue",
+                padding: "0.5rem"
             };
+
+            buttons = <ButtonGroup size="sm">
+                <Dropdown style={{ fontFamily: "sans-serif", display: "inline" }}>
+                    <Dropdown.Toggle id="add" size="sm">
+                        <img src={AddIcon} alt='Add' /> Add
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Item onClick={this.addList}>Bulleted List</Dropdown.Item>
+                        <Dropdown.Item onClick={this.addParagraph}>Paragraph</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
+                <EditButton {...this.props} extended={true} />
+                <DeleteButton {...this.props} extended={true} />
+                <UpButton {...this.props} extended={true} />
+                <DownButton {...this.props} extended={true} />
+            </ButtonGroup>
         }
 
         return <div className="resume-entry" style={style}>
-            <h3 className="flex-row" onClick={this.setSelected}><span>{title}{buttons}</span> <span className="title-right">{titleRight} </span></h3>
+            {buttons}
+            <h3 className="flex-row" onClick={this.setSelected}><span>{title}</span> <span className="title-right">{titleRight} </span></h3>
             <p className="flex-row subtitle">{subtitle} <span className="subtitle-right">{subtitleRight}</span></p>
 
             {this.renderChildren()}

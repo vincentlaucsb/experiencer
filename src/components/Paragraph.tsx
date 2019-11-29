@@ -25,7 +25,7 @@ export default class Paragraph extends ResumeComponent {
             modules={Paragraph.quillModules}
             value={this.props.value}
             onChange={((this.props.updateData as (key: string, data: any) => void).bind(this, "value") as (data: any) => void)}
-        /> : <div dangerouslySetInnerHTML={{ __html: this.props.value as string }} />;
+        /> : <span dangerouslySetInnerHTML={{ __html: this.props.value as string }} />;
 
         return <div>
             {value}            

@@ -7,10 +7,15 @@ import EditIcon from "../icons/edit-24px.svg";
 import DoneIcon from "../icons/done-24px.svg";
 import UpIcon from "../icons/keyboard_arrow_up-24px.svg";
 import DownIcon from "../icons/keyboard_arrow_down-24px.svg";
-import { Overlay } from "react-bootstrap";
+import { Overlay, Button } from "react-bootstrap";
 
 interface AddButtonProps {
     action: () => void;
+    extended?: boolean;
+}
+
+interface ButtonProps extends ResumeComponentProps {
+    extended?: boolean;
 }
 
 interface TooltipProps {
@@ -42,24 +47,56 @@ function ButtonWithTooltip(props: TooltipProps) {
 }
 
 export function AddButton(props: AddButtonProps) {
+    if (props.extended) {
+        return <Button onClick={props.action}><img src={AddIcon} />Move Down</Button>
+    }
+
     return <img onClick={props.action} src={AddIcon} alt='Add' />
 }
 
-export default function EditButton<P extends ResumeComponentProps>(props: P) {
+export default function EditButton<P extends ButtonProps>(props: P) {
+    if (props.extended) {
+        return <Button onClick={props.toggleEdit as Action}><img src={EditIcon} />Edit</Button>
+    }
+
     let imgSrc = props.isEditing ? DoneIcon : EditIcon;
     return <ButtonWithTooltip onClick={props.toggleEdit as Action} imgSrc={imgSrc} tooltip="Edit" />
 }
 
 export function DeleteButton<P extends ResumeComponentProps>(props: P) {
-    return <ButtonWithTooltip onClick={props.deleteChild as Action} imgSrc={DeleteIcon} tooltip="Delete" />
+    return <ExtendableButton action={props.deleteChild as Action} imgSrc={DeleteIcon} text='Delete' componentData={props} />
 }
 
 export function UpButton<P extends ResumeComponentProps>(props: P) {
     let imgCls = props.isFirst ? "button-disabled" : "";
-    return <ButtonWithTooltip imgCls={imgCls} onClick={props.moveUp as Action} imgSrc={UpIcon} tooltip="Move Up" />
+    return <ExtendableButton imgCls={imgCls} imgSrc={UpIcon} text='Move Up' action={props.moveUp as Action} componentData={props} />
 }
 
-export function DownButton<P extends ResumeComponentProps>(props: P) {
+export function DownButton<P extends ButtonProps>(props: P) {
+    if (props.extended) {
+        return <Button onClick={props.moveDown as Action}><img src={DownIcon} />Move Down</Button>
+    }
+
     let imgCls = props.isLast ? "button-disabled" : "";
     return <ButtonWithTooltip imgCls={imgCls} onClick={props.moveDown as Action} imgSrc={DownIcon} tooltip="Move Down" />
+}
+
+interface ExtendableButtonProps {
+    componentData: ButtonProps;
+    action: Action;
+    text: string;
+    imgSrc: string;
+
+    imgCls?: string;
+}
+
+function ExtendableButton(props: ExtendableButtonProps) {
+    const tooltip = props.text;
+    const extended = props.componentData.extended;
+
+    if (extended) {
+        return <Button onClick={props.action}><img src={props.imgSrc} />{tooltip}</Button>
+    }
+
+    return <ButtonWithTooltip imgCls={props.imgCls} onClick={props.action} imgSrc={props.imgSrc} tooltip={tooltip} />
 }

@@ -30,6 +30,11 @@ input {
     border: 1px solid blue;
 }
 
+.resume-hidden {
+    font-style: italic;
+    color: #aaaaaa;
+}
+
 /* Resizer */
 .Resizer.vertical {
     width: 2px;

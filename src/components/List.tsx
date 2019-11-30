@@ -123,17 +123,31 @@ export default class List extends ResumeComponent<ListProps> {
     render() {
         let className = (this.state.isSelected || this.state.isHovering) ? 'resume-selected' : '';
         let moveText = this.props.isMoving ? "Done Moving" : "Move Bullets";
+        let hideText = this.props.isHidden ? "Show List" : "Hide List";
+
+        if (this.props.isHidden) {
+            className += ' resume-hidden';
+        }
+
+        let list = <ul className={className} {...this.getSelectTriggerProps()}>
+            {this.renderChildren()}
+            {this.renderEditingMenu()}
+        </ul>
+
+        if (this.props.isHidden) {
+            if (this.props.isPrinting) {
+                list = <></>
+            }
+        }
 
         return <React.Fragment>
             <MenuProvider id={this.props.id as string}>
-                <ul className={className} {...this.getSelectTriggerProps()}>
-                    {this.renderChildren()}
-                    {this.renderEditingMenu()}
-                </ul>
+                {list}
             </MenuProvider>
             <Menu id={this.props.id as string}>
                 <Item onClick={this.addChild}>Add Bullet</Item>
                 <Item onClick={this.moveBullets}>{moveText}</Item>
+                <Item onClick={this.toggleHidden}>{hideText}</Item>
                 <Item onClick={this.props.deleteChild as Action}>Delete List</Item>
             </Menu>
         </React.Fragment>

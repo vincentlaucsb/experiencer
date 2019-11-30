@@ -8,6 +8,7 @@ export interface SelectedComponentProps {
 
 export interface ResumeComponentProps {
     id?: string;
+    isHidden?: boolean;
     isEditing?: boolean;
     isSelected?: boolean;
     isPrinting?: boolean;
@@ -51,6 +52,7 @@ export default class ResumeComponent<
         this.deleteNestedChild = this.deleteNestedChild.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
         this.toggleNestedEdit = this.toggleNestedEdit.bind(this);
+        this.toggleHidden = this.toggleHidden.bind(this);
         this.updateNestedData = this.updateNestedData.bind(this);
         this.setSelected = this.setSelected.bind(this);
         this.unselect = this.unselect.bind(this);
@@ -193,6 +195,10 @@ export default class ResumeComponent<
         }
 
         return <React.Fragment />
+    }
+
+    toggleHidden() {
+        this.updateData('isHidden', !this.props.isHidden);
     }
 
     setSelected() {

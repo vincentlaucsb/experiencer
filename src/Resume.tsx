@@ -67,11 +67,34 @@ h1, h2, h3, h4 {
     font-family: Georgia, serif;
 }
 
-h2 { border-bottom: 1px solid; }
+h2.flex-row {
+    border-bottom: 1px solid;
+}
+
+h2.flex-row, h3.flex-row {
+    justify-content: space-between;
+}
 
 section {
     margin-bottom: 1.5em;
-}`;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.flex-row-spread {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+`;
 
 interface PageState {
     children: Array<object>;

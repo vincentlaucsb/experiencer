@@ -62,7 +62,7 @@ export default class Entry extends ResumeComponent<EntryProps> {
                 );
             }
 
-            return extraData.map((text, index) => <span key={index}>{text || "Enter a value"}</span>);
+            return extraData.map((text, index) => <span key={index}>{this.process(text) || "Enter a value"}</span>);
         }
 
         return <></>
@@ -91,11 +91,20 @@ export default class Entry extends ResumeComponent<EntryProps> {
     updateSubtitleExtras(idx: number, event: any) {
         this.updateExtras('subtitleExtras', idx, event);
     }
+
+    process(text?: string) {
+        if (text) {
+            // Replace '--' with en dash and '---' with em dash
+            return text.replace('--', '\u2013').replace('---', '\u2014');
+        }
+
+        return ""
+    }
     
     render() {
         let className = 'entry';
-        let title: any = this.props.title || "Enter a title";
-        let subtitle: any = this.props.subtitle || "Enter a subtitle";
+        let title: any = this.process(this.props.title) || "Enter a title";
+        let subtitle: any = this.process(this.props.subtitle) || "Enter a subtitle";
 
         if (this.props.isEditing) {
             title = <input onChange={this.updateDataEvent.bind(this, "title")} value={this.props.title || ""} />;
@@ -109,8 +118,8 @@ export default class Entry extends ResumeComponent<EntryProps> {
         return <div className={className}>
             {this.renderEditingMenu()}
             <div className="entry-title" {...this.getSelectTriggerProps()}>
-                <h3 className="flex-row">{title} {this.getTitleExtras()}</h3>
-                <p className="flex-row subtitle">{subtitle} {this.getSubtitleExtras()}</p>
+                <h3 className="flex-row-spread">{title} {this.getTitleExtras()}</h3>
+                <p className="flex-row-spread subtitle">{subtitle} {this.getSubtitleExtras()}</p>
             </div>
 
             {this.renderChildren()}

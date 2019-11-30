@@ -43,13 +43,6 @@ input {
     cursor: col-resize;
 }
 
-/* Resume Components */
-.flex-row {
-    display: flex;
-    justify-content: space-between;
-    flex-direction: row;
-}
-
 /* Adjacent Elements */
 button + button {
     margin-left: 3px;

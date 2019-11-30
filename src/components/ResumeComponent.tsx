@@ -226,8 +226,13 @@ export default class ResumeComponent<
     getSelectTriggerProps() {
         return {
             onClick: this.setSelected,
-            onMouseEnter: () => this.setState({ isHovering: true }),
-            onMouseLeave: () => this.setState({ isHovering: false })
+            onMouseEnter: () => {
+                // Don't select anything in "print" mode
+                if (!this.props.isPrinting) {
+                    this.setState({ isHovering: true });
+                }
+            },
+            onMouseLeave: () => { this.setState({ isHovering: false }) }
         };
     }
 

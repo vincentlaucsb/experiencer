@@ -216,6 +216,10 @@ class Resume extends React.Component<{}, PageState> {
         if (prevNode && prevNode.unselect as Action) {
             (prevNode.unselect as Action)();
         }
+
+        this.setState({
+            selectedNode: undefined
+        });
     }
 
     updateSelected(data: SelectedComponentProps) {
@@ -263,6 +267,16 @@ class Resume extends React.Component<{}, PageState> {
     }
 
     renderToolbar() {
+        let unselectProps: object = {
+            disabled: true
+        };
+
+        if (this.state.selectedNode as SelectedComponentProps) {
+            unselectProps = {
+                onClick: this.unselect
+            };
+        }
+
         if (!this.state.isPrinting) {
             return <ButtonToolbar aria-label="Resume Editor Controls">
                 <FileLoader loadData={this.loadData} />
@@ -272,6 +286,7 @@ class Resume extends React.Component<{}, PageState> {
                 </ButtonGroup>
 
                 <ButtonGroup>
+                    <Button {...unselectProps}>Unselect</Button>
                     <Button onClick={this.toggleStyleEditor}>Edit Style</Button>
                 </ButtonGroup>
             </ButtonToolbar>
@@ -279,11 +294,7 @@ class Resume extends React.Component<{}, PageState> {
 
         return <></>
     }
-
-    onStyleEditorChange(event) {
-        console.log(event);
-    }
-
+    
     renderStyleEditor() {
         if (this.state.isEditingStyle && !this.state.isPrinting) {
             return <>
@@ -292,7 +303,7 @@ class Resume extends React.Component<{}, PageState> {
                     theme="github"
                     onChange={this.onStyleChange}
                     value={this.state.customCss}
-                    name="UNIQUE_ID_OF_DIV"
+                    name="style-editor"
                     editorProps={{ $blockScrolling: true }}
                 />
                 <Button onClick={this.renderStyle}>Update</Button>
@@ -337,4 +348,4 @@ class Resume extends React.Component<{}, PageState> {
     }
 }
 
-export default Resume;  
+export default Resume;

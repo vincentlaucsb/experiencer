@@ -21,7 +21,6 @@ export default class Entry extends ResumeComponent<EntryProps> {
 
         this.addTitleField = this.addTitleField.bind(this);
         this.addSubtitleField = this.addSubtitleField.bind(this);
-        this.setSelected = this.setSelected.bind(this);
     }
 
     addTitleField() {

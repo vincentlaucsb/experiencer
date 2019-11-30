@@ -31,11 +31,11 @@ export class ListItem extends ResumeComponent<ListProps> {
             <DownButton {...this.props} />
         </> : <></>
 
-        return <React.Fragment>
+        return <span>
             <EditButton {...this.props} />
             <DeleteButton {...this.props} />
             {moveButtons}
-        </React.Fragment>
+        </span>
     }
 
     render() {
@@ -65,7 +65,7 @@ export class ListItem extends ResumeComponent<ListProps> {
         return <li>
             <span className="flex-row">
                 <span>{value}</span>
-                <span>{this.getEditingMenu()}</span>
+                {this.renderEditingMenu()}
             </span>
         </li>
     }

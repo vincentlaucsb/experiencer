@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import EditButton from "./Buttons";
+import EditButton, { DeleteButton } from "./Buttons";
 import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
 
 export default class Title extends ResumeComponent {
@@ -8,7 +8,10 @@ export default class Title extends ResumeComponent {
     }
 
     getEditingMenu() {
-        return <EditButton {...this.props} />
+        return <div style={{ display: "inline-block", margin: "0.5rem" }}>
+            <EditButton {...this.props} />
+            <DeleteButton {...this.props} />
+            </div>
     }
 
     render() {

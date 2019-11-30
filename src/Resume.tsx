@@ -8,14 +8,14 @@ import './css/index.css';
 import './scss/custom.scss';
 import 'react-quill/dist/quill.snow.css';
 
-import { Button, ButtonToolbar, ButtonGroup, InputGroup } from 'react-bootstrap';
+import { Button, ButtonToolbar, ButtonGroup, InputGroup, Card } from 'react-bootstrap';
 import { FileLoader } from './components/FileLoader';
 import { deleteAt, moveUp, moveDown } from './components/Helpers';
 import { Nonprintable } from './components/Nonprintable';
 import { SelectedComponentProps, Action } from './components/ResumeComponent';
 import AceEditor from "react-ace";
 
-import "ace-builds/src-noconflict/mode-java";
+import "ace-builds/src-noconflict/mode-css";
 import "ace-builds/src-noconflict/theme-github";
 
 const resumeData = [
@@ -54,13 +54,12 @@ const resumeData = [
     
 ];
 
-const defaultCss = `body {
-    margin: 1em auto 1em auto;
+const defaultCss = `#resume {
     font-family: Tahoma, sans-serif;
     font-size: 10pt;
 }
 
-body * {
+#resume * {
     margin: 0;
 }
 
@@ -287,48 +286,55 @@ class Resume extends React.Component<{}, PageState> {
 
     renderStyleEditor() {
         if (this.state.isEditingStyle && !this.state.isPrinting) {
-            return <div>
-                <h2>Style Editor</h2>
+            return <>
                 <AceEditor
-                    mode="java"
+                    mode="css"
                     theme="github"
                     onChange={this.onStyleChange}
                     value={this.state.customCss}
                     name="UNIQUE_ID_OF_DIV"
                     editorProps={{ $blockScrolling: true }}
                 />
-                <button onClick={this.renderStyle}>Update</button>
-            </div>
+                <Button onClick={this.renderStyle}>Update</Button>
+            </>
         }
 
         return <></>
     }
 
     render() {
-        const resume = <div id="resume" style={{ width: "100%" }}>
+        const resume = <>
+            {this.renderToolbar()}
+            <div id="resume" style={{
+                width: "100%",
+                height: "100%",
+                overflowY: "auto"
+            }}>
             {this.renderChildren()}
 
             <Nonprintable isPrinting={this.state.isPrinting}>
                 <Button onClick={this.addSection}>Add Section</Button>
             </Nonprintable>
-        </div>
+            </div>
+        </>
 
         let mainContent = resume;
 
         // Split resume and style editor
         if (this.state.isEditingStyle && !this.state.isPrinting) {
             mainContent = <SplitPane defaultSize="500px" primary="second">
-                {resume}
+                <div style={{ height: "100vh" }}>
+                    {resume}
+                </div>
                 {this.renderStyleEditor()}
             </SplitPane>
         }
 
         return <React.Fragment>
-            {this.renderToolbar()}
             {this.renderHotkeys()}
             {mainContent}
         </React.Fragment>
     }
 }
 
-export default Resume;
+export default Resume;  

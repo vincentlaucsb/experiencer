@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import loadComponent from "./LoadComponent";
+import loadComponent, { EditorMode } from "./LoadComponent";
 import { deleteAt, moveUp, moveDown } from "./Helpers";
 
 export interface SelectedComponentProps {
@@ -7,15 +7,19 @@ export interface SelectedComponentProps {
 }
 
 export interface ResumeComponentProps {
-    id?: string;
+    id: string;
+    mode: EditorMode;
+    isFirst: boolean;
+    isLast: boolean;
+
     isHidden?: boolean;
     isEditing?: boolean;
     isSelected?: boolean;
-    isPrinting?: boolean;
-    isFirst?: boolean;
-    isLast?: boolean;
     value?: string;
     children?: Array<object>;
+
+    unselect: Action;
+    updateSelected: (data: SelectedComponentProps) => void;
 
     addChild?: ((idx: number, node: object) => void) | ((node: object) => void);
     moveUp?: ((idx: number) => void) | (() => void);
@@ -23,8 +27,6 @@ export interface ResumeComponentProps {
     deleteChild?: ((idx: number) => void) | (() => void);
     toggleEdit?: ((idx: number) => void) | (() => void);
     updateData?: ((idx: number, key: string, data: any) => void) | ((key: string, data: any) => void);
-    unselect?: Action;
-    updateSelected?: (data: SelectedComponentProps) => void;
 }
 
 export interface ResumeState {
@@ -58,13 +60,15 @@ export default class ResumeComponent<
         this.unselect = this.unselect.bind(this);
     }
 
+    get isPrinting() : boolean {
+        return this.props.mode == 'printing';
+    }
+
     componentWillUnmount() {
         // Since the node is being deleted, remove callback to this node's unselect
         // method from <Resume /> to prevent memory leaks
         if (this.state && this.state.isSelected) {
-            (this.props.updateSelected as (data: SelectedComponentProps) => void)({
-                unselect: undefined 
-            });
+            this.props.updateSelected({ unselect: undefined });
         }
     }
 
@@ -177,13 +181,13 @@ export default class ResumeComponent<
                     <React.Fragment key={idx}>
                         {loadComponent(elem, idx, arr.length,
                             {
+                                mode: this.props.mode,
                                 addChild: (this.addNestedChild.bind(this, idx) as (node: object) => void),
                                 moveDown: (this.moveNestedChildDown.bind(this, idx) as Action),
                                 moveUp: (this.moveNestedChildUp.bind(this, idx) as Action),
                                 deleteChild: (this.deleteNestedChild.bind(this, idx) as Action),
                                 toggleEdit: (this.toggleNestedEdit.bind(this, idx) as () => void),
                                 updateData: (this.updateNestedData.bind(this, idx) as (key: string, data: any) => void),
-                                isPrinting: this.props.isPrinting,
                                 unselect: this.props.unselect,
                                 updateSelected: this.props.updateSelected
                             },
@@ -206,12 +210,10 @@ export default class ResumeComponent<
             this.setState({ isSelected: true });
 
             // Unselect the previous component
-            if (this.props.unselect as Action) {
-                (this.props.unselect as Action)();
-            }
+            this.props.unselect();
 
             // Pass this node's unselect back up to <Resume />
-            (this.props.updateSelected as (data: SelectedComponentProps) => void)({
+            this.props.updateSelected({
                 unselect: this.unselect.bind(this)
             });
         }
@@ -228,7 +230,7 @@ export default class ResumeComponent<
             onClick: this.setSelected,
             onMouseEnter: () => {
                 // Don't select anything in "print" mode
-                if (!this.props.isPrinting) {
+                if (!this.isPrinting) {
                     this.setState({ isHovering: true });
                 }
             },
@@ -244,7 +246,7 @@ export default class ResumeComponent<
     // Actually render the editing controls after checking that
     // they should be rendered
     renderEditingMenu() {
-        if (!this.props.isPrinting) {
+        if (!this.isPrinting) {
             const menu = this.getEditingMenu();
             if (menu) {
                 return this.getEditingMenu();

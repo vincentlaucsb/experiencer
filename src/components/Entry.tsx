@@ -111,7 +111,7 @@ export default class Entry extends ResumeComponent<EntryProps> {
             subtitle = <input onChange={this.updateDataEvent.bind(this, "subtitle")} value={this.props.subtitle || ""} />
         }
 
-        if (!this.props.isPrinting && (this.state.isHovering || this.state.isSelected)) {
+        if (!this.isPrinting && (this.state.isHovering || this.state.isSelected)) {
             className += ' resume-selected';
         }
 

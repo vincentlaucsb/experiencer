@@ -14,7 +14,7 @@ export default class FlexibleRow extends ResumeComponent {
     render() {
         let className = "flex-row-spread";
 
-        if (!this.props.isPrinting && (this.state.isHovering || this.state.isSelected)) {
+        if (!this.isPrinting && (this.state.isHovering || this.state.isSelected)) {
             className += ' resume-selected';
         }
 

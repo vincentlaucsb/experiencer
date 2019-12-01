@@ -7,8 +7,12 @@ import Paragraph from "./Paragraph";
 import Title from "./Title";
 import { ResumeComponentProps, SelectedComponentProps } from "./ResumeComponent";
 
+export type EditorMode = 'normal' | 'editingStyle' | 'changingTemplate' | 'printing';
+
 interface ExtraProps {
-    isPrinting?: boolean;
+    mode: EditorMode;
+    unselect: () => void;
+    updateSelected: (data: SelectedComponentProps) => void;
 
     addChild?: (node: object) => void;
     moveUp?: () => void;
@@ -16,48 +20,48 @@ interface ExtraProps {
     deleteChild?: () => void;
     toggleEdit?: () => void;
     updateData?: (key: string, data: any) => void;
-    unselect?: () => void;
-    updateSelected?: (data: SelectedComponentProps) => void;
 }
 
 export default function loadComponent(data: object,
     index: number, numChildren: number, extraProps?: ExtraProps, parentIndex?: string) {
     // Load prop data
-    let props: ResumeComponentProps = {};
+    let propsDraft = {};
     for (let key in data) {
         if (data[key] != 'children' && data[key] != 'type') {
-            props[key] = data[key];
+            propsDraft[key] = data[key];
         }
     }
 
     // Generate unique IDs for component
-    props['id'] = index.toString();
+    propsDraft['id'] = index.toString();
     if (parentIndex) {
-        props['id'] = parentIndex + '-' + index.toString();
+        propsDraft['id'] = parentIndex + '-' + index.toString();
     }
 
-    props['isFirst'] = (index == 0);
-    props['isLast'] = (index == numChildren - 1);
+    propsDraft['isFirst'] = (index == 0);
+    propsDraft['isLast'] = (index == numChildren - 1);
 
     if (extraProps) {
-        props['addChild'] = extraProps.addChild;
-        props['deleteChild'] = extraProps.deleteChild;
-        props['moveUp'] = extraProps.moveUp;
-        props['moveDown'] = extraProps.moveDown;
-        props['toggleEdit'] = extraProps.toggleEdit;
-        props['updateData'] = extraProps.updateData;
-        props['isPrinting'] = extraProps.isPrinting;
-        props['unselect'] = extraProps.unselect;
-        props['updateSelected'] = extraProps.updateSelected;
+        propsDraft['addChild'] = extraProps.addChild;
+        propsDraft['deleteChild'] = extraProps.deleteChild;
+        propsDraft['moveUp'] = extraProps.moveUp;
+        propsDraft['moveDown'] = extraProps.moveDown;
+        propsDraft['toggleEdit'] = extraProps.toggleEdit;
+        propsDraft['updateData'] = extraProps.updateData;
+        propsDraft['unselect'] = extraProps.unselect;
+        propsDraft['updateSelected'] = extraProps.updateSelected;
     }
 
-    props['children'] = new Array();
+    propsDraft['children'] = new Array();
 
     // Load children
     const children = data['children'] as Array<object>;
     if (children) {
-        props['children'] = children;
+        propsDraft['children'] = children;
     }
+
+    // Type cast
+    const props = propsDraft as ResumeComponentProps;
 
     switch (data['type']) {
         case 'FlexibleRow':

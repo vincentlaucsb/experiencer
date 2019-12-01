@@ -135,16 +135,16 @@ export default class List extends ResumeComponent<ListProps> {
         </ul>
 
         if (this.props.isHidden) {
-            if (this.props.isPrinting) {
+            if (this.isPrinting) {
                 list = <></>
             }
         }
 
         return <React.Fragment>
-            <MenuProvider id={this.props.id as string}>
+            <MenuProvider id={this.props.id}>
                 {list}
             </MenuProvider>
-            <Menu id={this.props.id as string}>
+            <Menu id={this.props.id}>
                 <Item onClick={this.addChild}>Add Bullet</Item>
                 <Item onClick={this.moveBullets}>{moveText}</Item>
                 <Item onClick={this.toggleHidden}>{hideText}</Item>

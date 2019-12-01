@@ -1,5 +1,5 @@
 import * as React from 'react';
-import loadComponent from './components/LoadComponent';
+import loadComponent, { EditorMode } from './components/LoadComponent';
 import { saveAs } from 'file-saver';
 import SplitPane from 'react-split-pane';
 import { GlobalHotKeys } from 'react-hotkeys';
@@ -99,13 +99,52 @@ section {
 interface PageState {
     children: Array<object>;
     customCss: string;
-    isPrinting: boolean;
-    isEditingStyle: boolean;
+    mode: EditorMode;
     selectedNode?: SelectedComponentProps;
 }
 
 class Resume extends React.Component<{}, PageState> {
     style: HTMLStyleElement;
+
+    static tradtional2 = {
+        children: [
+            {
+                type: 'FlexibleRow',
+                children: [
+                    {
+                        type: 'Title',
+                        value: 'Your Name Here'
+                    },
+                    {
+                        type: 'Paragraph',
+                        value: '<p>Email: vincela9@hotmail.com</p><p>Phone: 123-456-7890</p>'
+                    }
+                ]
+            },
+            {
+                type: 'Section',
+                title: 'Objective',
+                headerPosition: 'left',
+                children: [
+                    {
+                        type: 'Paragraph',
+                        value: 'To conquer the world.'
+                    }
+                ]
+            },
+            {
+                type: 'Section',
+                title: 'Education',
+                headerPosition: 'left',
+                children: [
+                    {
+                        type: 'Entry'
+                    }
+                ]
+            }
+
+        ]
+    }
 
     constructor(props) {
         super(props);
@@ -119,8 +158,7 @@ class Resume extends React.Component<{}, PageState> {
         this.state = {
             children: resumeData,
             customCss: defaultCss,
-            isEditingStyle: false,
-            isPrinting: false
+            mode: 'normal'
         };
 
         this.renderStyle();
@@ -135,6 +173,14 @@ class Resume extends React.Component<{}, PageState> {
         this.saveFile = this.saveFile.bind(this);
         this.unselect = this.unselect.bind(this);
         this.toggleStyleEditor = this.toggleStyleEditor.bind(this);
+    }
+
+    get isEditingStyle(): boolean {
+        return this.state.mode == 'editingStyle';
+    }
+
+    get isPrinting(): boolean {
+        return this.state.mode == 'printing';
     }
 
     addSection() {
@@ -252,8 +298,12 @@ class Resume extends React.Component<{}, PageState> {
     }
 
     toggleStyleEditor() {
+        this.setState({ mode: 'editingStyle' });
+    }
+
+    changeTemplate() {
         this.setState({
-            isEditingStyle: !this.state.isEditingStyle
+            children: Resume.tradtional2.children
         });
     }
 
@@ -264,7 +314,7 @@ class Resume extends React.Component<{}, PageState> {
 
         const handlers = {
             PRINT_MODE: (event) => {
-                this.setState({ isPrinting: !this.state.isPrinting });
+                this.setState({ mode: 'printing' });
             }
         };
 
@@ -275,13 +325,13 @@ class Resume extends React.Component<{}, PageState> {
         return this.state.children.map((elem, idx, arr) =>
             <React.Fragment key={idx}>
                 {loadComponent(elem, idx, arr.length, {
+                    mode: this.state.mode,
                     addChild: this.addChild.bind(this, idx),
                     moveUp: this.moveUp.bind(this, idx),
                     moveDown: this.moveDown.bind(this, idx),
                     deleteChild: this.deleteChild.bind(this, idx),
                     toggleEdit: this.toggleEdit.bind(this, idx),
                     updateData: this.updateData.bind(this, idx),
-                    isPrinting: this.state.isPrinting,
                     unselect: this.unselect,
                     updateSelected: this.updateSelected.bind(this)
                 }
@@ -300,7 +350,7 @@ class Resume extends React.Component<{}, PageState> {
             };
         }
 
-        if (!this.state.isPrinting) {
+        if (!this.isPrinting) {
             return <ButtonToolbar aria-label="Resume Editor Controls">
                 <FileLoader loadData={this.loadData} />
 
@@ -319,7 +369,7 @@ class Resume extends React.Component<{}, PageState> {
     }
     
     renderStyleEditor() {
-        if (this.state.isEditingStyle && !this.state.isPrinting) {
+        if (this.isEditingStyle) {
             return <>
                 <AceEditor
                     mode="css"
@@ -336,9 +386,21 @@ class Resume extends React.Component<{}, PageState> {
         return <></>
     }
 
+    renderTemplateChanger() {
+
+    }
+
     render() {
         const resume = <>
             {this.renderToolbar()}
+            <ButtonGroup>
+                <Button onClick={(event) => {
+                    this.setState({
+                        children: resumeData
+                    })
+                }}>Traditional 1</Button>
+                <Button onClick={this.changeTemplate.bind(this)}>Traditional 2</Button>
+            </ButtonGroup>
             <div id="resume" style={{
                 width: "100%",
                 height: "100%",
@@ -346,7 +408,7 @@ class Resume extends React.Component<{}, PageState> {
             }}>
             {this.renderChildren()}
 
-            <Nonprintable isPrinting={this.state.isPrinting}>
+            <Nonprintable isPrinting={this.isPrinting}>
                 <Button onClick={this.addSection}>Add Section</Button>
             </Nonprintable>
             </div>
@@ -355,7 +417,7 @@ class Resume extends React.Component<{}, PageState> {
         let mainContent = resume;
 
         // Split resume and style editor
-        if (this.state.isEditingStyle && !this.state.isPrinting) {
+        if (this.isEditingStyle) {
             mainContent = <SplitPane defaultSize="500px" primary="second">
                 <div style={{ height: "100vh" }}>
                     {resume}

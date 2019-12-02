@@ -8,7 +8,7 @@ import './css/index.css';
 import './scss/custom.scss';
 import 'react-quill/dist/quill.snow.css';
 
-import { Button, ButtonToolbar, ButtonGroup, InputGroup, Card } from 'react-bootstrap';
+import { Button, ButtonToolbar, ButtonGroup, InputGroup, Card, Tab, Col, Nav } from 'react-bootstrap';
 import { FileLoader } from './components/FileLoader';
 import { deleteAt, moveUp, moveDown } from './components/Helpers';
 import { Nonprintable } from './components/Nonprintable';
@@ -100,6 +100,8 @@ interface PageState {
     children: Array<object>;
     customCss: string;
     mode: EditorMode;
+
+    activeTemplate?: string;
     selectedNode?: SelectedComponentProps;
 }
 
@@ -361,6 +363,7 @@ class Resume extends React.Component<{}, PageState> {
                 <ButtonGroup>
                     <Button {...unselectProps}>Unselect</Button>
                     <Button onClick={this.toggleStyleEditor}>Edit Style</Button>
+                    <Button onClick={(event) => this.setState({ mode: 'changingTemplate' })}>Template</Button>
                 </ButtonGroup>
             </ButtonToolbar>
         }
@@ -387,20 +390,35 @@ class Resume extends React.Component<{}, PageState> {
     }
 
     renderTemplateChanger() {
-
+        return <>
+            <Nav variant="pills"
+                activeKey={this.state.activeTemplate}
+                className="flex-column"
+            >
+                <Nav.Item>
+                    <Nav.Link eventKey='Traditional 1' onClick={(event) =>
+                        this.setState({
+                            activeTemplate: 'Traditional 1',
+                            children: resumeData
+                        })
+                    }> Traditional 1</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link eventKey='Traditional 2' onClick={
+                        (event) => this.setState({
+                            activeTemplate: 'Traditional 2',
+                            children: Resume.tradtional2.children
+                        })
+                    }> Traditional 2</Nav.Link>
+                </Nav.Item>
+            </Nav>
+            <Button onClick={(event) => this.setState({ mode: 'normal' })}>Use this Template</Button>
+        </>
     }
 
     render() {
         const resume = <>
             {this.renderToolbar()}
-            <ButtonGroup>
-                <Button onClick={(event) => {
-                    this.setState({
-                        children: resumeData
-                    })
-                }}>Traditional 1</Button>
-                <Button onClick={this.changeTemplate.bind(this)}>Traditional 2</Button>
-            </ButtonGroup>
             <div id="resume" style={{
                 width: "100%",
                 height: "100%",
@@ -424,6 +442,19 @@ class Resume extends React.Component<{}, PageState> {
                 </div>
                 {this.renderStyleEditor()}
             </SplitPane>
+        }
+        else if (this.state.mode == "changingTemplate") {
+            mainContent = <div style={{
+                display: 'flex',
+                flexDirection: 'row'
+            }}>
+                <div>
+                    {resume}
+                </div> 
+                <div>
+                    {this.renderTemplateChanger()}
+                </div>
+            </div>
         }
 
         return <React.Fragment>

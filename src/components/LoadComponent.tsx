@@ -33,11 +33,7 @@ export default function loadComponent(data: object,
     }
 
     // Generate unique IDs for component
-    propsDraft['id'] = index.toString();
-    if (parentIndex) {
-        propsDraft['id'] = parentIndex + '-' + index.toString();
-    }
-
+    propsDraft['id'] = parentIndex ? parentIndex + '-' + index.toString() : index.toString();
     propsDraft['isFirst'] = (index == 0);
     propsDraft['isLast'] = (index == numChildren - 1);
 
@@ -55,9 +51,7 @@ export default function loadComponent(data: object,
         propsDraft['children'] = children;
     }
 
-    // Type cast
     const props = propsDraft as ResumeComponentProps;
-
     switch (data['type']) {
         case 'FlexibleRow':
             return <FlexibleRow {...props} />;

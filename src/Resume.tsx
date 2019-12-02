@@ -55,7 +55,7 @@ const resumeData = [
 ];
 
 const defaultCss = `#resume {
-    font-family: Tahoma, sans-serif;
+    font-family: Georgia, sans-serif;
     font-size: 10pt;
 }
 
@@ -63,8 +63,29 @@ const defaultCss = `#resume {
     margin: 0;
 }
 
-h1, h2, h3, h4 {
-    font-family: Georgia, serif;
+#resume section {
+    margin-bottom: 1.5em;
+}
+
+#resume .entry {
+    margin-bottom: 0.75em;
+}
+
+#resume ul {
+    padding-left: 1.5em;
+}
+
+h1 {
+    font-size: 1.8rem;
+}
+
+h2 {
+    border: 0;
+    font-size: 1.1rem;
+}
+
+h3 {
+    font-size: 1.05rem;
 }
 
 h2.flex-row {
@@ -75,8 +96,8 @@ h2.flex-row, h3.flex-row {
     justify-content: space-between;
 }
 
-section {
-    margin-bottom: 1.5em;
+.entry-content, .entry {
+    width: 100%;
 }
 
 .flex-row {
@@ -93,6 +114,12 @@ section {
 .flex-col {
     display: flex;
     flex-direction: column;
+}
+
+#resume h2.flex-col {
+    padding-right: 0.5rem;
+    margin-right: 0.5rem;
+    width: 150px;
 }
 `;
 
@@ -136,11 +163,81 @@ class Resume extends React.Component<{}, PageState> {
             },
             {
                 type: 'Section',
+                title: 'Experience',
+                headerPosition: 'left',
+                children: [
+                    {
+                        type: 'Entry',
+                        title: 'Another Company',
+                        titleExtras: ['2019 -- Present'],
+                        subtitle: 'Senior Software Engineer',
+                        subtitleExtras: ['Sometown, USA'],
+                        children: [
+                            {
+                                type: 'List',
+                                children: [
+                                    {
+                                        type: 'ListItem',
+                                        value: 'Increased productivity by conducting telepathic SCRUM meetings'
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        type: 'Entry',
+                        title: 'Some Company',
+                        titleExtras: ['2014 -- 2016'],
+                        subtitle: 'Software Engineer',
+                        subtitleExtras: ['Big City, USA'],
+                        children: [
+                            {
+                                type: 'List',
+                                children: [
+                                    {
+                                        type: 'ListItem',
+                                        value: 'Did things with code while looking at a computer monitor'
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                type: 'Section',
+                title: 'Technical Skills',
+                headerPosition: 'left',
+                children: [
+                    {
+                        type: 'List',
+                        children: [
+                            {
+                                type: 'ListItem',
+                                value: 'C++'
+                            },
+                            {
+                                type: 'ListItem',
+                                value: 'Web Development'
+                            },
+                            {
+                                type: 'ListItem',
+                                value: 'Agile/SCRUM'
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                type: 'Section',
                 title: 'Education',
                 headerPosition: 'left',
                 children: [
                     {
-                        type: 'Entry'
+                        type: 'Entry',
+                        title: 'Some College',
+                        titleExtras: ['2010 -- 2014'],
+                        subtitle: 'BS in Some Major'
                     }
                 ]
             }
@@ -453,10 +550,10 @@ class Resume extends React.Component<{}, PageState> {
                 display: 'flex',
                 flexDirection: 'row'
             }}>
-                <div>
+                <div style={{ width: "70%" }}>
                     {resume}
                 </div> 
-                <div>
+                <div style={{ width: "30%" }}>
                     {this.renderTemplateChanger()}
                 </div>
             </div>

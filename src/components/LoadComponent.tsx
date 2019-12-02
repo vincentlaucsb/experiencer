@@ -41,20 +41,15 @@ export default function loadComponent(data: object,
     propsDraft['isFirst'] = (index == 0);
     propsDraft['isLast'] = (index == numChildren - 1);
 
+    // Load props passed from parent
     if (extraProps) {
-        propsDraft['addChild'] = extraProps.addChild;
-        propsDraft['deleteChild'] = extraProps.deleteChild;
-        propsDraft['moveUp'] = extraProps.moveUp;
-        propsDraft['moveDown'] = extraProps.moveDown;
-        propsDraft['toggleEdit'] = extraProps.toggleEdit;
-        propsDraft['updateData'] = extraProps.updateData;
-        propsDraft['unselect'] = extraProps.unselect;
-        propsDraft['updateSelected'] = extraProps.updateSelected;
+        for (let key in extraProps) {
+            propsDraft[key] = extraProps[key];
+        }
     }
 
-    propsDraft['children'] = new Array();
-
     // Load children
+    propsDraft['children'] = new Array();
     const children = data['children'] as Array<object>;
     if (children) {
         propsDraft['children'] = children;

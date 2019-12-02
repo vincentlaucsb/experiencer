@@ -316,7 +316,12 @@ class Resume extends React.Component<{}, PageState> {
 
         const handlers = {
             PRINT_MODE: (event) => {
-                this.setState({ mode: 'printing' });
+                if (!this.isPrinting) {
+                    this.setState({ mode: 'printing' });
+                    return;
+                }
+
+                this.setState({ mode: 'normal' });
             }
         };
 

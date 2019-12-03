@@ -61,6 +61,21 @@ export default class ResumeComponent<
         this.unselect = this.unselect.bind(this);
     }
 
+    /** Get the class name for the main container */
+    get className(): string {
+        let classes = new Array<string>();
+
+        if (!this.isPrinting && (this.state.isHovering || this.state.isSelected)) {
+            classes.push('resume-selected');
+        }
+
+        if (this.props.isHidden) {
+            classes.push('resume-hidden');
+        }
+
+        return classes.join(' ');
+    }
+
     get isPrinting() : boolean {
         return this.props.mode == 'printing';
     }
@@ -88,9 +103,7 @@ export default class ResumeComponent<
 
     addEntry() {
         this.addChild({
-            type: "Entry",
-            title: "Enter value here",
-            subtitle: "Enter value here"
+            type: "Entry"
         });
     }
 

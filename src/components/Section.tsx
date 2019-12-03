@@ -3,6 +3,7 @@ import EditButton, { DeleteButton, AddButton, DownButton, UpButton } from "./But
 import ResumeComponent, { ResumeComponentProps, AddChild, Action } from "./ResumeComponent";
 import { Dropdown, ButtonGroup, Button } from "react-bootstrap";
 import RotateLeft from "../icons/rotate_left-24px.svg";
+import Placeholder from "./Placeholder";
 
 export type SectionHeaderPosition = "left" | "top";
 
@@ -45,15 +46,18 @@ export default class Section extends ResumeComponent<SectionProps> {
         this.updateData('headerPosition', 'left');
     }
 
+    get sectionClassName(): string {
+        return this.props.headerPosition == 'left' ? 'flex-row' : '';
+    }
+
+    get h2ClassName(): string {
+        return this.props.headerPosition == 'left' ? 'flex-col' : 'flex-row-spread';
+    }
+
     render() {
-        let title: string | JSX.Element = this.props.title;
+        let title = <Placeholder text={this.props.title} alt="Add a title" />
 
         if (this.props.isEditing) {
-            title = <input onChange={this.updateDataEvent.bind(this, "title")} type="text" value={this.props.title} />;
-        }
-        
-        if (this.props.headerPosition == 'left') {
-            return <section className="flex-row">
                 <h2 className="flex-col">
                     {title}
                     {this.renderEditingMenu()}
@@ -62,15 +66,17 @@ export default class Section extends ResumeComponent<SectionProps> {
                     {this.renderChildren()}
                 </div>
             </section>
+            title = <input onChange={this.updateDataEvent.bind(this, "title")} type="text" value={this.props.title || ""} />;
         }
 
-        return <section>
-            <h2 className="flex-row-spread">
+        return <section className={this.sectionClassName}>
+            <h2 className={this.h2ClassName}>
                 {title}
                 {this.renderEditingMenu()}
             </h2>
-
-            {this.renderChildren()}
+            <div className="entry-content">
+                {this.renderChildren()}
+            </div>
         </section>
     }
 }

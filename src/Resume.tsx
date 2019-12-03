@@ -76,7 +76,6 @@ class Resume extends React.Component<{}, PageState> {
     addSection() {
         this.state.children.push({
             type: 'Section',
-            title: 'Add title here',
             headerPosition: this.state.sectionTitlePosition
         });
 

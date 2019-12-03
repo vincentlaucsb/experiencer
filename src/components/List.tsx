@@ -87,20 +87,6 @@ export default class List extends ResumeComponent<ListProps> {
         this.unselect = this.unselect.bind(this);
     }
 
-    get className(): string {
-        let classes = new Array<string>();
-
-        if (this.state.isSelected || this.state.isHovering) {
-            classes.push('resume-selected');
-        }
-        
-        if (this.props.isHidden) {
-            classes.push('resume-hidden');
-        }
-
-        return classes.join(' ');
-    }
-
     get moveText(): string {
         return this.props.isMoving ? "Done Moving" : "Move Items";
     }

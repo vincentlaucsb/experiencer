@@ -2,6 +2,7 @@
 import ResumeComponent, { ResumeComponentProps, SelectedComponentProps, Action } from "./ResumeComponent";
 import EditButton, { AddButton, DownButton, UpButton, DeleteButton } from "./Buttons";
 import { ButtonGroup, Button, Dropdown, DropdownButton } from "react-bootstrap";
+import Placeholder from "./Placeholder";
 
 export interface EntryProps extends ResumeComponentProps {
     title?: string;
@@ -21,6 +22,12 @@ export default class Entry extends ResumeComponent<EntryProps> {
 
         this.addTitleField = this.addTitleField.bind(this);
         this.addSubtitleField = this.addSubtitleField.bind(this);
+    }
+
+    /** Get the class name for the main <div> container */
+    get className(): string {
+        let classes = ['entry', super.className];
+        return classes.join(' ');
     }
 
     addTitleField() {
@@ -63,7 +70,7 @@ export default class Entry extends ResumeComponent<EntryProps> {
                 );
             }
 
-            return extraData.map((text, index) => <span key={index}>{this.process(text) || "Enter a value"}</span>);
+            return extraData.map((text, index) => <span key={index}>{Entry.process(text) || "Enter a value"}</span>);
         }
 
         return <></>
@@ -93,7 +100,11 @@ export default class Entry extends ResumeComponent<EntryProps> {
         this.updateExtras('subtitleExtras', idx, event);
     }
 
-    process(text?: string) {
+    /**
+     * Perform helpful text processing
+     * @param text Text to be processed
+     */
+    static process(text?: string) {
         if (text) {
             // Replace '--' with en dash and '---' with em dash
             return text.replace('--', '\u2013').replace('---', '\u2014');
@@ -103,20 +114,15 @@ export default class Entry extends ResumeComponent<EntryProps> {
     }
     
     render() {
-        let className = 'entry';
-        let title: any = this.process(this.props.title) || "Enter a title";
-        let subtitle: any = this.process(this.props.subtitle) || "Enter a subtitle";
+        let title = <Placeholder text={Entry.process(this.props.title)} alt="Enter a title" />;
+        let subtitle = <Placeholder text={Entry.process(this.props.subtitle)} alt="Enter a subtitle" />;
 
         if (this.props.isEditing) {
             title = <input onChange={this.updateDataEvent.bind(this, "title")} value={this.props.title || ""} />;
             subtitle = <input onChange={this.updateDataEvent.bind(this, "subtitle")} value={this.props.subtitle || ""} />
         }
 
-        if (!this.isPrinting && (this.state.isHovering || this.state.isSelected)) {
-            className += ' resume-selected';
-        }
-
-        return <div className={className}>
+        return <div className={this.className}>
             {this.renderEditingMenu()}
             <div className="entry-title" {...this.getSelectTriggerProps()}>
                 <h3 className="flex-row-spread">{title} {this.getTitleExtras()}</h3>

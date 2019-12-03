@@ -35,6 +35,10 @@ input {
     color: #aaaaaa;
 }
 
+.resume-default {
+    font-style: italic;
+}
+
 /* Resizer */
 .Resizer.vertical {
     width: 2px;

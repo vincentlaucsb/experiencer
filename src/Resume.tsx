@@ -17,112 +17,8 @@ import AceEditor from "react-ace";
 
 import "ace-builds/src-noconflict/mode-css";
 import "ace-builds/src-noconflict/theme-github";
-import Section, { SectionHeaderPosition } from './components/Section';
-
-const resumeData = [
-    {
-        type: 'FlexibleRow',
-        children: [
-            {
-                type: 'Title',
-                value: 'Your Name Here'
-            },
-            {
-                type: 'Paragraph',
-                value: '<p>Email: vincela9@hotmail.com</p><p>Phone: 123-456-7890</p>'
-            }
-        ]
-    },
-    {
-        type: 'Section',
-        title: 'Objective',
-        children: [
-            {
-                type: 'Paragraph',
-                value: 'To conquer the world.'
-            }
-        ]
-    },
-    {
-        type: 'Section',
-        title: 'Education',
-        children: [
-            {
-                type: 'Entry'
-            }
-        ]
-    }
-    
-];
-
-const defaultCss = `#resume {
-    font-family: Georgia, sans-serif;
-    font-size: 10pt;
-}
-
-#resume * {
-    margin: 0;
-}
-
-#resume section {
-    margin-bottom: 1.5em;
-}
-
-#resume .entry {
-    margin-bottom: 0.75em;
-}
-
-#resume ul {
-    padding-left: 1.5em;
-}
-
-h1 {
-    font-size: 1.8rem;
-}
-
-h2 {
-    border: 0;
-    font-size: 1.1rem;
-}
-
-h3 {
-    font-size: 1.05rem;
-}
-
-h2.flex-row {
-    border-bottom: 1px solid;
-}
-
-h2.flex-row, h3.flex-row {
-    justify-content: space-between;
-}
-
-.entry-content, .entry {
-    width: 100%;
-}
-
-.flex-row {
-    display: flex;
-    flex-direction: row;
-}
-
-.flex-row-spread {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-.flex-col {
-    display: flex;
-    flex-direction: column;
-}
-
-#resume h2.flex-col {
-    padding-right: 0.5rem;
-    margin-right: 0.5rem;
-    width: 150px;
-}
-`;
+import { SectionHeaderPosition } from './components/Section';
+import ResumeTemplateProvider from './components/ResumeTemplateProvider';
 
 interface PageState {
     children: Array<object>;
@@ -137,116 +33,6 @@ interface PageState {
 class Resume extends React.Component<{}, PageState> {
     style: HTMLStyleElement;
 
-    static tradtional2 = {
-        children: [
-            {
-                type: 'FlexibleRow',
-                children: [
-                    {
-                        type: 'Title',
-                        value: 'Your Name Here'
-                    },
-                    {
-                        type: 'Paragraph',
-                        value: '<p>Email: vincela9@hotmail.com</p><p>Phone: 123-456-7890</p>'
-                    }
-                ]
-            },
-            {
-                type: 'Section',
-                title: 'Objective',
-                headerPosition: 'left',
-                children: [
-                    {
-                        type: 'Paragraph',
-                        value: 'To conquer the world.'
-                    }
-                ]
-            },
-            {
-                type: 'Section',
-                title: 'Experience',
-                headerPosition: 'left',
-                children: [
-                    {
-                        type: 'Entry',
-                        title: 'Another Company',
-                        titleExtras: ['2019 -- Present'],
-                        subtitle: 'Senior Software Engineer',
-                        subtitleExtras: ['Sometown, USA'],
-                        children: [
-                            {
-                                type: 'List',
-                                children: [
-                                    {
-                                        type: 'ListItem',
-                                        value: 'Increased productivity by conducting telepathic SCRUM meetings'
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        type: 'Entry',
-                        title: 'Some Company',
-                        titleExtras: ['2014 -- 2016'],
-                        subtitle: 'Software Engineer',
-                        subtitleExtras: ['Big City, USA'],
-                        children: [
-                            {
-                                type: 'List',
-                                children: [
-                                    {
-                                        type: 'ListItem',
-                                        value: 'Did things with code while looking at a computer monitor'
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                type: 'Section',
-                title: 'Technical Skills',
-                headerPosition: 'left',
-                children: [
-                    {
-                        type: 'List',
-                        children: [
-                            {
-                                type: 'ListItem',
-                                value: 'C++'
-                            },
-                            {
-                                type: 'ListItem',
-                                value: 'Web Development'
-                            },
-                            {
-                                type: 'ListItem',
-                                value: 'Agile/SCRUM'
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                type: 'Section',
-                title: 'Education',
-                headerPosition: 'left',
-                children: [
-                    {
-                        type: 'Entry',
-                        title: 'Some College',
-                        titleExtras: ['2010 -- 2014'],
-                        subtitle: 'BS in Some Major'
-                    }
-                ]
-            }
-
-        ]
-    }
-
     constructor(props) {
         super(props);
 
@@ -256,11 +42,13 @@ class Resume extends React.Component<{}, PageState> {
         this.style.innerHTML = "";
         head.appendChild(this.style);
 
+        // Load "Traditional 1" template
+        const template = ResumeTemplateProvider.Traditional1();
         this.state = {
-            children: resumeData,
-            customCss: defaultCss,
+            children: template.children,
+            customCss: template.customCss,
             mode: 'normal',
-            sectionTitlePosition: 'top'
+            sectionTitlePosition: template.sectionTitlePosition
         };
 
         this.renderStyle();
@@ -403,13 +191,7 @@ class Resume extends React.Component<{}, PageState> {
     toggleStyleEditor() {
         this.setState({ mode: 'editingStyle' });
     }
-
-    changeTemplate() {
-        this.setState({
-            children: Resume.tradtional2.children
-        });
-    }
-
+    
     renderHotkeys() {
         const keyMap = {
             PRINT_MODE: "shift+p"
@@ -499,24 +281,16 @@ class Resume extends React.Component<{}, PageState> {
         return <>
             <Nav variant="pills"
                 activeKey={this.state.activeTemplate}
-                className="flex-column"
-            >
+                className="flex-column">
                 <Nav.Item>
-                    <Nav.Link eventKey='Traditional 1' onClick={(event) =>
-                        this.setState({
-                            activeTemplate: 'Traditional 1',
-                            children: resumeData
-                        })
-                    }> Traditional 1</Nav.Link>
+                    <Nav.Link eventKey='Traditional 1' onClick={
+                        (event) => this.setState(ResumeTemplateProvider.Traditional1())
+                    }>Traditional 1</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
                     <Nav.Link eventKey='Traditional 2' onClick={
-                        (event) => this.setState({
-                            activeTemplate: 'Traditional 2',
-                            children: Resume.tradtional2.children,
-                            sectionTitlePosition: 'left'
-                        })
-                    }> Traditional 2</Nav.Link>
+                        (event) => this.setState(ResumeTemplateProvider.Traditional2())
+                    }>Traditional 2</Nav.Link>
                 </Nav.Item>
             </Nav>
             <Button onClick={(event) => this.setState({ mode: 'normal' })}>Use this Template</Button>

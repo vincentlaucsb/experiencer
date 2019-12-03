@@ -4,9 +4,11 @@ import ResumeComponent, { ResumeComponentProps, AddChild, Action } from "./Resum
 import { Dropdown, ButtonGroup, Button } from "react-bootstrap";
 import RotateLeft from "../icons/rotate_left-24px.svg";
 
+export type SectionHeaderPosition = "left" | "top";
+
 export interface SectionProps extends ResumeComponentProps {
     title: string;
-    headerPosition?: "left" | "top";
+    headerPosition?: SectionHeaderPosition;
 }
 
 export default class Section extends ResumeComponent<SectionProps> {

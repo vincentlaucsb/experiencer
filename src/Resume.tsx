@@ -17,6 +17,7 @@ import AceEditor from "react-ace";
 
 import "ace-builds/src-noconflict/mode-css";
 import "ace-builds/src-noconflict/theme-github";
+import Section, { SectionHeaderPosition } from './components/Section';
 
 const resumeData = [
     {
@@ -127,6 +128,7 @@ interface PageState {
     children: Array<object>;
     customCss: string;
     mode: EditorMode;
+    sectionTitlePosition: SectionHeaderPosition;
 
     activeTemplate?: string;
     selectedNode?: SelectedComponentProps;
@@ -257,7 +259,8 @@ class Resume extends React.Component<{}, PageState> {
         this.state = {
             children: resumeData,
             customCss: defaultCss,
-            mode: 'normal'
+            mode: 'normal',
+            sectionTitlePosition: 'top'
         };
 
         this.renderStyle();
@@ -285,7 +288,8 @@ class Resume extends React.Component<{}, PageState> {
     addSection() {
         this.state.children.push({
             type: 'Section',
-            title: 'Add title here'
+            title: 'Add title here',
+            headerPosition: this.state.sectionTitlePosition
         });
 
         this.setState({ children: this.state.children });
@@ -509,7 +513,8 @@ class Resume extends React.Component<{}, PageState> {
                     <Nav.Link eventKey='Traditional 2' onClick={
                         (event) => this.setState({
                             activeTemplate: 'Traditional 2',
-                            children: Resume.tradtional2.children
+                            children: Resume.tradtional2.children,
+                            sectionTitlePosition: 'left'
                         })
                     }> Traditional 2</Nav.Link>
                 </Nav.Item>

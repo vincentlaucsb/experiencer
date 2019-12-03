@@ -45,9 +45,10 @@ export default class ResumeComponent<
     constructor(props: P) {
         super(props);
 
-        this.addParagraph = this.addParagraph.bind(this);
+        this.addDescriptionList = this.addDescriptionList.bind(this);
         this.addEntry = this.addEntry.bind(this);
         this.addList = this.addList.bind(this);
+        this.addParagraph = this.addParagraph.bind(this);
 
         this.updateDataEvent = this.updateDataEvent.bind(this);
         this.addNestedChild = this.addNestedChild.bind(this);
@@ -90,6 +91,15 @@ export default class ResumeComponent<
             type: "Entry",
             title: "Enter value here",
             subtitle: "Enter value here"
+        });
+    }
+
+    addDescriptionList() {
+        this.addChild({
+            type: 'DescriptionList',
+            children: [{
+                type: 'DescriptionListItem'
+            }]
         });
     }
 

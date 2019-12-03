@@ -40,6 +40,7 @@ export default class Entry extends ResumeComponent<EntryProps> {
             return <ButtonGroup size="sm">
                 <DropdownButton as={ButtonGroup} title="Add" id="add-options" size="sm">
                     <Dropdown.Item onClick={this.addList}>Bulleted List</Dropdown.Item>
+                    <Dropdown.Item onClick={this.addDescriptionList}>Description List</Dropdown.Item>
                     <Dropdown.Item onClick={this.addParagraph}>Paragraph</Dropdown.Item>
                     <Dropdown.Divider />
                     <Dropdown.Item onClick={this.addTitleField}>Add another title field</Dropdown.Item>

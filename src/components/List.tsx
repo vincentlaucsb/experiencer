@@ -153,3 +153,95 @@ export default class List extends ResumeComponent<ListProps> {
         </React.Fragment>
     }
 }
+
+interface DescriptionItemProps extends ListProps {
+    term?: string;
+}
+
+export class DescriptionListItem extends ResumeComponent<DescriptionItemProps> {
+    constructor(props) {
+        super(props);
+    }
+
+    getEditingMenu() {
+        let moveButtons = this.props.isMoving ? <>
+            <UpButton {...this.props} />
+            <DownButton {...this.props} />
+        </> : <></>
+
+        return <span>
+            <EditButton {...this.props} />
+            <DeleteButton {...this.props} />
+            {moveButtons}
+        </span>
+    }
+
+    render() {
+        let term: any = this.props.term || "";
+        let value: any = this.props.value || "";
+
+        if (this.props.isEditing) {
+            term = <input onChange={((this.updateDataEvent as (key: string, event: any) => void).bind(this, "term") as (data: any) => void)} value={this.props.term || ""} />
+            value = <input onChange={((this.updateDataEvent as (key: string, event: any) => void).bind(this, "value") as (data: any) => void)} value={this.props.value || ""} />
+        }
+
+        return <div className="flex-row">
+            <dt>
+                <span>{term}</span>
+            </dt>
+            <dd>
+                <span className="flex-row">
+                    <span>{value}</span>
+                    {this.renderEditingMenu()}
+                </span>
+            </dd>
+        </div>
+    }
+}
+
+export class DescriptionList extends List {
+    constructor(props: ListProps) {
+        super(props);
+    }
+
+    addChild() {
+        if (this.props.addChild as AddChild) {
+            (this.props.addChild as AddChild)({
+                type: 'DescriptionListItem'
+            });
+        }
+    }
+
+    render() {
+        let className = (this.state.isSelected || this.state.isHovering) ? 'resume-selected' : '';
+        let moveText = this.props.isMoving ? "Done Moving" : "Move Bullets";
+        let hideText = this.props.isHidden ? "Show List" : "Hide List";
+
+        if (this.props.isHidden) {
+            className += ' resume-hidden';
+        }
+
+        let list = <dl className={className} {...this.getSelectTriggerProps()}>
+            {this.renderChildren()}
+            {this.renderEditingMenu()}
+        </dl>
+
+        if (this.props.isHidden) {
+            if (this.isPrinting) {
+                list = <></>
+            }
+        }
+
+        return <React.Fragment>
+            <MenuProvider id={this.props.id}>
+                {list}
+            </MenuProvider>
+            <Menu id={this.props.id}>
+                <Item onClick={this.addChild}>Add Bullet</Item>
+                <Item onClick={this.moveBullets}>{moveText}</Item>
+                <Item onClick={this.toggleHidden}>{hideText}</Item>
+                <Item onClick={this.props.deleteChild as Action}>Delete List</Item>
+            </Menu>
+        </React.Fragment>
+    }
+}

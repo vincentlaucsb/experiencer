@@ -63,6 +63,11 @@ h2.flex-row, h3.flex-row {
     flex-direction: column;
 }
 
+#resume dt {
+    min-width: 20%;
+    padding-right: 0.5rem;
+}
+
 #resume h2.flex-col {
     border: 0;
     padding-right: 0.5rem;

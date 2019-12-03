@@ -26,6 +26,7 @@ export default class Section extends ResumeComponent<SectionProps> {
             <Dropdown.Menu>
                 <Dropdown.Item onClick={this.addEntry}>Entry</Dropdown.Item>
                 <Dropdown.Item onClick={this.addList}>Bulleted List</Dropdown.Item>
+                <Dropdown.Item onClick={this.addDescriptionList}>Description List</Dropdown.Item>
                 <Dropdown.Item onClick={this.addParagraph}>Paragraph</Dropdown.Item>
             </Dropdown.Menu>
         </Dropdown>

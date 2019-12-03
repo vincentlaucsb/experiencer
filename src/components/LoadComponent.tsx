@@ -2,7 +2,7 @@
 import FlexibleRow from "./FlexibleRow";
 import Section, { SectionProps } from "./Section";
 import Entry, { EntryProps } from "./Entry";
-import List, { ListItem } from "./List";
+import List, { ListItem, DescriptionList, DescriptionListItem } from "./List";
 import Paragraph from "./Paragraph";
 import Title from "./Title";
 import { ResumeComponentProps, SelectedComponentProps } from "./ResumeComponent";
@@ -53,6 +53,10 @@ export default function loadComponent(data: object,
 
     const props = propsDraft as ResumeComponentProps;
     switch (data['type']) {
+        case 'DescriptionList':
+            return <DescriptionList {...props} />;
+        case 'DescriptionListItem':
+            return <DescriptionListItem {...props} />;
         case 'FlexibleRow':
             return <FlexibleRow {...props} />;
         case 'Section':

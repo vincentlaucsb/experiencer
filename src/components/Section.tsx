@@ -58,14 +58,6 @@ export default class Section extends ResumeComponent<SectionProps> {
         let title = <Placeholder text={this.props.title} alt="Add a title" />
 
         if (this.props.isEditing) {
-                <h2 className="flex-col">
-                    {title}
-                    {this.renderEditingMenu()}
-                </h2>
-                <div className="entry-content">
-                    {this.renderChildren()}
-                </div>
-            </section>
             title = <input onChange={this.updateDataEvent.bind(this, "title")} type="text" value={this.props.title || ""} />;
         }
 

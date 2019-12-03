@@ -1,9 +1,8 @@
 ﻿import * as React from "react";
-import ResumeComponent, { AddChild, UpdateChild, Action, ResumeComponentProps, SelectedComponentProps } from "./ResumeComponent";
+import ResumeComponent, { AddChild, UpdateChild, Action, ResumeComponentProps } from "./ResumeComponent";
 import EditButton, { DeleteButton, AddButton, DownButton, UpButton } from "./Buttons";
-import { Button, ButtonGroup } from "react-bootstrap";
+import { Button, ButtonGroup, Form, Row, Col, InputGroup, ButtonToolbar } from "react-bootstrap";
 import ReactQuill from "react-quill";
-import { Nonprintable } from "./Nonprintable";
 import { Menu, Item, Separator, Submenu, MenuProvider } from 'react-contexify';
 import 'react-contexify/dist/ReactContexify.min.css';
 
@@ -11,7 +10,8 @@ interface ListProps extends ResumeComponentProps {
     isMoving?: boolean;
 }
 
-export class ListItem extends ResumeComponent<ListProps> {
+/** Represents an individual item in a list */
+export class ListItem<P extends ListProps = ListProps> extends ResumeComponent<P> {
     constructor(props) {
         super(props);
     }
@@ -31,18 +31,19 @@ export class ListItem extends ResumeComponent<ListProps> {
             <DownButton {...this.props} />
         </> : <></>
 
-        return <span>
+        return <>
             <EditButton {...this.props} />
             <DeleteButton {...this.props} />
             {moveButtons}
-        </span>
+        </>
     }
 
     render() {
         let value: any = "";
 
-        if (this.props.value) {
-            let htmlCode = this.props.value;
+        const dataValue = this.props.value as string;
+        if (dataValue) {
+            let htmlCode = dataValue;
 
             // Strip out parent <p> tags since we don't need them
             if (htmlCode.slice(0, 3) == '<p>' && htmlCode.slice(-4) == '</p>') {
@@ -58,7 +59,7 @@ export class ListItem extends ResumeComponent<ListProps> {
             value = <ReactQuill
                 modules={ListItem.quillModules}
                 value={this.props.value || ""}
-                onChange={((this.props.updateData as (key: string, data: any) => void).bind(this, "value") as (data: any) => void)}
+                onChange={((this.props.updateData as UpdateChild).bind(this, "value") as (data: any) => void)}
             />
         }
 
@@ -71,6 +72,7 @@ export class ListItem extends ResumeComponent<ListProps> {
     }
 }
 
+/** Represents a list component */
 export default class List extends ResumeComponent<ListProps> {
     constructor(props) {
         super(props);
@@ -85,6 +87,28 @@ export default class List extends ResumeComponent<ListProps> {
         this.unselect = this.unselect.bind(this);
     }
 
+    get className(): string {
+        let classes = new Array<string>();
+
+        if (this.state.isSelected || this.state.isHovering) {
+            classes.push('resume-selected');
+        }
+        
+        if (this.props.isHidden) {
+            classes.push('resume-hidden');
+        }
+
+        return classes.join(' ');
+    }
+
+    get moveText(): string {
+        return this.props.isMoving ? "Done Moving" : "Move Items";
+    }
+
+    get hideText(): string {
+        return this.props.isHidden ? "Show List" : "Hide List";
+    }
+
     addChild() {
         if (this.props.addChild as AddChild) {
             (this.props.addChild as AddChild)({
@@ -93,17 +117,21 @@ export default class List extends ResumeComponent<ListProps> {
         }
     }
 
+    /** Get editing controls for this list */
     getEditingMenu() {
         if (this.state.isSelected) {
-            let moveText = this.props.isMoving ? "Done Moving" : "Move Bullets";
-
             return <li className="list-options">
-                <ButtonGroup>
-                    <Button onClick={this.addChild} size="sm">Add Bullet</Button>
-                    <Button onClick={this.moveBullets} size="sm">{moveText}</Button>
-                </ButtonGroup>
+                <ButtonToolbar>
+                    <ButtonGroup className="mr-2">
+                        <Button onClick={this.addChild} size="sm">Add Item</Button>
+                        <Button onClick={this.moveBullets} size="sm">{this.moveText}</Button>
+                        <Button onClick={this.toggleHidden} size="sm">{this.hideText}</Button>
+                    </ButtonGroup>
 
-                <Button onClick={this.props.deleteChild as Action} size="sm" variant="danger">Delete List</Button>
+                    <ButtonGroup className="mr-2">
+                        <Button onClick={this.props.deleteChild as Action} size="sm" variant="danger">Delete List</Button>
+                    </ButtonGroup>
+                </ButtonToolbar>
             </li>
         }
     }
@@ -119,37 +147,33 @@ export default class List extends ResumeComponent<ListProps> {
         this.updateData("isMoving", isMoving);
         this.updateData("children", children);
     }
-    
-    render() {
-        let className = (this.state.isSelected || this.state.isHovering) ? 'resume-selected' : '';
-        let moveText = this.props.isMoving ? "Done Moving" : "Move Bullets";
-        let hideText = this.props.isHidden ? "Show List" : "Hide List";
 
-        if (this.props.isHidden) {
-            className += ' resume-hidden';
+    renderContextMenu() {
+        return <Menu id={this.props.id}>
+            <Item onClick={this.addChild}>Add Bullet</Item>
+            <Item onClick={this.moveBullets}>{this.moveText}</Item>
+            <Item onClick={this.toggleHidden}>{this.hideText}</Item>
+            <Item onClick={this.props.deleteChild as Action}>Delete List</Item>
+        </Menu>
+    }
+
+    renderList() {
+        if (this.props.isHidden && this.isPrinting) {
+            return <></>
         }
 
-        let list = <ul className={className} {...this.getSelectTriggerProps()}>
+        return <ul className={this.className} {...this.getSelectTriggerProps()}>
             {this.renderChildren()}
             {this.renderEditingMenu()}
         </ul>
-
-        if (this.props.isHidden) {
-            if (this.isPrinting) {
-                list = <></>
-            }
-        }
-
+    }
+    
+    render() {
         return <React.Fragment>
             <MenuProvider id={this.props.id}>
-                {list}
+                {this.renderList()}
             </MenuProvider>
-            <Menu id={this.props.id}>
-                <Item onClick={this.addChild}>Add Bullet</Item>
-                <Item onClick={this.moveBullets}>{moveText}</Item>
-                <Item onClick={this.toggleHidden}>{hideText}</Item>
-                <Item onClick={this.props.deleteChild as Action}>Delete List</Item>
-            </Menu>
+            {this.renderContextMenu()}
         </React.Fragment>
     }
 }
@@ -158,22 +182,9 @@ interface DescriptionItemProps extends ListProps {
     term?: string;
 }
 
-export class DescriptionListItem extends ResumeComponent<DescriptionItemProps> {
+export class DescriptionListItem extends ListItem<DescriptionItemProps> {
     constructor(props) {
         super(props);
-    }
-
-    getEditingMenu() {
-        let moveButtons = this.props.isMoving ? <>
-            <UpButton {...this.props} />
-            <DownButton {...this.props} />
-        </> : <></>
-
-        return <span>
-            <EditButton {...this.props} />
-            <DeleteButton {...this.props} />
-            {moveButtons}
-        </span>
     }
 
     render() {
@@ -181,8 +192,16 @@ export class DescriptionListItem extends ResumeComponent<DescriptionItemProps> {
         let value: any = this.props.value || "";
 
         if (this.props.isEditing) {
-            term = <input onChange={((this.updateDataEvent as (key: string, event: any) => void).bind(this, "term") as (data: any) => void)} value={this.props.term || ""} />
-            value = <input onChange={((this.updateDataEvent as (key: string, event: any) => void).bind(this, "value") as (data: any) => void)} value={this.props.value || ""} />
+            term = <InputGroup size="sm">
+                <Form.Control value={term}
+                    onChange={this.updateDataEvent.bind(this, "term")}
+                            placeholder="Term" />
+                    </InputGroup>
+            value = <InputGroup size="sm">
+                <Form.Control value={value}
+                    onChange={this.updateDataEvent.bind(this, "value")}
+                    placeholder="Value" />
+                    </InputGroup>
         }
 
         return <div className="flex-row">
@@ -191,7 +210,7 @@ export class DescriptionListItem extends ResumeComponent<DescriptionItemProps> {
             </dt>
             <dd>
                 <span className="flex-row">
-                    <span>{value}</span>
+                    {value}
                     {this.renderEditingMenu()}
                 </span>
             </dd>
@@ -212,36 +231,10 @@ export class DescriptionList extends List {
         }
     }
 
-    render() {
-        let className = (this.state.isSelected || this.state.isHovering) ? 'resume-selected' : '';
-        let moveText = this.props.isMoving ? "Done Moving" : "Move Bullets";
-        let hideText = this.props.isHidden ? "Show List" : "Hide List";
-
-        if (this.props.isHidden) {
-            className += ' resume-hidden';
-        }
-
-        let list = <dl className={className} {...this.getSelectTriggerProps()}>
+    renderList() {
+        return <dl className={this.className} {...this.getSelectTriggerProps()}>
             {this.renderChildren()}
             {this.renderEditingMenu()}
         </dl>
-
-        if (this.props.isHidden) {
-            if (this.isPrinting) {
-                list = <></>
-            }
-        }
-
-        return <React.Fragment>
-            <MenuProvider id={this.props.id}>
-                {list}
-            </MenuProvider>
-            <Menu id={this.props.id}>
-                <Item onClick={this.addChild}>Add Bullet</Item>
-                <Item onClick={this.moveBullets}>{moveText}</Item>
-                <Item onClick={this.toggleHidden}>{hideText}</Item>
-                <Item onClick={this.props.deleteChild as Action}>Delete List</Item>
-            </Menu>
-        </React.Fragment>
     }
 }

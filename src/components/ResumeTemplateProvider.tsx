@@ -66,6 +66,11 @@ h2.flex-row, h3.flex-row {
 #resume dt {
     min-width: 20%;
     padding-right: 0.5rem;
+    flex-shrink: 2;
+}
+
+#resume dd {
+    flex-grow: 2;
 }
 
 #resume h2.flex-col {

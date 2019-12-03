@@ -68,7 +68,12 @@ h2.flex-row, h3.flex-row {
     padding-right: 0.5rem;
     margin-right: 0.5rem;
     width: 150px;
-}`;
+}
+
+#resume p.subtitle {
+    font-style: italic;
+}
+`;
 
     static resumeChildren = [
         {

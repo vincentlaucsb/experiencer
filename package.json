@@ -1,6 +1,6 @@
 {
-  "name": "resume-editor",
-  "homepage": "http://vincela.com/resume-editor",
+  "name": "experiencer",
+  "homepage": "http://vincela.com/experiencer",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

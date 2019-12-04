@@ -11,6 +11,12 @@ div#resume {
     filter: opacity(0.3);
 }
 
+button img {
+    /* Make black icons white-ish */
+    filter: invert(0.95);
+    margin-right: 2px;
+}
+
 div.button-tooltip {
     border-radius: 3px;
     background: rgba(15, 15, 15, 1);

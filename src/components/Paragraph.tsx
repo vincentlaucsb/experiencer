@@ -16,6 +16,15 @@ export default class Paragraph extends ResumeComponent {
         this.updateDataEvent = this.updateDataEvent.bind(this);
     }
 
+    get className(): string {
+        let classNames = [super.className];
+        if (this.state.isSelected) {
+            classNames.push('flex-col');
+        }
+
+        return classNames.join(' ');
+    }
+
     static quillModules = {
         toolbar: [
             ['bold', 'italic', 'underline', 'strike'],

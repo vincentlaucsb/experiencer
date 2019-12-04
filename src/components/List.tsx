@@ -108,14 +108,13 @@ export default class List extends ResumeComponent<ListProps> {
         if (this.state.isSelected) {
             return <li className="list-options">
                 <ButtonToolbar>
-                    <ButtonGroup className="mr-2">
+                    <ButtonGroup size="sm" className="mr-2" >
                         <Button onClick={this.addChild} size="sm">Add Item</Button>
                         <Button onClick={this.moveBullets} size="sm">{this.moveText}</Button>
                         <Button onClick={this.toggleHidden} size="sm">{this.hideText}</Button>
-                    </ButtonGroup>
-
-                    <ButtonGroup className="mr-2">
-                        <Button onClick={this.props.deleteChild as Action} size="sm" variant="danger">Delete List</Button>
+                        <DeleteButton {...this.props} extended={true} />
+                        <UpButton {...this.props} extended={true} />
+                        <DownButton {...this.props} extended={true} />
                     </ButtonGroup>
                 </ButtonToolbar>
             </li>
@@ -149,8 +148,8 @@ export default class List extends ResumeComponent<ListProps> {
         }
 
         return <ul className={this.className} {...this.getSelectTriggerProps()}>
-            {this.renderChildren()}
             {this.renderEditingMenu()}
+            {this.renderChildren()}
         </ul>
     }
     
@@ -219,8 +218,8 @@ export class DescriptionList extends List {
 
     renderList() {
         return <dl className={this.className} {...this.getSelectTriggerProps()}>
-            {this.renderChildren()}
             {this.renderEditingMenu()}
+            {this.renderChildren()}
         </dl>
     }
 }

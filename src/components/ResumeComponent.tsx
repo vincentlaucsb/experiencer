@@ -166,6 +166,9 @@ export default class ResumeComponent<
             // Replace node's children with new list of children that excludes deleted node
             this.updateData("children", moveUp(replChildren, idx));
         }
+
+        // Workaround for when item that takes its place stays selected
+        this.props.unselect();
     }
 
     moveNestedChildDown(idx: number) {
@@ -174,6 +177,9 @@ export default class ResumeComponent<
             // Replace node's children with new list of children that excludes deleted node
             this.updateData("children", moveDown(replChildren, idx));
         }
+
+        // Workaround for when item that takes its place stays selected
+        this.props.unselect();
     }
 
     toggleEdit(event: any) {
@@ -242,6 +248,8 @@ export default class ResumeComponent<
         // TO DO: On hover, update a set of IDs in <Resume> of current components being hovered over
         // If a child of this node is also hovered over, prevent this node from being selected
         if (!this.state.isSelected && !(this.props.isSelectBlocked as (id: string) => boolean)(this.props.id)) {
+            console.log("Selected", this.props.id);
+
             // Unselect the previous component
             this.props.unselect();
 
@@ -254,6 +262,8 @@ export default class ResumeComponent<
     }
 
     unselect() {
+        console.log("Unselected", this.props.id);
+
         this.setState({
             isSelected: false
         });

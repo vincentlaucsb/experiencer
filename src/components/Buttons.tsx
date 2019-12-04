@@ -55,11 +55,13 @@ export function AddButton(props: AddButtonProps) {
 }
 
 export default function EditButton<P extends ButtonProps>(props: P) {
+    let imgSrc = props.isEditing ? DoneIcon : EditIcon;
+    let text = props.isEditing ? "Done" : "Edit";
+
     if (props.extended) {
-        return <Button onClick={props.toggleEdit as Action}><img src={EditIcon} />Edit</Button>
+        return <Button onClick={props.toggleEdit as Action}><img src={imgSrc} />{text}</Button>
     }
 
-    let imgSrc = props.isEditing ? DoneIcon : EditIcon;
     return <ButtonWithTooltip onClick={props.toggleEdit as Action} imgSrc={imgSrc} tooltip="Edit" />
 }
 

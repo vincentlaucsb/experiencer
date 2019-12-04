@@ -272,11 +272,11 @@ class Resume extends React.Component<{}, PageState> {
             return <ButtonToolbar aria-label="Resume Editor Controls">
                 <FileLoader loadData={this.loadData} />
 
-                <ButtonGroup>
+                <ButtonGroup className="mr-2">
                     <Button onClick={this.saveFile}>Save to File</Button>
                 </ButtonGroup>
 
-                <ButtonGroup>
+                <ButtonGroup className="mr-2">
                     <Button {...unselectProps}>Unselect</Button>
                     <Button onClick={this.toggleStyleEditor}>Edit Style</Button>
                     <Button onClick={(event) => this.setState({ mode: 'changingTemplate' })}>Template</Button>

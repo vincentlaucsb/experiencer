@@ -1,11 +1,18 @@
 ﻿import * as React from "react";
 import ReactQuill from 'react-quill';
-import EditButton, { DeleteButton } from "./Buttons";
+import EditButton, { DeleteButton, DownButton, UpButton } from "./Buttons";
 import ResumeComponent from "./ResumeComponent";
+import { ButtonGroup } from "react-bootstrap";
 
 export default class Paragraph extends ResumeComponent {
     constructor(props) {
         super(props);
+
+        this.state = {
+            isHovering: false,
+            isSelected: false
+        };
+
         this.updateDataEvent = this.updateDataEvent.bind(this);
     }
 
@@ -20,10 +27,14 @@ export default class Paragraph extends ResumeComponent {
     };
 
     getEditingMenu() {
-        return <span style={{ display: "inline-block" }}>
-            <EditButton {...this.props} />
-            <DeleteButton {...this.props} />
-        </span>
+        if (this.state.isSelected) {
+            return <ButtonGroup size="sm">
+                <EditButton {...this.props} extended={true} />
+                <DeleteButton {...this.props} extended={true} />
+                <UpButton {...this.props} extended={true} />
+                <DownButton {...this.props} extended={true} />
+            </ButtonGroup>
+        }
     }
 
     render(): JSX.Element {
@@ -33,9 +44,9 @@ export default class Paragraph extends ResumeComponent {
             onChange={((this.props.updateData as (key: string, data: any) => void).bind(this, "value") as (data: any) => void)}
         /> : <span dangerouslySetInnerHTML={{ __html: this.props.value as string }} />;
 
-        return <div>
-            {value}            
+        return <div className={this.className} {...this.getSelectTriggerProps()}>
             {this.renderEditingMenu()}
+            {value}
         </div>;
     }
 }

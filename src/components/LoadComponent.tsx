@@ -5,16 +5,19 @@ import Entry, { EntryProps } from "./Entry";
 import List, { ListItem, DescriptionList, DescriptionListItem } from "./List";
 import Paragraph from "./Paragraph";
 import Title from "./Title";
-import { ResumeComponentProps, SelectedComponentProps } from "./ResumeComponent";
+import { ResumeComponentProps, Action } from "./ResumeComponent";
 
 export type EditorMode = 'normal' | 'editingStyle' | 'changingTemplate' | 'printing';
 
 interface ExtraProps {
     mode: EditorMode;
     unselect: () => void;
-    updateSelected: (data: SelectedComponentProps) => void;
+    updateSelected: (unselect: Action) => void;
 
     addChild?: (node: object) => void;
+    isSelectBlocked?: (id: string) => boolean;
+    hoverInsert?: (id: string) => void;
+    hoverOut?: (id: string) => void;
     moveUp?: () => void;
     moveDown?: () => void;
     deleteChild?: () => void;

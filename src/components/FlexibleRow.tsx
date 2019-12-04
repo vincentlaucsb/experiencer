@@ -33,11 +33,11 @@ export default class FlexibleRow extends ResumeComponent {
     }
     
     render() {
-        return <>
+        return <div {...this.getSelectTriggerProps()}>
             {this.renderEditingMenu()}
-            <div className={this.className} style={{ width: "100%" }} {...this.getSelectTriggerProps()}>
+            <div className={this.className} style={{ width: "100%" }}>
                 {this.renderChildren()}
             </div>
-        </>
+        </div>
     }
 }

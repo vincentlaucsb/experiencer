@@ -12,7 +12,7 @@ import { Button, ButtonToolbar, ButtonGroup, InputGroup, Card, Tab, Col, Nav } f
 import { FileLoader } from './components/FileLoader';
 import { deleteAt, moveUp, moveDown } from './components/Helpers';
 import { Nonprintable } from './components/Nonprintable';
-import { SelectedComponentProps, Action } from './components/ResumeComponent';
+import { Action } from './components/ResumeComponent';
 import AceEditor from "react-ace";
 
 import "ace-builds/src-noconflict/mode-css";
@@ -23,11 +23,16 @@ import ResumeTemplateProvider from './components/ResumeTemplateProvider';
 interface PageState {
     children: Array<object>;
     customCss: string;
+
+    /** Set of nodes we are currently hovering over */
+    hovering: Set<string>;
+
     mode: EditorMode;
     sectionTitlePosition: SectionHeaderPosition;
 
+    /** Unselect the currently selected node */
+    unselectNode?: Action;
     activeTemplate?: string;
-    selectedNode?: SelectedComponentProps;
 }
 
 class Resume extends React.Component<{}, PageState> {
@@ -47,6 +52,7 @@ class Resume extends React.Component<{}, PageState> {
         this.state = {
             children: template.children,
             customCss: template.customCss,
+            hovering: new Set<string>(),
             mode: 'normal',
             sectionTitlePosition: template.sectionTitlePosition
         };
@@ -63,6 +69,9 @@ class Resume extends React.Component<{}, PageState> {
         this.saveFile = this.saveFile.bind(this);
         this.unselect = this.unselect.bind(this);
         this.toggleStyleEditor = this.toggleStyleEditor.bind(this);
+        this.hoverInsert = this.hoverInsert.bind(this);
+        this.hoverOut = this.hoverOut.bind(this);
+        this.isSelectBlocked = this.isSelectBlocked.bind(this);
     }
 
     get isEditingStyle(): boolean {
@@ -71,6 +80,28 @@ class Resume extends React.Component<{}, PageState> {
 
     get isPrinting(): boolean {
         return this.state.mode == 'printing';
+    }
+
+    // Determine if a node shouldn't be allowed to be selected
+    isSelectBlocked(id: string) {
+        const ids = Array.from(this.state.hovering);
+        for (let i in ids) {
+            const otherId = ids[i];
+
+            if (otherId.search(id) >= 0 && otherId != id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    hoverInsert(id: string) {
+        this.state.hovering.add(id);
+    }
+
+    hoverOut(id: string) {
+        this.state.hovering.delete(id);
     }
 
     addSection() {
@@ -171,20 +202,15 @@ class Resume extends React.Component<{}, PageState> {
     }
 
     unselect() {
-        const prevNode = this.state.selectedNode as SelectedComponentProps;
-        if (prevNode && prevNode.unselect as Action) {
-            (prevNode.unselect as Action)();
+        if (this.state.unselectNode as Action) {
+            (this.state.unselectNode as Action)();
         }
 
-        this.setState({
-            selectedNode: undefined
-        });
+        this.setState({ unselectNode: undefined });
     }
 
-    updateSelected(data: SelectedComponentProps) {
-        this.setState({
-            selectedNode: data
-        });
+    updateSelected(unselect: Action) {
+        this.setState({ unselectNode: unselect });
     }
 
     toggleStyleEditor() {
@@ -216,6 +242,9 @@ class Resume extends React.Component<{}, PageState> {
                 {loadComponent(elem, idx, arr.length, {
                     mode: this.state.mode,
                     addChild: this.addChild.bind(this, idx),
+                    hoverInsert: this.hoverInsert.bind(this),
+                    hoverOut: this.hoverOut.bind(this),
+                    isSelectBlocked: this.isSelectBlocked.bind(this),
                     moveUp: this.moveUp.bind(this, idx),
                     moveDown: this.moveDown.bind(this, idx),
                     deleteChild: this.deleteChild.bind(this, idx),
@@ -233,7 +262,7 @@ class Resume extends React.Component<{}, PageState> {
             disabled: true
         };
 
-        if (this.state.selectedNode as SelectedComponentProps) {
+        if (this.state.unselectNode as Action) {
             unselectProps = {
                 onClick: this.unselect
             };

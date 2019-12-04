@@ -2,10 +2,6 @@
 import loadComponent, { EditorMode } from "./LoadComponent";
 import { deleteAt, moveUp, moveDown } from "./Helpers";
 
-export interface SelectedComponentProps {
-    unselect?: Action;
-}
-
 export interface ResumeComponentProps {
     id: string;
     mode: EditorMode;
@@ -19,9 +15,12 @@ export interface ResumeComponentProps {
     children?: Array<object>;
 
     unselect: Action;
-    updateSelected: (data: SelectedComponentProps) => void;
+    updateSelected: (unselect?: Action) => void;
 
     addChild?: ((idx: number, node: object) => void) | ((node: object) => void);
+    isSelectBlocked?: (id: string) => boolean;
+    hoverInsert?: (id: string) => void;
+    hoverOut?: (id: string) => void;
     moveUp?: ((idx: number) => void) | (() => void);
     moveDown?: ((idx: number) => void) | (() => void);
     deleteChild?: ((idx: number) => void) | (() => void);
@@ -59,6 +58,7 @@ export default class ResumeComponent<
         this.updateNestedData = this.updateNestedData.bind(this);
         this.setSelected = this.setSelected.bind(this);
         this.unselect = this.unselect.bind(this);
+        this.getSelectTriggerProps = this.getSelectTriggerProps.bind(this);
     }
 
     /** Get the class name for the main container */
@@ -84,7 +84,14 @@ export default class ResumeComponent<
         // Since the node is being deleted, remove callback to this node's unselect
         // method from <Resume /> to prevent memory leaks
         if (this.state && this.state.isSelected) {
-            this.props.updateSelected({ unselect: undefined });
+            // NOTE: This can cause issues if an item is unmounted because it has 
+            // been vastly modified via render() but not deleted from the resume,
+            // i.e. unselect functionality will not work correctly.
+            //
+            // When that starts happening, either make render() not return vastly 
+            // different structures in different scenarios or refactor the select/unselect
+            // system to handle this by keeping unselect() bindings fresh
+            this.props.updateSelected(undefined);
         }
     }
 
@@ -206,6 +213,9 @@ export default class ResumeComponent<
                             {
                                 mode: this.props.mode,
                                 addChild: (this.addNestedChild.bind(this, idx) as (node: object) => void),
+                                isSelectBlocked: this.props.isSelectBlocked,
+                                hoverInsert: this.props.hoverInsert,
+                                hoverOut: this.props.hoverOut,
                                 moveDown: (this.moveNestedChildDown.bind(this, idx) as Action),
                                 moveUp: (this.moveNestedChildUp.bind(this, idx) as Action),
                                 deleteChild: (this.deleteNestedChild.bind(this, idx) as Action),
@@ -213,9 +223,9 @@ export default class ResumeComponent<
                                 updateData: (this.updateNestedData.bind(this, idx) as (key: string, data: any) => void),
                                 unselect: this.props.unselect,
                                 updateSelected: this.props.updateSelected
-                            },
-                            this.props.id
-                        )}
+                    },
+                    this.props.id
+                )}
                     </React.Fragment>)
             }
             </React.Fragment>
@@ -229,16 +239,17 @@ export default class ResumeComponent<
     }
 
     setSelected() {
-        if (!this.state.isSelected) {
-            this.setState({ isSelected: true });
-
+        // TO DO: On hover, update a set of IDs in <Resume> of current components being hovered over
+        // If a child of this node is also hovered over, prevent this node from being selected
+        if (!this.state.isSelected && !(this.props.isSelectBlocked as (id: string) => boolean)(this.props.id)) {
             // Unselect the previous component
             this.props.unselect();
 
+            // Set this as selected
+            this.setState({ isSelected: true });
+
             // Pass this node's unselect back up to <Resume />
-            this.props.updateSelected({
-                unselect: this.unselect.bind(this)
-            });
+            this.props.updateSelected(this.unselect);
         }
     }
 
@@ -251,13 +262,22 @@ export default class ResumeComponent<
     getSelectTriggerProps() {
         return {
             onClick: this.setSelected,
+
+            // Hover over
             onMouseEnter: () => {
                 // Don't select anything in "print" mode
                 if (!this.isPrinting) {
                     this.setState({ isHovering: true });
                 }
+
+                (this.props.hoverInsert as (id: string) => void)(this.props.id);
             },
-            onMouseLeave: () => { this.setState({ isHovering: false }) }
+
+            // Hover out
+            onMouseLeave: () => {
+                this.setState({ isHovering: false });
+                (this.props.hoverOut as (id: string) => void)(this.props.id);
+            }
         };
     }
 

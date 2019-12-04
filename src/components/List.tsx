@@ -4,6 +4,7 @@ import EditButton, { DeleteButton, AddButton, DownButton, UpButton } from "./But
 import { Button, ButtonGroup, Form, Row, Col, InputGroup, ButtonToolbar } from "react-bootstrap";
 import ReactQuill from "react-quill";
 import { Menu, Item, Separator, Submenu, MenuProvider } from 'react-contexify';
+import AddIcon from "../icons/add-24px.svg";
 import 'react-contexify/dist/ReactContexify.min.css';
 
 interface ListProps extends ResumeComponentProps {
@@ -109,7 +110,7 @@ export default class List extends ResumeComponent<ListProps> {
             return <li className="list-options">
                 <ButtonToolbar>
                     <ButtonGroup size="sm" className="mr-2" >
-                        <Button onClick={this.addChild} size="sm">Add Item</Button>
+                        <Button onClick={this.addChild} size="sm"><img src={AddIcon} alt="Add Item" />Add Item</Button>
                         <Button onClick={this.moveBullets} size="sm">{this.moveText}</Button>
                         <Button onClick={this.toggleHidden} size="sm">{this.hideText}</Button>
                         <DeleteButton {...this.props} extended={true} />

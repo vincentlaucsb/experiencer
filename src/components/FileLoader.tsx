@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import { Button, InputGroup, Collapse, Form } from "react-bootstrap";
+import { Button, InputGroup, Collapse, Form, Nav } from "react-bootstrap";
 import { InputGroupAppend } from "react-bootstrap/InputGroup";
 
 interface FileLoaderProps {
@@ -25,6 +25,7 @@ export class FileLoader extends React.Component<FileLoaderProps, FileLoaderState
 
         this.handleSubmit = this.handleSubmit.bind(this);
         this.readFile = this.readFile.bind(this);
+        this.onFileSelect = this.onFileSelect.bind(this);
 
         // See: https://reactjs.org/docs/uncontrolled-components.html#the-file-input-tag
         this.fileInput = React.createRef();
@@ -58,35 +59,34 @@ export class FileLoader extends React.Component<FileLoaderProps, FileLoaderState
 
     renderExpanded() {
         if (this.state.isOpen) {
-            return <React.Fragment>
-                <Form onSubmit={this.handleSubmit} id="load-file">
-                    <input className="form-control" type="file" ref={this.fileInput} />
-                </Form>
-                <InputGroup.Append>
-                    <Button form="load-file" type="submit">Open</Button>
-                </InputGroup.Append>
-            </React.Fragment>
+            return <Form inline>
+                <div className="custom-file">
+                    <input type="file" className="custom-file-input" onChange={this.onFileSelect} ref={this.fileInput} id="customFile" />
+                    <label className="custom-file-label" form="customFile">Choose file</label>
+                </div>
+            </Form>
         }
 
         return <></>
     }
 
     renderTrigger() {
-        const button = <Button onClick={() => this.setState({ isOpen: !this.state.isOpen })}>Load</Button>
-
-        if (this.state.isOpen) {
-            return <InputGroup.Prepend>
-                {button}
-            </InputGroup.Prepend>
-        }
+        const button = <Nav.Link onClick={() => this.setState({ isOpen: !this.state.isOpen })}>Load</Nav.Link>
 
         return button;
     }
 
+    onFileSelect(event) {
+        let userFile = this.fileInput.current.files[0];
+        if (userFile) {
+            this.readFile(userFile);
+        }
+    }
+
     render() {
-        return <InputGroup>
+        return <>
             {this.renderTrigger()}
             {this.renderExpanded()}
-        </InputGroup>
+        </>
     }
 }

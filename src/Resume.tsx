@@ -8,7 +8,7 @@ import './css/index.css';
 import './scss/custom.scss';
 import 'react-quill/dist/quill.snow.css';
 
-import { Button, ButtonToolbar, ButtonGroup, InputGroup, Card, Tab, Col, Nav } from 'react-bootstrap';
+import { Button, ButtonToolbar, ButtonGroup, InputGroup, Card, Tab, Col, Nav, Navbar } from 'react-bootstrap';
 import { FileLoader } from './components/FileLoader';
 import { deleteAt, moveUp, moveDown } from './components/Helpers';
 import { Nonprintable } from './components/Nonprintable';
@@ -178,7 +178,8 @@ class Resume extends React.Component<{}, PageState> {
     loadData(data: object) {
         this.setState({
             children: data['children'] as Array<object>,
-            customCss: data['css'] as string
+            customCss: data['css'] as string,
+            mode: 'normal'
         });
 
         // Actually load custom CSS
@@ -282,19 +283,21 @@ class Resume extends React.Component<{}, PageState> {
         }
 
         if (!this.isPrinting) {
-            return <ButtonToolbar aria-label="Resume Editor Controls">
-                <Button onClick={this.changeTemplate}>New</Button>
-                <FileLoader loadData={this.loadData} />
+            return <Navbar bg="dark" variant="dark" sticky="top">
+                <Navbar.Brand>
+                    Experiencer
+                </Navbar.Brand>
+                <Nav className="mr-auto">
+                    <Nav.Link onClick={this.changeTemplate}>New</Nav.Link>
+                    <FileLoader loadData={this.loadData} />
+                    <Nav.Link onClick={this.saveFile}>Save to File</Nav.Link>
+                </Nav>
 
                 <ButtonGroup className="mr-2">
-                    <Button onClick={this.saveFile}>Save to File</Button>
+                    <Button variant="outline-light" {...unselectProps}>Unselect</Button>
+                    <Button variant="outline-light" onClick={this.toggleStyleEditor}>Edit Style</Button>
                 </ButtonGroup>
-
-                <ButtonGroup className="mr-2">
-                    <Button {...unselectProps}>Unselect</Button>
-                    <Button onClick={this.toggleStyleEditor}>Edit Style</Button>
-                </ButtonGroup>
-            </ButtonToolbar>
+            </Navbar>
         }
 
         return <></>
@@ -342,19 +345,23 @@ class Resume extends React.Component<{}, PageState> {
         </>
     }
 
+    get resumeClassName() {
+        if (this.isPrinting) {
+            return "resume-printing";
+        }
+
+        return "ml-auto mr-auto mt-2";
+    }
+
     render() {
         const resume = <>
             {this.renderToolbar()}
-            <div id="resume" style={{
-                width: "100%",
-                height: "100%",
-                overflowY: "auto"
-            }}>
-            {this.renderChildren()}
+            <div id="resume" className={this.resumeClassName}>
+                {this.renderChildren()}
 
-            <Nonprintable isPrinting={this.isPrinting}>
-                <Button onClick={this.addSection}>Add Section</Button>
-            </Nonprintable>
+                <Nonprintable isPrinting={this.isPrinting}>
+                    <Button onClick={this.addSection}>Add Section</Button>
+                </Nonprintable>
             </div>
         </>
 

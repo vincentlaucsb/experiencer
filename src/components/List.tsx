@@ -32,11 +32,11 @@ export class ListItem<P extends ListProps = ListProps> extends ResumeComponent<P
             <DownButton {...this.props} />
         </> : <></>
 
-        return <>
+        return <span className="ml-auto">
             <EditButton {...this.props} />
             <DeleteButton {...this.props} />
             {moveButtons}
-        </>
+        </span>
     }
 
     render() {

@@ -61,6 +61,7 @@ class Resume extends React.Component<{}, PageState> {
 
         this.addSection = this.addSection.bind(this);
         this.addChild = this.addChild.bind(this);
+        this.changeTemplate = this.changeTemplate.bind(this);
         this.updateData = this.updateData.bind(this);
         this.loadData = this.loadData.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
@@ -201,6 +202,18 @@ class Resume extends React.Component<{}, PageState> {
         saveAs(blob, "resume.json");
     }
 
+    changeTemplate() {
+        const template = ResumeTemplateProvider.Traditional1();
+
+        this.setState({
+            activeTemplate: template.activeTemplate,
+            children: template.children,
+            customCss: template.customCss,
+            sectionTitlePosition: template.sectionTitlePosition,
+            mode: 'changingTemplate'
+        });
+    }
+
     unselect() {
         if (this.state.unselectNode as Action) {
             (this.state.unselectNode as Action)();
@@ -270,6 +283,7 @@ class Resume extends React.Component<{}, PageState> {
 
         if (!this.isPrinting) {
             return <ButtonToolbar aria-label="Resume Editor Controls">
+                <Button onClick={this.changeTemplate}>New</Button>
                 <FileLoader loadData={this.loadData} />
 
                 <ButtonGroup className="mr-2">
@@ -279,7 +293,6 @@ class Resume extends React.Component<{}, PageState> {
                 <ButtonGroup className="mr-2">
                     <Button {...unselectProps}>Unselect</Button>
                     <Button onClick={this.toggleStyleEditor}>Edit Style</Button>
-                    <Button onClick={(event) => this.setState({ mode: 'changingTemplate' })}>Template</Button>
                 </ButtonGroup>
             </ButtonToolbar>
         }
@@ -298,7 +311,11 @@ class Resume extends React.Component<{}, PageState> {
                     name="style-editor"
                     editorProps={{ $blockScrolling: true }}
                 />
-                <Button onClick={this.renderStyle}>Update</Button>
+
+                <ButtonToolbar className="mt-2">
+                    <Button onClick={this.renderStyle}>Apply</Button>
+                    <Button onClick={(event) => this.setState({ mode: 'normal' })}>Done</Button>
+                </ButtonToolbar>
             </>
         }
 

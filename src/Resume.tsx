@@ -329,7 +329,8 @@ class Resume extends React.Component<{}, PageState> {
         return <>
             <Nav variant="pills"
                 activeKey={this.state.activeTemplate}
-                className="flex-column">
+                className="flex-column mb-2"
+            >
                 <Nav.Item>
                     <Nav.Link eventKey='Traditional 1' onClick={
                         (event) => this.setState(ResumeTemplateProvider.Traditional1())
@@ -355,7 +356,6 @@ class Resume extends React.Component<{}, PageState> {
 
     render() {
         const resume = <>
-            {this.renderToolbar()}
             <div id="resume" className={this.resumeClassName}>
                 {this.renderChildren()}
 
@@ -365,29 +365,47 @@ class Resume extends React.Component<{}, PageState> {
             </div>
         </>
 
-        let mainContent = resume;
+        let mainContent = <>
+            {this.renderToolbar()}
+            {resume}
+        </>;
 
         // Split resume and style editor
         if (this.isEditingStyle) {
-            mainContent = <SplitPane defaultSize="500px" primary="second">
-                <div style={{ height: "100vh" }}>
-                    {resume}
-                </div>
-                {this.renderStyleEditor()}
+            mainContent = <SplitPane split="horizontal" pane1Style={{
+                    display: "block",
+                    height: "auto",
+                }}
+                resizerStyle={{
+                    display: "none"
+                }}
+            >
+                {this.renderToolbar()}
+                <SplitPane split="vertical" defaultSize="500px" primary="second" style={{
+                    height: "100%"
+                }}>
+                    <div style={{ height: "100vh" }}>
+                        {resume}
+                    </div>
+                    {this.renderStyleEditor()}
+                </SplitPane>
             </SplitPane>
         }
         else if (this.state.mode == "changingTemplate") {
-            mainContent = <div style={{
-                display: 'flex',
-                flexDirection: 'row'
-            }}>
+            mainContent = <>
+                {this.renderToolbar()}
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'row'
+                }}>
                 <div style={{ width: "70%" }}>
                     {resume}
                 </div> 
-                <div style={{ width: "30%" }}>
+                <div className="ml-2 mr-2 mt-2 mb-2" style={{ width: "30%" }}>
                     {this.renderTemplateChanger()}
                 </div>
-            </div>
+                </div>
+                </>
         }
 
         return <React.Fragment>

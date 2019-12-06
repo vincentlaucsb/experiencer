@@ -378,15 +378,16 @@ class Resume extends React.Component<{}, PageState> {
                 }}
                 resizerStyle={{
                     display: "none"
-                }}
-            >
+                }}>
                 {this.renderToolbar()}
                 <SplitPane split="vertical" defaultSize="500px" primary="second" style={{
                     height: "100%"
-                }}>
-                    <div style={{ height: "100vh" }}>
-                        {resume}
-                    </div>
+                }}
+                    pane1Style={{
+                        height: "100%",
+                        overflowY: "auto"
+                    }}>
+                    {resume}
                     {this.renderStyleEditor()}
                 </SplitPane>
             </SplitPane>
@@ -394,18 +395,13 @@ class Resume extends React.Component<{}, PageState> {
         else if (this.state.mode == "changingTemplate") {
             mainContent = <>
                 {this.renderToolbar()}
-                <div style={{
-                    display: 'flex',
-                    flexDirection: 'row'
-                }}>
-                <div style={{ width: "70%" }}>
+                <div className="flex-row">
                     {resume}
-                </div> 
-                <div className="ml-2 mr-2 mt-2 mb-2" style={{ width: "30%" }}>
-                    {this.renderTemplateChanger()}
+                    <div className="ml-2 mr-2 mt-2 mb-2" style={{ maxWidth: "300px", width: "30%" }}>
+                        {this.renderTemplateChanger()}
+                    </div>
                 </div>
-                </div>
-                </>
+            </>
         }
 
         return <React.Fragment>

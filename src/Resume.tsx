@@ -8,7 +8,7 @@ import './css/index.css';
 import './scss/custom.scss';
 import 'react-quill/dist/quill.snow.css';
 
-import { Button, ButtonToolbar, ButtonGroup, InputGroup, Card, Tab, Col, Nav, Navbar } from 'react-bootstrap';
+import { Button, ButtonToolbar, ButtonGroup, InputGroup, Card, Tab, Col, Nav, Navbar, ButtonProps } from 'react-bootstrap';
 import { FileLoader } from './components/FileLoader';
 import { deleteAt, moveUp, moveDown } from './components/Helpers';
 import { Nonprintable } from './components/Nonprintable';
@@ -228,6 +228,11 @@ class Resume extends React.Component<{}, PageState> {
     }
 
     toggleStyleEditor() {
+        if (this.isEditingStyle) {
+            this.setState({ mode: 'normal' });
+            return;
+        }
+
         this.setState({ mode: 'editingStyle' });
     }
     
@@ -280,6 +285,7 @@ class Resume extends React.Component<{}, PageState> {
     }
 
     renderToolbar() {
+        // Disable "Unselect" button conditionally
         let unselectProps: object = {
             disabled: true
         };
@@ -289,6 +295,12 @@ class Resume extends React.Component<{}, PageState> {
                 onClick: this.unselect
             };
         }
+
+        // Highlight "Edit Style" button conditionally
+        const editStyleProps = {
+            onClick: this.toggleStyleEditor,
+            variant: this.isEditingStyle ? "light" : "outline-light" as ButtonProps["variant"]
+        };
 
         if (!this.isPrinting) {
             return <Navbar bg="dark" variant="dark" sticky="top">
@@ -303,7 +315,7 @@ class Resume extends React.Component<{}, PageState> {
 
                 <ButtonGroup className="mr-2">
                     <Button variant="outline-light" {...unselectProps}>Unselect</Button>
-                    <Button variant="outline-light" onClick={this.toggleStyleEditor}>Edit Style</Button>
+                    <Button {...editStyleProps}>Edit Style</Button>
                 </ButtonGroup>
             </Navbar>
         }

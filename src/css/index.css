@@ -34,6 +34,10 @@ input {
 }
 
 .resume-selected {
+    border: 1px dotted blue;
+}
+
+.resume-selected.entry, ul.resume-selected {
     border: 1px solid blue;
 }
 

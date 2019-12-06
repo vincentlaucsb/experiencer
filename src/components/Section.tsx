@@ -77,9 +77,9 @@ export default class Section extends ResumeComponent<SectionProps> {
         }
 
         return <>
-            {this.renderEditingMenu()}
-            <section className={this.sectionClassName}>
-                <h2 className={this.h2ClassName} {...this.getSelectTriggerProps()}>
+            <section className={this.sectionClassName} {...this.getSelectTriggerProps()}>
+                {this.renderEditingMenu()}
+                <h2 className={this.h2ClassName}>
                     {title}
                 </h2>
                 <div className="entry-content">

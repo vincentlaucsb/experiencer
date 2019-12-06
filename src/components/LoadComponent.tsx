@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import FlexibleRow from "./FlexibleRow";
+import FlexibleRow, { FlexibleColumn } from "./FlexibleRow";
 import Section, { SectionProps } from "./Section";
 import Entry, { EntryProps } from "./Entry";
 import List, { ListItem, DescriptionList, DescriptionListItem } from "./List";
@@ -60,6 +60,8 @@ export default function loadComponent(data: object,
             return <DescriptionList {...props} />;
         case 'DescriptionListItem':
             return <DescriptionListItem {...props} />;
+        case 'FlexibleColumn':
+            return <FlexibleColumn {...props} />;
         case 'FlexibleRow':
             return <FlexibleRow {...props} />;
         case 'Header':

@@ -59,6 +59,7 @@ class Resume extends React.Component<{}, PageState> {
 
         this.renderStyle();
 
+        this.addColumn = this.addColumn.bind(this);
         this.addSection = this.addSection.bind(this);
         this.addChild = this.addChild.bind(this);
         this.changeTemplate = this.changeTemplate.bind(this);
@@ -109,6 +110,19 @@ class Resume extends React.Component<{}, PageState> {
         this.state.children.push({
             type: 'Section',
             headerPosition: this.state.sectionTitlePosition
+        });
+
+        this.setState({ children: this.state.children });
+    }
+
+    addColumn() {
+        this.state.children.push({
+            type: 'FlexibleRow',
+            children: [
+                {
+                    type: 'FlexibleColumn'
+                }
+            ]
         });
 
         this.setState({ children: this.state.children });
@@ -380,6 +394,7 @@ class Resume extends React.Component<{}, PageState> {
 
                 <Nonprintable isPrinting={this.isPrinting}>
                     <Button onClick={this.addSection}>Add Section</Button>
+                    <Button onClick={this.addColumn}>Add Columns</Button>
                 </Nonprintable>
             </div>
         </>

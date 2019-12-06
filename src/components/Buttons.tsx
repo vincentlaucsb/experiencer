@@ -48,7 +48,7 @@ function ButtonWithTooltip(props: TooltipProps) {
 
 export function AddButton(props: AddButtonProps) {
     if (props.extended) {
-        return <Button onClick={props.action}><img src={AddIcon} />Move Down</Button>
+        return <Button onClick={props.action}><img src={AddIcon} />Add</Button>
     }
 
     return <img onClick={props.action} src={AddIcon} alt='Add' />

@@ -1,9 +1,9 @@
 ﻿import * as React from "react";
 import ResumeComponent from "./ResumeComponent";
-import { ButtonGroup, Dropdown, DropdownButton } from "react-bootstrap";
-import { DeleteButton, UpButton, DownButton } from "./Buttons";
+import { ButtonGroup, Dropdown, DropdownButton, Button } from "react-bootstrap";
+import { DeleteButton, UpButton, DownButton, AddButton } from "./Buttons";
 
-export class Header extends ResumeComponent {
+export class FlexibleColumn extends ResumeComponent {
     constructor(props) {
         super(props);
 
@@ -33,10 +33,12 @@ export class Header extends ResumeComponent {
     }
 
     render() {
-        return <header className={this.className} {...this.getSelectTriggerProps()}>
+        return <div {...this.getSelectTriggerProps()}>
             {this.renderEditingMenu()}
-            {this.renderChildren()}
-        </header>
+            <div className={this.className} style={{ width: "100%", minWidth: "100px", minHeight: "100px" }}>
+                {this.renderChildren()}
+            </div>
+        </div>
     }
 }
 
@@ -48,20 +50,24 @@ export default class FlexibleRow extends ResumeComponent {
             isHovering: false,
             isSelected: false
         };
+
+        this.addColumn = this.addColumn.bind(this);
     }
 
     get className(): string {
         return ['flex-row', 'flex-spread', super.className].join(' ');
     }
 
+    addColumn() {
+        this.addChild({
+            type: 'FlexibleColumn'
+        });
+    }
+
     getEditingMenu() {
         if (this.state.isSelected) {
             return <ButtonGroup size="sm">
-                <DropdownButton as={ButtonGroup} title="Add" id="add-options" size="sm">
-                    <Dropdown.Item onClick={this.addList}>Bulleted List</Dropdown.Item>
-                    <Dropdown.Item onClick={this.addDescriptionList}>Description List</Dropdown.Item>
-                    <Dropdown.Item onClick={this.addParagraph}>Paragraph</Dropdown.Item>
-                </DropdownButton>
+                <Button onClick={this.addColumn}>Add Column</Button>
                 <DeleteButton {...this.props} extended={true} />
                 <UpButton {...this.props} extended={true} />
                 <DownButton {...this.props} extended={true} />
@@ -72,7 +78,7 @@ export default class FlexibleRow extends ResumeComponent {
     render() {
         return <div {...this.getSelectTriggerProps()}>
             {this.renderEditingMenu()}
-            <div className={this.className} style={{ width: "100%" }}>
+            <div className={this.className} style={{ width: "100%", minWidth: "100px", minHeight: "100px"  }}>
                 {this.renderChildren()}
             </div>
         </div>

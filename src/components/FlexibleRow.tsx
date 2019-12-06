@@ -3,6 +3,43 @@ import ResumeComponent from "./ResumeComponent";
 import { ButtonGroup, Dropdown, DropdownButton } from "react-bootstrap";
 import { DeleteButton, UpButton, DownButton } from "./Buttons";
 
+export class Header extends ResumeComponent {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            isHovering: false,
+            isSelected: false
+        };
+    }
+
+    get className(): string {
+        return ['flex-col', super.className].join(' ');
+    }
+
+    getEditingMenu() {
+        if (this.state.isSelected) {
+            return <ButtonGroup size="sm">
+                <DropdownButton as={ButtonGroup} title="Add" id="add-options" size="sm">
+                    <Dropdown.Item onClick={this.addList}>Bulleted List</Dropdown.Item>
+                    <Dropdown.Item onClick={this.addDescriptionList}>Description List</Dropdown.Item>
+                    <Dropdown.Item onClick={this.addParagraph}>Paragraph</Dropdown.Item>
+                </DropdownButton>
+                <DeleteButton {...this.props} extended={true} />
+                <UpButton {...this.props} extended={true} />
+                <DownButton {...this.props} extended={true} />
+            </ButtonGroup>
+        }
+    }
+
+    render() {
+        return <header className={this.className} {...this.getSelectTriggerProps()}>
+            {this.renderEditingMenu()}
+            {this.renderChildren()}
+        </header>
+    }
+}
+
 export default class FlexibleRow extends ResumeComponent {
     constructor(props) {
         super(props);

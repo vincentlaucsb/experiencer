@@ -3,7 +3,7 @@ import EditButton, { DeleteButton, UpButton, DownButton } from "./Buttons";
 import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
 import { ButtonGroup } from "react-bootstrap";
 
-export default class Title extends ResumeComponent {
+export default class Header extends ResumeComponent {
     constructor(props: ResumeComponentProps) {
         super(props);
 
@@ -38,9 +38,12 @@ export default class Title extends ResumeComponent {
         let value = this.props.isEditing ? <input onChange={this.updateDataEvent.bind(this, "value")}
             value={this.props.value} type="text" /> : this.props.value || "Enter a title";
 
-        return <h1 className={this.className} {...this.getSelectTriggerProps()}>
+        return <header className={this.className}>
             {this.renderEditingMenu()}
-            {value}
-        </h1>;
+            <h1 {...this.getSelectTriggerProps()}>
+                {value}
+            </h1>
+            {this.renderChildren()}
+        </header>;
     }
 }

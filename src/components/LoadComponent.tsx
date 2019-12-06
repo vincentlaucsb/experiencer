@@ -4,7 +4,7 @@ import Section, { SectionProps } from "./Section";
 import Entry, { EntryProps } from "./Entry";
 import List, { ListItem, DescriptionList, DescriptionListItem } from "./List";
 import Paragraph from "./Paragraph";
-import Title from "./Title";
+import Header from "./Header";
 import { ResumeComponentProps, Action } from "./ResumeComponent";
 
 export type EditorMode = 'normal' | 'editingStyle' | 'changingTemplate' | 'printing';
@@ -62,6 +62,8 @@ export default function loadComponent(data: object,
             return <DescriptionListItem {...props} />;
         case 'FlexibleRow':
             return <FlexibleRow {...props} />;
+        case 'Header':
+            return <Header {...props} />
         case 'Section':
             return <Section {...props as SectionProps} />;
         case 'Entry':
@@ -72,7 +74,5 @@ export default function loadComponent(data: object,
             return <ListItem {...props} />;
         case 'Paragraph':
             return <Paragraph {...props} />;
-        case 'Title':
-            return <Title {...props} />;
     }
 }

@@ -51,7 +51,7 @@ export default class Paragraph extends ResumeComponent {
             modules={Paragraph.quillModules}
             value={this.props.value}
             onChange={((this.props.updateData as (key: string, data: any) => void).bind(this, "value") as (data: any) => void)}
-        /> : <span dangerouslySetInnerHTML={{ __html: this.props.value as string }} />;
+        /> : <span className="resume-paragraph" dangerouslySetInnerHTML={{ __html: this.props.value as string }} />;
 
         return <div className={this.className} {...this.getSelectTriggerProps()}>
             {this.renderEditingMenu()}

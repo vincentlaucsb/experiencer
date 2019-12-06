@@ -10,8 +10,19 @@ export default class ResumeTemplateProvider {
     margin: 0;
 }
 
-#resume section {
+#resume header, #resume section {
     margin-bottom: 1.5em;
+}
+
+#resume header .resume-paragraph {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+#resume header .resume-paragraph p {
+    margin-right: 1.0rem;
 }
 
 #resume .entry {
@@ -22,8 +33,9 @@ export default class ResumeTemplateProvider {
     padding-left: 1.5em;
 }
 
-h1 {
+#resume h1 {
     font-size: 1.8rem;
+    text-align: center;
 }
 
 h2 {
@@ -87,12 +99,9 @@ h2.flex-row, h3.flex-row {
 
     static resumeChildren = [
         {
-            type: 'FlexibleRow',
+            type: 'Header',
+            value: 'Your Name Here',
             children: [
-                {
-                    type: 'Title',
-                    value: 'Your Name Here'
-                },
                 {
                     type: 'Paragraph',
                     value: '<p>Email: vincela9@hotmail.com</p><p>Phone: 123-456-7890</p>'

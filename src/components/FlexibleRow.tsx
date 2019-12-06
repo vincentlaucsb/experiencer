@@ -14,7 +14,10 @@ export class FlexibleColumn extends ResumeComponent {
     }
 
     get className(): string {
-        return ['flex-col', super.className].join(' ');
+        const position = ((this.props.id.split('-')).slice(-1))[0];
+        let positionClsName = 'column-' + position;
+
+        return [positionClsName, 'flex-col', super.className].join(' ');
     }
 
     getEditingMenu() {
@@ -34,7 +37,7 @@ export class FlexibleColumn extends ResumeComponent {
     }
 
     render() {
-        return <div {...this.getSelectTriggerProps()} className={this.className} style={{ width: "100%", minWidth: "100px", minHeight: "100px" }}>
+        return <div {...this.getSelectTriggerProps()} className={this.className} style={{ minWidth: "100px", minHeight: "100px" }}>
             {this.renderEditingMenu()}
             <div>
                 {this.renderChildren()}

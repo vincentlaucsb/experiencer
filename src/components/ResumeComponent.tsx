@@ -48,6 +48,7 @@ export default class ResumeComponent<
         this.addEntry = this.addEntry.bind(this);
         this.addList = this.addList.bind(this);
         this.addParagraph = this.addParagraph.bind(this);
+        this.addSection = this.addSection.bind(this);
 
         this.updateDataEvent = this.updateDataEvent.bind(this);
         this.addNestedChild = this.addNestedChild.bind(this);
@@ -130,6 +131,12 @@ export default class ResumeComponent<
                 type: 'ListItem'
             }]
         });
+    }
+
+    addSection() {
+        this.addChild({
+            type: 'Section'
+        })
     }
 
     /**

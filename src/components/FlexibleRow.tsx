@@ -21,6 +21,7 @@ export class FlexibleColumn extends ResumeComponent {
         if (this.state.isSelected) {
             return <ButtonGroup size="sm">
                 <DropdownButton as={ButtonGroup} title="Add" id="add-options" size="sm">
+                    <Dropdown.Item onClick={this.addSection}>Section</Dropdown.Item>
                     <Dropdown.Item onClick={this.addList}>Bulleted List</Dropdown.Item>
                     <Dropdown.Item onClick={this.addDescriptionList}>Description List</Dropdown.Item>
                     <Dropdown.Item onClick={this.addParagraph}>Paragraph</Dropdown.Item>
@@ -33,9 +34,9 @@ export class FlexibleColumn extends ResumeComponent {
     }
 
     render() {
-        return <div {...this.getSelectTriggerProps()}>
+        return <div {...this.getSelectTriggerProps()} className={this.className} style={{ width: "100%", minWidth: "100px", minHeight: "100px" }}>
             {this.renderEditingMenu()}
-            <div className={this.className} style={{ width: "100%", minWidth: "100px", minHeight: "100px" }}>
+            <div>
                 {this.renderChildren()}
             </div>
         </div>
@@ -74,11 +75,23 @@ export default class FlexibleRow extends ResumeComponent {
             </ButtonGroup>
         }
     }
+
+    /** Returns a "handle" which can be used to select the row itself and not the columns it contains */
+    renderGrabHandle() {
+        if (this.state.isHovering) {
+            return <div style={{ position: "relative" }}>
+                <div style={{ position: "absolute", left: "-20px", width: "20px", height: "100%", background: "#cccccc" }} />
+            </div>
+        }
+
+        return <></>
+    }
     
     render() {
         return <div {...this.getSelectTriggerProps()}>
             {this.renderEditingMenu()}
-            <div className={this.className} style={{ width: "100%", minWidth: "100px", minHeight: "100px"  }}>
+            <div className={this.className} style={{ width: "100%", minWidth: "100px", minHeight: "100px" }}>
+                {this.renderGrabHandle()}
                 {this.renderChildren()}
             </div>
         </div>

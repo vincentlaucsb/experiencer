@@ -233,10 +233,18 @@ class Resume extends React.Component<{}, PageState> {
     
     renderHotkeys() {
         const keyMap = {
+            ESCAPE: "esc",
             PRINT_MODE: "shift+p"
         };
 
         const handlers = {
+            ESCAPE: (event) => {
+                // Return everything back to default settings
+                this.unselect();
+
+                this.setState({ mode: 'normal' });
+            },
+
             PRINT_MODE: (event) => {
                 if (!this.isPrinting) {
                     this.setState({ mode: 'printing' });
@@ -326,11 +334,10 @@ class Resume extends React.Component<{}, PageState> {
     }
 
     renderTemplateChanger() {
-        return <>
+        return <div className="ml-2 mr-2 mt-2 mb-2" style={{ maxWidth: "300px", width: "30%" }}>
             <Nav variant="pills"
                 activeKey={this.state.activeTemplate}
-                className="flex-column mb-2"
-            >
+                className="flex-column mb-2">
                 <Nav.Item>
                     <Nav.Link eventKey='Traditional 1' onClick={
                         (event) => this.setState(ResumeTemplateProvider.Traditional1())
@@ -343,7 +350,7 @@ class Resume extends React.Component<{}, PageState> {
                 </Nav.Item>
             </Nav>
             <Button onClick={(event) => this.setState({ mode: 'normal' })}>Use this Template</Button>
-        </>
+        </div>
     }
 
     get resumeClassName() {
@@ -370,23 +377,15 @@ class Resume extends React.Component<{}, PageState> {
             {resume}
         </>;
 
-        // Split resume and style editor
         if (this.isEditingStyle) {
-            mainContent = <SplitPane split="horizontal" pane1Style={{
-                    display: "block",
-                    height: "auto",
-                }}
-                resizerStyle={{
-                    display: "none"
-                }}>
+            // Split resume and style editor
+            mainContent = <SplitPane split="horizontal"
+                pane1Style={{ display: "block", height: "auto" }}
+                resizerStyle={{ display: "none" }}>
                 {this.renderToolbar()}
-                <SplitPane split="vertical" defaultSize="500px" primary="second" style={{
-                    height: "100%"
-                }}
-                    pane1Style={{
-                        height: "100%",
-                        overflowY: "auto"
-                    }}>
+                <SplitPane split="vertical" defaultSize="500px" primary="second"
+                    style={{ height: "100%" }}
+                    pane1Style={{ height: "100%", overflowY: "auto"}}>
                     {resume}
                     {this.renderStyleEditor()}
                 </SplitPane>
@@ -397,9 +396,7 @@ class Resume extends React.Component<{}, PageState> {
                 {this.renderToolbar()}
                 <div className="flex-row">
                     {resume}
-                    <div className="ml-2 mr-2 mt-2 mb-2" style={{ maxWidth: "300px", width: "30%" }}>
-                        {this.renderTemplateChanger()}
-                    </div>
+                    {this.renderTemplateChanger()}
                 </div>
             </>
         }

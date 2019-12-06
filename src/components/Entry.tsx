@@ -125,8 +125,8 @@ export default class Entry extends ResumeComponent<EntryProps> {
         return <div className={this.className}>
             {this.renderEditingMenu()}
             <div className="entry-title" {...this.getSelectTriggerProps()}>
-                <h3 className="flex-row-spread">{title} {this.getTitleExtras()}</h3>
-                <p className="flex-row-spread subtitle">{subtitle} {this.getSubtitleExtras()}</p>
+                <h3 className="flex-row flex-spread">{title} {this.getTitleExtras()}</h3>
+                <p className="flex-row flex-spread subtitle">{subtitle} {this.getSubtitleExtras()}</p>
             </div>
 
             {this.renderChildren()}

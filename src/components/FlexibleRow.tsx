@@ -51,7 +51,7 @@ export default class FlexibleRow extends ResumeComponent {
     }
 
     get className(): string {
-        return ['flex-row-spread', super.className].join(' ');
+        return ['flex-row', 'flex-spread', super.className].join(' ');
     }
 
     getEditingMenu() {

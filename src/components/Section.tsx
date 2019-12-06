@@ -66,7 +66,7 @@ export default class Section extends ResumeComponent<SectionProps> {
     }
 
     get h2ClassName(): string {
-        return this.props.headerPosition == 'left' ? 'flex-col' : 'flex-row-spread';
+        return this.props.headerPosition == 'left' ? 'flex-col' : 'flex-row flex-spread';
     }
 
     render() {

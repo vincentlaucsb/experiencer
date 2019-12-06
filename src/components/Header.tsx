@@ -24,7 +24,7 @@ export default class Header extends ResumeComponent<HeaderProps> {
         let classNames = [super.className];
 
         if (this.props.orientation == 'row') {
-            classNames.push('flex-row-spread');
+            classNames.push('flex-row flex-spread');
         } else {
             classNames.push('flex-col');
         }

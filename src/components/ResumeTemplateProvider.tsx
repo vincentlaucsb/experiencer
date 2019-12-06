@@ -46,13 +46,9 @@ h3 {
     font-size: 1.05rem;
 }
 
-h2.flex-row-spread {
+h2.flex-row.flex-spread {
     border-bottom: 1px solid;
     align-items: self-end;
-}
-
-h2.flex-row, h3.flex-row {
-    justify-content: space-between;
 }
 
 .entry-content, .entry {
@@ -64,9 +60,7 @@ h2.flex-row, h3.flex-row {
     flex-direction: row;
 }
 
-.flex-row-spread {
-    display: flex;
-    flex-direction: row;
+.flex-spread {
     justify-content: space-between;
 }
 

@@ -4,8 +4,9 @@ import loadComponent, { EditorMode } from "./LoadComponent";
 import { deleteAt, moveUp, moveDown } from "./Helpers";
 
 export interface ResumeComponentProps {
-    id: string;
-    uuid: string;
+    id: string;   // Hierarchical ID based on the node's position in the resume; subject to change
+    uuid: string; // Unique ID that never changes
+
     mode: EditorMode;
     isFirst: boolean;
     isLast: boolean;
@@ -85,6 +86,14 @@ export default class ResumeComponent<
         return this.props.mode == 'printing';
     }
 
+    /**
+     * Returns true if we are directly hovering over one of this node's children.
+     * The purpose of this is to avoid selecting multiple nodes at once.
+     */
+    get isSelectBlocked(): boolean {
+        return (this.props.isSelectBlocked as (id: string) => boolean)(this.props.id);
+    }
+
     componentWillUnmount() {
         // Since the node is being deleted, remove callback to this node's unselect
         // method from <Resume /> to prevent memory leaks
@@ -154,6 +163,7 @@ export default class ResumeComponent<
             newChildren[idx]['children'] = new Array<object>();
         }
 
+        // Add unique ID
         node['uuid'] = uuid();
 
         newChildren[idx]['children'].push(node);
@@ -253,11 +263,10 @@ export default class ResumeComponent<
     }
 
     setSelected() {
-        // TO DO: On hover, update a set of IDs in <Resume> of current components being hovered over
-        // If a child of this node is also hovered over, prevent this node from being selected
-        if (!this.state.isSelected && !(this.props.isSelectBlocked as (id: string) => boolean)(this.props.id)) {
-            console.log("Selected", this.props.id);
+        // this.props.isSelectBlocked prevents a node from being selected if we are directly hovering
+        // over one of its child nodes
 
+        if (!this.state.isSelected && !this.isSelectBlocked) {
             // Unselect the previous component
             this.props.unselect();
 
@@ -270,11 +279,7 @@ export default class ResumeComponent<
     }
 
     unselect() {
-        console.log("Unselected", this.props.id);
-
-        this.setState({
-            isSelected: false
-        });
+        this.setState({ isSelected: false });
     }
 
     getSelectTriggerProps() {

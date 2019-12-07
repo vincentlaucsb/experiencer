@@ -45,26 +45,7 @@ export default class FileLoader extends React.Component<FileLoaderProps, FileLoa
 
         reader.readAsText(file, "UTF-8");
     }
-
-    renderExpanded() {
-        if (this.state.isOpen) {
-            return <Form inline>
-                <div className="custom-file">
-                    <input type="file" className="custom-file-input" onChange={this.onFileSelect} ref={this.fileInput} id="customFile" />
-                    <label className="custom-file-label" form="customFile">Choose file</label>
-                </div>
-            </Form>
-        }
-
-        return <></>
-    }
-
-    renderTrigger() {
-        const button = <Nav.Link onClick={() => this.setState({ isOpen: !this.state.isOpen })}>Load</Nav.Link>
-
-        return button;
-    }
-
+    
     /**
      * Load file as soon as a user selects it
      * @param event
@@ -77,9 +58,17 @@ export default class FileLoader extends React.Component<FileLoaderProps, FileLoa
     }
 
     render() {
+        const expanded = this.state.isOpen ? 
+            <Form inline>
+                <div className="custom-file">
+                    <input type="file" className="custom-file-input" onChange={this.onFileSelect} ref={this.fileInput} id="customFile" />
+                    <label className="custom-file-label" form="customFile">Choose file</label>
+                </div>
+            </Form> : <></>
+
         return <>
-            {this.renderTrigger()}
-            {this.renderExpanded()}
+            <Nav.Link onClick={() => this.setState({ isOpen: !this.state.isOpen })}>Load</Nav.Link>
+            {expanded}
         </>
     }
 }

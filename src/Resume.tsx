@@ -20,6 +20,7 @@ import "ace-builds/src-noconflict/mode-css";
 import "ace-builds/src-noconflict/theme-github";
 import { SectionHeaderPosition } from './components/Section';
 import ResumeTemplateProvider from './components/ResumeTemplateProvider';
+import FileSaver from './components/controls/FileSaver';
 
 interface PageState {
     children: Array<object>;
@@ -226,7 +227,7 @@ class Resume extends React.Component<{}, PageState> {
     }
 
     // Save data to an external file
-    saveFile() {
+    saveFile(filename: string) {
         const data = {
             children: this.state.children,
             css: this.state.customCss
@@ -238,8 +239,7 @@ class Resume extends React.Component<{}, PageState> {
             }
         );
 
-        // TODO: Allow user to change filename
-        saveAs(blob, "resume.json");
+        saveAs(blob, filename);
     }
 
     changeTemplate() {
@@ -394,7 +394,7 @@ class Resume extends React.Component<{}, PageState> {
                 <Nav className="mr-auto">
                     <Nav.Link onClick={this.changeTemplate}>New</Nav.Link>
                     <FileLoader loadData={this.loadData} />
-                    <Nav.Link onClick={this.saveFile}>Save to File</Nav.Link>
+                    <FileSaver saveFile={this.saveFile} />
                 </Nav>
 
                 <ButtonGroup className="mr-2">
@@ -435,7 +435,6 @@ class Resume extends React.Component<{}, PageState> {
 
     renderTemplateChanger() {
         let templateNames = Object.keys(ResumeTemplateProvider.templates);
-        console.log(templateNames);
         let navItems = templateNames.map((key: string) => <Nav.Item>
                 <Nav.Link eventKey={key} onClick={
                     (event) => {
@@ -446,6 +445,7 @@ class Resume extends React.Component<{}, PageState> {
                     }
                 }>{key}</Nav.Link>
             </Nav.Item>);
+
 
         return <div className="ml-2 mr-2 mt-2 mb-2" style={{ maxWidth: "300px", width: "30%" }}>
             <Nav variant="pills"

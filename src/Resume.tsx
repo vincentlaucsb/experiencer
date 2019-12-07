@@ -13,17 +13,18 @@ import { Button, ButtonToolbar, ButtonGroup, InputGroup, Card, Tab, Col, Nav, Na
 import { FileLoader } from './components/FileLoader';
 import { deleteAt, moveUp, moveDown, assignIds, deepCopy } from './components/Helpers';
 import { Nonprintable } from './components/Nonprintable';
-import { Action, SelectedNodeProps, AddChild } from './components/ResumeComponent';
+import { SelectedNodeProps, AddChild } from './components/ResumeComponent';
 import AceEditor from "react-ace";
 
 import "ace-builds/src-noconflict/mode-css";
 import "ace-builds/src-noconflict/theme-github";
 import { SectionHeaderPosition } from './components/Section';
 import ResumeTemplateProvider from './components/ResumeTemplateProvider';
+import { bool } from 'prop-types';
 
 interface PageState {
     children: Array<object>;
-    clipboard: object;
+    clipboard?: object;
     customCss: string;
 
     /** Set of nodes we are currently hovering over */
@@ -54,7 +55,6 @@ class Resume extends React.Component<{}, PageState> {
         
         this.state = {
             children: template.children,
-            clipboard: {},
             customCss: template.customCss,
             hovering: new Set<string>(),
             mode: 'normal',
@@ -63,19 +63,22 @@ class Resume extends React.Component<{}, PageState> {
 
         this.renderStyle();
 
-        this.childMapper = this.childMapper.bind(this);
+        this.changeTemplate = this.changeTemplate.bind(this);
+        this.renderStyle = this.renderStyle.bind(this);
+        this.onStyleChange = this.onStyleChange.bind(this);
+        this.toggleStyleEditor = this.toggleStyleEditor.bind(this);
 
+        /** Resume Nodes */
         this.addColumn = this.addColumn.bind(this);
         this.addSection = this.addSection.bind(this);
         this.addChild = this.addChild.bind(this);
-        this.changeTemplate = this.changeTemplate.bind(this);
+        this.childMapper = this.childMapper.bind(this);
         this.updateData = this.updateData.bind(this);
-        this.loadData = this.loadData.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
-        this.renderStyle = this.renderStyle.bind(this);
-        this.onStyleChange = this.onStyleChange.bind(this);
+
+        /** Load & Save */
+        this.loadData = this.loadData.bind(this);
         this.saveFile = this.saveFile.bind(this);
-        this.toggleStyleEditor = this.toggleStyleEditor.bind(this);
 
         /** Cut & Paste */
         this.copyClipboard = this.copyClipboard.bind(this);
@@ -346,16 +349,29 @@ class Resume extends React.Component<{}, PageState> {
     }
 
     renderToolbar() {
-        // Disable "Unselect" button conditionally
-        let unselectProps: object = {
-            disabled: true
+        const haveNode = this.state.selectedNode != undefined;
+
+        /**
+         * Conditionally render buttons
+         * @param enabled Whether or not button should be enabled
+         * @param onClick Click action if button is enabled
+         */
+        const baseProps = (enabled: boolean, onClick: any) => {
+            let props = {
+                disabled: !enabled,
+                variant: "outline-light" as ButtonProps["variant"]
+            };
+
+            if (enabled) {
+                props['onClick'] = onClick;
+            }
+
+            return props;
         };
 
-        if (this.state.selectedNode) {
-            unselectProps = {
-                onClick: this.unselect
-            };
-        }
+        const copyProps = baseProps(haveNode, this.copyClipboard);
+        const pasteProps = baseProps(haveNode && this.state.clipboard != undefined, this.pasteClipboard);
+        const unselectProps = baseProps(haveNode, this.unselect);
 
         // Highlight "Edit Style" button conditionally
         const editStyleProps = {
@@ -375,9 +391,11 @@ class Resume extends React.Component<{}, PageState> {
                 </Nav>
 
                 <ButtonGroup className="mr-2">
-                    <Button onClick={this.copyClipboard} variant="outline-light">Copy</Button>
-                    <Button onClick={this.pasteClipboard} variant="outline-light">Paste</Button>
-                    <Button variant="outline-light" {...unselectProps}>Unselect</Button>
+                    <Button {...copyProps}>Copy</Button>
+                    <Button {...pasteProps}>Paste</Button>
+                    <Button {...unselectProps}>Unselect</Button>
+                </ButtonGroup>
+                <ButtonGroup className="mr-2">
                     <Button {...editStyleProps}>Edit Style</Button>
                 </ButtonGroup>
             </Navbar>

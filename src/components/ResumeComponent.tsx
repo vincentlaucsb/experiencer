@@ -1,9 +1,11 @@
 ﻿import * as React from "react";
+import uuid from 'uuid/v4';
 import loadComponent, { EditorMode } from "./LoadComponent";
 import { deleteAt, moveUp, moveDown } from "./Helpers";
 
 export interface ResumeComponentProps {
     id: string;
+    uuid: string;
     mode: EditorMode;
     isFirst: boolean;
     isLast: boolean;
@@ -49,6 +51,8 @@ export default class ResumeComponent<
         this.addList = this.addList.bind(this);
         this.addParagraph = this.addParagraph.bind(this);
         this.addSection = this.addSection.bind(this);
+
+        this.childMapper = this.childMapper.bind(this);
 
         this.updateDataEvent = this.updateDataEvent.bind(this);
         this.addNestedChild = this.addNestedChild.bind(this);
@@ -150,6 +154,8 @@ export default class ResumeComponent<
             newChildren[idx]['children'] = new Array<object>();
         }
 
+        node['uuid'] = uuid();
+
         newChildren[idx]['children'].push(node);
         this.updateData("children", newChildren);
     }
@@ -173,9 +179,6 @@ export default class ResumeComponent<
             // Replace node's children with new list of children that excludes deleted node
             this.updateData("children", moveUp(replChildren, idx));
         }
-
-        // Workaround for when item that takes its place stays selected
-        this.props.unselect();
     }
 
     moveNestedChildDown(idx: number) {
@@ -184,9 +187,6 @@ export default class ResumeComponent<
             // Replace node's children with new list of children that excludes deleted node
             this.updateData("children", moveDown(replChildren, idx));
         }
-
-        // Workaround for when item that takes its place stays selected
-        this.props.unselect();
     }
 
     toggleEdit(event: any) {
@@ -217,31 +217,32 @@ export default class ResumeComponent<
         this.updateData(key, event.target.value);
     }
 
+    childMapper(elem: object, idx: number, arr: object[]) {
+        const uniqueId = elem['uuid'];
+        return <React.Fragment key={uniqueId}>
+            {loadComponent(elem, idx, arr.length,
+                {
+                    uuid: uniqueId,
+                    mode: this.props.mode,
+                    addChild: (this.addNestedChild.bind(this, idx) as (node: object) => void),
+                    isSelectBlocked: this.props.isSelectBlocked,
+                    hoverInsert: this.props.hoverInsert,
+                    hoverOut: this.props.hoverOut,
+                    moveDown: (this.moveNestedChildDown.bind(this, idx) as Action),
+                    moveUp: (this.moveNestedChildUp.bind(this, idx) as Action),
+                    deleteChild: (this.deleteNestedChild.bind(this, idx) as Action),
+                    toggleEdit: (this.toggleNestedEdit.bind(this, idx) as () => void),
+                    updateData: (this.updateNestedData.bind(this, idx) as (key: string, data: any) => void),
+                    unselect: this.props.unselect,
+                    updateSelected: this.props.updateSelected
+                },
+                this.props.id)}
+        </React.Fragment>
+    }
+
     renderChildren() {
         if (this.props.children as Array<object>) {
-            return <React.Fragment>{
-                (this.props.children as Array<object>).map((elem, idx, arr) =>
-                    <React.Fragment key={idx}>
-                        {loadComponent(elem, idx, arr.length,
-                            {
-                                mode: this.props.mode,
-                                addChild: (this.addNestedChild.bind(this, idx) as (node: object) => void),
-                                isSelectBlocked: this.props.isSelectBlocked,
-                                hoverInsert: this.props.hoverInsert,
-                                hoverOut: this.props.hoverOut,
-                                moveDown: (this.moveNestedChildDown.bind(this, idx) as Action),
-                                moveUp: (this.moveNestedChildUp.bind(this, idx) as Action),
-                                deleteChild: (this.deleteNestedChild.bind(this, idx) as Action),
-                                toggleEdit: (this.toggleNestedEdit.bind(this, idx) as () => void),
-                                updateData: (this.updateNestedData.bind(this, idx) as (key: string, data: any) => void),
-                                unselect: this.props.unselect,
-                                updateSelected: this.props.updateSelected
-                    },
-                    this.props.id
-                )}
-                    </React.Fragment>)
-            }
-            </React.Fragment>
+            return (this.props.children as Array<object>).map(this.childMapper)
         }
 
         return <React.Fragment />

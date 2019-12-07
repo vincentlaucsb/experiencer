@@ -3,6 +3,7 @@ import loadComponent, { EditorMode } from './components/LoadComponent';
 import { saveAs } from 'file-saver';
 import SplitPane from 'react-split-pane';
 import { GlobalHotKeys } from 'react-hotkeys';
+import uuid from 'uuid/v4';
 
 import './css/index.css';
 import './scss/custom.scss';
@@ -48,7 +49,21 @@ class Resume extends React.Component<{}, PageState> {
         head.appendChild(this.style);
 
         // Load "Traditional 1" template
-        const template = ResumeTemplateProvider.Traditional1();
+        let template = ResumeTemplateProvider.Traditional1();
+
+        // Assign unique IDs to all children
+        let workQueue = [template.children];
+        while (workQueue.length) {
+            let nextItem = workQueue.pop() as Array<object>;
+            nextItem.forEach((elem) => {
+                elem['uuid'] = uuid();
+
+                if (elem['children']) {
+                    workQueue.push(elem['children']);
+                }
+            });
+        }
+        
         this.state = {
             children: template.children,
             customCss: template.customCss,
@@ -58,6 +73,8 @@ class Resume extends React.Component<{}, PageState> {
         };
 
         this.renderStyle();
+
+        this.childMapper = this.childMapper.bind(this);
 
         this.addColumn = this.addColumn.bind(this);
         this.addSection = this.addSection.bind(this);
@@ -158,6 +175,9 @@ class Resume extends React.Component<{}, PageState> {
         if (!this.state.children[idx]['children']) {
             this.state.children[idx]['children'] = new Array<object>();
         }
+
+        // Generate UUID
+        node['uuid'] = uuid();
 
         this.state.children[idx]['children'].push(node);
 
@@ -277,25 +297,31 @@ class Resume extends React.Component<{}, PageState> {
         return <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
     }
 
+    childMapper(elem: object, idx: number, arr: object[]) {
+        const uniqueId = elem['uuid'];
+
+        return <React.Fragment key={uniqueId}>
+            {loadComponent(elem, idx, arr.length, {
+                uuid: uniqueId,
+                mode: this.state.mode,
+                addChild: this.addChild.bind(this, idx),
+                hoverInsert: this.hoverInsert.bind(this),
+                hoverOut: this.hoverOut.bind(this),
+                isSelectBlocked: this.isSelectBlocked.bind(this),
+                moveUp: this.moveUp.bind(this, idx),
+                moveDown: this.moveDown.bind(this, idx),
+                deleteChild: this.deleteChild.bind(this, idx),
+                toggleEdit: this.toggleEdit.bind(this, idx),
+                updateData: this.updateData.bind(this, idx),
+                unselect: this.unselect,
+                updateSelected: this.updateSelected.bind(this)
+            }
+            )}
+        </React.Fragment>
+    }
+
     renderChildren() {
-        return this.state.children.map((elem, idx, arr) =>
-            <React.Fragment key={idx}>
-                {loadComponent(elem, idx, arr.length, {
-                    mode: this.state.mode,
-                    addChild: this.addChild.bind(this, idx),
-                    hoverInsert: this.hoverInsert.bind(this),
-                    hoverOut: this.hoverOut.bind(this),
-                    isSelectBlocked: this.isSelectBlocked.bind(this),
-                    moveUp: this.moveUp.bind(this, idx),
-                    moveDown: this.moveDown.bind(this, idx),
-                    deleteChild: this.deleteChild.bind(this, idx),
-                    toggleEdit: this.toggleEdit.bind(this, idx),
-                    updateData: this.updateData.bind(this, idx),
-                    unselect: this.unselect,
-                    updateSelected: this.updateSelected.bind(this)
-                }
-                )}
-            </React.Fragment>)
+        return this.state.children.map(this.childMapper);
     }
 
     renderToolbar() {

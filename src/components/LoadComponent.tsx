@@ -1,4 +1,5 @@
 ﻿import * as React from "react";
+
 import FlexibleRow, { FlexibleColumn } from "./FlexibleRow";
 import Section, { SectionProps } from "./Section";
 import Entry, { EntryProps } from "./Entry";
@@ -10,6 +11,7 @@ import { ResumeComponentProps, Action } from "./ResumeComponent";
 export type EditorMode = 'normal' | 'editingStyle' | 'changingTemplate' | 'printing';
 
 interface ExtraProps {
+    uuid: string;
     mode: EditorMode;
     unselect: () => void;
     updateSelected: (unselect: Action) => void;

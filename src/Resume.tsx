@@ -374,6 +374,11 @@ class Resume extends React.Component<{}, PageState> {
                         (event) => this.setState(ResumeTemplateProvider.Traditional2())
                     }>Traditional 2</Nav.Link>
                 </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link eventKey='Multi-Column 1' onClick={
+                        (event) => this.setState(ResumeTemplateProvider.MultiColumn1())
+                    }>Multi-Column 1</Nav.Link>
+                </Nav.Item>
             </Nav>
             <Button onClick={(event) => this.setState({ mode: 'normal' })}>Use this Template</Button>
         </div>

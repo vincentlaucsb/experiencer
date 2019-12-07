@@ -89,107 +89,126 @@ h2.flex-row.flex-spread {
 #resume p.subtitle {
     font-style: italic;
 }
+
+#resume .column-0 {
+    width: 33%;
+    margin-right: 1.5rem;
+    flex-shrink: 0;
+}
+
+#resume .column-1 {
+    width: 100%;
+}
 `;
 
-    static resumeChildren = [
-        {
-            type: 'Header',
-            value: 'Your Name Here',
-            children: [
-                {
-                    type: 'Paragraph',
-                    value: '<p>Email: vincela9@hotmail.com</p><p>Phone: 123-456-7890</p>'
-                }
-            ]
-        },
-        {
-            type: 'Section',
-            title: 'Objective',
-            children: [
-                {
-                    type: 'Paragraph',
-                    value: 'To conquer the world.'
-                }
-            ]
-        },
-        {
-            type: 'Section',
-            title: 'Experience',
-            children: [
-                {
-                    type: 'Entry',
-                    title: 'Another Company',
-                    titleExtras: ['2019 -- Present'],
-                    subtitle: 'Senior Software Engineer',
-                    subtitleExtras: ['Sometown, USA'],
-                    children: [
-                        {
-                            type: 'List',
-                            children: [
-                                {
-                                    type: 'ListItem',
-                                    value: 'Increased productivity by conducting telepathic SCRUM meetings'
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    type: 'Entry',
-                    title: 'Some Company',
-                    titleExtras: ['2014 -- 2016'],
-                    subtitle: 'Software Engineer',
-                    subtitleExtras: ['Big City, USA'],
-                    children: [
-                        {
-                            type: 'List',
-                            children: [
-                                {
-                                    type: 'ListItem',
-                                    value: 'Did things with code while looking at a computer monitor'
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            type: 'Section',
-            title: 'Technical Skills',
-            children: [
-                {
-                    type: 'List',
-                    children: [
-                        {
-                            type: 'ListItem',
-                            value: 'C++'
-                        },
-                        {
-                            type: 'ListItem',
-                            value: 'Web Development'
-                        },
-                        {
-                            type: 'ListItem',
-                            value: 'Agile/SCRUM'
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            type: 'Section',
-            title: 'Education',
-            children: [
-                {
-                    type: 'Entry',
-                    title: 'Some College',
-                    titleExtras: ['2010 -- 2014'],
-                    subtitle: 'BS in Some Major'
-                }
-            ]
-        }
+    static header = {
+        type: 'Header',
+        value: 'Your Name Here',
+        children: [
+            {
+                type: 'Paragraph',
+                value: '<p>Email: vincela9@hotmail.com</p><p>Phone: 123-456-7890</p>'
+            }
+        ]
+    };
 
+    static objective = {
+        type: 'Section',
+        title: 'Objective',
+        children: [
+            {
+                type: 'Paragraph',
+                value: 'To conquer the world.'
+            }
+        ]
+    };
+
+    static experience = {
+        type: 'Section',
+        title: 'Experience',
+        children: [
+            {
+                type: 'Entry',
+                title: 'Another Company',
+                titleExtras: ['2019 -- Present'],
+                subtitle: 'Senior Software Engineer',
+                subtitleExtras: ['Sometown, USA'],
+                children: [
+                    {
+                        type: 'List',
+                        children: [
+                            {
+                                type: 'ListItem',
+                                value: 'Increased productivity by conducting telepathic SCRUM meetings'
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                type: 'Entry',
+                title: 'Some Company',
+                titleExtras: ['2014 -- 2016'],
+                subtitle: 'Software Engineer',
+                subtitleExtras: ['Big City, USA'],
+                children: [
+                    {
+                        type: 'List',
+                        children: [
+                            {
+                                type: 'ListItem',
+                                value: 'Did things with code while looking at a computer monitor'
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    };
+
+    static techSkills = {
+        type: 'Section',
+        title: 'Technical Skills',
+        children: [
+            {
+                type: 'List',
+                children: [
+                    {
+                        type: 'ListItem',
+                        value: 'C++'
+                    },
+                    {
+                        type: 'ListItem',
+                        value: 'Web Development'
+                    },
+                    {
+                        type: 'ListItem',
+                        value: 'Agile/SCRUM'
+                    }
+                ]
+            }
+        ]
+    };
+
+    static education = {
+        type: 'Section',
+        title: 'Education',
+        children: [
+            {
+                type: 'Entry',
+                title: 'Some College',
+                titleExtras: ['2010 -- 2014'],
+                subtitle: 'BS in Some Major'
+            }
+        ]
+    };
+
+    static resumeChildren = [
+        ResumeTemplateProvider.header,
+        ResumeTemplateProvider.objective,
+        ResumeTemplateProvider.experience,
+        ResumeTemplateProvider.techSkills,
+        ResumeTemplateProvider.education
     ]
 
     static Traditional1() {
@@ -224,6 +243,36 @@ h2.flex-row.flex-spread {
                 node['headerPosition'] = 'left';
             }
         }
+
+        return data;
+    }
+
+    static MultiColumn1() {
+        let data = {
+            activeTemplate: 'Multi-Column 1',
+            children: [
+                ResumeTemplateProvider.header,
+                {
+                    type: 'FlexibleRow',
+                    children: [
+                        {
+                            type: 'FlexibleColumn',
+                            children: [
+                                ResumeTemplateProvider.education,
+                                ResumeTemplateProvider.techSkills
+                            ]
+                        },
+                        {
+                            type: 'FlexibleColumn',
+                            children: [
+                                ResumeTemplateProvider.experience
+                            ]
+                        }
+                    ]
+                }
+            ],
+            customCss: this.defaultCss,
+        };
 
         return data;
     }

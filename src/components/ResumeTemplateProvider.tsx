@@ -5,12 +5,17 @@ import Resume from "src/Resume";
 
 export default class ResumeTemplateProvider {
     static defaultCss = `#resume {
-    font-family: Georgia, sans-serif;
+    font-family: Georgia, serif;
     font-size: 10pt;
 }
 
 #resume * {
+    /* Set all margins to zero, and then re-set them later */
     margin: 0;
+}
+
+#resume a, a:hover {
+    color: #000000;
 }
 
 #resume header, #resume section {
@@ -32,75 +37,78 @@ export default class ResumeTemplateProvider {
     margin-bottom: 0.75em;
 }
 
-#resume ul {
-    padding-left: 1.5em;
-}
-
+/** Headers **/
 #resume h1 {
     font-size: 1.8rem;
     text-align: center;
 }
 
-h2 {
+#resume h2 {
     font-size: 1.1rem;
 }
 
-h3 {
+#resume h3 {
     font-size: 1.05rem;
 }
 
-h2.flex-row.flex-spread {
-    border-bottom: 1px solid;
-    align-items: self-end;
-}
-
-.entry-content, .entry {
-    width: 100%;
-}
-
-.flex-row {
-    display: flex;
-    flex-direction: row;
-}
-
-.flex-spread {
-    justify-content: space-between;
-}
-
-.flex-col {
-    display: flex;
-    flex-direction: column;
-}
-
-#resume dt {
-    min-width: 20%;
-    padding-right: 0.5rem;
-    flex-shrink: 2;
-}
-
-#resume dd {
-    flex-grow: 2;
-}
-
 #resume h2.flex-col {
-    border: 0;
+    /* Section with header on left */
     padding-right: 0.5rem;
     margin-right: 0.5rem;
     width: 150px;
+}
+
+#resume h2.flex-row.flex-spread {
+    /* Section with header on top */
+    border-bottom: 1px solid;
+    align-items: self-end;
 }
 
 #resume p.subtitle {
     font-style: italic;
 }
 
+.entry-content, .entry {
+    width: 100%;
+}
+
+/** Lists **/
+#resume dd {
+    padding-left: 0.5rem;
+}
+
+#resume ul {
+    padding-left: 1.5em; /** Reduced padding */
+}
+
+#resume ul li {
+    list-style-type: square; /** Default: circle */
+}
+
+/** Multi-Column Layouts */
 #resume .column-0 {
     width: 33%;
     margin-right: 1.5rem;
-    flex-shrink: 0;
+    flex-shrink: 0; /** Do not shrink */
 }
 
 #resume .column-1 {
-    width: 100%;
+    width: 100%; /** Fill up remaining space */
+}
+
+/** Key Classes: Modify at your own risk **/
+#resume .flex-row {
+    display: flex;
+    flex-direction: row;
+}
+
+#resume .flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+#resume .flex-spread {
+    justify-content: space-between;
 }
 `;
 

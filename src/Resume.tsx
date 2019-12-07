@@ -50,7 +50,7 @@ class Resume extends React.Component<{}, PageState> {
         head.appendChild(this.style);
 
         // Load "Traditional 1" template
-        let template = ResumeTemplateProvider.Traditional1();
+        let template = ResumeTemplateProvider.templates["Traditional 1"]();
         
         this.state = {
             children: template.children,
@@ -233,7 +233,7 @@ class Resume extends React.Component<{}, PageState> {
     }
 
     changeTemplate() {
-        const template = ResumeTemplateProvider.Traditional1();
+        const template = ResumeTemplateProvider.templates['Traditional 1']();
 
         this.setState({
             activeTemplate: template.activeTemplate,
@@ -409,25 +409,24 @@ class Resume extends React.Component<{}, PageState> {
     }
 
     renderTemplateChanger() {
+        let templateNames = Object.keys(ResumeTemplateProvider.templates);
+        console.log(templateNames);
+        let navItems = templateNames.map((key: string) => <Nav.Item>
+                <Nav.Link eventKey={key} onClick={
+                    (event) => {
+                        this.setState(ResumeTemplateProvider.templates[key]);
+
+                        // Update loaded CSS
+                        this.renderStyle();
+                    }
+                }>{key}</Nav.Link>
+            </Nav.Item>);
+
         return <div className="ml-2 mr-2 mt-2 mb-2" style={{ maxWidth: "300px", width: "30%" }}>
             <Nav variant="pills"
                 activeKey={this.state.activeTemplate}
                 className="flex-column mb-2">
-                <Nav.Item>
-                    <Nav.Link eventKey='Traditional 1' onClick={
-                        (event) => this.setState(ResumeTemplateProvider.Traditional1())
-                    }>Traditional 1</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link eventKey='Traditional 2' onClick={
-                        (event) => this.setState(ResumeTemplateProvider.Traditional2())
-                    }>Traditional 2</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link eventKey='Multi-Column 1' onClick={
-                        (event) => this.setState(ResumeTemplateProvider.MultiColumn1())
-                    }>Multi-Column 1</Nav.Link>
-                </Nav.Item>
+                {navItems}
             </Nav>
             <Button onClick={(event) => this.setState({ mode: 'normal' })}>Use this Template</Button>
         </div>

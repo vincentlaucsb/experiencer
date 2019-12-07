@@ -1,6 +1,7 @@
 ﻿import { SectionHeaderPosition } from "./Section";
 import uuid from 'uuid/v4';
 import { assignIds } from "./Helpers";
+import Resume from "src/Resume";
 
 export default class ResumeTemplateProvider {
     static defaultCss = `#resume {
@@ -213,69 +214,71 @@ h2.flex-row.flex-spread {
         ResumeTemplateProvider.education
     ]
 
-    static Traditional1() {
-        let data = {
-            activeTemplate: 'Traditional 1',
-            children: assignIds(ResumeTemplateProvider.resumeChildren),
-            customCss: this.defaultCss,
-            sectionTitlePosition: "top" as SectionHeaderPosition
-        };
+    static templates = {
+        "Traditional 1": () => {
+            let data = {
+                activeTemplate: 'Traditional 1',
+                children: assignIds(ResumeTemplateProvider.resumeChildren),
+                customCss: ResumeTemplateProvider.defaultCss,
+                sectionTitlePosition: "top" as SectionHeaderPosition
+            };
 
-        for (let k in data.children) {
-            const node = data.children[k];
-            if (node['type'] == 'Section') {
-                node['headerPosition'] = 'top';
-            }
-        }
-
-        return data;
-    }
-
-    static Traditional2() {
-        let data = {
-            activeTemplate: 'Traditional 2',
-            children: assignIds(ResumeTemplateProvider.resumeChildren),
-            customCss: this.defaultCss,
-            sectionTitlePosition: "left" as SectionHeaderPosition
-        };
-
-        for (let k in data.children) {
-            const node = data.children[k];
-            if (node['type'] == 'Section') {
-                node['headerPosition'] = 'left';
-            }
-        }
-
-        return data;
-    }
-
-    static MultiColumn1() {
-        let data = {
-            activeTemplate: 'Multi-Column 1',
-            children: assignIds([
-                ResumeTemplateProvider.header,
-                {
-                    type: 'FlexibleRow',
-                    children: [
-                        {
-                            type: 'FlexibleColumn',
-                            children: [
-                                ResumeTemplateProvider.education,
-                                ResumeTemplateProvider.techSkills
-                            ]
-                        },
-                        {
-                            type: 'FlexibleColumn',
-                            children: [
-                                ResumeTemplateProvider.experience
-                            ]
-                        }
-                    ]
+            for (let k in data.children) {
+                const node = data.children[k];
+                if (node['type'] == 'Section') {
+                    node['headerPosition'] = 'top';
                 }
-            ]),
-            customCss: this.defaultCss,
-        };
+            }
 
-        return data;
+            return data;
+        },
+
+        "Traditional 2": () => {
+            let data = {
+                activeTemplate: 'Traditional 2',
+                children: assignIds(ResumeTemplateProvider.resumeChildren),
+                customCss: ResumeTemplateProvider.defaultCss,
+                sectionTitlePosition: "left" as SectionHeaderPosition
+            };
+
+            for (let k in data.children) {
+                const node = data.children[k];
+                if (node['type'] == 'Section') {
+                    node['headerPosition'] = 'left';
+                }
+            }
+
+            return data;
+        },
+
+        "Multi-Column 1": () => {
+            let data = {
+                activeTemplate: 'Multi-Column 1',
+                children: assignIds([
+                    ResumeTemplateProvider.header,
+                    {
+                        type: 'FlexibleRow',
+                        children: [
+                            {
+                                type: 'FlexibleColumn',
+                                children: [
+                                    ResumeTemplateProvider.education,
+                                    ResumeTemplateProvider.techSkills
+                                ]
+                            },
+                            {
+                                type: 'FlexibleColumn',
+                                children: [
+                                    ResumeTemplateProvider.experience
+                                ]
+                            }
+                        ]
+                    }
+                ]),
+                customCss: ResumeTemplateProvider.defaultCss,
+            };
+
+            return data;
+        }
     }
 }

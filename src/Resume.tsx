@@ -217,7 +217,7 @@ class Resume extends React.Component<{}, PageState> {
 
     loadData(data: object) {
         this.setState({
-            children: data['children'] as Array<object>,
+            children: assignIds(data['children'] as Array<object>),
             customCss: data['css'] as string,
             mode: 'normal'
         });
@@ -254,6 +254,7 @@ class Resume extends React.Component<{}, PageState> {
         });
     }
 
+    /** Copy the currently selected node */
     copyClipboard() {
         if (this.state.selectedNode) {
             const data = this.state.selectedNode.getData();
@@ -263,6 +264,7 @@ class Resume extends React.Component<{}, PageState> {
         }
     }
 
+    /** Paste whatever is currently in the clipboard */
     pasteClipboard() {
         if (this.state.selectedNode) {
             if (this.state.selectedNode.addChild) {
@@ -303,16 +305,32 @@ class Resume extends React.Component<{}, PageState> {
     
     renderHotkeys() {
         const keyMap = {
+            COPY_SELECTED: "shift+c",
+            PASTE_SELECTED: "shift+v",
+            DELETE_SELECTED: "shift+del",
             ESCAPE: "esc",
             PRINT_MODE: "shift+p"
         };
 
         const handlers = {
+            COPY_SELECTED: (event) => {
+                this.copyClipboard();
+            },
+
+            PASTE_SELECTED: (event) => {
+                this.pasteClipboard();
+            },
+
             ESCAPE: (event) => {
                 // Return everything back to default settings
                 this.unselect();
-
                 this.setState({ mode: 'normal' });
+            },
+
+            DELETE_SELECTED: (event) => {
+                if (this.state.selectedNode) {
+                    this.state.selectedNode.deleteChild();
+                }
             },
 
             PRINT_MODE: (event) => {

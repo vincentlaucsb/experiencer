@@ -190,7 +190,7 @@ export class DescriptionListItem extends ListItem<DescriptionItemProps> {
                     </InputGroup>
         }
 
-        return <div className="flex-row">
+        return <div className="resume-definition">
             <dt>
                 <span>{term}</span>
             </dt>

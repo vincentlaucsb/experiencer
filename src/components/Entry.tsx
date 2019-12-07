@@ -22,6 +22,8 @@ export default class Entry extends ResumeComponent<EntryProps> {
 
         this.addTitleField = this.addTitleField.bind(this);
         this.addSubtitleField = this.addSubtitleField.bind(this);
+        this.removeTitleField = this.removeTitleField.bind(this);
+        this.removeSubtitleField = this.removeSubtitleField.bind(this);
     }
 
     /** Get the class name for the main <div> container */
@@ -42,6 +44,18 @@ export default class Entry extends ResumeComponent<EntryProps> {
         this.updateData('subtitleExtras', replTitle);
     }
 
+    removeTitleField() {
+        let replTitle = this.props.titleExtras || [];
+        replTitle = replTitle.slice(0, replTitle.length - 1);
+        this.updateData('titleExtras', replTitle);
+    }
+
+   removeSubtitleField() {
+        let replTitle = this.props.subtitleExtras || [];
+        replTitle = replTitle.slice(0, replTitle.length - 1);
+        this.updateData('subtitleExtras', replTitle);
+   }
+
     getEditingMenu() {
         if (this.state.isSelected) {
             return <ButtonGroup size="sm">
@@ -52,6 +66,8 @@ export default class Entry extends ResumeComponent<EntryProps> {
                     <Dropdown.Divider />
                     <Dropdown.Item onClick={this.addTitleField}>Add another title field</Dropdown.Item>
                     <Dropdown.Item onClick={this.addSubtitleField}>Add another subtitle field</Dropdown.Item>
+                    <Dropdown.Item onClick={this.removeTitleField}>Remove title field (from right)</Dropdown.Item>
+                    <Dropdown.Item onClick={this.removeSubtitleField}>Remove subtitle field (from right)</Dropdown.Item>
                 </DropdownButton>
                 <EditButton {...this.props} extended={true} />
                 <DeleteButton {...this.props} extended={true} />

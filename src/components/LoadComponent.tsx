@@ -8,7 +8,7 @@ import Paragraph from "./Paragraph";
 import Header from "./Header";
 import { ResumeComponentProps, Action, SelectedNodeProps } from "./ResumeComponent";
 
-export type EditorMode = 'normal' | 'editingStyle' | 'changingTemplate' | 'printing';
+export type EditorMode = 'normal' | 'landing' | 'editingStyle' | 'changingTemplate' | 'printing';
 
 interface ExtraProps {
     uuid: string;

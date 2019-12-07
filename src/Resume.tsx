@@ -1,23 +1,23 @@
 import * as React from 'react';
-import loadComponent, { EditorMode } from './components/LoadComponent';
 import { saveAs } from 'file-saver';
 import SplitPane from 'react-split-pane';
 import { GlobalHotKeys } from 'react-hotkeys';
 import uuid from 'uuid/v4';
 
+import AceEditor from "react-ace";
+import "ace-builds/src-noconflict/mode-css";
+import "ace-builds/src-noconflict/theme-github";
+
 import './css/index.css';
 import './scss/custom.scss';
 import 'react-quill/dist/quill.snow.css';
 
+import loadComponent, { EditorMode } from './components/LoadComponent';
 import { Button, ButtonToolbar, ButtonGroup, Nav, Navbar, ButtonProps } from 'react-bootstrap';
 import FileLoader from './components/controls/FileLoader';
 import { deleteAt, moveUp, moveDown, assignIds, deepCopy } from './components/Helpers';
 import { Nonprintable } from './components/Nonprintable';
 import { SelectedNodeProps, AddChild } from './components/ResumeComponent';
-import AceEditor from "react-ace";
-
-import "ace-builds/src-noconflict/mode-css";
-import "ace-builds/src-noconflict/theme-github";
 import { SectionHeaderPosition } from './components/Section';
 import ResumeTemplateProvider from './components/ResumeTemplateProvider';
 import FileSaver from './components/controls/FileSaver';
@@ -49,16 +49,13 @@ class Resume extends React.Component<{}, PageState> {
         this.style = document.createElement("style");
         this.style.innerHTML = "";
         head.appendChild(this.style);
-
-        // Load "Traditional 1" template
-        let template = ResumeTemplateProvider.templates["Traditional 1"]();
         
         this.state = {
-            children: template.children,
-            customCss: template.customCss,
+            children: [],
+            customCss: "",
             hovering: new Set<string>(),
-            mode: 'normal',
-            sectionTitlePosition: template.sectionTitlePosition
+            mode: "landing",
+            sectionTitlePosition: "top"
         };
 
         this.renderStyle();
@@ -252,6 +249,10 @@ class Resume extends React.Component<{}, PageState> {
             sectionTitlePosition: template.sectionTitlePosition,
             mode: 'changingTemplate'
         });
+
+        // this.renderStyle();
+
+        this.style.innerHTML = template.customCss;
     }
 
     /** Copy the currently selected node */
@@ -480,7 +481,8 @@ class Resume extends React.Component<{}, PageState> {
             return "resume-printing";
         }
 
-        return "ml-auto mr-auto mt-2";
+        let classNames = ["ml-auto", "mr-auto", "mt-2"];
+        return classNames.join(' ');
     }
 
     render() {
@@ -500,7 +502,26 @@ class Resume extends React.Component<{}, PageState> {
             {resume}
         </>;
 
-        if (this.isEditingStyle) {
+        if (this.state.mode == "landing") {
+            mainContent = <>
+                {this.renderToolbar()}
+                <div id="resume" className={this.resumeClassName}>
+                    <h2>Getting Started</h2>
+                    <p>Welcome to Experiencer, a powerful tool that can help you create attractive resumes.</p>
+
+                    <h3>Creating a Resume</h3>
+                    <ul>
+                        <li>Creating a resume</li>
+                        <li>
+                            <ul>
+                                <li>Test</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </>
+        }
+        else if (this.isEditingStyle) {
             // Split resume and style editor
             mainContent = <SplitPane split="horizontal"
                 pane1Style={{ display: "block", height: "auto" }}
@@ -517,7 +538,7 @@ class Resume extends React.Component<{}, PageState> {
         else if (this.state.mode == "changingTemplate") {
             mainContent = <>
                 {this.renderToolbar()}
-                <div className="flex-row">
+                <div className="d-flex flex-row">
                     {resume}
                     {this.renderTemplateChanger()}
                 </div>

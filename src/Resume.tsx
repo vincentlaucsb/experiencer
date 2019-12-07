@@ -50,19 +50,6 @@ class Resume extends React.Component<{}, PageState> {
 
         // Load "Traditional 1" template
         let template = ResumeTemplateProvider.Traditional1();
-
-        // Assign unique IDs to all children
-        let workQueue = [template.children];
-        while (workQueue.length) {
-            let nextItem = workQueue.pop() as Array<object>;
-            nextItem.forEach((elem) => {
-                elem['uuid'] = uuid();
-
-                if (elem['children']) {
-                    workQueue.push(elem['children']);
-                }
-            });
-        }
         
         this.state = {
             children: template.children,

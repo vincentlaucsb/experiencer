@@ -10,7 +10,7 @@ interface FileLoaderState {
     filename: string;
 }
 
-// Form used for reading Auto Cost Calculator saved files
+// Form used for reading saved resume data files
 export default class FileLoader extends React.Component<FileLoaderProps, FileLoaderState> {
     fileInput: any;
 

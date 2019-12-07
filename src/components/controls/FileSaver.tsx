@@ -10,7 +10,7 @@ interface FileLoaderState {
     filename: string;
 }
 
-// Form used for reading Auto Cost Calculator saved files
+// Form used for saving resume data
 export default class FileSaver extends React.Component<FileSaverProps, FileLoaderState> {
     constructor(props) {
         super(props);
@@ -28,9 +28,9 @@ export default class FileSaver extends React.Component<FileSaverProps, FileLoade
         this.setState({ filename: filename });
     }
 
-    renderExpanded() {
-        if (this.state.isOpen) {
-            return <Form inline>
+    render() {
+        const expanded = this.state.isOpen ? 
+            <Form inline>
                 <InputGroup>
                     <Form.Control
                         onChange={this.onChange}
@@ -40,23 +40,14 @@ export default class FileSaver extends React.Component<FileSaverProps, FileLoade
                         <Button onClick={() => this.props.saveFile(this.state.filename)} variant="outline-light">Save</Button>
                     </InputGroup.Append>
                 </InputGroup>
-            </Form>
-        }
+            </Form> : <></>
 
-        return <></>
-    }
-
-    renderTrigger() {
-        return <Nav.Link
-            onClick={() => this.setState({ isOpen: !this.state.isOpen })}>
-            Save to File
-        </Nav.Link>
-    }
-
-    render() {
         return <>
-            {this.renderTrigger()}
-            {this.renderExpanded()}
+            <Nav.Link
+                onClick={() => this.setState({ isOpen: !this.state.isOpen })}>
+                Save to File
+            </Nav.Link>
+            {expanded}
         </>
     }
 }

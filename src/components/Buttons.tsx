@@ -18,7 +18,8 @@ interface ButtonProps extends ResumeComponentProps {
     extended?: boolean;
 }
 
-interface TooltipProps {
+
+interface ButtonWithTooltipProps {
     onClick: () => void;
     tooltip: string;
     imgSrc: string;
@@ -26,7 +27,7 @@ interface TooltipProps {
     imgCls?: string;
 }
 
-function ButtonWithTooltip(props: TooltipProps) {
+function ButtonWithTooltip(props: ButtonWithTooltipProps) {
     const [show, setShow] = React.useState(false);
     const target: any = React.useRef(null);
 

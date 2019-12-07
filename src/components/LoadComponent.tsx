@@ -27,6 +27,14 @@ interface ExtraProps {
     updateData?: (key: string, data: any) => void;
 }
 
+/**
+ * Load a resume node from a JavaScript object
+ * @param data
+ * @param index       The n-th index of this node relative to its parent
+ * @param numChildren How many total siblings this node has plus itself
+ * @param extraProps  Props passed down from parent (such as functions)
+ * @param parentIndex The n-th index of this node's parent relative to its parent
+ */
 export default function loadComponent(data: object,
     index: number, numChildren: number, extraProps?: ExtraProps, parentIndex?: string) {
     // Load prop data

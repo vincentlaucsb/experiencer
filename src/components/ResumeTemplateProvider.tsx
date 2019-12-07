@@ -256,6 +256,7 @@ h2.flex-row.flex-spread {
                 activeTemplate: 'Multi-Column 1',
                 children: assignIds([
                     ResumeTemplateProvider.header,
+                    ResumeTemplateProvider.objective,
                     {
                         type: 'FlexibleRow',
                         children: [

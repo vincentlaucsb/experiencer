@@ -9,8 +9,8 @@ import './css/index.css';
 import './scss/custom.scss';
 import 'react-quill/dist/quill.snow.css';
 
-import { Button, ButtonToolbar, ButtonGroup, InputGroup, Card, Tab, Col, Nav, Navbar, ButtonProps } from 'react-bootstrap';
-import { FileLoader } from './components/FileLoader';
+import { Button, ButtonToolbar, ButtonGroup, Nav, Navbar, ButtonProps } from 'react-bootstrap';
+import FileLoader from './components/controls/FileLoader';
 import { deleteAt, moveUp, moveDown, assignIds, deepCopy } from './components/Helpers';
 import { Nonprintable } from './components/Nonprintable';
 import { SelectedNodeProps, AddChild } from './components/ResumeComponent';
@@ -20,7 +20,6 @@ import "ace-builds/src-noconflict/mode-css";
 import "ace-builds/src-noconflict/theme-github";
 import { SectionHeaderPosition } from './components/Section';
 import ResumeTemplateProvider from './components/ResumeTemplateProvider';
-import { bool } from 'prop-types';
 
 interface PageState {
     children: Array<object>;
@@ -71,7 +70,7 @@ class Resume extends React.Component<{}, PageState> {
         /** Resume Nodes */
         this.addColumn = this.addColumn.bind(this);
         this.addSection = this.addSection.bind(this);
-        this.addChild = this.addChild.bind(this);
+        this.addNestedChild = this.addNestedChild.bind(this);
         this.childMapper = this.childMapper.bind(this);
         this.updateData = this.updateData.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
@@ -122,16 +121,14 @@ class Resume extends React.Component<{}, PageState> {
     }
 
     addSection() {
-        this.state.children.push({
+        this.addChild({
             type: 'Section',
             headerPosition: this.state.sectionTitlePosition
         });
-
-        this.setState({ children: this.state.children });
     }
 
     addColumn() {
-        this.state.children.push({
+        this.addChild({
             type: 'FlexibleRow',
             children: [
                 {
@@ -139,8 +136,6 @@ class Resume extends React.Component<{}, PageState> {
                 }
             ]
         });
-
-        this.setState({ children: this.state.children });
     }
 
     // Move the child at idx up one position
@@ -169,19 +164,31 @@ class Resume extends React.Component<{}, PageState> {
         this.style.innerHTML = this.state.customCss;
     }
 
-    addChild(idx: number, node: object) {
-        if (!this.state.children[idx]['children']) {
-            this.state.children[idx]['children'] = new Array<object>();
+    /**
+     * Add an immediate child
+     * @param node Node to be added
+     */
+    addChild(node: object) {
+        this.state.children.push(node);
+        this.setState({ children: this.state.children });
+    }
+
+    /**
+     * Add a child for some child node of this resume
+     * @param idx  Index of the child
+     * @param node Grandchild to be added
+     */
+    addNestedChild(idx: number, node: object) {
+        let children = this.state.children[idx]['children'];
+        if (!children) {
+            children = new Array<object>();
         }
 
         // Generate UUID
         node['uuid'] = uuid();
 
-        this.state.children[idx]['children'].push(node);
-
-        this.setState({
-            children: this.state.children
-        });
+        children.push(node);
+        this.setState({ children: this.state.children });
     }
 
     deleteChild(idx: number) {
@@ -328,7 +335,7 @@ class Resume extends React.Component<{}, PageState> {
             {loadComponent(elem, idx, arr.length, {
                 uuid: uniqueId,
                 mode: this.state.mode,
-                addChild: this.addChild.bind(this, idx),
+                addChild: this.addNestedChild.bind(this, idx),
                 hoverInsert: this.hoverInsert.bind(this),
                 hoverOut: this.hoverOut.bind(this),
                 isSelectBlocked: this.isSelectBlocked.bind(this),

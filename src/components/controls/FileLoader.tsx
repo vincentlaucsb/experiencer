@@ -12,7 +12,7 @@ interface FileLoaderState {
 }
 
 // Form used for reading Auto Cost Calculator saved files
-export class FileLoader extends React.Component<FileLoaderProps, FileLoaderState> {
+export default class FileLoader extends React.Component<FileLoaderProps, FileLoaderState> {
     fileInput: any;
 
     constructor(props: FileLoaderProps) {

@@ -6,7 +6,7 @@ import Entry, { EntryProps } from "./Entry";
 import List, { ListItem, DescriptionList, DescriptionListItem } from "./List";
 import Paragraph from "./Paragraph";
 import Header from "./Header";
-import { ResumeComponentProps, Action } from "./ResumeComponent";
+import { ResumeComponentProps, Action, SelectedNodeProps } from "./ResumeComponent";
 
 export type EditorMode = 'normal' | 'editingStyle' | 'changingTemplate' | 'printing';
 
@@ -14,7 +14,7 @@ interface ExtraProps {
     uuid: string;
     mode: EditorMode;
     unselect: () => void;
-    updateSelected: (unselect: Action) => void;
+    updateSelected: (data?: SelectedNodeProps) => void;
 
     addChild?: (node: object) => void;
     isSelectBlocked?: (id: string) => boolean;

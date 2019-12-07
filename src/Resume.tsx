@@ -13,7 +13,7 @@ import { Button, ButtonToolbar, ButtonGroup, InputGroup, Card, Tab, Col, Nav, Na
 import { FileLoader } from './components/FileLoader';
 import { deleteAt, moveUp, moveDown } from './components/Helpers';
 import { Nonprintable } from './components/Nonprintable';
-import { Action } from './components/ResumeComponent';
+import { Action, SelectedNodeProps, AddChild } from './components/ResumeComponent';
 import AceEditor from "react-ace";
 
 import "ace-builds/src-noconflict/mode-css";
@@ -23,6 +23,7 @@ import ResumeTemplateProvider from './components/ResumeTemplateProvider';
 
 interface PageState {
     children: Array<object>;
+    clipboard: object;
     customCss: string;
 
     /** Set of nodes we are currently hovering over */
@@ -32,7 +33,7 @@ interface PageState {
     sectionTitlePosition: SectionHeaderPosition;
 
     /** Unselect the currently selected node */
-    unselectNode?: Action;
+    selectedNode?: SelectedNodeProps;
     activeTemplate?: string;
 }
 
@@ -53,6 +54,7 @@ class Resume extends React.Component<{}, PageState> {
         
         this.state = {
             children: template.children,
+            clipboard: {},
             customCss: template.customCss,
             hovering: new Set<string>(),
             mode: 'normal',
@@ -73,8 +75,13 @@ class Resume extends React.Component<{}, PageState> {
         this.renderStyle = this.renderStyle.bind(this);
         this.onStyleChange = this.onStyleChange.bind(this);
         this.saveFile = this.saveFile.bind(this);
-        this.unselect = this.unselect.bind(this);
         this.toggleStyleEditor = this.toggleStyleEditor.bind(this);
+
+        /** Cut & Paste */
+        this.pasteClipboard = this.pasteClipboard.bind(this);
+
+        /** Selection Methods */
+        this.unselect = this.unselect.bind(this);
         this.hoverInsert = this.hoverInsert.bind(this);
         this.hoverOut = this.hoverOut.bind(this);
         this.isSelectBlocked = this.isSelectBlocked.bind(this);
@@ -236,16 +243,30 @@ class Resume extends React.Component<{}, PageState> {
         });
     }
 
-    unselect() {
-        if (this.state.unselectNode as Action) {
-            (this.state.unselectNode as Action)();
-        }
+    pasteClipboard() {
+        if (this.state.selectedNode) {
+            if (this.state.selectedNode.addChild) {
+                // Paste
+                (this.state.selectedNode.addChild as AddChild)(this.state.clipboard);
 
-        this.setState({ unselectNode: undefined });
+                // Clear clipboard
+                this.setState({
+                    clipboard: {}
+                });
+            }
+        }
     }
 
-    updateSelected(unselect: Action) {
-        this.setState({ unselectNode: unselect });
+    unselect() {
+        if (this.state.selectedNode) {
+            this.state.selectedNode.unselect();
+        }
+
+        this.setState({ selectedNode: undefined });
+    }
+
+    updateSelected(data?: SelectedNodeProps) {
+        this.setState({ selectedNode: data });
     }
 
     toggleStyleEditor() {
@@ -317,7 +338,7 @@ class Resume extends React.Component<{}, PageState> {
             disabled: true
         };
 
-        if (this.state.unselectNode as Action) {
+        if (this.state.selectedNode) {
             unselectProps = {
                 onClick: this.unselect
             };
@@ -341,6 +362,8 @@ class Resume extends React.Component<{}, PageState> {
                 </Nav>
 
                 <ButtonGroup className="mr-2">
+                    <Button variant="outline-light">Cut</Button>
+                    <Button onClick={this.pasteClipboard} variant="outline-light">Paste</Button>
                     <Button variant="outline-light" {...unselectProps}>Unselect</Button>
                     <Button {...editStyleProps}>Edit Style</Button>
                 </ButtonGroup>

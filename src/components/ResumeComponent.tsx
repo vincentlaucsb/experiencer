@@ -3,6 +3,11 @@ import uuid from 'uuid/v4';
 import loadComponent, { EditorMode } from "./LoadComponent";
 import { deleteAt, moveUp, moveDown } from "./Helpers";
 
+export interface SelectedNodeProps {
+    addChild?: AddChild;
+    unselect: Action;
+}
+
 export interface ResumeComponentProps {
     id: string;   // Hierarchical ID based on the node's position in the resume; subject to change
     uuid: string; // Unique ID that never changes
@@ -18,7 +23,7 @@ export interface ResumeComponentProps {
     children?: Array<object>;
 
     unselect: Action;
-    updateSelected: (unselect?: Action) => void;
+    updateSelected: (data?: SelectedNodeProps) => void;
 
     addChild?: ((idx: number, node: object) => void) | ((node: object) => void);
     isSelectBlocked?: (id: string) => boolean;
@@ -55,6 +60,7 @@ export default class ResumeComponent<
 
         this.childMapper = this.childMapper.bind(this);
 
+        this.addChild = this.addChild.bind(this);
         this.updateDataEvent = this.updateDataEvent.bind(this);
         this.addNestedChild = this.addNestedChild.bind(this);
         this.deleteNestedChild = this.deleteNestedChild.bind(this);
@@ -274,7 +280,10 @@ export default class ResumeComponent<
             this.setState({ isSelected: true });
 
             // Pass this node's unselect back up to <Resume />
-            this.props.updateSelected(this.unselect);
+            this.props.updateSelected({
+                addChild: this.addChild,
+                unselect: this.unselect
+            });
         }
     }
 

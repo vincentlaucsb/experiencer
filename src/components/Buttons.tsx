@@ -7,7 +7,7 @@ import EditIcon from "../icons/edit-24px.svg";
 import DoneIcon from "../icons/done-24px.svg";
 import UpIcon from "../icons/keyboard_arrow_up-24px.svg";
 import DownIcon from "../icons/keyboard_arrow_down-24px.svg";
-import { Overlay, Button } from "react-bootstrap";
+import { Overlay, Button, Modal } from "react-bootstrap";
 
 interface AddButtonProps {
     action: () => void;
@@ -66,7 +66,33 @@ export default function EditButton<P extends ButtonProps>(props: P) {
 }
 
 export function DeleteButton<P extends ResumeComponentProps>(props: P) {
-    return <ExtendableButton action={props.deleteChild as Action} imgSrc={DeleteIcon} text='Delete' componentData={props} />
+    const [show, setShow] = React.useState(false);
+
+    let confirmDelete = () => {
+        (props.deleteChild as Action)();
+
+        // Workaround
+        setShow(false);
+    }
+
+    return <>
+        <Modal show={show} onHide={() => setShow(false)}>
+            <Modal.Header closeButton>
+                <Modal.Title>Confirm Delete</Modal.Title>
+            </Modal.Header>
+
+            <Modal.Body>
+                <p>Are you sure?</p>
+            </Modal.Body>
+
+            <Modal.Footer>
+                <Button onClick={confirmDelete} variant="secondary">Yes</Button>
+                <Button onClick={() => setShow(false)} variant="primary">Cancel</Button>
+            </Modal.Footer>
+        </Modal>
+
+        <ExtendableButton action={() => setShow(true)} imgSrc={DeleteIcon} text='Delete' componentData={props} />
+        </>
 }
 
 export function UpButton<P extends ResumeComponentProps>(props: P) {

@@ -76,7 +76,7 @@ export function DeleteButton<P extends ResumeComponentProps>(props: P) {
     }
 
     return <>
-        <Modal show={show} onHide={() => setShow(false)}>
+        <Modal show={show} onHide={() => setShow(false)} centered>
             <Modal.Header closeButton>
                 <Modal.Title>Confirm Delete</Modal.Title>
             </Modal.Header>
@@ -86,7 +86,7 @@ export function DeleteButton<P extends ResumeComponentProps>(props: P) {
             </Modal.Body>
 
             <Modal.Footer>
-                <Button onClick={confirmDelete} variant="secondary">Yes</Button>
+                <Button onClick={confirmDelete} variant="danger">Delete</Button>
                 <Button onClick={() => setShow(false)} variant="primary">Cancel</Button>
             </Modal.Footer>
         </Modal>

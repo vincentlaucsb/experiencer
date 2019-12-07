@@ -1,6 +1,5 @@
 ﻿import * as React from "react";
-import { Button, InputGroup, Collapse, Form, Nav } from "react-bootstrap";
-import { InputGroupAppend } from "react-bootstrap/InputGroup";
+import { Form, Nav } from "react-bootstrap";
 
 interface FileLoaderProps {
     loadData: (data: Array<object>) => void;
@@ -23,7 +22,6 @@ export default class FileLoader extends React.Component<FileLoaderProps, FileLoa
             isOpen: false
         };
 
-        this.handleSubmit = this.handleSubmit.bind(this);
         this.readFile = this.readFile.bind(this);
         this.onFileSelect = this.onFileSelect.bind(this);
 
@@ -48,15 +46,6 @@ export default class FileLoader extends React.Component<FileLoaderProps, FileLoa
         reader.readAsText(file, "UTF-8");
     }
 
-    handleSubmit(event) {
-        event.preventDefault(); // Prevent page refresh
-
-        let userFile = this.fileInput.current.files[0];
-        if (userFile) {
-            this.readFile(userFile);
-        }
-    }
-
     renderExpanded() {
         if (this.state.isOpen) {
             return <Form inline>
@@ -76,6 +65,10 @@ export default class FileLoader extends React.Component<FileLoaderProps, FileLoa
         return button;
     }
 
+    /**
+     * Load file as soon as a user selects it
+     * @param event
+     */
     onFileSelect(event) {
         let userFile = this.fileInput.current.files[0];
         if (userFile) {

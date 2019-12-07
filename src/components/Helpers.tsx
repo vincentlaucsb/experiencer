@@ -1,4 +1,6 @@
-﻿/**
+﻿import uuid from 'uuid/v4';
+
+/**
  * Return a copy of an array with the i-th element removed
  * @param i: The index of the item to be deleted, zero-indexed
  */
@@ -48,4 +50,35 @@ export function moveDown<T>(arr: Array<T>, i: number) {
     }
 
     return arr;
+}
+
+/**
+ * Assign unique IDs to an array of nodes
+ * @param children An array of nodes
+ */
+export function assignIds(children: Array<object>) {
+    let newChildren = deepCopy(children);
+
+    // Assign unique IDs to all children
+    let workQueue = [ newChildren ];
+    while(workQueue.length) {
+        let nextItem = workQueue.pop() as Array<object>;
+        nextItem.forEach((elem) => {
+            elem['uuid'] = uuid();
+
+            if (elem['children']) {
+                workQueue.push(elem['children']);
+            }
+        });
+    }
+
+    return newChildren;
+}
+
+/**
+ * Return a deep copy of a JavaScript object
+ * @param obj Object to be copied
+ */
+export function deepCopy(obj: any) {
+    return JSON.parse(JSON.stringify(obj));
 }

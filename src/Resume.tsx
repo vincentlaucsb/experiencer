@@ -11,7 +11,7 @@ import 'react-quill/dist/quill.snow.css';
 
 import { Button, ButtonToolbar, ButtonGroup, InputGroup, Card, Tab, Col, Nav, Navbar, ButtonProps } from 'react-bootstrap';
 import { FileLoader } from './components/FileLoader';
-import { deleteAt, moveUp, moveDown } from './components/Helpers';
+import { deleteAt, moveUp, moveDown, assignIds, deepCopy } from './components/Helpers';
 import { Nonprintable } from './components/Nonprintable';
 import { Action, SelectedNodeProps, AddChild } from './components/ResumeComponent';
 import AceEditor from "react-ace";
@@ -78,6 +78,7 @@ class Resume extends React.Component<{}, PageState> {
         this.toggleStyleEditor = this.toggleStyleEditor.bind(this);
 
         /** Cut & Paste */
+        this.copyClipboard = this.copyClipboard.bind(this);
         this.pasteClipboard = this.pasteClipboard.bind(this);
 
         /** Selection Methods */
@@ -243,16 +244,28 @@ class Resume extends React.Component<{}, PageState> {
         });
     }
 
+    copyClipboard() {
+        if (this.state.selectedNode) {
+            const data = this.state.selectedNode.getData();
+            this.setState({
+                clipboard: data
+            });
+        }
+    }
+
     pasteClipboard() {
         if (this.state.selectedNode) {
             if (this.state.selectedNode.addChild) {
-                // Paste
-                (this.state.selectedNode.addChild as AddChild)(this.state.clipboard);
+                let node = deepCopy(this.state.clipboard);
 
-                // Clear clipboard
-                this.setState({
-                    clipboard: {}
-                });
+                // Generate fresh IDs
+                node['uuid'] = uuid();
+                if (node['children']) {
+                    node['children'] = assignIds(node['children']);
+                }
+
+                // Paste
+                (this.state.selectedNode.addChild as AddChild)(node);
             }
         }
     }
@@ -362,7 +375,7 @@ class Resume extends React.Component<{}, PageState> {
                 </Nav>
 
                 <ButtonGroup className="mr-2">
-                    <Button variant="outline-light">Cut</Button>
+                    <Button onClick={this.copyClipboard} variant="outline-light">Copy</Button>
                     <Button onClick={this.pasteClipboard} variant="outline-light">Paste</Button>
                     <Button variant="outline-light" {...unselectProps}>Unselect</Button>
                     <Button {...editStyleProps}>Edit Style</Button>

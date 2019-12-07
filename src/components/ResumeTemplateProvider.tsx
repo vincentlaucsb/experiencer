@@ -1,5 +1,6 @@
 ﻿import { SectionHeaderPosition } from "./Section";
 import uuid from 'uuid/v4';
+import { assignIds } from "./Helpers";
 
 export default class ResumeTemplateProvider {
     static defaultCss = `#resume {
@@ -212,27 +213,10 @@ h2.flex-row.flex-spread {
         ResumeTemplateProvider.education
     ]
 
-    static assignIds(children: Array<object>) {
-        // Assign unique IDs to all children
-        let workQueue = [ children ];
-        while (workQueue.length) {
-            let nextItem = workQueue.pop() as Array<object>;
-            nextItem.forEach((elem) => {
-                elem['uuid'] = uuid();
-
-                if (elem['children']) {
-                    workQueue.push(elem['children']);
-                }
-            });
-        }
-
-        return children;
-    }
-
     static Traditional1() {
         let data = {
             activeTemplate: 'Traditional 1',
-            children: ResumeTemplateProvider.assignIds(ResumeTemplateProvider.resumeChildren),
+            children: assignIds(ResumeTemplateProvider.resumeChildren),
             customCss: this.defaultCss,
             sectionTitlePosition: "top" as SectionHeaderPosition
         };
@@ -250,7 +234,7 @@ h2.flex-row.flex-spread {
     static Traditional2() {
         let data = {
             activeTemplate: 'Traditional 2',
-            children: ResumeTemplateProvider.assignIds(ResumeTemplateProvider.resumeChildren),
+            children: assignIds(ResumeTemplateProvider.resumeChildren),
             customCss: this.defaultCss,
             sectionTitlePosition: "left" as SectionHeaderPosition
         };
@@ -268,7 +252,7 @@ h2.flex-row.flex-spread {
     static MultiColumn1() {
         let data = {
             activeTemplate: 'Multi-Column 1',
-            children: ResumeTemplateProvider.assignIds([
+            children: assignIds([
                 ResumeTemplateProvider.header,
                 {
                     type: 'FlexibleRow',

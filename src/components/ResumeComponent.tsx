@@ -1,10 +1,12 @@
 ﻿import * as React from "react";
 import uuid from 'uuid/v4';
 import loadComponent, { EditorMode } from "./LoadComponent";
-import { deleteAt, moveUp, moveDown } from "./Helpers";
+import { deleteAt, moveUp, moveDown, deepCopy } from "./Helpers";
 
 export interface SelectedNodeProps {
     addChild?: AddChild;
+    deleteChild: Action;
+    getData: () => object;
     unselect: Action;
 }
 
@@ -61,6 +63,7 @@ export default class ResumeComponent<
         this.childMapper = this.childMapper.bind(this);
 
         this.addChild = this.addChild.bind(this);
+        this.getData = this.getData.bind(this);
         this.updateDataEvent = this.updateDataEvent.bind(this);
         this.addNestedChild = this.addNestedChild.bind(this);
         this.deleteNestedChild = this.deleteNestedChild.bind(this);
@@ -189,6 +192,21 @@ export default class ResumeComponent<
         }
     }
 
+    /** Return an object representation of this item's essential attributes */
+    getData() {
+        let data = {
+            children: deepCopy(this.props.children as Array<object>)
+        };
+
+        for (let k in this.props) {
+            if (typeof(this.props[k]) == "string") {
+                data[k] = this.props[k];
+            }
+        }
+
+        return data;
+    }
+
     moveNestedChildUp(idx: number) {
         let replChildren = this.props.children as Array<object>;
         if (replChildren) {
@@ -282,6 +300,8 @@ export default class ResumeComponent<
             // Pass this node's unselect back up to <Resume />
             this.props.updateSelected({
                 addChild: this.addChild,
+                deleteChild: this.props.deleteChild as Action,
+                getData: this.getData,
                 unselect: this.unselect
             });
         }

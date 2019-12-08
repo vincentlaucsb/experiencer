@@ -12,6 +12,8 @@ import './css/index.css';
 import './scss/custom.scss';
 import 'react-quill/dist/quill.snow.css';
 
+import GitHub from './icons/mark-github.svg';
+
 import loadComponent, { EditorMode } from './components/LoadComponent';
 import { Button, ButtonToolbar, ButtonGroup, Nav, Navbar, ButtonProps } from 'react-bootstrap';
 import FileLoader from './components/controls/FileLoader';
@@ -436,6 +438,10 @@ class Resume extends React.Component<{}, PageState> {
                 <ButtonGroup className="mr-2">
                     <Button {...editStyleProps}>Edit Style</Button>
                 </ButtonGroup>
+
+                <Nav>
+                    <Nav.Link href="https://github.com/vincentlaucsb/experiencer"><img src={GitHub} style={{ filter: "invert(1)", height: "30px" }} alt="GitHub" /></Nav.Link>
+                </Nav>
             </Navbar>
         }
 

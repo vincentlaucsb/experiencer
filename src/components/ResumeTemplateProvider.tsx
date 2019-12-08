@@ -125,7 +125,6 @@ export default class ResumeTemplateProvider {
         children: [
             {
                 type: 'Paragraph',
-                value: '<p>Email: vincela9@hotmail.com</p><p>Phone: 123-456-7890</p>'
                 value: '<p>Email: spamMePlz@spicymail.com</p><p>Phone: 123-456-7890</p>'
             }
         ]

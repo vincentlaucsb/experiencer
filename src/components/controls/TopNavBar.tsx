@@ -25,7 +25,7 @@ interface TopNavBarProps {
 }
 
 /** The top nav bar for the resume editor */
-export class TopNavBar extends React.Component<TopNavBarProps> {
+export default class TopNavBar extends React.Component<TopNavBarProps> {
     constructor(props) {
         super(props);
     }

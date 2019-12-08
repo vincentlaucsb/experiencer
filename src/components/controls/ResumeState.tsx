@@ -4,7 +4,6 @@ import { SelectedNodeProps } from "../ResumeComponent";
 
 export default interface ResumeState {
     children: Array<object>;
-    clipboard?: object;
     customCss: string;
 
     /** Set of nodes we are currently hovering over */
@@ -13,7 +12,9 @@ export default interface ResumeState {
     mode: EditorMode;
     sectionTitlePosition: SectionHeaderPosition;
 
+    activeTemplate?: string;
+    clipboard?: object;
+
     /** Unselect the currently selected node */
     selectedNode?: SelectedNodeProps;
-    activeTemplate?: string;
 }

@@ -232,7 +232,6 @@ export default class ResumeTemplateProvider {
     static templates = {
         "Traditional 1": () => {
             let data = {
-                activeTemplate: 'Traditional 1',
                 children: assignIds(ResumeTemplateProvider.resumeChildren),
                 customCss: ResumeTemplateProvider.defaultCss,
                 sectionTitlePosition: "top" as SectionHeaderPosition
@@ -250,7 +249,6 @@ export default class ResumeTemplateProvider {
 
         "Traditional 2": () => {
             let data = {
-                activeTemplate: 'Traditional 2',
                 children: assignIds(ResumeTemplateProvider.resumeChildren),
                 customCss: ResumeTemplateProvider.defaultCss,
                 sectionTitlePosition: "left" as SectionHeaderPosition
@@ -268,7 +266,6 @@ export default class ResumeTemplateProvider {
 
         "Multi-Column 1": () => {
             let data = {
-                activeTemplate: 'Multi-Column 1',
                 children: assignIds([
                     ResumeTemplateProvider.header,
                     ResumeTemplateProvider.objective,

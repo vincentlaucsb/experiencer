@@ -2,10 +2,6 @@ import * as React from 'react';
 import { saveAs } from 'file-saver';
 import uuid from 'uuid/v4';
 
-import AceEditor from "react-ace";
-import "ace-builds/src-noconflict/mode-css";
-import "ace-builds/src-noconflict/theme-github";
-
 import './css/index.css';
 import './scss/custom.scss';
 import 'react-quill/dist/quill.snow.css';
@@ -17,9 +13,10 @@ import { SelectedNodeProps, AddChild } from './components/ResumeComponent';
 import ResumeTemplateProvider from './components/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
 import Landing from './components/help/Landing';
-import { TopNavBar } from './components/controls/TopNavBar';
+import TopNavBar from './components/controls/TopNavBar';
 import ResumeHotKeys from './components/controls/ResumeHotkeys';
 import ResumeState from './components/controls/ResumeState';
+import StyleEditor from './components/controls/StyleEditor';
 
 class Resume extends React.Component<{}, ResumeState> {
     style: HTMLStyleElement;
@@ -68,7 +65,6 @@ class Resume extends React.Component<{}, ResumeState> {
         /** Selection Methods */
         this.unselect = this.unselect.bind(this);
         this.isSelectBlocked = this.isSelectBlocked.bind(this);
-        this.reset = this.reset.bind(this);
     }
 
     get isNodeSelected() : boolean {
@@ -79,20 +75,112 @@ class Resume extends React.Component<{}, ResumeState> {
         return this.state.mode == 'printing';
     }
 
-    /** Determine if a node shouldn't be allowed to be selected */
-    isSelectBlocked(id: string) {
-        const ids = Array.from(this.state.hovering);
-        for (let i in ids) {
-            const otherId = ids[i];
-
-            if (otherId.search(id) >= 0 && otherId != id) {
-                return true;
-            }
+    get resumeClassName() {
+        if (this.isPrinting) {
+            return "resume-printing";
         }
 
-        return false;
+        let classNames = ["ml-auto", "mr-auto", "mt-2"];
+        return classNames.join(' ');
     }
 
+    // Push style changes to browser
+    renderStyle() {
+        this.style.innerHTML = this.state.customCss;
+    }
+
+    /**
+     * Render the nodes of this resume
+     * @param elem An object with resume component data
+     * @param idx  Index of the object
+     * @param arr  Array of component data
+     */
+    childMapper(elem: object, idx: number, arr: object[]) {
+        const uniqueId = elem['uuid'];
+
+        // Add an ID to the set of nodes we are hovering over
+        const hoverInsert = (id: string) => {
+            this.state.hovering.add(id);
+        }
+
+        // Remove an ID from the set of nodes we are hovering over
+        const hoverOut = (id: string) => {
+            this.state.hovering.delete(id);
+        }
+
+        return <React.Fragment key={uniqueId}>
+            {loadComponent(elem, idx, arr.length, {
+                uuid: uniqueId,
+                mode: this.state.mode,
+                addChild: this.addNestedChild.bind(this, idx),
+                hoverInsert: hoverInsert.bind(this),
+                hoverOut: hoverOut.bind(this),
+                isSelectBlocked: this.isSelectBlocked.bind(this),
+                moveUp: this.moveUp.bind(this, idx),
+                moveDown: this.moveDown.bind(this, idx),
+                deleteChild: this.deleteChild.bind(this, idx),
+                toggleEdit: this.toggleEdit.bind(this, idx),
+                updateData: this.updateData.bind(this, idx),
+                unselect: this.unselect,
+                updateSelected: this.updateSelected.bind(this)
+            })}
+        </React.Fragment>
+    }
+
+    /**
+     * Switch into mode if not already. Otherwise, return to normal.
+     * @param mode Mode to check
+     */
+    toggleMode(mode: EditorMode = 'normal') {
+        const newMode = (this.state.mode == mode) ? 'normal' : mode;
+        this.setState({ mode: newMode });
+    }
+
+    //#region Changing Templates
+    changeTemplate() {
+        const key = 'Traditional 1';
+        const template = ResumeTemplateProvider.templates[key]();
+
+        this.setState({
+            activeTemplate: key,
+            mode: 'changingTemplate',
+            ...template
+        });
+
+        this.style.innerHTML = template.customCss;
+    }
+
+    renderTemplateChanger() {
+        const loadTemplate = (key: string) => {
+            this.setState({
+                activeTemplate: key,
+                ...ResumeTemplateProvider.templates[key]()
+            });
+
+            // Update loaded CSS
+            this.renderStyle();
+        };
+
+        const templateNames = Object.keys(ResumeTemplateProvider.templates);
+        let navItems = templateNames.map((key: string) =>
+            <Nav.Item key={key}>
+                <Nav.Link eventKey={key} onClick={() => loadTemplate(key)}>
+                    {key}
+                </Nav.Link>
+            </Nav.Item>);
+
+        return <div className="ml-2 mr-2 mt-2 mb-2" style={{ maxWidth: "300px", width: "30%" }}>
+            <Nav variant="pills"
+                activeKey={this.state.activeTemplate}
+                className="flex-column mb-2">
+                {navItems}
+            </Nav>
+            <Button onClick={() => this.toggleMode()}>Use this Template</Button>
+        </div>
+    }
+    //#endregion
+
+    //#region Creating/Editing Nodes
     addSection() {
         this.addChild({
             type: 'Section',
@@ -108,25 +196,6 @@ class Resume extends React.Component<{}, ResumeState> {
                 { type: 'FlexibleColumn' }
             ]
         });
-    }
-
-    // Move the child at idx up one position
-    moveUp(idx: number) {
-        this.setState({
-            children: moveUp(this.state.children, idx)
-        });
-    }
-
-    // Move the child at idx down one position
-    moveDown(idx: number) {
-        this.setState({
-            children: moveDown(this.state.children, idx)
-        });
-    }
-
-    // Push style changes to browser
-    renderStyle() {
-        this.style.innerHTML = this.state.customCss;
     }
 
     /**
@@ -189,6 +258,70 @@ class Resume extends React.Component<{}, ResumeState> {
         });
     }
 
+    // Move the child at idx up one position
+    moveUp(idx: number) {
+        this.setState({
+            children: moveUp(this.state.children, idx)
+        });
+    }
+
+    // Move the child at idx down one position
+    moveDown(idx: number) {
+        this.setState({
+            children: moveDown(this.state.children, idx)
+        });
+    }
+    //#endregion
+
+    //#region Clipboard
+    /** Copy the currently selected node */
+    copyClipboard() {
+        if (this.state.selectedNode) {
+            const data = this.state.selectedNode.getData();
+            this.setState({
+                clipboard: data
+            });
+        }
+    }
+
+    /** Paste whatever is currently in the clipboard */
+    pasteClipboard() {
+        if (this.state.selectedNode && this.state.selectedNode.addChild) {
+            let node = deepCopy(this.state.clipboard);
+            (this.state.selectedNode.addChild as AddChild)(node);
+        }
+    }
+    //#endregion
+
+    //#region Node Selection
+    /** Determine if a node shouldn't be allowed to be selected */
+    isSelectBlocked(id: string) {
+        const ids = Array.from(this.state.hovering);
+        for (let i in ids) {
+            const otherId = ids[i];
+
+            if (otherId.search(id) >= 0 && otherId != id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    unselect() {
+        if (this.state.selectedNode) {
+            this.state.selectedNode.unselect();
+        }
+
+        this.setState({ selectedNode: undefined });
+    }
+
+    updateSelected(data?: SelectedNodeProps) {
+        this.setState({ selectedNode: data });
+    }
+    //#endregion
+
+    //#region Serialization
     loadData(data: object) {
         this.setState({
             children: assignIds(data['chaildren'] as Array<object>),
@@ -215,166 +348,60 @@ class Resume extends React.Component<{}, ResumeState> {
 
         saveAs(blob, filename);
     }
+    //#endregion
 
-    changeTemplate() {
-        const template = ResumeTemplateProvider.templates['Traditional 1']();
+    //#region Helper Component Props
+    get toolbarProps() {
+        const toggleStyleEditor = () => this.toggleMode('editingStyle');
+        const pasteEnabled = this.isNodeSelected && this.state.clipboard != undefined;
 
-        this.setState({
-            activeTemplate: template.activeTemplate,
-            children: template.children,
-            customCss: template.customCss,
-            sectionTitlePosition: template.sectionTitlePosition,
-            mode: 'changingTemplate'
-        });
-
-        // this.renderStyle();
-
-        this.style.innerHTML = template.customCss;
-    }
-
-    /**
-     * Render the nodes of this resume
-     * @param elem An object with resume component data
-     * @param idx  Index of the object
-     * @param arr  Array of component data
-     */
-    childMapper(elem: object, idx: number, arr: object[]) {
-        const uniqueId = elem['uuid'];
-
-        // Add an ID to the set of nodes we are hovering over
-        const hoverInsert = (id: string) => {
-            this.state.hovering.add(id);
+        let props = {
+            mode: this.state.mode,
+            loadData: this.loadData,
+            saveFile: this.saveFile,
+            changeTemplate: this.changeTemplate,
+            toggleStyleEditor: toggleStyleEditor
         }
 
-        // Remove an ID from the set of nodes we are hovering over
-        const hoverOut = (id: string) => {
-            this.state.hovering.delete(id);
+        if (this.isNodeSelected) {
+            props['copyClipboard'] = this.copyClipboard;
+            props['unselect'] = this.unselect;
         }
 
-        return <React.Fragment key={uniqueId}>
-            {loadComponent(elem, idx, arr.length, {
-                uuid: uniqueId,
-                mode: this.state.mode,
-                addChild: this.addNestedChild.bind(this, idx),
-                hoverInsert: hoverInsert.bind(this),
-                hoverOut: hoverOut.bind(this),
-                isSelectBlocked: this.isSelectBlocked.bind(this),
-                moveUp: this.moveUp.bind(this, idx),
-                moveDown: this.moveDown.bind(this, idx),
-                deleteChild: this.deleteChild.bind(this, idx),
-                toggleEdit: this.toggleEdit.bind(this, idx),
-                updateData: this.updateData.bind(this, idx),
-                unselect: this.unselect,
-                updateSelected: this.updateSelected.bind(this)
-            })}
-        </React.Fragment>
-    }
-
-    /** Copy the currently selected node */
-    copyClipboard() {
-        if (this.state.selectedNode) {
-            const data = this.state.selectedNode.getData();
-            this.setState({
-                clipboard: data
-            });
-        }
-    }
-
-    /** Paste whatever is currently in the clipboard */
-    pasteClipboard() {
-        if (this.state.selectedNode && this.state.selectedNode.addChild) {
-            let node = deepCopy(this.state.clipboard);
-            (this.state.selectedNode.addChild as AddChild)(node);
-        }
-    }
-
-    unselect() {
-        if (this.state.selectedNode) {
-            this.state.selectedNode.unselect();
+        if (pasteEnabled) {
+            props['pasteClipboard'] = this.pasteClipboard;
         }
 
-        this.setState({ selectedNode: undefined });
-    }
-
-    updateSelected(data?: SelectedNodeProps) {
-        this.setState({ selectedNode: data });
-    }
-
-    /**
-     * Switch into mode if not already. Otherwise, return to normal.
-     * @param mode Mode to check
-     */
-    toggleMode(mode: EditorMode) {
-        const newMode = (this.state.mode == mode) ? 'normal' : mode;
-        this.setState({ mode: newMode });
-    }
-
-    renderStyleEditor() {
-        const onStyleChange = (css: string) => {
-            this.setState({ customCss: css });
-        }
-
-        return <>
-            <AceEditor
-                mode="css"
-                theme="github"
-                onChange={onStyleChange}
-                value={this.state.customCss}
-                name="style-editor"
-                editorProps={{ $blockScrolling: true }}
-            />
-
-            <ButtonToolbar className="mt-2">
-                <Button onClick={this.renderStyle}>Apply</Button>
-                <Button onClick={(event) => this.setState({ mode: 'normal' })}>Done</Button>
-            </ButtonToolbar>
-        </>
-    }
-
-    renderTemplateChanger() {
-        let templateNames = Object.keys(ResumeTemplateProvider.templates);
-        let navItems = templateNames.map((key: string) => <Nav.Item key={key}>
-                <Nav.Link eventKey={key} onClick={
-                    (event) => {
-                        this.setState(ResumeTemplateProvider.templates[key]);
-
-                        // Update loaded CSS
-                        this.renderStyle();
-                    }
-                }>{key}</Nav.Link>
-            </Nav.Item>);
-
-
-        return <div className="ml-2 mr-2 mt-2 mb-2" style={{ maxWidth: "300px", width: "30%" }}>
-            <Nav variant="pills"
-                activeKey={this.state.activeTemplate}
-                className="flex-column mb-2">
-                {navItems}
-            </Nav>
-            <Button onClick={(event) => this.setState({ mode: 'normal' })}>Use this Template</Button>
-        </div>
-    }
-
-    get resumeClassName() {
-        if (this.isPrinting) {
-            return "resume-printing";
-        }
-
-        let classNames = ["ml-auto", "mr-auto", "mt-2"];
-        return classNames.join(' ');
+        return props;
     }
 
     get resumeHotKeysProps() {
-        const togglePrintMode = () => this.toggleMode('printing');
-
         return {
-            mode: this.state.mode,
             copyClipboard: this.copyClipboard,
             pasteClipboard: this.pasteClipboard,
-            togglePrintMode: togglePrintMode,
-            reset: this.reset
+            togglePrintMode: () => this.toggleMode('printing'),
+            reset: () => {
+                this.unselect();
+                this.setState({ mode: 'normal' });
+            }
         }
     }
+
+    get styleEditorProps() {
+        const onStyleChange = (css: string) => {
+            this.setState({ customCss: css });
+        }
+        const toggleStyleEditor = () => this.toggleMode('editingStyle');
+
+        return {
+            onStyleChange: onStyleChange,
+            renderStyle: this.renderStyle,
+            toggleStyleEditor: toggleStyleEditor,
+            ...this.state
+        }
+    }
+
+    //#endregion
 
     render() {
         const resumeToolbar = !this.isPrinting ? <ButtonToolbar>
@@ -389,32 +416,24 @@ class Resume extends React.Component<{}, ResumeState> {
             {resumeToolbar}
         </div>
 
-        const toggleStyleEditor = () => this.toggleMode('editingStyle');
-        const pasteEnabled = this.isNodeSelected && this.state.clipboard != undefined;
-
-        const toolbar = <TopNavBar
-            mode={this.state.mode}
-            copyClipboard={this.isNodeSelected ? this.copyClipboard : undefined}
-            pasteClipboard={pasteEnabled ? this.pasteClipboard : undefined}
-            unselect={this.isNodeSelected ? this.unselect : undefined}
-            loadData={this.loadData}
-            saveFile={this.saveFile}
-            changeTemplate={this.changeTemplate}
-            toggleStyleEditor={toggleStyleEditor}
-        />
+        const topNav = <TopNavBar {...this.toolbarProps} />
 
         let main = resume;
+        let sidebar: JSX.Element;
 
+        // Render the final layout based on editor mode
         switch (this.state.mode) {
             case 'editingStyle':
+                sidebar = <StyleEditor {...this.styleEditorProps} />
+
                 return <ResizableSidebarLayout
-                    topNav={toolbar}
+                    topNav={topNav}
                     main={resume}
-                    sideBar={this.renderStyleEditor()}
+                    sideBar={sidebar}
                 />
             case 'changingTemplate':
                 return <StaticSidebarLayout
-                    topNav={toolbar}
+                    topNav={topNav}
                     main={resume}
                     sideBar={this.renderTemplateChanger()}
                 />
@@ -422,15 +441,9 @@ class Resume extends React.Component<{}, ResumeState> {
                 main = <Landing className={this.resumeClassName} />
             default:
                 return <DefaultLayout
-                    topNav={toolbar}
+                    topNav={topNav}
                     main={main} />
         }
-    }
-
-    /** Return everything back to default settings */
-    reset() {
-        this.unselect();
-        this.setState({ mode: 'normal' });
     }
 }
 

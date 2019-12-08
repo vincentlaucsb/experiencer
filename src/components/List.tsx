@@ -65,7 +65,7 @@ export class ListItem<P extends ListProps = ListProps> extends ResumeComponent<P
         }
 
         return <li>
-            <span className="flex-row">
+            <span className="iflex-row">
                 <span>{value}</span>
                 {this.renderEditingMenu()}
             </span>

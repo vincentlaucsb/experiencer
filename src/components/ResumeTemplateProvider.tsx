@@ -97,8 +97,15 @@ export default class ResumeTemplateProvider {
 }
 
 /** Key Classes: Modify at your own risk **/
+#resume .iflex-row {
+    display: inline-flex;
+}
+
 #resume .flex-row {
     display: flex;
+}
+
+#resume .iflex-row, flex-row {
     flex-direction: row;
 }
 
@@ -119,6 +126,7 @@ export default class ResumeTemplateProvider {
             {
                 type: 'Paragraph',
                 value: '<p>Email: vincela9@hotmail.com</p><p>Phone: 123-456-7890</p>'
+                value: '<p>Email: spamMePlz@spicymail.com</p><p>Phone: 123-456-7890</p>'
             }
         ]
     };

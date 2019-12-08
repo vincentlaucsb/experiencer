@@ -439,16 +439,16 @@ class Resume extends React.Component<{}, PageState> {
     }
 
     render() {
+        const resumeToolbar = !this.isPrinting ? <ButtonToolbar>
+            <Button className="mr-2" onClick={this.addSection}>Add Section</Button>
+            <Button className="mr-2" onClick={this.addColumn}>Add Multi-Column Row</Button>
+        </ButtonToolbar> : <></>
+
         const resume = <div id="resume" className={this.resumeClassName}>
             {this.renderHotkeys()}
             {this.renderChildren()}
 
-            <Nonprintable isPrinting={this.isPrinting}>
-                <ButtonToolbar>
-                    <Button className="mr-2" onClick={this.addSection}>Add Section</Button>
-                    <Button className="mr-2" onClick={this.addColumn}>Add Multi-Column Row</Button>
-                </ButtonToolbar>
-            </Nonprintable>
+            {resumeToolbar}
         </div>
 
         const haveNode = this.state.selectedNode != undefined;
@@ -465,17 +465,9 @@ class Resume extends React.Component<{}, PageState> {
             toggleStyleEditor={this.toggleStyleEditor}
         />
 
+        let main = resume;
+
         switch (this.state.mode) {
-            case 'normal':
-            case 'landing':
-                let main = resume;
-                if (this.state.mode == 'landing') {
-                    main = <Landing className={this.resumeClassName} />
-                }
-                
-                return <DefaultLayout
-                    topNav={toolbar}
-                    main={main} />
             case 'editingStyle':
                 return <ResizableSidebarLayout
                     topNav={toolbar}
@@ -488,6 +480,12 @@ class Resume extends React.Component<{}, PageState> {
                     main={resume}
                     sideBar={this.renderTemplateChanger()}
                 />
+            case 'landing':
+                main = <Landing className={this.resumeClassName} />
+            default:
+                return <DefaultLayout
+                    topNav={toolbar}
+                    main={main} />
         }
     }
 }

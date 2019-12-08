@@ -2,7 +2,7 @@ body {
     margin: 0;
 }
 
-div#resume:not(.resume-printing){
+div#help, div#resume:not(.resume-printing){
     width: 8.5in;
     padding: 0 0.5em 0 0.5em;
 }

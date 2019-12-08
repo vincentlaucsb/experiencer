@@ -419,10 +419,13 @@ class Resume extends React.Component<{}, PageState> {
                 <Navbar.Brand>
                     Experiencer
                 </Navbar.Brand>
-                <Nav className="mr-auto">
+                <Nav>
                     <Nav.Link onClick={this.changeTemplate}>New</Nav.Link>
                     <FileLoader loadData={this.loadData} />
                     <FileSaver saveFile={this.saveFile} />
+                </Nav>
+                <Nav className="mr-auto">
+                    <Nav.Link onClick={() => this.setState({ mode: 'landing' })}>Help</Nav.Link>
                 </Nav>
 
                 <ButtonGroup className="mr-2">
@@ -514,9 +517,17 @@ class Resume extends React.Component<{}, PageState> {
         </>;
 
         if (this.state.mode == "landing") {
+            let backButton = <></>
+            if (this.state.children.length > 0) {
+                backButton = <Button className="mb-2" onClick={() => this.setState({ mode: 'normal' })}>Back to Editing</Button>
+            }
+
             mainContent = <>
                 {this.renderToolbar()}
-                <div id="resume" className={this.resumeClassName}>
+
+                <div id="help" className={this.resumeClassName}>
+                    {backButton}
+
                     <h2>Getting Started</h2>
                     <p>Welcome to Experiencer, a powerful tool that can help you create attractive resumes.</p>
 

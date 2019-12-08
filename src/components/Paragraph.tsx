@@ -35,6 +35,19 @@ export default class Paragraph extends ResumeComponent {
         ],
     };
 
+    /**
+     * Perform helpful text processing
+     * @param text Text to be processed
+     */
+    static process(text?: string) {
+        if (text) {
+            // Replace '--' with en dash and '---' with em dash
+            return text.replace(/--/g, '\u2013').replace(/---/g, '\u2014');
+        }
+
+        return ""
+    }
+
     getEditingMenu() {
         if (this.state.isSelected) {
             return <ButtonGroup size="sm">
@@ -51,7 +64,7 @@ export default class Paragraph extends ResumeComponent {
             modules={Paragraph.quillModules}
             value={this.props.value}
             onChange={((this.props.updateData as (key: string, data: any) => void).bind(this, "value") as (data: any) => void)}
-        /> : <span className="resume-paragraph" dangerouslySetInnerHTML={{ __html: this.props.value as string }} />;
+        /> : <span className="resume-paragraph" dangerouslySetInnerHTML={{ __html: Paragraph.process(this.props.value) as string }} />;
 
         return <div className={this.className} {...this.getSelectTriggerProps()}>
             {this.renderEditingMenu()}

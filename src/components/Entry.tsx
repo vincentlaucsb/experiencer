@@ -123,7 +123,7 @@ export default class Entry extends ResumeComponent<EntryProps> {
     static process(text?: string) {
         if (text) {
             // Replace '--' with en dash and '---' with em dash
-            return text.replace('--', '\u2013').replace('---', '\u2014');
+            return text.replace(/--/g, '\u2013').replace(/---/g, '\u2014');
         }
 
         return ""

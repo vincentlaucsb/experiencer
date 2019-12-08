@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { saveAs } from 'file-saver';
-import { GlobalHotKeys } from 'react-hotkeys';
 import uuid from 'uuid/v4';
 
 import AceEditor from "react-ace";
@@ -14,31 +13,15 @@ import 'react-quill/dist/quill.snow.css';
 import loadComponent, { EditorMode } from './components/LoadComponent';
 import { Button, ButtonToolbar, ButtonGroup, Nav, Navbar, ButtonProps } from 'react-bootstrap';
 import { deleteAt, moveUp, moveDown, assignIds, deepCopy } from './components/Helpers';
-import { Nonprintable } from './components/Nonprintable';
 import { SelectedNodeProps, AddChild } from './components/ResumeComponent';
-import { SectionHeaderPosition } from './components/Section';
 import ResumeTemplateProvider from './components/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
 import Landing from './components/help/Landing';
 import { TopNavBar } from './components/controls/TopNavBar';
+import ResumeHotKeys from './components/controls/ResumeHotkeys';
+import ResumeState from './components/controls/ResumeState';
 
-interface PageState {
-    children: Array<object>;
-    clipboard?: object;
-    customCss: string;
-
-    /** Set of nodes we are currently hovering over */
-    hovering: Set<string>;
-
-    mode: EditorMode;
-    sectionTitlePosition: SectionHeaderPosition;
-
-    /** Unselect the currently selected node */
-    selectedNode?: SelectedNodeProps;
-    activeTemplate?: string;
-}
-
-class Resume extends React.Component<{}, PageState> {
+class Resume extends React.Component<{}, ResumeState> {
     style: HTMLStyleElement;
 
     constructor(props) {
@@ -60,10 +43,7 @@ class Resume extends React.Component<{}, PageState> {
 
         this.renderStyle();
 
-        this.changeTemplate = this.changeTemplate.bind(this);
-        this.renderStyle = this.renderStyle.bind(this);
-        this.onStyleChange = this.onStyleChange.bind(this);
-        this.toggleStyleEditor = this.toggleStyleEditor.bind(this);
+        this.toggleMode = this.toggleMode.bind(this);
 
         /** Resume Nodes */
         this.addColumn = this.addColumn.bind(this);
@@ -72,6 +52,10 @@ class Resume extends React.Component<{}, PageState> {
         this.childMapper = this.childMapper.bind(this);
         this.updateData = this.updateData.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
+
+        /** Templates and Styling **/
+        this.changeTemplate = this.changeTemplate.bind(this);
+        this.renderStyle = this.renderStyle.bind(this);
 
         /** Load & Save */
         this.loadData = this.loadData.bind(this);
@@ -83,20 +67,19 @@ class Resume extends React.Component<{}, PageState> {
 
         /** Selection Methods */
         this.unselect = this.unselect.bind(this);
-        this.hoverInsert = this.hoverInsert.bind(this);
-        this.hoverOut = this.hoverOut.bind(this);
         this.isSelectBlocked = this.isSelectBlocked.bind(this);
+        this.reset = this.reset.bind(this);
     }
 
-    get isEditingStyle(): boolean {
-        return this.state.mode == 'editingStyle';
+    get isNodeSelected() : boolean {
+        return this.state.selectedNode != undefined;
     }
 
     get isPrinting(): boolean {
         return this.state.mode == 'printing';
     }
 
-    // Determine if a node shouldn't be allowed to be selected
+    /** Determine if a node shouldn't be allowed to be selected */
     isSelectBlocked(id: string) {
         const ids = Array.from(this.state.hovering);
         for (let i in ids) {
@@ -108,14 +91,6 @@ class Resume extends React.Component<{}, PageState> {
         }
 
         return false;
-    }
-
-    hoverInsert(id: string) {
-        this.state.hovering.add(id);
-    }
-
-    hoverOut(id: string) {
-        this.state.hovering.delete(id);
     }
 
     addSection() {
@@ -146,13 +121,6 @@ class Resume extends React.Component<{}, PageState> {
     moveDown(idx: number) {
         this.setState({
             children: moveDown(this.state.children, idx)
-        });
-    }
-
-    // Update custom CSS
-    onStyleChange(css: string) {
-        this.setState({
-            customCss: css,
         });
     }
 
@@ -264,6 +232,44 @@ class Resume extends React.Component<{}, PageState> {
         this.style.innerHTML = template.customCss;
     }
 
+    /**
+     * Render the nodes of this resume
+     * @param elem An object with resume component data
+     * @param idx  Index of the object
+     * @param arr  Array of component data
+     */
+    childMapper(elem: object, idx: number, arr: object[]) {
+        const uniqueId = elem['uuid'];
+
+        // Add an ID to the set of nodes we are hovering over
+        const hoverInsert = (id: string) => {
+            this.state.hovering.add(id);
+        }
+
+        // Remove an ID from the set of nodes we are hovering over
+        const hoverOut = (id: string) => {
+            this.state.hovering.delete(id);
+        }
+
+        return <React.Fragment key={uniqueId}>
+            {loadComponent(elem, idx, arr.length, {
+                uuid: uniqueId,
+                mode: this.state.mode,
+                addChild: this.addNestedChild.bind(this, idx),
+                hoverInsert: hoverInsert.bind(this),
+                hoverOut: hoverOut.bind(this),
+                isSelectBlocked: this.isSelectBlocked.bind(this),
+                moveUp: this.moveUp.bind(this, idx),
+                moveDown: this.moveDown.bind(this, idx),
+                deleteChild: this.deleteChild.bind(this, idx),
+                toggleEdit: this.toggleEdit.bind(this, idx),
+                updateData: this.updateData.bind(this, idx),
+                unselect: this.unselect,
+                updateSelected: this.updateSelected.bind(this)
+            })}
+        </React.Fragment>
+    }
+
     /** Copy the currently selected node */
     copyClipboard() {
         if (this.state.selectedNode) {
@@ -276,19 +282,9 @@ class Resume extends React.Component<{}, PageState> {
 
     /** Paste whatever is currently in the clipboard */
     pasteClipboard() {
-        if (this.state.selectedNode) {
-            if (this.state.selectedNode.addChild) {
-                let node = deepCopy(this.state.clipboard);
-
-                // Generate fresh IDs
-                node['uuid'] = uuid();
-                if (node['children']) {
-                    node['children'] = assignIds(node['children']);
-                }
-
-                // Paste
-                (this.state.selectedNode.addChild as AddChild)(node);
-            }
+        if (this.state.selectedNode && this.state.selectedNode.addChild) {
+            let node = deepCopy(this.state.clipboard);
+            (this.state.selectedNode.addChild as AddChild)(node);
         }
     }
 
@@ -304,105 +300,35 @@ class Resume extends React.Component<{}, PageState> {
         this.setState({ selectedNode: data });
     }
 
-    toggleStyleEditor() {
-        if (this.isEditingStyle) {
-            this.setState({ mode: 'normal' });
-            return;
-        }
-
-        this.setState({ mode: 'editingStyle' });
-    }
-    
-    renderHotkeys() {
-        const keyMap = {
-            COPY_SELECTED: "shift+c",
-            PASTE_SELECTED: "shift+v",
-            DELETE_SELECTED: "shift+del",
-            ESCAPE: "esc",
-            PRINT_MODE: "shift+p"
-        };
-
-        const handlers = {
-            COPY_SELECTED: (event) => {
-                this.copyClipboard();
-            },
-
-            PASTE_SELECTED: (event) => {
-                this.pasteClipboard();
-            },
-
-            ESCAPE: (event) => {
-                // Return everything back to default settings
-                this.unselect();
-                this.setState({ mode: 'normal' });
-            },
-
-            DELETE_SELECTED: (event) => {
-                if (this.state.selectedNode) {
-                    this.state.selectedNode.deleteChild();
-                }
-            },
-
-            PRINT_MODE: (event) => {
-                if (!this.isPrinting) {
-                    this.setState({ mode: 'printing' });
-                    return;
-                }
-
-                this.setState({ mode: 'normal' });
-            }
-        };
-
-        return <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
-    }
-
-    childMapper(elem: object, idx: number, arr: object[]) {
-        const uniqueId = elem['uuid'];
-
-        return <React.Fragment key={uniqueId}>
-            {loadComponent(elem, idx, arr.length, {
-                uuid: uniqueId,
-                mode: this.state.mode,
-                addChild: this.addNestedChild.bind(this, idx),
-                hoverInsert: this.hoverInsert.bind(this),
-                hoverOut: this.hoverOut.bind(this),
-                isSelectBlocked: this.isSelectBlocked.bind(this),
-                moveUp: this.moveUp.bind(this, idx),
-                moveDown: this.moveDown.bind(this, idx),
-                deleteChild: this.deleteChild.bind(this, idx),
-                toggleEdit: this.toggleEdit.bind(this, idx),
-                updateData: this.updateData.bind(this, idx),
-                unselect: this.unselect,
-                updateSelected: this.updateSelected.bind(this)
-            }
-            )}
-        </React.Fragment>
-    }
-
-    renderChildren() {
-        return this.state.children.map(this.childMapper);
+    /**
+     * Switch into mode if not already. Otherwise, return to normal.
+     * @param mode Mode to check
+     */
+    toggleMode(mode: EditorMode) {
+        const newMode = (this.state.mode == mode) ? 'normal' : mode;
+        this.setState({ mode: newMode });
     }
 
     renderStyleEditor() {
-        if (this.isEditingStyle) {
-            return <>
-                <AceEditor
-                    mode="css"
-                    theme="github"
-                    onChange={this.onStyleChange}
-                    value={this.state.customCss}
-                    name="style-editor"
-                    editorProps={{ $blockScrolling: true }}
-                />
-
-                <ButtonToolbar className="mt-2">
-                    <Button onClick={this.renderStyle}>Apply</Button>
-                    <Button onClick={(event) => this.setState({ mode: 'normal' })}>Done</Button>
-                </ButtonToolbar>
-            </>
+        const onStyleChange = (css: string) => {
+            this.setState({ customCss: css });
         }
 
-        return <></>
+        return <>
+            <AceEditor
+                mode="css"
+                theme="github"
+                onChange={onStyleChange}
+                value={this.state.customCss}
+                name="style-editor"
+                editorProps={{ $blockScrolling: true }}
+            />
+
+            <ButtonToolbar className="mt-2">
+                <Button onClick={this.renderStyle}>Apply</Button>
+                <Button onClick={(event) => this.setState({ mode: 'normal' })}>Done</Button>
+            </ButtonToolbar>
+        </>
     }
 
     renderTemplateChanger() {
@@ -438,6 +364,18 @@ class Resume extends React.Component<{}, PageState> {
         return classNames.join(' ');
     }
 
+    get resumeHotKeysProps() {
+        const togglePrintMode = () => this.toggleMode('printing');
+
+        return {
+            mode: this.state.mode,
+            copyClipboard: this.copyClipboard,
+            pasteClipboard: this.pasteClipboard,
+            togglePrintMode: togglePrintMode,
+            reset: this.reset
+        }
+    }
+
     render() {
         const resumeToolbar = !this.isPrinting ? <ButtonToolbar>
             <Button className="mr-2" onClick={this.addSection}>Add Section</Button>
@@ -445,24 +383,24 @@ class Resume extends React.Component<{}, PageState> {
         </ButtonToolbar> : <></>
 
         const resume = <div id="resume" className={this.resumeClassName}>
-            {this.renderHotkeys()}
-            {this.renderChildren()}
+            <ResumeHotKeys {...this.resumeHotKeysProps} {...this.state} />
+            {this.state.children.map(this.childMapper)}
 
             {resumeToolbar}
         </div>
 
-        const haveNode = this.state.selectedNode != undefined;
-        const pasteEnabled = haveNode && this.state.clipboard != undefined;
+        const toggleStyleEditor = () => this.toggleMode('editingStyle');
+        const pasteEnabled = this.isNodeSelected && this.state.clipboard != undefined;
 
         const toolbar = <TopNavBar
             mode={this.state.mode}
-            copyClipboard={haveNode ? this.copyClipboard : undefined}
+            copyClipboard={this.isNodeSelected ? this.copyClipboard : undefined}
             pasteClipboard={pasteEnabled ? this.pasteClipboard : undefined}
-            unselect={haveNode ? this.unselect : undefined}
+            unselect={this.isNodeSelected ? this.unselect : undefined}
             loadData={this.loadData}
             saveFile={this.saveFile}
             changeTemplate={this.changeTemplate}
-            toggleStyleEditor={this.toggleStyleEditor}
+            toggleStyleEditor={toggleStyleEditor}
         />
 
         let main = resume;
@@ -487,6 +425,12 @@ class Resume extends React.Component<{}, PageState> {
                     topNav={toolbar}
                     main={main} />
         }
+    }
+
+    /** Return everything back to default settings */
+    reset() {
+        this.unselect();
+        this.setState({ mode: 'normal' });
     }
 }
 

@@ -38,7 +38,7 @@ export interface ResumeComponentProps {
     updateData?: ((idx: number, key: string, data: any) => void) | ((key: string, data: any) => void);
 }
 
-export interface ResumeState {
+export interface ResumeComponentState {
     isHovering?: boolean;
     isSelected?: boolean;
 }
@@ -49,7 +49,7 @@ export type UpdateChild = ((key: string, data: any) => void);
 
 // Represents a component that is part of the user's resume
 export default class ResumeComponent<
-    P extends ResumeComponentProps=ResumeComponentProps, S extends ResumeState=ResumeState>
+    P extends ResumeComponentProps=ResumeComponentProps, S extends ResumeComponentState=ResumeComponentState>
     extends React.Component<P, S> {
     constructor(props: P) {
         super(props);

@@ -15,7 +15,7 @@ import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './co
 import Landing from './components/help/Landing';
 import TopNavBar from './components/controls/TopNavBar';
 import ResumeHotKeys from './components/controls/ResumeHotkeys';
-import ResumeState from './components/controls/ResumeState';
+import ResumeState, { ResumeSaveData } from './components/controls/ResumeState';
 import StyleEditor from './components/controls/StyleEditor';
 
 class Resume extends React.Component<{}, ResumeState> {
@@ -32,7 +32,7 @@ class Resume extends React.Component<{}, ResumeState> {
         
         this.state = {
             children: [],
-            customCss: "",
+            css: "",
             hovering: new Set<string>(),
             mode: "landing",
             sectionTitlePosition: "top"
@@ -91,7 +91,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
     // Push style changes to browser
     renderStyle() {
-        this.style.innerHTML = this.state.customCss;
+        this.style.innerHTML = this.state.css;
     }
 
     /**
@@ -152,7 +152,7 @@ class Resume extends React.Component<{}, ResumeState> {
             ...template
         });
 
-        this.style.innerHTML = template.customCss;
+        this.style.innerHTML = template.css;
     }
 
     renderTemplateChanger() {
@@ -328,9 +328,10 @@ class Resume extends React.Component<{}, ResumeState> {
 
     //#region Serialization
     loadData(data: object) {
+        let savedData = data as ResumeSaveData;
         this.setState({
-            children: assignIds(data['chaildren'] as Array<object>),
-            customCss: data['css'] as string,
+            children: assignIds(savedData.children),
+            css: savedData.css as string,
             mode: 'normal'
         });
 
@@ -340,9 +341,9 @@ class Resume extends React.Component<{}, ResumeState> {
 
     // Save data to an external file
     saveFile(filename: string) {
-        const data = {
+        const data: ResumeSaveData = {
             children: this.state.children,
-            css: this.state.customCss
+            css: this.state.css
         };
 
         var blob = new Blob([JSON.stringify(data)],
@@ -394,7 +395,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
     get styleEditorProps() {
         const onStyleChange = (css: string) => {
-            this.setState({ customCss: css });
+            this.setState({ css: css });
         }
         const toggleStyleEditor = () => this.toggleMode('editingStyle');
 

@@ -2,7 +2,7 @@
 import { Form, Nav } from "react-bootstrap";
 
 interface FileLoaderProps {
-    loadData: (data: Array<object>) => void;
+    loadData: (data: object) => void;
 }
 
 interface FileLoaderState {
@@ -39,6 +39,7 @@ export default class FileLoader extends React.Component<FileLoaderProps, FileLoa
         reader.onload =(fileLoadedEvent: Event) => {
             var text = reader.result;
             if (text as string) {
+                console.log(JSON.parse((text as string).toString()));
                 this.props.loadData(JSON.parse((text as string).toString()));
             }
         };

@@ -233,7 +233,7 @@ export default class ResumeTemplateProvider {
         "Traditional 1": () => {
             let data = {
                 children: assignIds(ResumeTemplateProvider.resumeChildren),
-                customCss: ResumeTemplateProvider.defaultCss,
+                css: ResumeTemplateProvider.defaultCss,
                 sectionTitlePosition: "top" as SectionHeaderPosition
             };
 
@@ -250,7 +250,7 @@ export default class ResumeTemplateProvider {
         "Traditional 2": () => {
             let data = {
                 children: assignIds(ResumeTemplateProvider.resumeChildren),
-                customCss: ResumeTemplateProvider.defaultCss,
+                css: ResumeTemplateProvider.defaultCss,
                 sectionTitlePosition: "left" as SectionHeaderPosition
             };
 
@@ -288,7 +288,7 @@ export default class ResumeTemplateProvider {
                         ]
                     }
                 ]),
-                customCss: ResumeTemplateProvider.defaultCss,
+                css: ResumeTemplateProvider.defaultCss,
             };
 
             return data;

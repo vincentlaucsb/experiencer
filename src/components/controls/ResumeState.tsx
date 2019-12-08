@@ -2,10 +2,12 @@
 import { SectionHeaderPosition } from "../Section";
 import { SelectedNodeProps } from "../ResumeComponent";
 
-export default interface ResumeState {
+export interface ResumeSaveData {
     children: Array<object>;
-    customCss: string;
+    css: string;
+}
 
+export default interface ResumeState extends ResumeSaveData {
     /** Set of nodes we are currently hovering over */
     hovering: Set<string>;
 

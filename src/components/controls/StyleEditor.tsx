@@ -19,7 +19,7 @@ export default function StyleEditor(props: StyleEditorProps) {
             mode="css"
             theme="github"
             onChange={props.onStyleChange}
-            value={props.customCss}
+            value={props.css}
             name="style-editor"
             editorProps={{ $blockScrolling: true }}
         />

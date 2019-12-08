@@ -80,8 +80,13 @@ export default class ResumeComponent<
     get className(): string {
         let classes = new Array<string>();
 
-        if (!this.isPrinting && (this.state.isHovering || this.state.isSelected)) {
-            classes.push('resume-selected');
+        if (!this.isPrinting) {
+            if (this.state.isHovering) {
+                classes.push('resume-hovering');
+            }
+            if (this.state.isSelected) {
+                classes.push('resume-selected');
+            }
         }
 
         if (this.props.isHidden) {

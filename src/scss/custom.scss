@@ -57,13 +57,16 @@ input {
     width: 100%;
 }
 
-.resume-selected {
-    border: 1px dashed $blue;
+.resume-hovering, .resume-selected {
     background: $gray-100;
+}
 
-    .resume-selected {
-        border: 1px solid $blue;
-    }
+.resume-hovering {
+    border: 1px dashed $blue;
+}
+
+.resume-selected, .resume-hovering.resume-selected {
+    border: 2px solid $blue;
 }
 
 .resume-hidden {
@@ -89,6 +92,11 @@ input {
 }
 
 #resume {
+    a.dropdown-item, button {
+        /** Use Bootstrap style for editing controls */
+        font-family: $font-family-base;
+    }
+
     li.list-options {
         list-style-type: none;
     }

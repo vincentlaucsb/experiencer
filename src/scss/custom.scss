@@ -80,17 +80,38 @@ input {
     font-style: italic;
 }
 
-.row-grab-handle-container {
-    position: relative;
-    $grab-handle-width: 35px;
+$grab-handle-size: 35px;
 
+.row-grab-handle-container, .column-grab-handle-container {
+    position: relative;
+}
+
+.row-grab-handle, .column-grab-handle {
+    position: absolute;
+    font-family: $font-family-base;
+    color: $white;
+    cursor: pointer;
+}
+
+.row-grab-handle-container {
     .row-grab-handle {
-        position: absolute;
-        left: -$grab-handle-width;
-        width: $grab-handle-width;
+        left: -$grab-handle-size;
+        width: $grab-handle-size;
         height: 100%;
         background: $blue;
-        cursor: pointer;
+        writing-mode: vertical-rl;
+        transform: rotate(-180deg);
+        padding-top: 0.5rem;
+    }
+}
+
+.column-grab-handle-container {
+    .column-grab-handle {
+        top: -$grab-handle-size;
+        width: 100%;
+        height: $grab-handle-size;
+        background: $gray-600;
+        padding-left: 0.5rem;
     }
 }
 

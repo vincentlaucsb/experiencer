@@ -39,6 +39,19 @@ export class FlexibleColumn extends ResumeComponent {
         }
     }
 
+    /** Returns a "handle" which can be used to select the column itself and not the columns it contains */
+    renderGrabHandle() {
+        if (this.state.isHovering && !this.state.isSelected) {
+            return <div className="column-grab-handle-container">
+                <div className="d-flex align-items-center column-grab-handle">
+                    Click to select column
+                </div>
+            </div>
+        }
+
+        return <></>
+    }
+
     render() {
         let helperText = <></>;
         if (this.isEmpty && !this.props.isSelected) {
@@ -48,6 +61,7 @@ export class FlexibleColumn extends ResumeComponent {
         return <div {...this.getSelectTriggerProps()} className={this.className} style={{ minWidth: "100px", minHeight: "100px" }}>
             {this.renderEditingMenu()}
             <div>
+                {this.renderGrabHandle()}
                 {this.renderChildren()}
                 {helperText}
             </div>
@@ -90,9 +104,11 @@ export default class FlexibleRow extends ResumeComponent {
 
     /** Returns a "handle" which can be used to select the row itself and not the columns it contains */
     renderGrabHandle() {
-        if (this.state.isHovering) {
+        if (this.state.isHovering && !this.state.isSelected) {
             return <div className="row-grab-handle-container">
-                <div className="row-grab-handle" />
+                <div className="d-flex align-items-center row-grab-handle">
+                    Click to select row
+                </div>
             </div>
         }
 

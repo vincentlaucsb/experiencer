@@ -166,6 +166,8 @@ class Resume extends React.Component<{}, PageState> {
      * @param node Node to be added
      */
     addChild(node: object) {
+        // Generate UUID
+        node['uuid'] = uuid();
         this.state.children.push(node);
         this.setState({ children: this.state.children });
     }
@@ -176,14 +178,12 @@ class Resume extends React.Component<{}, PageState> {
      * @param node Grandchild to be added
      */
     addNestedChild(idx: number, node: object) {
-        let children = this.state.children[idx]['children'];
-        if (!children) {
-            children = new Array<object>();
+        if (!this.state.children[idx]['children']) {
+            this.state.children[idx]['children'] = new Array<object>();
         }
 
-        // Generate UUID
-        node['uuid'] = uuid();
-
+        let children = this.state.children[idx]['children'];
+        node['uuid'] = uuid(); // Generate UUID
         children.push(node);
         this.setState({ children: this.state.children });
     }
@@ -453,7 +453,7 @@ class Resume extends React.Component<{}, PageState> {
 
     renderTemplateChanger() {
         let templateNames = Object.keys(ResumeTemplateProvider.templates);
-        let navItems = templateNames.map((key: string) => <Nav.Item>
+        let navItems = templateNames.map((key: string) => <Nav.Item key={key}>
                 <Nav.Link eventKey={key} onClick={
                     (event) => {
                         this.setState(ResumeTemplateProvider.templates[key]);
@@ -490,8 +490,10 @@ class Resume extends React.Component<{}, PageState> {
                 {this.renderChildren()}
 
                 <Nonprintable isPrinting={this.isPrinting}>
-                    <Button onClick={this.addSection}>Add Section</Button>
-                    <Button onClick={this.addColumn}>Add Columns</Button>
+                    <ButtonToolbar>
+                        <Button className="mr-2" onClick={this.addSection}>Add Section</Button>
+                        <Button className="mr-2" onClick={this.addColumn}>Add Multi-Column Row</Button>
+                    </ButtonToolbar>
                 </Nonprintable>
             </div>
         </>

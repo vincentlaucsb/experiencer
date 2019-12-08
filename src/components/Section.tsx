@@ -27,6 +27,7 @@ export default class Section extends ResumeComponent<SectionProps> {
     }
 
     getEditingMenu() {
+        let editToolsClassName = this.props.headerPosition == 'left' ? 'btn-group-vertical' : '';
         let rotateButton = <Button onClick={this.rotateLeft}><img src={RotateLeft} alt="Place header on left" />Place Header on Left</Button>
         if (this.props.headerPosition == 'left') {
             rotateButton = <Button onClick={this.rotateRight}>
@@ -35,7 +36,7 @@ export default class Section extends ResumeComponent<SectionProps> {
         }
 
         if (this.state.isSelected) {
-            return <ButtonGroup size="sm">
+            return <ButtonGroup className={editToolsClassName} size="sm">
                 <DropdownButton as={ButtonGroup} title="Add" id="add-options" size="sm">
                     <Dropdown.Item onClick={this.addEntry}>Entry</Dropdown.Item>
                     <Dropdown.Item onClick={this.addList}>Bulleted List</Dropdown.Item>
@@ -71,9 +72,14 @@ export default class Section extends ResumeComponent<SectionProps> {
 
     render() {
         let title = <Placeholder text={this.props.title} alt="Add a title" />
+        let helperText = <></>
 
         if (this.props.isEditing) {
             title = <input onChange={this.updateDataEvent.bind(this, "title")} type="text" value={this.props.title || ""} />;
+        }
+
+        if (this.isEmpty && !this.props.isSelected) {
+            helperText = <p>This section is empty. Click here to select it and add content.</p>
         }
 
         return <>
@@ -84,6 +90,7 @@ export default class Section extends ResumeComponent<SectionProps> {
                 </h2>
                 <div className="entry-content">
                     {this.renderChildren()}
+                    {helperText}
                 </div>
             </section>
         </>

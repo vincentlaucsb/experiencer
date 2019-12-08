@@ -32,6 +32,15 @@ export default class Header extends ResumeComponent<HeaderProps> {
         return classNames.join(' ');
     }
 
+    get editToolsClassName(): string {
+        let classNames = ['flex-wrap'];
+        if (this.props.orientation == 'row') {
+            classNames.push('btn-group-vertical');
+        }
+
+        return classNames.join(' ');
+    }
+
     orientColumn() {
         this.updateData('orientation', 'column');
     }
@@ -42,7 +51,7 @@ export default class Header extends ResumeComponent<HeaderProps> {
 
     getEditingMenu() {
         if (this.state.isSelected) {
-            return <ButtonGroup className="flex-wrap" size="sm">
+            return <ButtonGroup className={this.editToolsClassName} size="sm">
                 <DropdownButton as={ButtonGroup} title="Distribute Items" id="distribute-options" size="sm">
                     <Dropdown.Item onClick={this.orientColumn}>Top-to-bottom (column)</Dropdown.Item>
                     <Dropdown.Item onClick={this.orientRow}>Left-to-right (row)</Dropdown.Item>

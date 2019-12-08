@@ -63,10 +63,12 @@ input {
 
 .resume-hovering {
     border: 1px dashed $blue;
+    cursor: pointer;
 }
 
 .resume-selected, .resume-hovering.resume-selected {
     border: 2px solid $blue;
+    cursor: auto;
 }
 
 .resume-hidden {
@@ -88,6 +90,7 @@ input {
         width: $grab-handle-width;
         height: 100%;
         background: $blue;
+        cursor: pointer;
     }
 }
 

@@ -129,9 +129,8 @@ class Resume extends React.Component<{}, PageState> {
         this.addChild({
             type: 'FlexibleRow',
             children: [
-                {
-                    type: 'FlexibleColumn'
-                }
+                { type: 'FlexibleColumn' },
+                { type: 'FlexibleColumn' }
             ]
         });
     }

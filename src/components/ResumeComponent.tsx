@@ -96,6 +96,16 @@ export default class ResumeComponent<
         return classes.join(' ');
     }
 
+    /** Returns true if this node has no children */
+    get isEmpty(): boolean {
+        const children = this.props.children as Array<object>;
+        if (children) {
+            return children.length == 0;
+        }
+
+        return true;
+    }
+
     get isPrinting() : boolean {
         return this.props.mode == 'printing';
     }

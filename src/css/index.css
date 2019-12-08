@@ -3,7 +3,7 @@ body {
 }
 
 div#resume:not(.resume-printing){
-    max-width: 8.5in;
+    width: 8.5in;
     padding: 0 0.5em 0 0.5em;
 }
 

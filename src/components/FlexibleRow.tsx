@@ -13,10 +13,13 @@ export class FlexibleColumn extends ResumeComponent {
         };
     }
 
-    get className(): string {
-        const position = ((this.props.id.split('-')).slice(-1))[0];
-        let positionClsName = 'column-' + position;
+    /** Get the index of this column */
+    get position(): string {
+        return ((this.props.id.split('-')).slice(-1))[0];
+    }
 
+    get className(): string {
+        let positionClsName = 'column-' + this.position;
         return [positionClsName, 'flex-col', super.className].join(' ');
     }
 
@@ -37,10 +40,16 @@ export class FlexibleColumn extends ResumeComponent {
     }
 
     render() {
+        let helperText = <></>;
+        if (this.isEmpty && !this.props.isSelected) {
+            helperText = <span>Column {this.position}: Click to select and add content</span>
+        }
+
         return <div {...this.getSelectTriggerProps()} className={this.className} style={{ minWidth: "100px", minHeight: "100px" }}>
             {this.renderEditingMenu()}
             <div>
                 {this.renderChildren()}
+                {helperText}
             </div>
         </div>
     }

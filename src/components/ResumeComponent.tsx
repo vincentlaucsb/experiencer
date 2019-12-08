@@ -72,7 +72,6 @@ export default class ResumeComponent<
         this.toggleHidden = this.toggleHidden.bind(this);
         this.updateNestedData = this.updateNestedData.bind(this);
         this.setSelected = this.setSelected.bind(this);
-        this.unselect = this.unselect.bind(this);
         this.getSelectTriggerProps = this.getSelectTriggerProps.bind(this);
     }
 
@@ -104,6 +103,11 @@ export default class ResumeComponent<
         }
 
         return true;
+    }
+
+    /** Prevent component from being edited from the template changing screen */
+    get isEditable(): boolean {
+        return !this.isPrinting && !(this.props.mode == 'changingTemplate');
     }
 
     get isPrinting() : boolean {
@@ -210,6 +214,7 @@ export default class ResumeComponent<
         }
     }
 
+    // TODO: Just copy it from this child's parent's data
     /** Return an object representation of this item's essential attributes */
     getData() {
         let data = {
@@ -320,16 +325,16 @@ export default class ResumeComponent<
                 addChild: this.addChild,
                 deleteChild: this.props.deleteChild as Action,
                 getData: this.getData,
-                unselect: this.unselect
+                unselect: () => this.setState({ isSelected: false })
             });
         }
     }
 
-    unselect() {
-        this.setState({ isSelected: false });
-    }
-
     getSelectTriggerProps() {
+        if (!this.isEditable) {
+            return {};
+        }
+
         return {
             onClick: this.setSelected,
 
@@ -359,7 +364,7 @@ export default class ResumeComponent<
     // Actually render the editing controls after checking that
     // they should be rendered
     renderEditingMenu() {
-        if (!this.isPrinting) {
+        if (this.isEditable) {
             const menu = this.getEditingMenu();
             if (menu) {
                 return this.getEditingMenu();

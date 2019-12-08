@@ -79,13 +79,12 @@ export default class List extends ResumeComponent<ListProps> {
         super(props);
 
         this.state = {
+            isHovering: false,
             isSelected: false
         };
 
         this.addChild = this.addChild.bind(this);
         this.moveBullets = this.moveBullets.bind(this);
-        this.setSelected = this.setSelected.bind(this);
-        this.unselect = this.unselect.bind(this);
     }
 
     get moveText(): string {

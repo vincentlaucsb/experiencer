@@ -67,6 +67,11 @@ class Resume extends React.Component<{}, ResumeState> {
         this.isSelectBlocked = this.isSelectBlocked.bind(this);
     }
 
+    /** Prevent component from being edited from the template changing screen */
+    get isEditable(): boolean {
+        return !this.isPrinting && !(this.state.mode == 'changingTemplate');
+    }
+
     get isNodeSelected() : boolean {
         return this.state.selectedNode != undefined;
     }
@@ -404,7 +409,7 @@ class Resume extends React.Component<{}, ResumeState> {
     //#endregion
 
     render() {
-        const resumeToolbar = !this.isPrinting ? <ButtonToolbar>
+        const resumeToolbar = this.isEditable ? <ButtonToolbar>
             <Button className="mr-2" onClick={this.addSection}>Add Section</Button>
             <Button className="mr-2" onClick={this.addColumn}>Add Multi-Column Row</Button>
         </ButtonToolbar> : <></>

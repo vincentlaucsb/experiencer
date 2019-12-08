@@ -25,18 +25,18 @@ export interface ResumeComponentProps {
     value?: string;
     children?: Array<object>;
 
+    deleteChild: ((idx: number) => void) | (() => void);
+    hoverInsert: (id: string) => void;
+    hoverOut: (id: string) => void;
+    isSelectBlocked: (id: string) => boolean;
+    moveUp: ((idx: number) => void) | (() => void);
+    moveDown: ((idx: number) => void) | (() => void);
     unselect: Action;
+    updateData: ((idx: number, key: string, data: any) => void) | ((key: string, data: any) => void);
     updateSelected: (data?: SelectedNodeProps) => void;
 
     addChild?: ((idx: number, node: object) => void) | ((node: object) => void);
-    isSelectBlocked?: (id: string) => boolean;
-    hoverInsert?: (id: string) => void;
-    hoverOut?: (id: string) => void;
-    moveUp?: ((idx: number) => void) | (() => void);
-    moveDown?: ((idx: number) => void) | (() => void);
-    deleteChild?: ((idx: number) => void) | (() => void);
     toggleEdit?: ((idx: number) => void) | (() => void);
-    updateData?: ((idx: number, key: string, data: any) => void) | ((key: string, data: any) => void);
 }
 
 export interface ResumeComponentState {
@@ -120,7 +120,7 @@ export default class ResumeComponent<
      * The purpose of this is to avoid selecting multiple nodes at once.
      */
     get isSelectBlocked(): boolean {
-        return (this.props.isSelectBlocked as (id: string) => boolean)(this.props.id);
+        return this.props.isSelectBlocked(this.props.id);
     }
 
     componentWillUnmount() {

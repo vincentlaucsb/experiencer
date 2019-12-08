@@ -56,7 +56,12 @@ export default class TopNavBar extends React.Component<TopNavBarProps> {
         return props;
     }
 
-    render() {
+    /** Return some controls for editing the resume */
+    renderEditorControls() {
+        if (this.props.mode == 'landing') {
+            return <></>
+        }
+
         const copyProps = this.getProps(this.props.copyClipboard);
         const pasteProps = this.getProps(this.props.pasteClipboard);
         const unselectProps = this.getProps(this.props.unselect);
@@ -67,6 +72,19 @@ export default class TopNavBar extends React.Component<TopNavBarProps> {
             variant: this.isEditingStyle ? "light" : "outline-light" as ButtonProps["variant"]
         };
 
+        return <>
+            <ButtonGroup className="mr-2">
+                <Button {...copyProps}>Copy</Button>
+                <Button {...pasteProps}>Paste</Button>
+                <Button {...unselectProps}>Unselect</Button>
+            </ButtonGroup>
+            <ButtonGroup className="mr-2">
+                <Button {...editStyleProps}>Edit Style</Button>
+            </ButtonGroup>
+        </>
+    }
+
+    render() {
         if (!this.isPrinting) {
             return <Navbar bg="dark" variant="dark" sticky="top">
                 <Navbar.Brand>
@@ -81,14 +99,7 @@ export default class TopNavBar extends React.Component<TopNavBarProps> {
                     <Nav.Link onClick={() => this.setState({ mode: 'landing' })}>Help</Nav.Link>
                 </Nav>
 
-                <ButtonGroup className="mr-2">
-                    <Button {...copyProps}>Copy</Button>
-                    <Button {...pasteProps}>Paste</Button>
-                    <Button {...unselectProps}>Unselect</Button>
-                </ButtonGroup>
-                <ButtonGroup className="mr-2">
-                    <Button {...editStyleProps}>Edit Style</Button>
-                </ButtonGroup>
+                {this.renderEditorControls()}
 
                 <Nav>
                     <Nav.Link href="https://github.com/vincentlaucsb/experiencer"><img src={GitHub} style={{ filter: "invert(1)", height: "30px" }} alt="GitHub" /></Nav.Link>

@@ -1,11 +1,12 @@
 ﻿import { Action } from "../ResumeComponent";
 import React from "react";
-import { ButtonProps, ButtonGroup, Button, Navbar, Nav } from "react-bootstrap";
+import { ButtonProps, ButtonGroup, Button, Navbar, Nav, OverlayTrigger, Tooltip } from "react-bootstrap";
 import FileLoader from "./FileLoader";
 import FileSaver from "./FileSaver";
 import GitHub from '../../icons/mark-github.svg';
 import { EditorMode } from "../LoadComponent";
 import { isUndefined } from "util";
+import { withTooltip } from "../Buttons";
 
 interface TopNavBarProps {
     mode: EditorMode;
@@ -59,7 +60,7 @@ export default class TopNavBar extends React.Component<TopNavBarProps> {
 
     /** Return some controls for editing the resume */
     renderEditorControls() {
-        if (this.props.mode == 'landing') {
+        if (['changingTemplate', 'landing'].indexOf(this.props.mode) >= 0) {
             return <></>
         }
 
@@ -73,11 +74,15 @@ export default class TopNavBar extends React.Component<TopNavBarProps> {
             variant: this.isEditingStyle ? "light" : "outline-light" as ButtonProps["variant"]
         };
 
+        const CopyButton = withTooltip(Button, 'Shift + C', 'copy-button');
+        const PasteButton = withTooltip(Button, 'Shift + V', 'paste-button');
+        const UnselectButton = withTooltip(Button, 'Esc', 'unselect-button');
+
         return <>
             <ButtonGroup className="mr-2">
-                <Button {...copyProps}>Copy</Button>
-                <Button {...pasteProps}>Paste</Button>
-                <Button {...unselectProps}>Unselect</Button>
+                <CopyButton {...copyProps}>Copy</CopyButton>
+                <PasteButton {...pasteProps}>Paste</PasteButton>
+                <UnselectButton {...unselectProps}>Unselect</UnselectButton>
             </ButtonGroup>
             <ButtonGroup className="mr-2">
                 <Button {...editStyleProps}>Edit Style</Button>

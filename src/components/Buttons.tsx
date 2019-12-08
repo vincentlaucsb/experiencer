@@ -7,7 +7,32 @@ import EditIcon from "../icons/edit-24px.svg";
 import DoneIcon from "../icons/done-24px.svg";
 import UpIcon from "../icons/keyboard_arrow_up-24px.svg";
 import DownIcon from "../icons/keyboard_arrow_down-24px.svg";
-import { Overlay, Button, Modal } from "react-bootstrap";
+import { Overlay, Button, Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
+
+/**
+ * HOC which returns a component wrapped with a tooltip
+ * @param WrappedComponent Component to wrap with a tooltip
+ * @param tooltip   Tooltip text
+ * @param tooltipId ID of the tooltip container
+ */
+export function withTooltip(WrappedComponent,
+    tooltip: string,
+    tooltipId: string) {
+    return class extends React.Component {
+        constructor(props) {
+            super(props);
+        }
+
+        render() {
+            return <OverlayTrigger trigger="hover"
+                delay={{ show: 500, hide: 0 }}
+                placement="bottom"
+                overlay={<Tooltip id={tooltipId}>{tooltip}</Tooltip>}>
+                <WrappedComponent {...this.props} />
+            </OverlayTrigger>
+        }
+    }
+}
 
 interface AddButtonProps {
     action: () => void;

@@ -44,7 +44,7 @@ export class FlexibleColumn extends ResumeComponent {
         if (this.state.isHovering && !this.state.isSelected) {
             return <div className="column-grab-handle-container">
                 <div className="d-flex align-items-center column-grab-handle">
-                    Click to select column
+                    Click here to select column
                 </div>
             </div>
         }
@@ -107,7 +107,7 @@ export default class FlexibleRow extends ResumeComponent {
         if (this.state.isHovering && !this.state.isSelected) {
             return <div className="row-grab-handle-container">
                 <div className="d-flex align-items-center row-grab-handle">
-                    Click to select row
+                    Click here to select row
                 </div>
             </div>
         }

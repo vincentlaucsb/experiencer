@@ -357,7 +357,6 @@ class Resume extends React.Component<{}, ResumeState> {
 
     //#region Helper Component Props
     get toolbarProps() {
-        const toggleStyleEditor = () => this.toggleMode('editingStyle');
         const pasteEnabled = this.isNodeSelected && this.state.clipboard != undefined;
 
         let props = {
@@ -365,7 +364,8 @@ class Resume extends React.Component<{}, ResumeState> {
             loadData: this.loadData,
             saveFile: this.saveFile,
             changeTemplate: this.changeTemplate,
-            toggleStyleEditor: toggleStyleEditor
+            toggleHelp: () => this.toggleMode('help'),
+            toggleStyleEditor: () => this.toggleMode('editingStyle')
         }
 
         if (this.isNodeSelected) {
@@ -429,7 +429,14 @@ class Resume extends React.Component<{}, ResumeState> {
         // Render the final layout based on editor mode
         switch (this.state.mode) {
             case 'editingStyle':
-                sidebar = <StyleEditor {...this.styleEditorProps} />
+            case 'help':
+                if (this.state.mode == 'editingStyle') {
+                    sidebar = <StyleEditor {...this.styleEditorProps} />
+                }
+                else {
+                    // TODO: Replac ethis
+                    sidebar = <Landing />
+                }
 
                 return <ResizableSidebarLayout
                     topNav={topNav}

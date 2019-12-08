@@ -21,6 +21,7 @@ interface TopNavBarProps {
 
     /** Sidebar Actions */
     changeTemplate: Action;
+    toggleHelp: Action;
     toggleStyleEditor: Action;
 }
 
@@ -85,18 +86,20 @@ export default class TopNavBar extends React.Component<TopNavBarProps> {
     }
 
     render() {
+        const helpOk = ['normal', 'help', 'editingStyle'].indexOf(this.props.mode) >= 0;        
+        const helpButton = helpOk ? <Nav.Link onClick={this.props.toggleHelp}>
+            Help</Nav.Link> : <></>
+
         if (!this.isPrinting) {
             return <Navbar bg="dark" variant="dark" sticky="top">
                 <Navbar.Brand>
                     Experiencer
                 </Navbar.Brand>
-                <Nav>
+                <Nav className="mr-auto">
                     <Nav.Link onClick={this.props.changeTemplate}>New</Nav.Link>
                     <FileLoader loadData={this.props.loadData} />
                     <FileSaver saveFile={this.props.saveFile} />
-                </Nav>
-                <Nav className="mr-auto">
-                    <Nav.Link onClick={() => this.setState({ mode: 'landing' })}>Help</Nav.Link>
+                    {helpButton}
                 </Nav>
 
                 {this.renderEditorControls()}

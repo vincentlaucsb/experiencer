@@ -6,9 +6,14 @@ import Entry, { EntryProps } from "./Entry";
 import List, { ListItem, DescriptionList, DescriptionListItem } from "./List";
 import Paragraph from "./Paragraph";
 import Header from "./Header";
-import { ResumeComponentProps, Action, SelectedNodeProps } from "./ResumeComponent";
+import { ResumeComponentProps, SelectedNodeProps } from "./ResumeComponent";
 
-export type EditorMode = 'normal' | 'landing' | 'editingStyle' | 'changingTemplate' | 'printing';
+export type EditorMode = 'normal'
+    | 'landing'
+    | 'help'
+    | 'editingStyle'
+    | 'changingTemplate'
+    | 'printing';
 
 interface ExtraProps {
     uuid: string;

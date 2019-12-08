@@ -3,51 +3,8 @@ body {
 }
 
 div#resume:not(.resume-printing){
-    width: 8.5in;
+    max-width: 8.5in;
     padding: 0 0.5em 0 0.5em;
-}
-
-/* App Stuff */
-.button-disabled {
-    filter: opacity(0.3);
-}
-
-button img {
-    /* Make black icons white-ish */
-    filter: invert(0.95);
-    margin-right: 2px;
-}
-
-div.button-tooltip {
-    border-radius: 3px;
-    background: rgba(15, 15, 15, 1);
-    color: rgba(240, 240, 240, 1);
-    padding: 5px;
-}
-
-li.list-options {
-    list-style-type: none;
-}
-
-input {
-    width: 100%;
-}
-
-.resume-selected {
-    border: 1px dotted blue;
-}
-
-.resume-selected.entry, ul.resume-selected {
-    border: 1px solid blue;
-}
-
-.resume-hidden {
-    font-style: italic;
-    color: #aaaaaa;
-}
-
-.resume-default {
-    font-style: italic;
 }
 
 /* Resizer */

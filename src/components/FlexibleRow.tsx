@@ -82,8 +82,8 @@ export default class FlexibleRow extends ResumeComponent {
     /** Returns a "handle" which can be used to select the row itself and not the columns it contains */
     renderGrabHandle() {
         if (this.state.isHovering) {
-            return <div style={{ position: "relative" }}>
-                <div style={{ position: "absolute", left: "-20px", width: "20px", height: "100%", background: "#cccccc" }} />
+            return <div className="row-grab-handle-container">
+                <div className="row-grab-handle" />
             </div>
         }
 

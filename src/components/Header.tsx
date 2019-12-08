@@ -42,7 +42,7 @@ export default class Header extends ResumeComponent<HeaderProps> {
 
     getEditingMenu() {
         if (this.state.isSelected) {
-            return <ButtonGroup size="sm">
+            return <ButtonGroup className="flex-wrap" size="sm">
                 <DropdownButton as={ButtonGroup} title="Distribute Items" id="distribute-options" size="sm">
                     <Dropdown.Item onClick={this.orientColumn}>Top-to-bottom (column)</Dropdown.Item>
                     <Dropdown.Item onClick={this.orientRow}>Left-to-right (row)</Dropdown.Item>

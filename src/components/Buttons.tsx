@@ -18,7 +18,6 @@ interface ButtonProps extends ResumeComponentProps {
     extended?: boolean;
 }
 
-
 interface ButtonWithTooltipProps {
     onClick: () => void;
     tooltip: string;

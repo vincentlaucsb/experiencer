@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { saveAs } from 'file-saver';
-import SplitPane from 'react-split-pane';
 import { GlobalHotKeys } from 'react-hotkeys';
 import uuid from 'uuid/v4';
 
@@ -12,19 +11,16 @@ import './css/index.css';
 import './scss/custom.scss';
 import 'react-quill/dist/quill.snow.css';
 
-import GitHub from './icons/mark-github.svg';
-
 import loadComponent, { EditorMode } from './components/LoadComponent';
 import { Button, ButtonToolbar, ButtonGroup, Nav, Navbar, ButtonProps } from 'react-bootstrap';
-import FileLoader from './components/controls/FileLoader';
 import { deleteAt, moveUp, moveDown, assignIds, deepCopy } from './components/Helpers';
 import { Nonprintable } from './components/Nonprintable';
 import { SelectedNodeProps, AddChild } from './components/ResumeComponent';
 import { SectionHeaderPosition } from './components/Section';
 import ResumeTemplateProvider from './components/ResumeTemplateProvider';
-import FileSaver from './components/controls/FileSaver';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
 import Landing from './components/help/Landing';
+import { TopNavBar } from './components/controls/TopNavBar';
 
 interface PageState {
     children: Array<object>;
@@ -227,7 +223,7 @@ class Resume extends React.Component<{}, PageState> {
 
     loadData(data: object) {
         this.setState({
-            children: assignIds(data['children'] as Array<object>),
+            children: assignIds(data['chaildren'] as Array<object>),
             customCss: data['css'] as string,
             mode: 'normal'
         });
@@ -387,69 +383,6 @@ class Resume extends React.Component<{}, PageState> {
         return this.state.children.map(this.childMapper);
     }
 
-    renderToolbar() {
-        const haveNode = this.state.selectedNode != undefined;
-
-        /**
-         * Conditionally render buttons
-         * @param enabled Whether or not button should be enabled
-         * @param onClick Click action if button is enabled
-         */
-        const baseProps = (enabled: boolean, onClick: any) => {
-            let props = {
-                disabled: !enabled,
-                variant: "outline-light" as ButtonProps["variant"]
-            };
-
-            if (enabled) {
-                props['onClick'] = onClick;
-            }
-
-            return props;
-        };
-
-        const copyProps = baseProps(haveNode, this.copyClipboard);
-        const pasteProps = baseProps(haveNode && this.state.clipboard != undefined, this.pasteClipboard);
-        const unselectProps = baseProps(haveNode, this.unselect);
-
-        // Highlight "Edit Style" button conditionally
-        const editStyleProps = {
-            onClick: this.toggleStyleEditor,
-            variant: this.isEditingStyle ? "light" : "outline-light" as ButtonProps["variant"]
-        };
-
-        if (!this.isPrinting) {
-            return <Navbar bg="dark" variant="dark" sticky="top">
-                <Navbar.Brand>
-                    Experiencer
-                </Navbar.Brand>
-                <Nav>
-                    <Nav.Link onClick={this.changeTemplate}>New</Nav.Link>
-                    <FileLoader loadData={this.loadData} />
-                    <FileSaver saveFile={this.saveFile} />
-                </Nav>
-                <Nav className="mr-auto">
-                    <Nav.Link onClick={() => this.setState({ mode: 'landing' })}>Help</Nav.Link>
-                </Nav>
-
-                <ButtonGroup className="mr-2">
-                    <Button {...copyProps}>Copy</Button>
-                    <Button {...pasteProps}>Paste</Button>
-                    <Button {...unselectProps}>Unselect</Button>
-                </ButtonGroup>
-                <ButtonGroup className="mr-2">
-                    <Button {...editStyleProps}>Edit Style</Button>
-                </ButtonGroup>
-
-                <Nav>
-                    <Nav.Link href="https://github.com/vincentlaucsb/experiencer"><img src={GitHub} style={{ filter: "invert(1)", height: "30px" }} alt="GitHub" /></Nav.Link>
-                </Nav>
-            </Navbar>
-        }
-
-        return <></>
-    }
-    
     renderStyleEditor() {
         if (this.isEditingStyle) {
             return <>
@@ -518,6 +451,20 @@ class Resume extends React.Component<{}, PageState> {
             </Nonprintable>
         </div>
 
+        const haveNode = this.state.selectedNode != undefined;
+        const pasteEnabled = haveNode && this.state.clipboard != undefined;
+
+        const toolbar = <TopNavBar
+            mode={this.state.mode}
+            copyClipboard={haveNode ? this.copyClipboard : undefined}
+            pasteClipboard={pasteEnabled ? this.pasteClipboard : undefined}
+            unselect={haveNode ? this.unselect : undefined}
+            loadData={this.loadData}
+            saveFile={this.saveFile}
+            changeTemplate={this.changeTemplate}
+            toggleStyleEditor={this.toggleStyleEditor}
+        />
+
         switch (this.state.mode) {
             case 'normal':
             case 'landing':
@@ -527,17 +474,17 @@ class Resume extends React.Component<{}, PageState> {
                 }
                 
                 return <DefaultLayout
-                    topNav={this.renderToolbar()}
+                    topNav={toolbar}
                     main={main} />
             case 'editingStyle':
                 return <ResizableSidebarLayout
-                    topNav={this.renderToolbar()}
+                    topNav={toolbar}
                     main={resume}
                     sideBar={this.renderStyleEditor()}
                 />
             case 'changingTemplate':
                 return <StaticSidebarLayout
-                    topNav={this.renderToolbar()}
+                    topNav={toolbar}
                     main={resume}
                     sideBar={this.renderTemplateChanger()}
                 />

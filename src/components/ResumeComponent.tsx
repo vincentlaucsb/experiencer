@@ -1,7 +1,7 @@
 ﻿import * as React from "react";
 import uuid from 'uuid/v4';
 import loadComponent, { EditorMode } from "./LoadComponent";
-import { deleteAt, moveUp, moveDown, deepCopy } from "./Helpers";
+import { deleteAt, moveUp, moveDown, deepCopy, assignIds } from "./Helpers";
 
 export interface SelectedNodeProps {
     addChild?: AddChild;
@@ -133,9 +133,9 @@ export default class ResumeComponent<
         }
     }
 
-    addChild(data: object) {
+    addChild(node: object) {
         if (this.props.addChild as AddChild) {
-            (this.props.addChild as AddChild)(data);
+            (this.props.addChild as AddChild)(node);
         }
     }
 
@@ -187,8 +187,11 @@ export default class ResumeComponent<
             newChildren[idx]['children'] = new Array<object>();
         }
 
-        // Add unique ID
+        // Generate UUIDs
         node['uuid'] = uuid();
+        if (node['children']) {
+            node['children'] = assignIds(node['children']);
+        }
 
         newChildren[idx]['children'].push(node);
         this.updateData("children", newChildren);

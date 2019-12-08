@@ -166,8 +166,12 @@ class Resume extends React.Component<{}, PageState> {
      * @param node Node to be added
      */
     addChild(node: object) {
-        // Generate UUID
+        // Generate UUIDs
         node['uuid'] = uuid();
+        if (node['children']) {
+            node['children'] = assignIds(node['children']);
+        }
+
         this.state.children.push(node);
         this.setState({ children: this.state.children });
     }
@@ -183,7 +187,13 @@ class Resume extends React.Component<{}, PageState> {
         }
 
         let children = this.state.children[idx]['children'];
-        node['uuid'] = uuid(); // Generate UUID
+
+        // Generate UUIDs
+        node['uuid'] = uuid();
+        if (node['children']) {
+            node['children'] = assignIds(node['children']);
+        }
+
         children.push(node);
         this.setState({ children: this.state.children });
     }

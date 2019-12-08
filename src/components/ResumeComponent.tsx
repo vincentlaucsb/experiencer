@@ -7,6 +7,7 @@ export interface SelectedNodeProps {
     addChild?: AddChild;
     deleteChild: Action;
     getData: () => object;
+    toggleEdit?: Action;
     unselect: Action;
 }
 
@@ -325,6 +326,7 @@ export default class ResumeComponent<
                 addChild: this.addChild,
                 deleteChild: this.props.deleteChild as Action,
                 getData: this.getData,
+                toggleEdit: this.props.toggleEdit as Action,
                 unselect: () => this.setState({ isSelected: false })
             });
         }

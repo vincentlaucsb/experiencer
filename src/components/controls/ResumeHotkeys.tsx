@@ -20,6 +20,7 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
 
     public static readonly keyMap = {
         COPY_SELECTED: "shift+c",
+        EDIT_SELECTED: "enter",
         PASTE_SELECTED: "shift+v",
         DELETE_SELECTED: "shift+del",
         ESCAPE: "esc",
@@ -37,6 +38,12 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
         const handlers = {
             COPY_SELECTED: (event) => {
                 this.props.copyClipboard();
+            },
+
+            EDIT_SELECTED: (event) => {
+                if (this.props.selectedNode && this.props.selectedNode.toggleEdit) {
+                    this.props.selectedNode.toggleEdit();
+                }
             },
 
             PASTE_SELECTED: (event) => {

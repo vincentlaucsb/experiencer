@@ -17,6 +17,7 @@ import TopNavBar from './components/controls/TopNavBar';
 import ResumeHotKeys from './components/controls/ResumeHotkeys';
 import ResumeState, { ResumeSaveData } from './components/controls/ResumeState';
 import StyleEditor from './components/controls/StyleEditor';
+import Help from './components/help/Help';
 
 class Resume extends React.Component<{}, ResumeState> {
     style: HTMLStyleElement;
@@ -435,8 +436,7 @@ class Resume extends React.Component<{}, ResumeState> {
                     sidebar = <StyleEditor {...this.styleEditorProps} />
                 }
                 else {
-                    // TODO: Replac ethis
-                    sidebar = <Landing />
+                    sidebar = <Help />
                 }
 
                 return <ResizableSidebarLayout

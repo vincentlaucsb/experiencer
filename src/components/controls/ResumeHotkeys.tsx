@@ -1,5 +1,5 @@
 ﻿import React from "react";
-import { GlobalHotKeys } from "react-hotkeys";
+import { GlobalHotKeys, KeyMap, ExtendedKeyMapOptions } from "react-hotkeys";
 import { Action } from "../ResumeComponent";
 import ResumeState from "./ResumeState";
 
@@ -18,13 +18,42 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
         super(props);
     }
 
-    public static readonly keyMap = {
-        COPY_SELECTED: "shift+c",
-        EDIT_SELECTED: "enter",
-        PASTE_SELECTED: "shift+v",
-        DELETE_SELECTED: "shift+del",
-        ESCAPE: "esc",
-        PRINT_MODE: "shift+p"
+    public static readonly keyMap: KeyMap = {
+        COPY_SELECTED: {
+            name: 'Copy Node',
+            description: 'Copy the selected node',
+            sequence: "shift+c"
+        } as ExtendedKeyMapOptions,
+
+        EDIT_SELECTED: {
+            name: 'Edit Node',
+            description: 'Edit the selected node',
+            sequence: "enter"
+        } as ExtendedKeyMapOptions,
+
+        PASTE_SELECTED: {
+            name: 'Paste Node',
+            description: 'Paste the clipboard as a child of the currently selected node',
+            sequence: 'shift+v'
+        } as ExtendedKeyMapOptions,
+
+        DELETE_SELECTED: {
+            name: 'Deleted Node',
+            description: 'Delete the currently selected node',
+            sequence: 'shift+del'
+        } as ExtendedKeyMapOptions,
+
+        ESCAPE: {
+            name: 'Escape',
+            description: 'Unselect the selected node and return to normal editing mode',
+            sequence: "esc"
+        } as ExtendedKeyMapOptions,
+
+        PRINT_MODE: {
+            name: 'Print Mode',
+            description: 'Toggle between normal and print mode',
+            sequence: "shift+p"
+        } as ExtendedKeyMapOptions
     };
 
     /** Delete the currently selected node */

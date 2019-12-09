@@ -1,22 +1,40 @@
 ﻿import React from "react";
 import { Container, Table } from "react-bootstrap";
+import { getApplicationKeyMap, ApplicationKeyMap } from 'react-hotkeys';
+import HelpPage from "./HelpPage";
 
 export default function HotkeysHelp() {
-    return <Container>
-        <h2>Hotkeys</h2>
-        <p>
-            <h3>General Hotkeys</h3>
-            <Table striped bordered>
+    const keyMap: ApplicationKeyMap = getApplicationKeyMap();
+    let keyMapValues = new Array<object>();
+    for (let k in keyMap) {
+        keyMapValues.push(keyMap[k]);
+    }
+
+    let tableContent = keyMapValues.map((value) =>
+        <tr>
+            <td>{value['name']}</td>
+            <td>
+                {
+                    (value['sequences'] as Array<object>).map(
+                        (shortcut: object) => <span>{shortcut['sequence']}</span>
+                    )
+                }
+            </td>
+            <td>{value['description']}</td>
+        </tr>);
+
+    return <HelpPage title="Keyboard Shortcuts">
+        <Table striped bordered>
             <thead>
                 <tr>
                     <th>Command</th>
                     <th>Shortcut</th>
                     <th>Description</th>
                 </tr>
-                </thead>
-            </Table>
-
-            <h3>Editing Hotkeys</h3>
-        </p>
-    </Container>
+            </thead>
+            <tbody>
+                {tableContent}
+            </tbody>
+        </Table>
+    </HelpPage>
 }

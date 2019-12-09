@@ -436,7 +436,7 @@ class Resume extends React.Component<{}, ResumeState> {
                     sidebar = <StyleEditor {...this.styleEditorProps} />
                 }
                 else {
-                    sidebar = <Help />
+                    sidebar = <Help close={() => this.toggleMode()} />
                 }
 
                 return <ResizableSidebarLayout

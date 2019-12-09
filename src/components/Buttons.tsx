@@ -19,7 +19,7 @@ export function withTooltip(WrappedComponent,
     tooltip: string,
     tooltipId: string) {
     return class extends React.Component {
-        constructor(props) {
+        constructor(props: any) {
             super(props);
         }
 

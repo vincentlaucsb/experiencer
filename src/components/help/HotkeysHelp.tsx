@@ -1,9 +1,9 @@
 ﻿import React from "react";
 import { Container, Table } from "react-bootstrap";
 import { getApplicationKeyMap, ApplicationKeyMap } from 'react-hotkeys';
-import HelpPage from "./HelpPage";
+import HelpPage, { HelpPageActions } from "./HelpPage";
 
-export default function HotkeysHelp() {
+export default function HotkeysHelp(props: HelpPageActions) {
     const keyMap: ApplicationKeyMap = getApplicationKeyMap();
     let keyMapValues = new Array<object>();
     for (let k in keyMap) {
@@ -23,7 +23,7 @@ export default function HotkeysHelp() {
             <td>{value['description']}</td>
         </tr>);
 
-    return <HelpPage title="Keyboard Shortcuts">
+    return <HelpPage title="Keyboard Shortcuts" {...props}>
         <Table striped bordered>
             <thead>
                 <tr>

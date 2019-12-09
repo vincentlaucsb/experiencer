@@ -91,7 +91,7 @@ export default class TopNavBar extends React.Component<TopNavBarProps> {
     }
 
     render() {
-        const helpOk = ['normal', 'help', 'editingStyle'].indexOf(this.props.mode) >= 0;        
+        const helpOk = ['normal', 'help', 'editingStyle'].indexOf(this.props.mode) >= 0; 
         const helpButton = helpOk ? <Nav.Link onClick={this.props.toggleHelp}>
             Help</Nav.Link> : <></>
 

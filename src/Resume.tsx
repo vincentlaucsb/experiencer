@@ -18,6 +18,7 @@ import ResumeHotKeys from './components/controls/ResumeHotkeys';
 import ResumeState, { ResumeSaveData } from './components/controls/ResumeState';
 import StyleEditor from './components/controls/StyleEditor';
 import Help from './components/help/Help';
+import { isUndefined, isNullOrUndefined } from 'util';
 
 class Resume extends React.Component<{}, ResumeState> {
     style: HTMLStyleElement;

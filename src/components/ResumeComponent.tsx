@@ -4,6 +4,8 @@ import loadComponent, { EditorMode } from "./LoadComponent";
 import { deleteAt, moveUp, moveDown, deepCopy, assignIds } from "./Helpers";
 
 export interface SelectedNodeProps {
+    id: string;
+    uuid: string;
     addChild?: AddChild;
     deleteChild: Action;
     getData: () => object;
@@ -135,6 +137,9 @@ export default class ResumeComponent<
             // different structures in different scenarios or refactor the select/unselect
             // system to handle this by keeping unselect() bindings fresh
             this.props.updateSelected(undefined);
+
+            // Remove self from set of active hover IDs
+            this.props.hoverOut(this.props.id);
         }
     }
 
@@ -323,6 +328,8 @@ export default class ResumeComponent<
 
             // Pass this node's unselect back up to <Resume />
             this.props.updateSelected({
+                id: this.props.id,
+                uuid: this.props.uuid,
                 addChild: this.addChild,
                 deleteChild: this.props.deleteChild as Action,
                 getData: this.getData,

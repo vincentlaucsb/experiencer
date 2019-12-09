@@ -4,13 +4,14 @@ import HotkeysHelp from "./HotkeysHelp";
 import HelpPage from "./HelpPage";
 import { Action } from "../ResumeComponent";
 import SavingHelp from "./SavingHelp";
+import StartHelp from "./StartHelp";
 
 interface HelpProps {
     close: Action;
 }
 
 interface HelpState {
-    page: 'home' | 'hotkeys' | 'saving';
+    page: 'home' | 'hotkeys' | 'saving' | 'start';
 }
 
 export default class Help extends React.Component<HelpProps, HelpState> {
@@ -36,10 +37,12 @@ export default class Help extends React.Component<HelpProps, HelpState> {
                 return <HotkeysHelp {...this.pageProps} />
             case 'saving':
                 return <SavingHelp {...this.pageProps} />
+            case 'start':
+                return <StartHelp {...this.pageProps} />
             default:
                 return <HelpPage close={this.props.close} title="Help">
                     <Nav className="flex-column">
-                        <Nav.Link>Getting Started</Nav.Link>
+                        <Nav.Link onClick={() => this.setState({ page: 'start' })}>Getting Started</Nav.Link>
                         <Nav.Link onClick={() => this.setState({ page: 'saving' })}>Saving and Printing</Nav.Link>
                         <Nav.Link onClick={() => this.setState({ page: 'hotkeys' })}>Keyboard Shortcuts</Nav.Link>
                     </Nav>

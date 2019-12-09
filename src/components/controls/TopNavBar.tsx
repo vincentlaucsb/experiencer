@@ -22,6 +22,7 @@ interface TopNavBarProps {
 
     /** Sidebar Actions */
     changeTemplate: Action;
+    toggleLanding: Action;
     toggleHelp: Action;
     toggleStyleEditor: Action;
 }
@@ -97,9 +98,7 @@ export default class TopNavBar extends React.Component<TopNavBarProps> {
 
         if (!this.isPrinting) {
             return <Navbar bg="dark" variant="dark" sticky="top">
-                <Navbar.Brand>
-                    Experiencer
-                </Navbar.Brand>
+                <Navbar.Brand className="cursor-pointer" onClick={this.props.toggleLanding}>Experiencer</Navbar.Brand>
                 <Nav className="mr-auto">
                     <Nav.Link onClick={this.props.changeTemplate}>New</Nav.Link>
                     <FileLoader loadData={this.props.loadData} />

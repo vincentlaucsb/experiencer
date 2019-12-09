@@ -4,6 +4,14 @@ import { Button } from "react-bootstrap";
 
 export default function SavingHelp(props: HelpPageActions) {
     return <HelpPage title="Saving and Printing" {...props}>
+        <h3>Printing</h3>
+        <ul>
+            <li>At any time while editing your resume, you can toggle back and forth between editing and <strong>Print Mode</strong> by
+            using the shortcut <strong>Shift + P</strong>.</li>
+            <li><strong>Print Mode</strong> displays a print-friendly version of your resume without any margins (unless you add them
+            yourself).</li>
+        </ul>
+
         <h3>Saving an HTML or PDF Copy</h3>
         <ul>
             <li><strong>HTML:</strong> To save an HTML copy, switch into Print Mode and then use your browser's "Save As" or "Save Page As" functionality.</li>

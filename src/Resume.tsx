@@ -367,6 +367,7 @@ class Resume extends React.Component<{}, ResumeState> {
             saveFile: this.saveFile,
             changeTemplate: this.changeTemplate,
             toggleHelp: () => this.toggleMode('help'),
+            toggleLanding: () => this.setState({ mode: 'landing' }),
             toggleStyleEditor: () => this.toggleMode('editingStyle')
         }
 

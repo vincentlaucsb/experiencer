@@ -49,7 +49,7 @@ export class FlexibleColumn extends ResumeNodeBase {
             helperText = <span>Column {this.position}: Click to select and add content</span>
         }
 
-        return <div {...this.getSelectTriggerProps()} className={this.className} style={{ minWidth: "100px", minHeight: "100px" }}>
+        return <div {...this.selectTriggerProps} className={this.className} style={{ minWidth: "100px", minHeight: "100px" }}>
             {this.renderEditingMenu()}
             <div>
                 {this.renderGrabHandle()}
@@ -102,7 +102,7 @@ export default class FlexibleRow extends ResumeNodeBase {
     }
     
     render() {
-        return <div {...this.getSelectTriggerProps()}>
+        return <div {...this.selectTriggerProps}>
             {this.renderEditingMenu()}
             <div className={this.className} style={{ width: "100%", minWidth: "100px", minHeight: "100px" }}>
                 {this.renderGrabHandle()}

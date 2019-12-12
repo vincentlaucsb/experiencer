@@ -129,7 +129,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
             subtitle = <input onChange={this.updateDataEvent.bind(this, "subtitle")} value={this.props.subtitle || ""} />
         }
 
-        return <div className={this.className} {...this.getSelectTriggerProps()}>
+        return <div className={this.className} {...this.selectTriggerProps}>
             {this.renderEditingMenu()}
             <div className="entry-title">
                 <h3 className="flex-row flex-spread">{title} {this.getTitleExtras()}</h3>

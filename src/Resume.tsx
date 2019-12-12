@@ -5,7 +5,7 @@ import './css/index.css';
 import './scss/custom.scss';
 import 'react-quill/dist/quill.snow.css';
 
-import loadComponent, { EditorMode } from './components/LoadComponent';
+import { EditorMode } from './components/LoadComponent';
 import { Button, ButtonToolbar, Nav } from 'react-bootstrap';
 import { deleteAt, moveUp, moveDown, assignIds, deepCopy, arraysEqual } from './components/Helpers';
 import { SelectedNodeProps, AddChild, Action } from './components/ResumeComponent';
@@ -36,7 +36,6 @@ class Resume extends React.Component<{}, ResumeState> {
         head.appendChild(this.style);
 
         this.hovering = new HoverTracker();
-        
         this.state = {
             children: [],
             css: "",
@@ -98,7 +97,7 @@ class Resume extends React.Component<{}, ResumeState> {
     get hoverProps() {
         return {
             // Add an ID to the set of nodes we are hovering over
-            hoverInsert: (id: IdType) => {
+            hoverOver: (id: IdType) => {
                 this.hovering.hoverOver(id);
                 this.setState({
                     hoverNode: this.hovering.currentId

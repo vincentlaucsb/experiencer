@@ -78,7 +78,7 @@ export default class Section extends ResumeNodeBase<SectionProps> {
         }
 
         return <>
-            <section className={this.sectionClassName} {...this.getSelectTriggerProps()}>
+            <section className={this.sectionClassName} {...this.selectTriggerProps}>
                 {this.renderEditingMenu()}
                 <h2 className={this.h2ClassName}>
                     {title}

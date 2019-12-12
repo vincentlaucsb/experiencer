@@ -57,7 +57,7 @@ export default class Paragraph extends ResumeNodeBase {
             onChange={((this.props.updateData as (key: string, data: any) => void).bind(this, "value") as (data: any) => void)}
         /> : <span className="resume-paragraph" dangerouslySetInnerHTML={{ __html: Paragraph.process(this.props.value) as string }} />;
 
-        return <div className={this.className} {...this.getSelectTriggerProps()}>
+        return <div className={this.className} {...this.selectTriggerProps}>
             {this.renderEditingMenu()}
             {value}
         </div>;

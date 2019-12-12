@@ -32,7 +32,7 @@ export class FlexibleColumn extends ResumeComponent {
 
     /** Returns a "handle" which can be used to select the column itself and not the columns it contains */
     renderGrabHandle() {
-        if (this.displayBorder) {
+        if (this.displayBorder && !this.isSelected) {
             return <div className="column-grab-handle-container">
                 <div className="d-flex align-items-center column-grab-handle">
                     Click here to select column
@@ -90,7 +90,7 @@ export default class FlexibleRow extends ResumeComponent {
 
     /** Returns a "handle" which can be used to select the row itself and not the columns it contains */
     renderGrabHandle() {
-        if (this.displayBorder) {
+        if (this.displayBorder && !this.isSelected) {
             return <div className="row-grab-handle-container">
                 <div className="d-flex align-items-center row-grab-handle">
                     Click here to select row

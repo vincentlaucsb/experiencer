@@ -10,7 +10,6 @@
     "babel-preset-react-app": "^9.0.2",
     "bootstrap": "^4.4.0",
     "file-saver": "^2.0.2",
-    "immutability-helper": "^3.0.1",
     "react": "^16.11.0",
     "react-ace": "^8.0.0",
     "react-bootstrap": "^1.0.0-beta.15",

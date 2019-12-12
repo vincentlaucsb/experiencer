@@ -1,4 +1,5 @@
 ﻿import uuid from 'uuid/v4';
+import { isNullOrUndefined, isUndefined } from 'util';
 
 /**
  * Return a copy of an array with the i-th element removed
@@ -47,6 +48,23 @@ export function moveDown<T>(arr: Array<T>, i: number) {
         let willSwap = arr[i + 1];
         arr[i + 1] = arr[i];
         arr[i] = willSwap;
+    }
+
+    return arr;
+}
+
+/**
+ * Push data to arr, creating an array if necessary
+ * @param arr
+ * @param data
+ */
+export function pushArray(arr: object, data: any) {
+    if (isUndefined(arr)) {
+        arr = new Array<object>();
+    }
+
+    if (Array.isArray(arr)) {
+        arr.push(data);
     }
 
     return arr;

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import update from 'immutability-helper';
 import { saveAs } from 'file-saver';
 
 import './css/index.css';
@@ -8,7 +7,7 @@ import 'react-quill/dist/quill.snow.css';
 
 import loadComponent, { EditorMode } from './components/LoadComponent';
 import { Button, ButtonToolbar, Nav } from 'react-bootstrap';
-import { deleteAt, moveUp, moveDown, assignIds, deepCopy } from './components/Helpers';
+import { deleteAt, moveUp, moveDown, assignIds, deepCopy, pushArray } from './components/Helpers';
 import { SelectedNodeProps, AddChild } from './components/ResumeComponent';
 import ResumeTemplateProvider from './components/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
@@ -238,14 +237,10 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param node Grandchild to be added
      */
     addNestedChild(idx: number, node: object) {
-        this.setState({
-            children: update(this.state.children, {
-                [idx]: {
-                    children: children =>
-                        update(children || new Array<object>(),
-                            { $push: [ assignIds(node) ] })
-            }})
-        });
+        const newChildren = [...this.state.children];
+        pushArray(newChildren[idx]['children'], node);
+
+        this.setState({ children: newChildren });
     }
 
     deleteChild(idx: number) {
@@ -255,25 +250,18 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     updateData(idx: number, key: string, data: any) {
-        this.setState({
-            children: update(this.state.children, {
-                [idx]: {
-                    [key]: { $set: data }
-                }
-            })
-        });
+        const newChildren = [...this.state.children];
+        newChildren[idx][key] = data;
+
+        this.setState({ children: newChildren });
     }
 
     toggleEdit(idx: number) {
         const currentValue = this.state.children[idx]['isEditing'];
-        this.setState({
-            children: update(this.state.children, {
-                [idx]: {
-                    isEditing: isEditing =>
-                        update(isEditing || false, { $set: !currentValue })
-                }
-            })
-        });
+        const newChildren = [...this.state.children];
+        newChildren[idx]['isEditing'] = !currentValue;
+
+        this.setState({ children: newChildren });
     }
 
     // Move the child at idx up one position

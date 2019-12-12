@@ -9,7 +9,6 @@ export interface SelectedNodeProps {
     deleteChild: Action;
     getData: () => object;
     toggleEdit?: Action;
-    unselect: Action;
 }
 
 export interface ResumeComponentProps {
@@ -23,7 +22,7 @@ export interface ResumeComponentProps {
     isHidden?: boolean;
     isEditing?: boolean
     isHovering: (id: string) => boolean;
-    isSelected?: boolean;
+    isSelected: (id: string) => boolean;
     value?: string;
     children?: Array<object>;
 
@@ -42,17 +41,13 @@ export interface ResumeComponentProps {
     toggleEdit?: ((idx: number) => void) | (() => void);
 }
 
-export interface ResumeComponentState {
-    isSelected?: boolean;
-}
-
 export type Action = (() => void);
 export type AddChild = ((node: object) => void);
 export type UpdateChild = ((key: string, data: any) => void);
 
 // Represents a component that is part of the user's resume
 export default class ResumeComponent<
-    P extends ResumeComponentProps=ResumeComponentProps, S extends ResumeComponentState=ResumeComponentState>
+    P extends ResumeComponentProps=ResumeComponentProps, S = {}>
     extends React.Component<P, S> {
     constructor(props: P) {
         super(props);
@@ -86,7 +81,7 @@ export default class ResumeComponent<
             if (this.displayBorder) {
                 classes.push('resume-hovering');
             }
-            if (this.state.isSelected) {
+            if (this.isSelected) {
                 classes.push('resume-selected');
             }
         }
@@ -126,6 +121,10 @@ export default class ResumeComponent<
         return this.props.mode === 'printing';
     }
 
+    get isSelected(): boolean {
+        return this.props.isSelected(this.props.uuid);
+    }
+
     /**
      * Returns true if we are directly hovering over one of this node's children.
      * The purpose of this is to avoid selecting multiple nodes at once.
@@ -137,7 +136,7 @@ export default class ResumeComponent<
     componentWillUnmount() {
         // Since the node is being deleted, remove callback to this node's unselect
         // method from <Resume /> to prevent memory leaks
-        if (this.state && this.state.isSelected) {
+        if (this.isSelected) {
             // NOTE: This can cause issues if an item is unmounted because it has 
             // been vastly modified via render() but not deleted from the resume,
             // i.e. unselect functionality will not work correctly.
@@ -294,6 +293,7 @@ export default class ResumeComponent<
                     mode: this.props.mode,
                     addChild: (this.addNestedChild.bind(this, idx) as (node: object) => void),
                     isHovering: this.props.isHovering,
+                    isSelected: this.props.isSelected,
                     isSelectBlocked: this.props.isSelectBlocked,
                     hoverInsert: this.props.hoverInsert,
                     hoverOut: this.props.hoverOut,
@@ -325,13 +325,10 @@ export default class ResumeComponent<
         // this.props.isSelectBlocked prevents a node from being selected if we are directly hovering
         // over one of its child nodes
 
-        if (!this.state.isSelected && !this.isSelectBlocked) {
+        if (!this.isSelected && !this.isSelectBlocked) {
             // Unselect the previous component
             this.props.unselect();
-
-            // Set this as selected
-            this.setState({ isSelected: true });
-
+            
             // Pass this node's unselect back up to <Resume />
             this.props.updateSelected({
                 id: this.props.id,
@@ -339,8 +336,7 @@ export default class ResumeComponent<
                 addChild: this.addChild,
                 deleteChild: this.props.deleteChild as Action,
                 getData: this.getData,
-                toggleEdit: this.props.toggleEdit as Action,
-                unselect: () => this.setState({ isSelected: false })
+                toggleEdit: this.props.toggleEdit as Action
             });
         }
     }

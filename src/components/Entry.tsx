@@ -57,7 +57,7 @@ export default class Entry extends ResumeComponent<EntryProps> {
    }
 
     getEditingMenu() {
-        if (this.state.isSelected) {
+        if (this.isSelected) {
             return <ButtonGroup size="sm">
                 <DropdownButton as={ButtonGroup} title="Add" id="add-options" size="sm">
                     <Dropdown.Item onClick={this.addList}>Bulleted List</Dropdown.Item>

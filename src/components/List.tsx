@@ -74,10 +74,6 @@ export default class List extends ResumeComponent<ListProps> {
     constructor(props) {
         super(props);
 
-        this.state = {
-            isSelected: false
-        };
-
         this.addChild = this.addChild.bind(this);
         this.moveBullets = this.moveBullets.bind(this);
     }
@@ -100,7 +96,7 @@ export default class List extends ResumeComponent<ListProps> {
 
     /** Get editing controls for this list */
     getEditingMenu() {
-        if (this.state.isSelected) {
+        if (this.isSelected) {
             return <li className="list-options">
                 <ButtonToolbar>
                     <ButtonGroup size="sm" className="mr-2" >

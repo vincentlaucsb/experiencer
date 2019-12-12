@@ -17,10 +17,6 @@ export default class Section extends ResumeComponent<SectionProps> {
     constructor(props: SectionProps) {
         super(props);
 
-        this.state = {
-            isSelected: false
-        };
-
         this.rotateLeft = this.rotateLeft.bind(this);
         this.rotateRight = this.rotateRight.bind(this);
     }
@@ -34,7 +30,7 @@ export default class Section extends ResumeComponent<SectionProps> {
             </Button>
         }
 
-        if (this.state.isSelected) {
+        if (this.isSelected) {
             return <ButtonGroup className={editToolsClassName} size="sm">
                 <DropdownButton as={ButtonGroup} title="Add" id="add-options" size="sm">
                     <Dropdown.Item onClick={this.addEntry}>Entry</Dropdown.Item>

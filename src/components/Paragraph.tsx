@@ -9,16 +9,12 @@ export default class Paragraph extends ResumeComponent {
     constructor(props) {
         super(props);
 
-        this.state = {
-            isSelected: false
-        };
-
         this.updateDataEvent = this.updateDataEvent.bind(this);
     }
 
     get className(): string {
         let classNames = [super.className];
-        if (this.state.isSelected) {
+        if (this.isSelected) {
             classNames.push('flex-col');
         }
 
@@ -44,7 +40,7 @@ export default class Paragraph extends ResumeComponent {
     }
 
     getEditingMenu() {
-        if (this.state.isSelected) {
+        if (this.isSelected) {
             return <ButtonGroup size="sm">
                 <EditButton {...this.props} extended={true} />
                 <DeleteButton {...this.props} extended={true} />

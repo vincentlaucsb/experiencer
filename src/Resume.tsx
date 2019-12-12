@@ -138,6 +138,7 @@ class Resume extends React.Component<{}, ResumeState> {
                 isHovering: this.isHovering.bind(this),
                 hoverInsert: hoverInsert.bind(this),
                 hoverOut: hoverOut.bind(this),
+                isSelected: this.isSelected.bind(this),
                 isSelectBlocked: this.isSelectBlocked.bind(this),
                 moveUp: this.moveUp.bind(this, idx),
                 moveDown: this.moveDown.bind(this, idx),
@@ -338,15 +339,19 @@ class Resume extends React.Component<{}, ResumeState> {
         return id !== this.deepestHoverId();
     }
 
+    isSelected(uuid: string) {
+        if (this.state.selectedNode) {
+            return uuid === this.state.selectedNode.uuid;
+        }
+
+        return false;
+    }
+
     isHovering(id: string) {
         return this.state.hovering.has(id);
     }
 
     unselect() {
-        if (this.state.selectedNode) {
-            this.state.selectedNode.unselect();
-        }
-
         this.setState({ selectedNode: undefined });
     }
 

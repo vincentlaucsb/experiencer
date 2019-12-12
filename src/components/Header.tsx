@@ -11,10 +11,6 @@ export default class Header extends ResumeComponent<HeaderProps> {
     constructor(props: ResumeComponentProps) {
         super(props);
 
-        this.state = {
-            isSelected: false
-        }
-
         this.orientColumn = this.orientColumn.bind(this);
         this.orientRow = this.orientRow.bind(this);
     }
@@ -49,7 +45,7 @@ export default class Header extends ResumeComponent<HeaderProps> {
     }
 
     getEditingMenu() {
-        if (this.state.isSelected) {
+        if (this.isSelected) {
             return <ButtonGroup className={this.editToolsClassName} size="sm">
                 <DropdownButton as={ButtonGroup} title="Distribute Items" id="distribute-options" size="sm">
                     <Dropdown.Item onClick={this.orientColumn}>Top-to-bottom (column)</Dropdown.Item>

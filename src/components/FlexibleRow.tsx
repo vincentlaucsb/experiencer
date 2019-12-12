@@ -4,14 +4,6 @@ import { ButtonGroup, Dropdown, DropdownButton, Button } from "react-bootstrap";
 import { DeleteButton, UpButton, DownButton } from "./Buttons";
 
 export class FlexibleColumn extends ResumeComponent {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            isSelected: false
-        };
-    }
-
     /** Get the index of this column */
     get position(): string {
         return ((this.props.id.split('-')).slice(-1))[0];
@@ -23,7 +15,7 @@ export class FlexibleColumn extends ResumeComponent {
     }
 
     getEditingMenu() {
-        if (this.state.isSelected) {
+        if (this.isSelected) {
             return <ButtonGroup size="sm">
                 <DropdownButton as={ButtonGroup} title="Add" id="add-options" size="sm">
                     <Dropdown.Item onClick={this.addSection}>Section</Dropdown.Item>
@@ -72,10 +64,6 @@ export default class FlexibleRow extends ResumeComponent {
     constructor(props) {
         super(props);
 
-        this.state = {
-            isSelected: false
-        };
-
         this.addColumn = this.addColumn.bind(this);
     }
 
@@ -90,7 +78,7 @@ export default class FlexibleRow extends ResumeComponent {
     }
 
     getEditingMenu() {
-        if (this.state.isSelected) {
+        if (this.isSelected) {
             return <ButtonGroup size="sm">
                 <Button onClick={this.addColumn}>Add Column</Button>
                 <DeleteButton {...this.props} extended={true} />

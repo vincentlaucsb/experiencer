@@ -1,7 +1,7 @@
 ﻿import * as React from "react";
 import ResumeComponent from "./ResumeComponent";
 import { ButtonGroup, Dropdown, DropdownButton, Button } from "react-bootstrap";
-import { DeleteButton, UpButton, DownButton } from "./Buttons";
+import { DeleteButton, UpButton, DownButton } from "./controls/Buttons";
 
 export class FlexibleColumn extends ResumeComponent {
     /** Get the index of this column */
@@ -45,7 +45,7 @@ export class FlexibleColumn extends ResumeComponent {
 
     render() {
         let helperText = <></>;
-        if (this.isEmpty && !this.props.isSelected) {
+        if (this.isEmpty && !this.isSelected) {
             helperText = <span>Column {this.position}: Click to select and add content</span>
         }
 

@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import EditButton, { DeleteButton, UpButton, DownButton } from "./Buttons";
+import EditButton, { DeleteButton, UpButton, DownButton } from "./controls/Buttons";
 import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
 import { ButtonGroup, DropdownButton, Dropdown } from "react-bootstrap";
 

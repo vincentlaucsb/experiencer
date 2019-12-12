@@ -1,8 +1,8 @@
 ﻿import * as React from "react";
 import * as Helpers from "./Helpers";
 import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
-import EditButton, { DownButton, UpButton, DeleteButton } from "./Buttons";
-import { ButtonGroup, Button, Dropdown, DropdownButton } from "react-bootstrap";
+import EditButton, { DownButton, UpButton, DeleteButton } from "./controls/Buttons";
+import { ButtonGroup, Dropdown, DropdownButton } from "react-bootstrap";
 import Placeholder from "./Placeholder";
 
 export interface EntryProps extends ResumeComponentProps {
@@ -15,10 +15,6 @@ export interface EntryProps extends ResumeComponentProps {
 export default class Entry extends ResumeComponent<EntryProps> {
     constructor(props) {
         super(props);
-
-        this.state = {
-            isSelected: false
-        };
 
         this.addTitleField = this.addTitleField.bind(this);
         this.addSubtitleField = this.addSubtitleField.bind(this);

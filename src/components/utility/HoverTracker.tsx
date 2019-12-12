@@ -25,10 +25,10 @@ export default class HoverTracker {
     hoverOver(id: IdType) {
         const newDepth = id.length;
 
-        if (newDepth == this.currentDepth) {
+        if (newDepth === this.currentDepth) {
             // We selected a sibling
             const lastIdx = id.length - 1;
-            if (id[lastIdx] == this.currentId[lastIdx]) {
+            if (id[lastIdx] === this.currentId[lastIdx]) {
                 this._currentId = id;
             }
         }
@@ -40,7 +40,7 @@ export default class HoverTracker {
         {
             // Last index of the shorter array
             const lastIdx = id.length - 1;
-            if (id[lastIdx] != this.currentId[lastIdx]) {
+            if (id[lastIdx] !== this.currentId[lastIdx]) {
                 // We are hovering over a completely new set of elements
                 this._currentId = id;
                 this._hovering.clear();

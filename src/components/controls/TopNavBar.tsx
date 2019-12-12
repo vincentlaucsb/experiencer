@@ -6,7 +6,7 @@ import FileSaver from "./FileSaver";
 import GitHub from '../../icons/mark-github.svg';
 import { EditorMode } from "../LoadComponent";
 import { isUndefined } from "util";
-import { withTooltip } from "../Buttons";
+import { withTooltip } from "./Buttons";
 
 interface TopNavBarProps {
     mode: EditorMode;

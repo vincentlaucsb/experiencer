@@ -1,9 +1,9 @@
 ﻿import React from "react";
-import { Container, Row, CloseButton } from "react-bootstrap";
+import { Container, } from "react-bootstrap";
 import { Action } from "../ResumeComponent";
 
 import CloseIcon from "../../icons/close-24px.svg";
-import { withTooltip } from "../Buttons";
+import { withTooltip } from "../controls/Buttons";
 
 export interface HelpPageActions {
     close: Action;

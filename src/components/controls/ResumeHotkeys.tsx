@@ -14,10 +14,6 @@ export interface ResumeHotKeysProps extends ResumeState {
 };
 
 export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
-    constructor(props) {
-        super(props);
-    }
-
     public static readonly keyMap: KeyMap = {
         COPY_SELECTED: {
             name: 'Copy Node',

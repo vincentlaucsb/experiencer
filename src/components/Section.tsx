@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import EditButton, { DeleteButton, DownButton, UpButton } from "./Buttons";
+import EditButton, { DeleteButton, DownButton, UpButton } from "./controls/Buttons";
 import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
 import { Dropdown, ButtonGroup, Button, DropdownButton } from "react-bootstrap";
 import RotateLeft from "../icons/rotate_left-24px.svg";
@@ -73,7 +73,7 @@ export default class Section extends ResumeComponent<SectionProps> {
             title = <input onChange={this.updateDataEvent.bind(this, "title")} type="text" value={this.props.title || ""} />;
         }
 
-        if (this.isEmpty && !this.props.isSelected) {
+        if (this.isEmpty && !this.isSelected) {
             helperText = <p>This section is empty. Click here to select it and add content.</p>
         }
 

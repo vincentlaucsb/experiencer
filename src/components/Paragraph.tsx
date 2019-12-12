@@ -1,7 +1,7 @@
 ﻿import * as React from "react";
 import * as Helpers from "./Helpers";
 import ReactQuill from 'react-quill';
-import EditButton, { DeleteButton, DownButton, UpButton } from "./Buttons";
+import EditButton, { DeleteButton, DownButton, UpButton } from "./controls/Buttons";
 import ResumeComponent from "./ResumeComponent";
 import { ButtonGroup } from "react-bootstrap";
 

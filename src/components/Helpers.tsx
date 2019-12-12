@@ -53,12 +53,12 @@ export function moveDown<T>(arr: Array<T>, i: number) {
 }
 
 export function arraysEqual<T>(left: Array<T>, right: Array<T>) {
-    if (left.length != right.length) {
+    if (left.length !== right.length) {
         return false;
     }
 
     for (let i = 0; i < left.length; i++) {
-        if (left[i] != right[i]) {
+        if (left[i] !== right[i]) {
             return false;
         }
     }

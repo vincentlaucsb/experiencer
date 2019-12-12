@@ -17,7 +17,6 @@ export default class Entry extends ResumeComponent<EntryProps> {
         super(props);
 
         this.state = {
-            isHovering: false,
             isSelected: false
         };
 

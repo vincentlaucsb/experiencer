@@ -75,7 +75,6 @@ export default class List extends ResumeComponent<ListProps> {
         super(props);
 
         this.state = {
-            isHovering: false,
             isSelected: false
         };
 

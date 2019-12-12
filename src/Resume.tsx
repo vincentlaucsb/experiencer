@@ -65,6 +65,7 @@ class Resume extends React.Component<{}, ResumeState> {
         this.pasteClipboard = this.pasteClipboard.bind(this);
 
         /** Selection Methods */
+        this.isHovering = this.isHovering.bind(this);
         this.unselect = this.unselect.bind(this);
         this.isSelectBlocked = this.isSelectBlocked.bind(this);
     }
@@ -105,21 +106,36 @@ class Resume extends React.Component<{}, ResumeState> {
     childMapper(elem: object, idx: number, arr: object[]) {
         const uniqueId = elem['uuid'];
 
+        const addId = (set: Set<string>, id: string) => {
+            set.add(id);
+            return set;
+        };
+
         // Add an ID to the set of nodes we are hovering over
         const hoverInsert = (id: string) => {
-            this.state.hovering.add(id);
-        }
+            this.setState({
+                hovering: addId(this.state.hovering, id)
+            });
+        };
 
+        const removeId = (set: Set<string>, id: string) => {
+            set.delete(id);
+            return set;
+        }
+        
         // Remove an ID from the set of nodes we are hovering over
         const hoverOut = (id: string) => {
-            this.state.hovering.delete(id);
-        }
+            this.setState({
+                hovering: removeId(this.state.hovering, id)
+            });
+        };
 
         return <React.Fragment key={uniqueId}>
             {loadComponent(elem, idx, arr.length, {
                 uuid: uniqueId,
                 mode: this.state.mode,
                 addChild: this.addNestedChild.bind(this, idx),
+                isHovering: this.isHovering.bind(this),
                 hoverInsert: hoverInsert.bind(this),
                 hoverOut: hoverOut.bind(this),
                 isSelectBlocked: this.isSelectBlocked.bind(this),
@@ -221,15 +237,14 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param node Grandchild to be added
      */
     addNestedChild(idx: number, node: object) {
-        if (!this.state.children[idx]['children']) {
-            this.state.children[idx]['children'] = new Array<object>();
-        }
-
-        let children = this.state.children[idx]['children'];
-
-        // Generate UUIDs with assignIds()
-        children.push(assignIds(node));
-        this.setState({ children: this.state.children });
+        this.setState({
+            children: update(this.state.children, {
+                [idx]: {
+                    children: children =>
+                        update(children || new Array<object>(),
+                            { $push: [ assignIds(node) ] })
+            }})
+        });
     }
 
     deleteChild(idx: number) {
@@ -239,10 +254,12 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     updateData(idx: number, key: string, data: any) {
-        this.state.children[idx][key] = data;
-
         this.setState({
-            children: this.state.children
+            children: update(this.state.children, {
+                [idx]: {
+                    [key]: { $set: data }
+                }
+            })
         });
     }
 
@@ -250,7 +267,10 @@ class Resume extends React.Component<{}, ResumeState> {
         const currentValue = this.state.children[idx]['isEditing'];
         this.setState({
             children: update(this.state.children, {
-                idx: { isEditing: !currentValue }
+                [idx]: {
+                    isEditing: isEditing =>
+                        update(isEditing || false, { $set: !currentValue })
+                }
             })
         });
     }
@@ -294,17 +314,32 @@ class Resume extends React.Component<{}, ResumeState> {
 
     //#region Node Selection
     /** Determine if a node shouldn't be allowed to be selected */
-    isSelectBlocked(id: string) {
+    // TODO: Cache this value
+    deepestHoverId(): string {
+        /** Return the deepest hover node ID */
         const ids = Array.from(this.state.hovering);
-        for (let i in ids) {
-            const otherId = ids[i];
+        let depth = 0;
+        let cand = "";
 
-            if (otherId.search(id) >= 0 && otherId !== id) {
-                return true;
+        for (let i in ids) {
+            const id = ids[i];
+            const currentDepth = id.split("-").length;
+
+            if (currentDepth > depth) {
+                depth = currentDepth;
+                cand = id;
             }
         }
 
-        return false;
+        return cand;
+    }
+    
+    isSelectBlocked(id: string) {
+        return id !== this.deepestHoverId();
+    }
+
+    isHovering(id: string) {
+        return this.state.hovering.has(id);
     }
 
     unselect() {

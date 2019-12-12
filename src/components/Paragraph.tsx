@@ -10,7 +10,6 @@ export default class Paragraph extends ResumeComponent {
         super(props);
 
         this.state = {
-            isHovering: false,
             isSelected: false
         };
 

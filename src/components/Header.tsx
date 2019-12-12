@@ -12,7 +12,6 @@ export default class Header extends ResumeComponent<HeaderProps> {
         super(props);
 
         this.state = {
-            isHovering: false,
             isSelected: false
         }
 

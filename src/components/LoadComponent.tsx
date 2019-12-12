@@ -6,7 +6,7 @@ import Entry, { EntryProps } from "./Entry";
 import List, { ListItem, DescriptionList, DescriptionListItem } from "./List";
 import Paragraph from "./Paragraph";
 import Header from "./Header";
-import { ResumeComponentProps, SelectedNodeProps } from "./ResumeComponent";
+import { ResumeComponentProps, SelectedNodeProps, Action } from "./ResumeComponent";
 
 export type EditorMode = 'normal'
     | 'landing'
@@ -17,18 +17,20 @@ export type EditorMode = 'normal'
 
 interface ExtraProps {
     uuid: string;
+    isHovering: (id: string) => boolean;
+    toggleParentHighlight?: (isHovering: boolean) => void;
+    isSelectBlocked: (id: string) => boolean;
+    deleteChild: () => void;
     mode: EditorMode;
     unselect: () => void;
     updateSelected: (data?: SelectedNodeProps) => void;
 
     addChild?: (node: object) => void;
-    isSelectBlocked?: (id: string) => boolean;
     hoverInsert?: (id: string) => void;
     hoverOut?: (id: string) => void;
-    moveUp?: () => void;
-    moveDown?: () => void;
-    deleteChild?: () => void;
-    toggleEdit?: () => void;
+    moveUp?: Action;
+    moveDown?: Action;
+    toggleEdit?: Action;
     updateData?: (key: string, data: any) => void;
 }
 

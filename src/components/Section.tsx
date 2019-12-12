@@ -18,7 +18,6 @@ export default class Section extends ResumeComponent<SectionProps> {
         super(props);
 
         this.state = {
-            isHovering: false,
             isSelected: false
         };
 

@@ -21,7 +21,8 @@ export interface ResumeComponentProps {
     isLast: boolean;
 
     isHidden?: boolean;
-    isEditing?: boolean;
+    isEditing?: boolean
+    isHovering: (id: string) => boolean;
     isSelected?: boolean;
     value?: string;
     children?: Array<object>;
@@ -29,6 +30,7 @@ export interface ResumeComponentProps {
     deleteChild: ((idx: number) => void) | (() => void);
     hoverInsert: (id: string) => void;
     hoverOut: (id: string) => void;
+    toggleParentHighlight: (isHovering: boolean) => void;
     isSelectBlocked: (id: string) => boolean;
     moveUp: ((idx: number) => void) | (() => void);
     moveDown: ((idx: number) => void) | (() => void);
@@ -41,7 +43,6 @@ export interface ResumeComponentProps {
 }
 
 export interface ResumeComponentState {
-    isHovering?: boolean;
     isSelected?: boolean;
 }
 
@@ -82,7 +83,7 @@ export default class ResumeComponent<
         let classes = new Array<string>();
 
         if (!this.isPrinting) {
-            if (this.state.isHovering) {
+            if (this.displayBorder) {
                 classes.push('resume-hovering');
             }
             if (this.state.isSelected) {
@@ -97,6 +98,10 @@ export default class ResumeComponent<
         return classes.join(' ');
     }
 
+    get displayBorder(): boolean {
+        return this.isHovering && (!this.isSelectBlocked || this.props['type'] === 'FlexibleColumn');
+    }
+
     /** Returns true if this node has no children */
     get isEmpty(): boolean {
         const children = this.props.children as Array<object>;
@@ -105,6 +110,10 @@ export default class ResumeComponent<
         }
 
         return true;
+    }
+
+    get isHovering(): boolean {
+        return this.props.isHovering(this.props.id) && !this.isPrinting;
     }
 
     /** Prevent component from being edited from the template changing screen */
@@ -256,7 +265,7 @@ export default class ResumeComponent<
         let currentChildData = this.props.children[idx]['isEditing'];
         this.updateNestedData(idx, "isEditing", !currentChildData);
     }
-
+    
     updateNestedData(idx: number, key: string, data: any) {
         let newChildren = this.props.children as Array<object>;
         newChildren[idx][key] = data;
@@ -276,12 +285,14 @@ export default class ResumeComponent<
 
     childMapper(elem: object, idx: number, arr: object[]) {
         const uniqueId = elem['uuid'];
+
         return <React.Fragment key={uniqueId}>
             {loadComponent(elem, idx, arr.length,
                 {
                     uuid: uniqueId,
                     mode: this.props.mode,
                     addChild: (this.addNestedChild.bind(this, idx) as (node: object) => void),
+                    isHovering: this.props.isHovering,
                     isSelectBlocked: this.props.isSelectBlocked,
                     hoverInsert: this.props.hoverInsert,
                     hoverOut: this.props.hoverOut,
@@ -343,17 +354,11 @@ export default class ResumeComponent<
 
             // Hover over
             onMouseEnter: () => {
-                // Don't select anything in "print" mode
-                if (!this.isPrinting) {
-                    this.setState({ isHovering: true });
-                }
-
                 (this.props.hoverInsert as (id: string) => void)(this.props.id);
             },
 
             // Hover out
             onMouseLeave: () => {
-                this.setState({ isHovering: false });
                 (this.props.hoverOut as (id: string) => void)(this.props.id);
             }
         };

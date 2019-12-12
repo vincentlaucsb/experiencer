@@ -1,4 +1,5 @@
 import * as React from 'react';
+import update from 'immutability-helper';
 import { saveAs } from 'file-saver';
 
 import './css/index.css';
@@ -246,11 +247,11 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     toggleEdit(idx: number) {
-        let currentValue = this.state.children[idx]['isEditing'];
-        this.state.children[idx]['isEditing'] = !currentValue;
-
+        const currentValue = this.state.children[idx]['isEditing'];
         this.setState({
-            children: this.state.children
+            children: update(this.state.children, {
+                idx: { isEditing: !currentValue }
+            })
         });
     }
 

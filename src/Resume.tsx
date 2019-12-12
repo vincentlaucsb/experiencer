@@ -68,7 +68,7 @@ class Resume extends React.Component<{}, ResumeState> {
         this.pasteClipboard = this.pasteClipboard.bind(this);
 
         // Unselect the currently selected node
-        this.unselect = () => { this.setState({ selectedNode: undefined }); }
+        this.unselect = (() => { this.setState({ selectedNode: undefined }); }).bind(this);
     }
 
     /** Prevent component from being edited from the template changing screen */
@@ -93,6 +93,47 @@ class Resume extends React.Component<{}, ResumeState> {
         return classNames.join(' ');
     }
 
+    /** Return props related to hover/select functionality */
+    get hoverProps() {
+        return {
+            // Add an ID to the set of nodes we are hovering over
+            hoverInsert: (id: IdType) => {
+                this.hovering.hoverOver(id);
+                this.setState({
+                    hoverNode: this.hovering.currentId
+                });
+            },
+
+            // Remove an ID from the set of nodes we are hovering over
+            hoverOut: (id: IdType) => {
+                this.hovering.hoverOut(id);
+                this.setState({
+                    hoverNode: this.hovering.currentId
+                });
+            },
+
+            // Determines if we are currently hovering over a node
+            isHovering: this.hovering.isHovering,
+
+            // Determines if a node is selectable or not
+            isSelectBlocked: (id: IdType) => {
+                return !arraysEqual(id, this.hovering.currentId);
+            },
+
+            // Returns true if the given node is currently selected
+            isSelected: (uuid: string) => {
+                return this.state.selectedNode ? uuid === this.state.selectedNode.uuid : false;
+            },
+
+            // Update the selected node
+            updateSelected: (data?: SelectedNodeProps) => {
+                this.setState({ selectedNode: data });
+            },
+
+            unselect: this.unselect
+        }
+    }
+
     // Push style changes to browser
     renderStyle() {
         this.style.innerHTML = this.state.css;
@@ -106,58 +147,17 @@ class Resume extends React.Component<{}, ResumeState> {
      */
     childMapper(elem: object, idx: number, arr: object[]) {
         const uniqueId = elem['uuid'];
-
-        // Add an ID to the set of nodes we are hovering over
-        const hoverInsert = (id: IdType) => {
-            this.hovering.hoverOver(id);
-            this.setState({
-                hoverNode: this.hovering.currentId
-            });
-        };
-
-        // Remove an ID from the set of nodes we are hovering over
-        const hoverOut = (id: IdType) => {
-            this.hovering.hoverOut(id);
-            this.setState({
-                hoverNode: this.hovering.currentId
-            });
-        };
-
-        // Determines if a node is selectable or not
-        const isSelectBlocked = (id: IdType) => {
-            return !arraysEqual(id, this.hovering.currentId);
-        };
-
-        const isSelected = (uuid: string) => {
-            if (this.state.selectedNode) {
-                return uuid === this.state.selectedNode.uuid;
-            }
-
-            return false;
-        }
-
-        
-
-        // Update the selected node
-        const updateSelected = (data?: SelectedNodeProps) => { this.setState({ selectedNode: data }); }
-        
         return <React.Fragment key={uniqueId}>
             {loadComponent(elem, idx, arr.length, {
                 uuid: uniqueId,
                 mode: this.state.mode,
                 addChild: this.addNestedChild.bind(this, idx),
-                isHovering: this.hovering.isHovering,
-                hoverInsert: hoverInsert.bind(this),
-                hoverOut: hoverOut.bind(this),
-                isSelected: isSelected,
-                isSelectBlocked: isSelectBlocked,
                 moveUp: this.moveUp.bind(this, idx),
                 moveDown: this.moveDown.bind(this, idx),
                 deleteChild: this.deleteChild.bind(this, idx),
                 toggleEdit: this.toggleEdit.bind(this, idx),
                 updateData: this.updateData.bind(this, idx),
-                unselect: this.unselect.bind(this),
-                updateSelected: updateSelected
+                ...this.hoverProps
             })}
         </React.Fragment>
     }

@@ -1,5 +1,8 @@
 ﻿export type IdType = Array<number>;
 
+/** Helper class for keeping track of elements we are hovering over
+ *  and which are selectable
+ * */
 export default class HoverTracker {
     private _currentId: IdType;
     private _hovering: Set<string>;
@@ -23,6 +26,7 @@ export default class HoverTracker {
         const newDepth = id.length;
 
         if (newDepth == this.currentDepth) {
+            // We selected a sibling
             const lastIdx = id.length - 1;
             if (id[lastIdx] == this.currentId[lastIdx]) {
                 this._currentId = id;

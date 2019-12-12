@@ -2,10 +2,10 @@
 import * as Helpers from "./Helpers";
 import ReactQuill from 'react-quill';
 import EditButton, { DeleteButton, DownButton, UpButton } from "./controls/Buttons";
-import ResumeComponent from "./ResumeComponent";
+import ResumeNodeBase from "./ResumeComponent";
 import { ButtonGroup } from "react-bootstrap";
 
-export default class Paragraph extends ResumeComponent {
+export default class Paragraph extends ResumeNodeBase {
     constructor(props) {
         super(props);
 

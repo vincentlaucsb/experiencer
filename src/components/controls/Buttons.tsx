@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import { ResumeComponentProps, Action } from "../ResumeComponent";
+import { ResumeNodeProps, Action } from "../ResumeComponent";
 
 import AddIcon from "../../icons/add-24px.svg";
 import DeleteIcon from "../../icons/delete-24px.svg";
@@ -39,7 +39,7 @@ interface AddButtonProps {
     extended?: boolean;
 }
 
-interface ButtonProps extends ResumeComponentProps {
+interface ButtonProps extends ResumeNodeProps {
     extended?: boolean;
 }
 
@@ -90,7 +90,7 @@ export default function EditButton<P extends ButtonProps>(props: P) {
     return <ButtonWithTooltip onClick={props.toggleEdit as Action} imgSrc={imgSrc} tooltip="Edit" />
 }
 
-export function DeleteButton<P extends ResumeComponentProps>(props: P) {
+export function DeleteButton<P extends ResumeNodeProps>(props: P) {
     const [show, setShow] = React.useState(false);
 
     let confirmDelete = () => {
@@ -120,7 +120,7 @@ export function DeleteButton<P extends ResumeComponentProps>(props: P) {
         </>
 }
 
-export function UpButton<P extends ResumeComponentProps>(props: P) {
+export function UpButton<P extends ResumeNodeProps>(props: P) {
     let imgCls = props.isFirst ? "button-disabled" : "";
     return <ExtendableButton imgCls={imgCls} imgSrc={UpIcon} text='Move Up' action={props.moveUp as Action} componentData={props} />
 }

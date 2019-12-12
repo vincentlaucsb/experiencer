@@ -6,7 +6,7 @@ import Entry, { EntryProps } from "./Entry";
 import List, { ListItem, DescriptionList, DescriptionListItem } from "./List";
 import Paragraph from "./Paragraph";
 import Header from "./Header";
-import { ResumeComponentProps, SelectedNodeProps, Action } from "./ResumeComponent";
+import { ResumeNodeProps, SelectedNodeProps, Action } from "./ResumeComponent";
 import { IdType } from "./utility/HoverTracker";
 
 export type EditorMode = 'normal'
@@ -34,6 +34,11 @@ interface ExtraProps {
     moveDown?: Action;
     toggleEdit?: Action;
     updateData?: (key: string, data: any) => void;
+
+    /// ????
+    index: number;
+    numChildren: number;
+    parentId?: IdType;
 }
 
 /**
@@ -43,41 +48,41 @@ interface ExtraProps {
  * @param numChildren How many total siblings this node has plus itself
  * @param parentId    The id of the parent node
  */
-export default function loadComponent(data: ExtraProps,
-    index: number, numChildren: number, parentId?: IdType) {
-    let props = {
-        ...data,
+export default function ResumeComponent(props: ExtraProps) {
+    const parentId = props.parentId;
+    const index = props.index;
+
+    let newProps = {
+        ...props,
 
         // Generate unique IDs for component
         id: parentId ? [...parentId, index] : [index],
         isFirst: (index === 0),
-        isLast: (index === numChildren - 1)
-    } as ResumeComponentProps;
+        isLast: (index === props.numChildren - 1)
+    } as ResumeNodeProps;
     
-    if (!props.children) {
-        props.children = new Array<object>();
-    }
-
-    switch (data['type']) {
+    switch (props['type']) {
         case 'DescriptionList':
-            return <DescriptionList {...props} />;
+            return <DescriptionList {...newProps} />;
         case 'DescriptionListItem':
-            return <DescriptionListItem {...props} />;
+            return <DescriptionListItem {...newProps} />;
         case 'FlexibleColumn':
-            return <FlexibleColumn {...props} />;
+            return <FlexibleColumn {...newProps} />;
         case 'FlexibleRow':
-            return <FlexibleRow {...props} />;
+            return <FlexibleRow {...newProps} />;
         case 'Header':
-            return <Header {...props} />
+            return <Header {...newProps} />
         case 'Section':
-            return <Section {...props as SectionProps} />;
+            return <Section {...newProps as SectionProps} />;
         case 'Entry':
-            return <Entry {...props as EntryProps} />;
+            return <Entry {...newProps as EntryProps} />;
         case 'List':
-            return <List {...props} />;
+            return <List {...newProps} />;
         case 'ListItem':
-            return <ListItem {...props} />;
+            return <ListItem {...newProps} />;
         case 'Paragraph':
-            return <Paragraph {...props} />;
+            return <Paragraph {...newProps} />;
+        default:
+            return <React.Fragment></React.Fragment>
     }
 }

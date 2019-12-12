@@ -1,18 +1,18 @@
 ﻿import * as React from "react";
 import * as Helpers from "./Helpers";
-import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
+import ResumeNodeBase, { ResumeNodeProps } from "./ResumeComponent";
 import EditButton, { DownButton, UpButton, DeleteButton } from "./controls/Buttons";
 import { ButtonGroup, Dropdown, DropdownButton } from "react-bootstrap";
 import Placeholder from "./Placeholder";
 
-export interface EntryProps extends ResumeComponentProps {
+export interface EntryProps extends ResumeNodeProps {
     title?: string;
     titleExtras?: string[];
     subtitle?: string;
     subtitleExtras?: string[];
 }
 
-export default class Entry extends ResumeComponent<EntryProps> {
+export default class Entry extends ResumeNodeBase<EntryProps> {
     constructor(props) {
         super(props);
 

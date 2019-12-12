@@ -19,6 +19,7 @@ import StyleEditor from './components/controls/StyleEditor';
 import Help from './components/help/Help';
 import { isNullOrUndefined } from 'util';
 import HoverTracker, { IdType } from './components/utility/HoverTracker';
+import ResumeComponent from './components/LoadComponent';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering: HoverTracker;
@@ -147,21 +148,23 @@ class Resume extends React.Component<{}, ResumeState> {
      */
     childMapper(elem: object, idx: number, arr: object[]) {
         const uniqueId = elem['uuid'];
-        return <React.Fragment key={uniqueId}>
-            {loadComponent({
-                ...elem,
-                uuid: uniqueId,
-                mode: this.state.mode,
-                addChild: this.addNestedChild.bind(this, idx),
-                moveUp: this.moveUp.bind(this, idx),
-                moveDown: this.moveDown.bind(this, idx),
-                deleteChild: this.deleteChild.bind(this, idx),
-                toggleEdit: this.toggleEdit.bind(this, idx),
-                updateData: this.updateData.bind(this, idx),
-                ...this.hoverProps
-            },
-            idx, arr.length)}
-        </React.Fragment>
+        const props = {
+            ...elem,
+            uuid: uniqueId,
+            mode: this.state.mode,
+            addChild: this.addNestedChild.bind(this, idx),
+            moveUp: this.moveUp.bind(this, idx),
+            moveDown: this.moveDown.bind(this, idx),
+            deleteChild: this.deleteChild.bind(this, idx),
+            toggleEdit: this.toggleEdit.bind(this, idx),
+            updateData: this.updateData.bind(this, idx),
+            ...this.hoverProps,
+
+            index: idx,
+            numChildren: arr.length
+        };
+
+        return <ResumeComponent key={uniqueId} {...props} />
     }
 
     /**

@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
 import EditButton, { DeleteButton, DownButton, UpButton } from "./controls/Buttons";
-import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
+import ResumeNodeBase, { ResumeNodeProps } from "./ResumeComponent";
 import { Dropdown, ButtonGroup, Button, DropdownButton } from "react-bootstrap";
 import RotateLeft from "../icons/rotate_left-24px.svg";
 import RotateRight from "../icons/rotate_right-24px.svg";
@@ -8,12 +8,12 @@ import Placeholder from "./Placeholder";
 
 export type SectionHeaderPosition = "left" | "top";
 
-export interface SectionProps extends ResumeComponentProps {
+export interface SectionProps extends ResumeNodeProps {
     title: string;
     headerPosition?: SectionHeaderPosition;
 }
 
-export default class Section extends ResumeComponent<SectionProps> {
+export default class Section extends ResumeNodeBase<SectionProps> {
     constructor(props: SectionProps) {
         super(props);
 

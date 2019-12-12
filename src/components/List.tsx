@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import ResumeComponent, { AddChild, UpdateChild, Action, ResumeComponentProps } from "./ResumeComponent";
+import ResumeNodeBase, { AddChild, UpdateChild, Action, ResumeNodeProps } from "./ResumeComponent";
 import EditButton, { DeleteButton, DownButton, UpButton } from "./controls/Buttons";
 import { Button, ButtonGroup, Form, InputGroup, ButtonToolbar } from "react-bootstrap";
 import ReactQuill from "react-quill";
@@ -7,12 +7,12 @@ import { Menu, Item, MenuProvider } from 'react-contexify';
 import AddIcon from "../icons/add-24px.svg";
 import 'react-contexify/dist/ReactContexify.min.css';
 
-interface ListProps extends ResumeComponentProps {
+interface ListProps extends ResumeNodeProps {
     isMoving?: boolean;
 }
 
 /** Represents an individual item in a list */
-export class ListItem<P extends ListProps = ListProps> extends ResumeComponent<P> {
+export class ListItem<P extends ListProps = ListProps> extends ResumeNodeBase<P> {
     static quillModules = {
         toolbar: [
             ['bold', 'italic', 'underline', 'strike'],
@@ -70,7 +70,7 @@ export class ListItem<P extends ListProps = ListProps> extends ResumeComponent<P
 }
 
 /** Represents a list component */
-export default class List extends ResumeComponent<ListProps> {
+export default class List extends ResumeNodeBase<ListProps> {
     constructor(props) {
         super(props);
 

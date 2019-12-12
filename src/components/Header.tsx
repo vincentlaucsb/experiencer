@@ -1,14 +1,14 @@
 ﻿import * as React from "react";
 import EditButton, { DeleteButton, UpButton, DownButton } from "./controls/Buttons";
-import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
+import ResumeNodeBase, { ResumeNodeProps } from "./ResumeComponent";
 import { ButtonGroup, DropdownButton, Dropdown } from "react-bootstrap";
 
-export interface HeaderProps extends ResumeComponentProps {
+export interface HeaderProps extends ResumeNodeProps {
     orientation?: 'row' | 'column';
 }
 
-export default class Header extends ResumeComponent<HeaderProps> {
-    constructor(props: ResumeComponentProps) {
+export default class Header extends ResumeNodeBase<HeaderProps> {
+    constructor(props: ResumeNodeProps) {
         super(props);
 
         this.orientColumn = this.orientColumn.bind(this);

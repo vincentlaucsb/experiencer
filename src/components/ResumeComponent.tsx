@@ -2,6 +2,7 @@
 import loadComponent, { EditorMode } from "./LoadComponent";
 import { deleteAt, moveUp, moveDown, deepCopy, assignIds } from "./Helpers";
 import { IdType } from "./utility/HoverTracker";
+import ResumeComponent from "./LoadComponent";
 
 export interface SelectedNodeProps {
     id: IdType;
@@ -12,7 +13,7 @@ export interface SelectedNodeProps {
     toggleEdit?: Action;
 }
 
-export interface ResumeComponentProps {
+export interface ResumeNodeProps {
     id: IdType;   // Hierarchical ID based on the node's position in the resume; subject to change
     uuid: string; // Unique ID that never changes
 
@@ -30,25 +31,25 @@ export interface ResumeComponentProps {
     hoverInsert: (id: IdType) => void;
     hoverOut: (id: IdType) => void;
     isSelectBlocked: (id: IdType) => boolean;
-    deleteChild: ((idx: number) => void) | (() => void);
+    deleteChild: Action;
     toggleParentHighlight: (isHovering: boolean) => void;
-    moveUp: ((idx: number) => void) | (() => void);
-    moveDown: ((idx: number) => void) | (() => void);
+    moveUp: Action;
+    moveDown: Action;
     unselect: Action;
-    updateData: ((idx: number, key: string, data: any) => void) | ((key: string, data: any) => void);
+    updateData: (key: string, data: any) => void;
     updateSelected: (data?: SelectedNodeProps) => void;
 
-    addChild?: ((idx: number, node: object) => void) | ((node: object) => void);
-    toggleEdit?: ((idx: number) => void) | (() => void);
+    addChild?: (node: object) => void;
+    toggleEdit?: Action;
 }
 
 export type Action = (() => void);
 export type AddChild = ((node: object) => void);
 export type UpdateChild = ((key: string, data: any) => void);
 
-// Represents a component that is part of the user's resume
-export default class ResumeComponent<P
-    extends ResumeComponentProps=ResumeComponentProps> extends React.PureComponent<P> {
+// Represents a node that is part of the user's resume
+export default class ResumeNodeBase<P
+    extends ResumeNodeProps=ResumeNodeProps> extends React.PureComponent<P> {
     constructor(props: P) {
         super(props);
         
@@ -285,28 +286,32 @@ export default class ResumeComponent<P
     childMapper(elem: object, idx: number, arr: object[]) {
         const uniqueId = elem['uuid'];
 
-        return <React.Fragment key={uniqueId}>
-            {loadComponent({
-                ...elem,
-                uuid: uniqueId,
-                mode: this.props.mode,
-                addChild: (this.addNestedChild.bind(this, idx) as (node: object) => void),
-                isHovering: this.props.isHovering,
-                isSelected: this.props.isSelected,
-                isSelectBlocked: this.props.isSelectBlocked,
-                hoverInsert: this.props.hoverInsert,
-                hoverOut: this.props.hoverOut,
-                moveDown: (this.moveNestedChildDown.bind(this, idx) as Action),
-                moveUp: (this.moveNestedChildUp.bind(this, idx) as Action),
-                deleteChild: (this.deleteNestedChild.bind(this, idx) as Action),
-                toggleEdit: (this.toggleNestedEdit.bind(this, idx) as () => void),
-                updateData: (this.updateNestedData.bind(this, idx) as (key: string, data: any) => void),
-                unselect: this.props.unselect,
-                updateSelected: this.props.updateSelected
-            },
-            idx, arr.length,
-            this.props.id)}
-        </React.Fragment>
+        const props = {
+            ...elem,
+            uuid: uniqueId,
+            mode: this.props.mode,
+            addChild: (this.addNestedChild.bind(this, idx) as (node: object) => void),
+            isHovering: this.props.isHovering,
+            isSelected: this.props.isSelected,
+            isSelectBlocked: this.props.isSelectBlocked,
+            hoverInsert: this.props.hoverInsert,
+            hoverOut: this.props.hoverOut,
+            moveDown: (this.moveNestedChildDown.bind(this, idx) as Action),
+            moveUp: (this.moveNestedChildUp.bind(this, idx) as Action),
+            deleteChild: (this.deleteNestedChild.bind(this, idx) as Action),
+            toggleEdit: (this.toggleNestedEdit.bind(this, idx) as () => void),
+            updateData: (this.updateNestedData.bind(this, idx) as (key: string, data: any) => void),
+            unselect: this.props.unselect,
+            updateSelected: this.props.updateSelected,
+
+            index: idx,
+            numChildren: arr.length,
+
+            // Crucial for generating IDs so hover/select works properly
+            parentId: this.props.id
+        };
+
+        return <ResumeComponent key={uniqueId} {...props} />
     }
 
     renderChildren() {

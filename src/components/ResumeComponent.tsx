@@ -99,7 +99,8 @@ export default class ResumeComponent<
     }
 
     get displayBorder(): boolean {
-        return this.isHovering && (!this.isSelectBlocked || this.props['type'] === 'FlexibleColumn');
+        const isExcepted = ['FlexibleColumn', 'FlexibleRow'].indexOf(this.props['type']) >= 0;
+        return this.isHovering && (!this.isSelectBlocked || isExcepted);
     }
 
     /** Returns true if this node has no children */

@@ -1,4 +1,5 @@
 ﻿import * as React from "react";
+import * as Helpers from "./Helpers";
 import ReactQuill from 'react-quill';
 import EditButton, { DeleteButton, DownButton, UpButton } from "./Buttons";
 import ResumeComponent from "./ResumeComponent";
@@ -40,12 +41,7 @@ export default class Paragraph extends ResumeComponent {
      * @param text Text to be processed
      */
     static process(text?: string) {
-        if (text) {
-            // Replace '--' with en dash and '---' with em dash
-            return text.replace(/--/g, '\u2013').replace(/---/g, '\u2014');
-        }
-
-        return ""
+        return Helpers.process(text);
     }
 
     getEditingMenu() {

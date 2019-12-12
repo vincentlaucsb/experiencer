@@ -97,3 +97,17 @@ function assignIdsToNodeArray(children: Array<object>) {
 export function deepCopy(obj: any) {
     return JSON.parse(JSON.stringify(obj));
 }
+
+/**
+ * Perform helpful text processing
+ * @param text Text to be processed
+ */
+// TODO: Convert URLs to anchors
+export function process(text?: string) {
+    if (text) {
+        // Replace '--' with en dash and '---' with em dash
+        return text.replace(/---/g, '\u2014').replace(/--/g, '\u2013');
+    }
+
+    return "";
+}

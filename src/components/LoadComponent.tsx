@@ -41,39 +41,23 @@ interface ExtraProps {
  * @param data
  * @param index       The n-th index of this node relative to its parent
  * @param numChildren How many total siblings this node has plus itself
- * @param extraProps  Props passed down from parent (such as functions)
  * @param parentId    The id of the parent node
  */
-export default function loadComponent(data: object,
-    index: number, numChildren: number, extraProps?: ExtraProps, parentId?: IdType) {
-    // Load prop data
-    let propsDraft = {};
-    for (let key in data) {
-        if (data[key] !== 'children' && data[key] !== 'type') {
-            propsDraft[key] = data[key];
-        }
+export default function loadComponent(data: ExtraProps,
+    index: number, numChildren: number, parentId?: IdType) {
+    let props = {
+        ...data,
+
+        // Generate unique IDs for component
+        id: parentId ? [...parentId, index] : [index],
+        isFirst: (index === 0),
+        isLast: (index === numChildren - 1)
+    } as ResumeComponentProps;
+    
+    if (!props.children) {
+        props.children = new Array<object>();
     }
 
-    // Generate unique IDs for component
-    propsDraft['id'] = parentId ? [...parentId, index] : [index];
-    propsDraft['isFirst'] = (index === 0);
-    propsDraft['isLast'] = (index === numChildren - 1);
-
-    // Load props passed from parent
-    if (extraProps) {
-        for (let key in extraProps) {
-            propsDraft[key] = extraProps[key];
-        }
-    }
-
-    // Load children
-    propsDraft['children'] = new Array<object>();
-    const children = data['children'] as Array<object>;
-    if (children) {
-        propsDraft['children'] = children;
-    }
-
-    const props = propsDraft as ResumeComponentProps;
     switch (data['type']) {
         case 'DescriptionList':
             return <DescriptionList {...props} />;

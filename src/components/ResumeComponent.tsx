@@ -206,8 +206,7 @@ export default class ResumeComponent<
             newChildren[idx]['children'] = new Array<object>();
         }
 
-        assignIds(node); // Generate UUIDs
-        newChildren[idx]['children'].push(node);
+        newChildren[idx]['children'].push(assignIds(node));
         this.updateData("children", newChildren);
     }
 
@@ -288,25 +287,26 @@ export default class ResumeComponent<
         const uniqueId = elem['uuid'];
 
         return <React.Fragment key={uniqueId}>
-            {loadComponent(elem, idx, arr.length,
-                {
-                    uuid: uniqueId,
-                    mode: this.props.mode,
-                    addChild: (this.addNestedChild.bind(this, idx) as (node: object) => void),
-                    isHovering: this.props.isHovering,
-                    isSelected: this.props.isSelected,
-                    isSelectBlocked: this.props.isSelectBlocked,
-                    hoverInsert: this.props.hoverInsert,
-                    hoverOut: this.props.hoverOut,
-                    moveDown: (this.moveNestedChildDown.bind(this, idx) as Action),
-                    moveUp: (this.moveNestedChildUp.bind(this, idx) as Action),
-                    deleteChild: (this.deleteNestedChild.bind(this, idx) as Action),
-                    toggleEdit: (this.toggleNestedEdit.bind(this, idx) as () => void),
-                    updateData: (this.updateNestedData.bind(this, idx) as (key: string, data: any) => void),
-                    unselect: this.props.unselect,
-                    updateSelected: this.props.updateSelected
-                },
-                this.props.id)}
+            {loadComponent({
+                ...elem,
+                uuid: uniqueId,
+                mode: this.props.mode,
+                addChild: (this.addNestedChild.bind(this, idx) as (node: object) => void),
+                isHovering: this.props.isHovering,
+                isSelected: this.props.isSelected,
+                isSelectBlocked: this.props.isSelectBlocked,
+                hoverInsert: this.props.hoverInsert,
+                hoverOut: this.props.hoverOut,
+                moveDown: (this.moveNestedChildDown.bind(this, idx) as Action),
+                moveUp: (this.moveNestedChildUp.bind(this, idx) as Action),
+                deleteChild: (this.deleteNestedChild.bind(this, idx) as Action),
+                toggleEdit: (this.toggleNestedEdit.bind(this, idx) as () => void),
+                updateData: (this.updateNestedData.bind(this, idx) as (key: string, data: any) => void),
+                unselect: this.props.unselect,
+                updateSelected: this.props.updateSelected
+            },
+            idx, arr.length,
+            this.props.id)}
         </React.Fragment>
     }
 

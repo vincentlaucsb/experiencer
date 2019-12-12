@@ -7,7 +7,7 @@ import 'react-quill/dist/quill.snow.css';
 
 import loadComponent, { EditorMode } from './components/LoadComponent';
 import { Button, ButtonToolbar, Nav } from 'react-bootstrap';
-import { deleteAt, moveUp, moveDown, assignIds, deepCopy, pushArray, arraysEqual } from './components/Helpers';
+import { deleteAt, moveUp, moveDown, assignIds, deepCopy, arraysEqual } from './components/Helpers';
 import { SelectedNodeProps, AddChild, Action } from './components/ResumeComponent';
 import ResumeTemplateProvider from './components/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
@@ -148,7 +148,8 @@ class Resume extends React.Component<{}, ResumeState> {
     childMapper(elem: object, idx: number, arr: object[]) {
         const uniqueId = elem['uuid'];
         return <React.Fragment key={uniqueId}>
-            {loadComponent(elem, idx, arr.length, {
+            {loadComponent({
+                ...elem,
                 uuid: uniqueId,
                 mode: this.state.mode,
                 addChild: this.addNestedChild.bind(this, idx),
@@ -158,7 +159,8 @@ class Resume extends React.Component<{}, ResumeState> {
                 toggleEdit: this.toggleEdit.bind(this, idx),
                 updateData: this.updateData.bind(this, idx),
                 ...this.hoverProps
-            })}
+            },
+            idx, arr.length)}
         </React.Fragment>
     }
 
@@ -250,7 +252,11 @@ class Resume extends React.Component<{}, ResumeState> {
      */
     addNestedChild(idx: number, node: object) {
         const newChildren = [...this.state.children];
-        pushArray(newChildren[idx]['children'], node);
+        if (!newChildren[idx]['children']) {
+            newChildren[idx]['children'] = new Array<object>();
+        }
+
+        newChildren[idx]['children'].push(assignIds(node));
 
         this.setState({ children: newChildren });
     }

@@ -5,8 +5,8 @@ import { DeleteButton, UpButton, DownButton } from "./Buttons";
 
 export class FlexibleColumn extends ResumeComponent {
     /** Get the index of this column */
-    get position(): string {
-        return ((this.props.id.split('-')).slice(-1))[0];
+    get position(): number {
+        return this.props.id[this.props.id.length - 1];
     }
 
     get className(): string {

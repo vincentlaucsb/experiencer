@@ -1,9 +1,10 @@
 ﻿import * as React from "react";
 import loadComponent, { EditorMode } from "./LoadComponent";
 import { deleteAt, moveUp, moveDown, deepCopy, assignIds } from "./Helpers";
+import { IdType } from "./utility/HoverTracker";
 
 export interface SelectedNodeProps {
-    id: string;
+    id: IdType;
     uuid: string;
     addChild?: AddChild;
     deleteChild: Action;
@@ -12,7 +13,7 @@ export interface SelectedNodeProps {
 }
 
 export interface ResumeComponentProps {
-    id: string;   // Hierarchical ID based on the node's position in the resume; subject to change
+    id: IdType;   // Hierarchical ID based on the node's position in the resume; subject to change
     uuid: string; // Unique ID that never changes
 
     mode: EditorMode;
@@ -21,16 +22,16 @@ export interface ResumeComponentProps {
 
     isHidden?: boolean;
     isEditing?: boolean
-    isHovering: (id: string) => boolean;
-    isSelected: (id: string) => boolean;
     value?: string;
     children?: Array<object>;
 
+    isHovering: (id: IdType) => boolean;
+    isSelected: (id: string) => boolean;
+    hoverInsert: (id: IdType) => void;
+    hoverOut: (id: IdType) => void;
+    isSelectBlocked: (id: IdType) => boolean;
     deleteChild: ((idx: number) => void) | (() => void);
-    hoverInsert: (id: string) => void;
-    hoverOut: (id: string) => void;
     toggleParentHighlight: (isHovering: boolean) => void;
-    isSelectBlocked: (id: string) => boolean;
     moveUp: ((idx: number) => void) | (() => void);
     moveDown: ((idx: number) => void) | (() => void);
     unselect: Action;
@@ -51,7 +52,7 @@ export default class ResumeComponent<
     extends React.Component<P, S> {
     constructor(props: P) {
         super(props);
-
+        
         this.addDescriptionList = this.addDescriptionList.bind(this);
         this.addEntry = this.addEntry.bind(this);
         this.addList = this.addList.bind(this);
@@ -351,12 +352,12 @@ export default class ResumeComponent<
 
             // Hover over
             onMouseEnter: () => {
-                (this.props.hoverInsert as (id: string) => void)(this.props.id);
+                (this.props.hoverInsert as (id: IdType) => void)(this.props.id);
             },
 
             // Hover out
             onMouseLeave: () => {
-                (this.props.hoverOut as (id: string) => void)(this.props.id);
+                (this.props.hoverOut as (id: IdType) => void)(this.props.id);
             }
         };
     }

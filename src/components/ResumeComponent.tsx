@@ -47,9 +47,8 @@ export type AddChild = ((node: object) => void);
 export type UpdateChild = ((key: string, data: any) => void);
 
 // Represents a component that is part of the user's resume
-export default class ResumeComponent<
-    P extends ResumeComponentProps=ResumeComponentProps, S = {}>
-    extends React.Component<P, S> {
+export default class ResumeComponent<P
+    extends ResumeComponentProps=ResumeComponentProps> extends React.PureComponent<P> {
     constructor(props: P) {
         super(props);
         

@@ -1,5 +1,4 @@
 ﻿import * as React from "react";
-import uuid from 'uuid/v4';
 import loadComponent, { EditorMode } from "./LoadComponent";
 import { deleteAt, moveUp, moveDown, deepCopy, assignIds } from "./Helpers";
 
@@ -102,7 +101,7 @@ export default class ResumeComponent<
     get isEmpty(): boolean {
         const children = this.props.children as Array<object>;
         if (children) {
-            return children.length == 0;
+            return children.length === 0;
         }
 
         return true;
@@ -110,11 +109,11 @@ export default class ResumeComponent<
 
     /** Prevent component from being edited from the template changing screen */
     get isEditable(): boolean {
-        return !this.isPrinting && !(this.props.mode == 'changingTemplate');
+        return !this.isPrinting && !(this.props.mode === 'changingTemplate');
     }
 
     get isPrinting() : boolean {
-        return this.props.mode == 'printing';
+        return this.props.mode === 'printing';
     }
 
     /**
@@ -197,12 +196,7 @@ export default class ResumeComponent<
             newChildren[idx]['children'] = new Array<object>();
         }
 
-        // Generate UUIDs
-        node['uuid'] = uuid();
-        if (node['children']) {
-            node['children'] = assignIds(node['children']);
-        }
-
+        assignIds(node); // Generate UUIDs
         newChildren[idx]['children'].push(node);
         this.updateData("children", newChildren);
     }

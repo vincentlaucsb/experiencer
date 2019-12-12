@@ -23,7 +23,7 @@ export default class Header extends ResumeComponent<HeaderProps> {
     get className(): string {
         let classNames = [super.className];
 
-        if (this.props.orientation == 'row') {
+        if (this.props.orientation === 'row') {
             classNames.push('flex-row flex-spread');
         } else {
             classNames.push('flex-col');
@@ -34,7 +34,7 @@ export default class Header extends ResumeComponent<HeaderProps> {
 
     get editToolsClassName(): string {
         let classNames = ['flex-wrap'];
-        if (this.props.orientation == 'row') {
+        if (this.props.orientation === 'row') {
             classNames.push('btn-group-vertical');
         }
 

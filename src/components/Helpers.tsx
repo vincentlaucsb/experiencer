@@ -5,10 +5,10 @@
  * @param i: The index of the item to be deleted, zero-indexed
  */
 export function deleteAt<T>(arr: Array<T>, i: number) {
-    if (i == 0) {
+    if (i === 0) {
         arr.shift();
     }
-    else if (i == arr.length - 1) {
+    else if (i === arr.length - 1) {
         arr.pop();
     }
     else {
@@ -53,14 +53,31 @@ export function moveDown<T>(arr: Array<T>, i: number) {
 }
 
 /**
- * Assign unique IDs to an array of nodes
+ * Assign unique IDs to a node and its children, or an array of nodes by reference
+ * @param nodeOrArray An object describing a node or an array of nodes
+ */
+export function assignIds(nodeOrArray: object) {
+    if (nodeOrArray instanceof Array) {
+        assignIdsToNodeArray(nodeOrArray);
+        return nodeOrArray as Array<object>;
+    }
+
+    nodeOrArray['uuid'] = uuid();
+    let children = nodeOrArray['children'] as Array<object>;
+    if (children) {
+        assignIdsToNodeArray(nodeOrArray['children']);
+    }
+
+    return nodeOrArray;
+}
+
+/**
+ * Assign unique IDs to an array of nodes by reference
  * @param children An array of nodes
  */
-export function assignIds(children: Array<object>) {
-    let newChildren = deepCopy(children);
-
+function assignIdsToNodeArray(children: Array<object>) {
     // Assign unique IDs to all children
-    let workQueue = [ newChildren ];
+    let workQueue = [ children ];
     while(workQueue.length) {
         let nextItem = workQueue.pop() as Array<object>;
         nextItem.forEach((elem) => {
@@ -71,8 +88,6 @@ export function assignIds(children: Array<object>) {
             }
         });
     }
-
-    return newChildren;
 }
 
 /**

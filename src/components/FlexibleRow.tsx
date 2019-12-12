@@ -1,7 +1,7 @@
 ﻿import * as React from "react";
 import ResumeComponent from "./ResumeComponent";
 import { ButtonGroup, Dropdown, DropdownButton, Button } from "react-bootstrap";
-import { DeleteButton, UpButton, DownButton, AddButton } from "./Buttons";
+import { DeleteButton, UpButton, DownButton } from "./Buttons";
 
 export class FlexibleColumn extends ResumeComponent {
     constructor(props) {

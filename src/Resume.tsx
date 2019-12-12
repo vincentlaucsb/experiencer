@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { saveAs } from 'file-saver';
-import uuid from 'uuid/v4';
 
 import './css/index.css';
 import './scss/custom.scss';
 import 'react-quill/dist/quill.snow.css';
 
 import loadComponent, { EditorMode } from './components/LoadComponent';
-import { Button, ButtonToolbar, ButtonGroup, Nav, Navbar, ButtonProps } from 'react-bootstrap';
+import { Button, ButtonToolbar, Nav } from 'react-bootstrap';
 import { deleteAt, moveUp, moveDown, assignIds, deepCopy } from './components/Helpers';
 import { SelectedNodeProps, AddChild } from './components/ResumeComponent';
 import ResumeTemplateProvider from './components/ResumeTemplateProvider';
@@ -18,7 +17,7 @@ import ResumeHotKeys from './components/controls/ResumeHotkeys';
 import ResumeState, { ResumeSaveData } from './components/controls/ResumeState';
 import StyleEditor from './components/controls/StyleEditor';
 import Help from './components/help/Help';
-import { isUndefined, isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from 'util';
 
 class Resume extends React.Component<{}, ResumeState> {
     style: HTMLStyleElement;
@@ -71,15 +70,15 @@ class Resume extends React.Component<{}, ResumeState> {
 
     /** Prevent component from being edited from the template changing screen */
     get isEditable(): boolean {
-        return !this.isPrinting && !(this.state.mode == 'changingTemplate');
+        return !this.isPrinting && !(this.state.mode === 'changingTemplate');
     }
 
     get isNodeSelected() : boolean {
-        return this.state.selectedNode != undefined;
+        return !isNullOrUndefined(this.state.selectedNode);
     }
 
     get isPrinting(): boolean {
-        return this.state.mode == 'printing';
+        return this.state.mode === 'printing';
     }
 
     get resumeClassName() {
@@ -139,7 +138,7 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param mode Mode to check
      */
     toggleMode(mode: EditorMode = 'normal') {
-        const newMode = (this.state.mode == mode) ? 'normal' : mode;
+        const newMode = (this.state.mode === mode) ? 'normal' : mode;
         this.setState({ mode: newMode });
     }
 
@@ -211,10 +210,7 @@ class Resume extends React.Component<{}, ResumeState> {
      */
     addChild(node: object) {
         // Generate UUIDs
-        node['uuid'] = uuid();
-        if (node['children']) {
-            node['children'] = assignIds(node['children']);
-        }
+        node = assignIds(node);
 
         this.state.children.push(node);
         this.setState({ children: this.state.children });
@@ -232,13 +228,8 @@ class Resume extends React.Component<{}, ResumeState> {
 
         let children = this.state.children[idx]['children'];
 
-        // Generate UUIDs
-        node['uuid'] = uuid();
-        if (node['children']) {
-            node['children'] = assignIds(node['children']);
-        }
-
-        children.push(node);
+        // Generate UUIDs with assignIds()
+        children.push(assignIds(node));
         this.setState({ children: this.state.children });
     }
 
@@ -295,6 +286,8 @@ class Resume extends React.Component<{}, ResumeState> {
     pasteClipboard() {
         if (this.state.selectedNode && this.state.selectedNode.addChild) {
             let node = deepCopy(this.state.clipboard);
+
+            // UUIDs will be added in the method below
             (this.state.selectedNode.addChild as AddChild)(node);
         }
     }
@@ -307,7 +300,7 @@ class Resume extends React.Component<{}, ResumeState> {
         for (let i in ids) {
             const otherId = ids[i];
 
-            if (otherId.search(id) >= 0 && otherId != id) {
+            if (otherId.search(id) >= 0 && otherId !== id) {
                 return true;
             }
         }
@@ -332,7 +325,7 @@ class Resume extends React.Component<{}, ResumeState> {
     loadData(data: object) {
         let savedData = data as ResumeSaveData;
         this.setState({
-            children: assignIds(savedData.children),
+            children: assignIds(savedData.children) as Array<object>,
             css: savedData.css as string,
             mode: 'normal'
         });
@@ -360,7 +353,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
     //#region Helper Component Props
     get toolbarProps() {
-        const pasteEnabled = this.isNodeSelected && this.state.clipboard != undefined;
+        const pasteEnabled = this.isNodeSelected && !isNullOrUndefined(this.state.clipboard);
 
         let props = {
             mode: this.state.mode,
@@ -434,7 +427,7 @@ class Resume extends React.Component<{}, ResumeState> {
         switch (this.state.mode) {
             case 'editingStyle':
             case 'help':
-                if (this.state.mode == 'editingStyle') {
+                if (this.state.mode === 'editingStyle') {
                     sidebar = <StyleEditor {...this.styleEditorProps} />
                 }
                 else {

@@ -209,11 +209,9 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param node Node to be added
      */
     addChild(node: object) {
-        // Generate UUIDs
-        node = assignIds(node);
-
-        this.state.children.push(node);
-        this.setState({ children: this.state.children });
+        this.setState({
+            children: [...this.state.children, assignIds(node)]
+        });
     }
 
     /**

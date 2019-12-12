@@ -1,18 +1,9 @@
 ﻿import * as React from "react";
 import ResumeComponent from "./ResumeComponent";
 import { ButtonGroup, Dropdown, DropdownButton, Button } from "react-bootstrap";
-import { DeleteButton, UpButton, DownButton, AddButton } from "./Buttons";
+import { DeleteButton, UpButton, DownButton } from "./Buttons";
 
 export class FlexibleColumn extends ResumeComponent {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            isHovering: false,
-            isSelected: false
-        };
-    }
-
     /** Get the index of this column */
     get position(): string {
         return ((this.props.id.split('-')).slice(-1))[0];
@@ -24,7 +15,7 @@ export class FlexibleColumn extends ResumeComponent {
     }
 
     getEditingMenu() {
-        if (this.state.isSelected) {
+        if (this.isSelected) {
             return <ButtonGroup size="sm">
                 <DropdownButton as={ButtonGroup} title="Add" id="add-options" size="sm">
                     <Dropdown.Item onClick={this.addSection}>Section</Dropdown.Item>
@@ -41,7 +32,7 @@ export class FlexibleColumn extends ResumeComponent {
 
     /** Returns a "handle" which can be used to select the column itself and not the columns it contains */
     renderGrabHandle() {
-        if (this.state.isHovering && !this.state.isSelected) {
+        if (this.displayBorder && !this.isSelected) {
             return <div className="column-grab-handle-container">
                 <div className="d-flex align-items-center column-grab-handle">
                     Click here to select column
@@ -73,11 +64,6 @@ export default class FlexibleRow extends ResumeComponent {
     constructor(props) {
         super(props);
 
-        this.state = {
-            isHovering: false,
-            isSelected: false
-        };
-
         this.addColumn = this.addColumn.bind(this);
     }
 
@@ -92,7 +78,7 @@ export default class FlexibleRow extends ResumeComponent {
     }
 
     getEditingMenu() {
-        if (this.state.isSelected) {
+        if (this.isSelected) {
             return <ButtonGroup size="sm">
                 <Button onClick={this.addColumn}>Add Column</Button>
                 <DeleteButton {...this.props} extended={true} />
@@ -104,7 +90,7 @@ export default class FlexibleRow extends ResumeComponent {
 
     /** Returns a "handle" which can be used to select the row itself and not the columns it contains */
     renderGrabHandle() {
-        if (this.state.isHovering && !this.state.isSelected) {
+        if (this.displayBorder && !this.isSelected) {
             return <div className="row-grab-handle-container">
                 <div className="d-flex align-items-center row-grab-handle">
                     Click here to select row

@@ -1,14 +1,15 @@
 ﻿import uuid from 'uuid/v4';
+import { isNullOrUndefined, isUndefined } from 'util';
 
 /**
  * Return a copy of an array with the i-th element removed
  * @param i: The index of the item to be deleted, zero-indexed
  */
 export function deleteAt<T>(arr: Array<T>, i: number) {
-    if (i == 0) {
+    if (i === 0) {
         arr.shift();
     }
-    else if (i == arr.length - 1) {
+    else if (i === arr.length - 1) {
         arr.pop();
     }
     else {
@@ -53,14 +54,48 @@ export function moveDown<T>(arr: Array<T>, i: number) {
 }
 
 /**
- * Assign unique IDs to an array of nodes
+ * Push data to arr, creating an array if necessary
+ * @param arr
+ * @param data
+ */
+export function pushArray(arr: object, data: any) {
+    if (isUndefined(arr)) {
+        arr = new Array<object>();
+    }
+
+    if (Array.isArray(arr)) {
+        arr.push(data);
+    }
+
+    return arr;
+}
+
+/**
+ * Assign unique IDs to a node and its children, or an array of nodes by reference
+ * @param nodeOrArray An object describing a node or an array of nodes
+ */
+export function assignIds(nodeOrArray: object) {
+    if (nodeOrArray instanceof Array) {
+        assignIdsToNodeArray(nodeOrArray);
+        return nodeOrArray as Array<object>;
+    }
+
+    nodeOrArray['uuid'] = uuid();
+    let children = nodeOrArray['children'] as Array<object>;
+    if (children) {
+        assignIdsToNodeArray(nodeOrArray['children']);
+    }
+
+    return nodeOrArray;
+}
+
+/**
+ * Assign unique IDs to an array of nodes by reference
  * @param children An array of nodes
  */
-export function assignIds(children: Array<object>) {
-    let newChildren = deepCopy(children);
-
+function assignIdsToNodeArray(children: Array<object>) {
     // Assign unique IDs to all children
-    let workQueue = [ newChildren ];
+    let workQueue = [ children ];
     while(workQueue.length) {
         let nextItem = workQueue.pop() as Array<object>;
         nextItem.forEach((elem) => {
@@ -71,8 +106,6 @@ export function assignIds(children: Array<object>) {
             }
         });
     }
-
-    return newChildren;
 }
 
 /**
@@ -81,4 +114,18 @@ export function assignIds(children: Array<object>) {
  */
 export function deepCopy(obj: any) {
     return JSON.parse(JSON.stringify(obj));
+}
+
+/**
+ * Perform helpful text processing
+ * @param text Text to be processed
+ */
+// TODO: Convert URLs to anchors
+export function process(text?: string) {
+    if (text) {
+        // Replace '--' with en dash and '---' with em dash
+        return text.replace(/---/g, '\u2014').replace(/--/g, '\u2013');
+    }
+
+    return "";
 }

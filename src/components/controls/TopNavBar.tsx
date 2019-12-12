@@ -1,6 +1,6 @@
 ﻿import { Action } from "../ResumeComponent";
 import React from "react";
-import { ButtonProps, ButtonGroup, Button, Navbar, Nav, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { ButtonProps, ButtonGroup, Button, Navbar, Nav } from "react-bootstrap";
 import FileLoader from "./FileLoader";
 import FileSaver from "./FileSaver";
 import GitHub from '../../icons/mark-github.svg';
@@ -29,16 +29,12 @@ interface TopNavBarProps {
 
 /** The top nav bar for the resume editor */
 export default class TopNavBar extends React.Component<TopNavBarProps> {
-    constructor(props) {
-        super(props);
-    }
-
     get isEditingStyle(): boolean {
-        return this.props.mode == 'editingStyle';
+        return this.props.mode === 'editingStyle';
     }
 
     get isPrinting(): boolean {
-        return this.props.mode == 'printing';
+        return this.props.mode === 'printing';
     }
 
     /** Conditionally render buttons

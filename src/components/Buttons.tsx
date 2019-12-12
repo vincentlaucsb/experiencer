@@ -84,7 +84,7 @@ export default function EditButton<P extends ButtonProps>(props: P) {
     let text = props.isEditing ? "Done" : "Edit";
 
     if (props.extended) {
-        return <Button onClick={props.toggleEdit as Action}><img src={imgSrc} />{text}</Button>
+        return <Button onClick={props.toggleEdit as Action}><img src={imgSrc} alt={text}/>{text}</Button>
     }
 
     return <ButtonWithTooltip onClick={props.toggleEdit as Action} imgSrc={imgSrc} tooltip="Edit" />

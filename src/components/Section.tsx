@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
-import EditButton, { DeleteButton, AddButton, DownButton, UpButton } from "./Buttons";
-import ResumeComponent, { ResumeComponentProps, AddChild, Action } from "./ResumeComponent";
+import EditButton, { DeleteButton, DownButton, UpButton } from "./Buttons";
+import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
 import { Dropdown, ButtonGroup, Button, DropdownButton } from "react-bootstrap";
 import RotateLeft from "../icons/rotate_left-24px.svg";
 import RotateRight from "../icons/rotate_right-24px.svg";
@@ -17,25 +17,20 @@ export default class Section extends ResumeComponent<SectionProps> {
     constructor(props: SectionProps) {
         super(props);
 
-        this.state = {
-            isHovering: false,
-            isSelected: false
-        };
-
         this.rotateLeft = this.rotateLeft.bind(this);
         this.rotateRight = this.rotateRight.bind(this);
     }
 
     getEditingMenu() {
-        let editToolsClassName = this.props.headerPosition == 'left' ? 'btn-group-vertical' : '';
+        let editToolsClassName = this.props.headerPosition === 'left' ? 'btn-group-vertical' : '';
         let rotateButton = <Button onClick={this.rotateLeft}><img src={RotateLeft} alt="Place header on left" />Place Header on Left</Button>
-        if (this.props.headerPosition == 'left') {
+        if (this.props.headerPosition === 'left') {
             rotateButton = <Button onClick={this.rotateRight}>
                 <img src={RotateRight} alt="Place header on right" />Place Header on Top
             </Button>
         }
 
-        if (this.state.isSelected) {
+        if (this.isSelected) {
             return <ButtonGroup className={editToolsClassName} size="sm">
                 <DropdownButton as={ButtonGroup} title="Add" id="add-options" size="sm">
                     <Dropdown.Item onClick={this.addEntry}>Entry</Dropdown.Item>
@@ -62,12 +57,12 @@ export default class Section extends ResumeComponent<SectionProps> {
 
     get sectionClassName(): string {
         let classNames = [this.className];
-        classNames.push(this.props.headerPosition == 'left' ? 'flex-row' : '');
+        classNames.push(this.props.headerPosition === 'left' ? 'flex-row' : '');
         return classNames.join(' ');
     }
 
     get h2ClassName(): string {
-        return this.props.headerPosition == 'left' ? 'flex-col' : 'flex-row flex-spread';
+        return this.props.headerPosition === 'left' ? 'flex-col' : 'flex-row flex-spread';
     }
 
     render() {

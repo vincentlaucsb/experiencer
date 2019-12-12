@@ -1,6 +1,7 @@
 ﻿import * as React from "react";
-import ResumeComponent, { ResumeComponentProps, Action } from "./ResumeComponent";
-import EditButton, { AddButton, DownButton, UpButton, DeleteButton } from "./Buttons";
+import * as Helpers from "./Helpers";
+import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
+import EditButton, { DownButton, UpButton, DeleteButton } from "./Buttons";
 import { ButtonGroup, Button, Dropdown, DropdownButton } from "react-bootstrap";
 import Placeholder from "./Placeholder";
 
@@ -16,7 +17,6 @@ export default class Entry extends ResumeComponent<EntryProps> {
         super(props);
 
         this.state = {
-            isHovering: false,
             isSelected: false
         };
 
@@ -57,7 +57,7 @@ export default class Entry extends ResumeComponent<EntryProps> {
    }
 
     getEditingMenu() {
-        if (this.state.isSelected) {
+        if (this.isSelected) {
             return <ButtonGroup size="sm">
                 <DropdownButton as={ButtonGroup} title="Add" id="add-options" size="sm">
                     <Dropdown.Item onClick={this.addList}>Bulleted List</Dropdown.Item>
@@ -121,12 +121,7 @@ export default class Entry extends ResumeComponent<EntryProps> {
      * @param text Text to be processed
      */
     static process(text?: string) {
-        if (text) {
-            // Replace '--' with en dash and '---' with em dash
-            return text.replace(/--/g, '\u2013').replace(/---/g, '\u2014');
-        }
-
-        return ""
+        return Helpers.process(text);
     }
     
     render() {

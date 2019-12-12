@@ -1,9 +1,9 @@
 ﻿import * as React from "react";
 import ResumeComponent, { AddChild, UpdateChild, Action, ResumeComponentProps } from "./ResumeComponent";
-import EditButton, { DeleteButton, AddButton, DownButton, UpButton } from "./Buttons";
-import { Button, ButtonGroup, Form, Row, Col, InputGroup, ButtonToolbar } from "react-bootstrap";
+import EditButton, { DeleteButton, DownButton, UpButton } from "./Buttons";
+import { Button, ButtonGroup, Form, InputGroup, ButtonToolbar } from "react-bootstrap";
 import ReactQuill from "react-quill";
-import { Menu, Item, Separator, Submenu, MenuProvider } from 'react-contexify';
+import { Menu, Item, MenuProvider } from 'react-contexify';
 import AddIcon from "../icons/add-24px.svg";
 import 'react-contexify/dist/ReactContexify.min.css';
 
@@ -13,10 +13,6 @@ interface ListProps extends ResumeComponentProps {
 
 /** Represents an individual item in a list */
 export class ListItem<P extends ListProps = ListProps> extends ResumeComponent<P> {
-    constructor(props) {
-        super(props);
-    }
-
     static quillModules = {
         toolbar: [
             ['bold', 'italic', 'underline', 'strike'],
@@ -47,7 +43,7 @@ export class ListItem<P extends ListProps = ListProps> extends ResumeComponent<P
             let htmlCode = dataValue;
 
             // Strip out parent <p> tags since we don't need them
-            if (htmlCode.slice(0, 3) == '<p>' && htmlCode.slice(-4) == '</p>') {
+            if (htmlCode.slice(0, 3) === '<p>' && htmlCode.slice(-4) === '</p>') {
                 htmlCode = htmlCode.slice(3, htmlCode.length - 4);
             }
             
@@ -78,11 +74,6 @@ export default class List extends ResumeComponent<ListProps> {
     constructor(props) {
         super(props);
 
-        this.state = {
-            isHovering: false,
-            isSelected: false
-        };
-
         this.addChild = this.addChild.bind(this);
         this.moveBullets = this.moveBullets.bind(this);
     }
@@ -105,7 +96,7 @@ export default class List extends ResumeComponent<ListProps> {
 
     /** Get editing controls for this list */
     getEditingMenu() {
-        if (this.state.isSelected) {
+        if (this.isSelected) {
             return <li className="list-options">
                 <ButtonToolbar>
                     <ButtonGroup size="sm" className="mr-2" >
@@ -168,10 +159,6 @@ interface DescriptionItemProps extends ListProps {
 }
 
 export class DescriptionListItem extends ListItem<DescriptionItemProps> {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         let term: any = this.props.term || "";
         let value: any = this.props.value || "";
@@ -204,10 +191,6 @@ export class DescriptionListItem extends ListItem<DescriptionItemProps> {
 }
 
 export class DescriptionList extends List {
-    constructor(props: ListProps) {
-        super(props);
-    }
-
     addChild() {
         if (this.props.addChild as AddChild) {
             (this.props.addChild as AddChild)({

@@ -1,4 +1,5 @@
 ﻿import * as React from "react";
+import * as Helpers from "./Helpers";
 import ReactQuill from 'react-quill';
 import EditButton, { DeleteButton, DownButton, UpButton } from "./Buttons";
 import ResumeComponent from "./ResumeComponent";
@@ -8,17 +9,12 @@ export default class Paragraph extends ResumeComponent {
     constructor(props) {
         super(props);
 
-        this.state = {
-            isHovering: false,
-            isSelected: false
-        };
-
         this.updateDataEvent = this.updateDataEvent.bind(this);
     }
 
     get className(): string {
         let classNames = [super.className];
-        if (this.state.isSelected) {
+        if (this.isSelected) {
             classNames.push('flex-col');
         }
 
@@ -40,16 +36,11 @@ export default class Paragraph extends ResumeComponent {
      * @param text Text to be processed
      */
     static process(text?: string) {
-        if (text) {
-            // Replace '--' with en dash and '---' with em dash
-            return text.replace(/--/g, '\u2013').replace(/---/g, '\u2014');
-        }
-
-        return ""
+        return Helpers.process(text);
     }
 
     getEditingMenu() {
-        if (this.state.isSelected) {
+        if (this.isSelected) {
             return <ButtonGroup size="sm">
                 <EditButton {...this.props} extended={true} />
                 <DeleteButton {...this.props} extended={true} />

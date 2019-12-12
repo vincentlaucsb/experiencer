@@ -1,5 +1,4 @@
 ﻿import * as React from "react";
-import uuid from 'uuid/v4';
 import loadComponent, { EditorMode } from "./LoadComponent";
 import { deleteAt, moveUp, moveDown, deepCopy, assignIds } from "./Helpers";
 
@@ -10,7 +9,6 @@ export interface SelectedNodeProps {
     deleteChild: Action;
     getData: () => object;
     toggleEdit?: Action;
-    unselect: Action;
 }
 
 export interface ResumeComponentProps {
@@ -22,14 +20,16 @@ export interface ResumeComponentProps {
     isLast: boolean;
 
     isHidden?: boolean;
-    isEditing?: boolean;
-    isSelected?: boolean;
+    isEditing?: boolean
+    isHovering: (id: string) => boolean;
+    isSelected: (id: string) => boolean;
     value?: string;
     children?: Array<object>;
 
     deleteChild: ((idx: number) => void) | (() => void);
     hoverInsert: (id: string) => void;
     hoverOut: (id: string) => void;
+    toggleParentHighlight: (isHovering: boolean) => void;
     isSelectBlocked: (id: string) => boolean;
     moveUp: ((idx: number) => void) | (() => void);
     moveDown: ((idx: number) => void) | (() => void);
@@ -41,18 +41,13 @@ export interface ResumeComponentProps {
     toggleEdit?: ((idx: number) => void) | (() => void);
 }
 
-export interface ResumeComponentState {
-    isHovering?: boolean;
-    isSelected?: boolean;
-}
-
 export type Action = (() => void);
 export type AddChild = ((node: object) => void);
 export type UpdateChild = ((key: string, data: any) => void);
 
 // Represents a component that is part of the user's resume
 export default class ResumeComponent<
-    P extends ResumeComponentProps=ResumeComponentProps, S extends ResumeComponentState=ResumeComponentState>
+    P extends ResumeComponentProps=ResumeComponentProps, S = {}>
     extends React.Component<P, S> {
     constructor(props: P) {
         super(props);
@@ -83,10 +78,10 @@ export default class ResumeComponent<
         let classes = new Array<string>();
 
         if (!this.isPrinting) {
-            if (this.state.isHovering) {
+            if (this.displayBorder) {
                 classes.push('resume-hovering');
             }
-            if (this.state.isSelected) {
+            if (this.isSelected) {
                 classes.push('resume-selected');
             }
         }
@@ -98,23 +93,36 @@ export default class ResumeComponent<
         return classes.join(' ');
     }
 
+    get displayBorder(): boolean {
+        const isExcepted = ['FlexibleColumn', 'FlexibleRow'].indexOf(this.props['type']) >= 0;
+        return this.isHovering && (!this.isSelectBlocked || isExcepted);
+    }
+
     /** Returns true if this node has no children */
     get isEmpty(): boolean {
         const children = this.props.children as Array<object>;
         if (children) {
-            return children.length == 0;
+            return children.length === 0;
         }
 
         return true;
     }
 
+    get isHovering(): boolean {
+        return this.props.isHovering(this.props.id) && !this.isPrinting;
+    }
+
     /** Prevent component from being edited from the template changing screen */
     get isEditable(): boolean {
-        return !this.isPrinting && !(this.props.mode == 'changingTemplate');
+        return !this.isPrinting && !(this.props.mode === 'changingTemplate');
     }
 
     get isPrinting() : boolean {
-        return this.props.mode == 'printing';
+        return this.props.mode === 'printing';
+    }
+
+    get isSelected(): boolean {
+        return this.props.isSelected(this.props.uuid);
     }
 
     /**
@@ -128,7 +136,7 @@ export default class ResumeComponent<
     componentWillUnmount() {
         // Since the node is being deleted, remove callback to this node's unselect
         // method from <Resume /> to prevent memory leaks
-        if (this.state && this.state.isSelected) {
+        if (this.isSelected) {
             // NOTE: This can cause issues if an item is unmounted because it has 
             // been vastly modified via render() but not deleted from the resume,
             // i.e. unselect functionality will not work correctly.
@@ -197,12 +205,7 @@ export default class ResumeComponent<
             newChildren[idx]['children'] = new Array<object>();
         }
 
-        // Generate UUIDs
-        node['uuid'] = uuid();
-        if (node['children']) {
-            node['children'] = assignIds(node['children']);
-        }
-
+        assignIds(node); // Generate UUIDs
         newChildren[idx]['children'].push(node);
         this.updateData("children", newChildren);
     }
@@ -262,7 +265,7 @@ export default class ResumeComponent<
         let currentChildData = this.props.children[idx]['isEditing'];
         this.updateNestedData(idx, "isEditing", !currentChildData);
     }
-
+    
     updateNestedData(idx: number, key: string, data: any) {
         let newChildren = this.props.children as Array<object>;
         newChildren[idx][key] = data;
@@ -282,12 +285,15 @@ export default class ResumeComponent<
 
     childMapper(elem: object, idx: number, arr: object[]) {
         const uniqueId = elem['uuid'];
+
         return <React.Fragment key={uniqueId}>
             {loadComponent(elem, idx, arr.length,
                 {
                     uuid: uniqueId,
                     mode: this.props.mode,
                     addChild: (this.addNestedChild.bind(this, idx) as (node: object) => void),
+                    isHovering: this.props.isHovering,
+                    isSelected: this.props.isSelected,
                     isSelectBlocked: this.props.isSelectBlocked,
                     hoverInsert: this.props.hoverInsert,
                     hoverOut: this.props.hoverOut,
@@ -319,13 +325,10 @@ export default class ResumeComponent<
         // this.props.isSelectBlocked prevents a node from being selected if we are directly hovering
         // over one of its child nodes
 
-        if (!this.state.isSelected && !this.isSelectBlocked) {
+        if (!this.isSelected && !this.isSelectBlocked) {
             // Unselect the previous component
             this.props.unselect();
-
-            // Set this as selected
-            this.setState({ isSelected: true });
-
+            
             // Pass this node's unselect back up to <Resume />
             this.props.updateSelected({
                 id: this.props.id,
@@ -333,8 +336,7 @@ export default class ResumeComponent<
                 addChild: this.addChild,
                 deleteChild: this.props.deleteChild as Action,
                 getData: this.getData,
-                toggleEdit: this.props.toggleEdit as Action,
-                unselect: () => this.setState({ isSelected: false })
+                toggleEdit: this.props.toggleEdit as Action
             });
         }
     }
@@ -349,17 +351,11 @@ export default class ResumeComponent<
 
             // Hover over
             onMouseEnter: () => {
-                // Don't select anything in "print" mode
-                if (!this.isPrinting) {
-                    this.setState({ isHovering: true });
-                }
-
                 (this.props.hoverInsert as (id: string) => void)(this.props.id);
             },
 
             // Hover out
             onMouseLeave: () => {
-                this.setState({ isHovering: false });
                 (this.props.hoverOut as (id: string) => void)(this.props.id);
             }
         };

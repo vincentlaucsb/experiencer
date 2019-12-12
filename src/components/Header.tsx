@@ -11,11 +11,6 @@ export default class Header extends ResumeComponent<HeaderProps> {
     constructor(props: ResumeComponentProps) {
         super(props);
 
-        this.state = {
-            isHovering: false,
-            isSelected: false
-        }
-
         this.orientColumn = this.orientColumn.bind(this);
         this.orientRow = this.orientRow.bind(this);
     }
@@ -23,7 +18,7 @@ export default class Header extends ResumeComponent<HeaderProps> {
     get className(): string {
         let classNames = [super.className];
 
-        if (this.props.orientation == 'row') {
+        if (this.props.orientation === 'row') {
             classNames.push('flex-row flex-spread');
         } else {
             classNames.push('flex-col');
@@ -34,7 +29,7 @@ export default class Header extends ResumeComponent<HeaderProps> {
 
     get editToolsClassName(): string {
         let classNames = ['flex-wrap'];
-        if (this.props.orientation == 'row') {
+        if (this.props.orientation === 'row') {
             classNames.push('btn-group-vertical');
         }
 
@@ -50,7 +45,7 @@ export default class Header extends ResumeComponent<HeaderProps> {
     }
 
     getEditingMenu() {
-        if (this.state.isSelected) {
+        if (this.isSelected) {
             return <ButtonGroup className={this.editToolsClassName} size="sm">
                 <DropdownButton as={ButtonGroup} title="Distribute Items" id="distribute-options" size="sm">
                     <Dropdown.Item onClick={this.orientColumn}>Top-to-bottom (column)</Dropdown.Item>

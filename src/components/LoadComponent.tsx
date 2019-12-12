@@ -6,7 +6,7 @@ import Entry, { EntryProps } from "./Entry";
 import List, { ListItem, DescriptionList, DescriptionListItem } from "./List";
 import Paragraph from "./Paragraph";
 import Header from "./Header";
-import { ResumeComponentProps, SelectedNodeProps } from "./ResumeComponent";
+import { ResumeComponentProps, SelectedNodeProps, Action } from "./ResumeComponent";
 
 export type EditorMode = 'normal'
     | 'landing'
@@ -17,18 +17,21 @@ export type EditorMode = 'normal'
 
 interface ExtraProps {
     uuid: string;
+    isHovering: (id: string) => boolean;
+    toggleParentHighlight?: (isHovering: boolean) => void;
+    isSelected: (id: string) => boolean;
+    isSelectBlocked: (id: string) => boolean;
+    deleteChild: () => void;
     mode: EditorMode;
     unselect: () => void;
     updateSelected: (data?: SelectedNodeProps) => void;
 
     addChild?: (node: object) => void;
-    isSelectBlocked?: (id: string) => boolean;
     hoverInsert?: (id: string) => void;
     hoverOut?: (id: string) => void;
-    moveUp?: () => void;
-    moveDown?: () => void;
-    deleteChild?: () => void;
-    toggleEdit?: () => void;
+    moveUp?: Action;
+    moveDown?: Action;
+    toggleEdit?: Action;
     updateData?: (key: string, data: any) => void;
 }
 
@@ -45,15 +48,15 @@ export default function loadComponent(data: object,
     // Load prop data
     let propsDraft = {};
     for (let key in data) {
-        if (data[key] != 'children' && data[key] != 'type') {
+        if (data[key] !== 'children' && data[key] !== 'type') {
             propsDraft[key] = data[key];
         }
     }
 
     // Generate unique IDs for component
     propsDraft['id'] = parentIndex ? parentIndex + '-' + index.toString() : index.toString();
-    propsDraft['isFirst'] = (index == 0);
-    propsDraft['isLast'] = (index == numChildren - 1);
+    propsDraft['isFirst'] = (index === 0);
+    propsDraft['isLast'] = (index === numChildren - 1);
 
     // Load props passed from parent
     if (extraProps) {
@@ -63,7 +66,7 @@ export default function loadComponent(data: object,
     }
 
     // Load children
-    propsDraft['children'] = new Array();
+    propsDraft['children'] = new Array<object>();
     const children = data['children'] as Array<object>;
     if (children) {
         propsDraft['children'] = children;

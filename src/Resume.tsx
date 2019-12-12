@@ -1,14 +1,13 @@
 import * as React from 'react';
 import { saveAs } from 'file-saver';
-import uuid from 'uuid/v4';
 
 import './css/index.css';
 import './scss/custom.scss';
 import 'react-quill/dist/quill.snow.css';
 
 import loadComponent, { EditorMode } from './components/LoadComponent';
-import { Button, ButtonToolbar, ButtonGroup, Nav, Navbar, ButtonProps } from 'react-bootstrap';
-import { deleteAt, moveUp, moveDown, assignIds, deepCopy } from './components/Helpers';
+import { Button, ButtonToolbar, Nav } from 'react-bootstrap';
+import { deleteAt, moveUp, moveDown, assignIds, deepCopy, pushArray } from './components/Helpers';
 import { SelectedNodeProps, AddChild } from './components/ResumeComponent';
 import ResumeTemplateProvider from './components/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
@@ -18,7 +17,7 @@ import ResumeHotKeys from './components/controls/ResumeHotkeys';
 import ResumeState, { ResumeSaveData } from './components/controls/ResumeState';
 import StyleEditor from './components/controls/StyleEditor';
 import Help from './components/help/Help';
-import { isUndefined, isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from 'util';
 
 class Resume extends React.Component<{}, ResumeState> {
     style: HTMLStyleElement;
@@ -65,21 +64,22 @@ class Resume extends React.Component<{}, ResumeState> {
         this.pasteClipboard = this.pasteClipboard.bind(this);
 
         /** Selection Methods */
+        this.isHovering = this.isHovering.bind(this);
         this.unselect = this.unselect.bind(this);
         this.isSelectBlocked = this.isSelectBlocked.bind(this);
     }
 
     /** Prevent component from being edited from the template changing screen */
     get isEditable(): boolean {
-        return !this.isPrinting && !(this.state.mode == 'changingTemplate');
+        return !this.isPrinting && !(this.state.mode === 'changingTemplate');
     }
 
     get isNodeSelected() : boolean {
-        return this.state.selectedNode != undefined;
+        return !isNullOrUndefined(this.state.selectedNode);
     }
 
     get isPrinting(): boolean {
-        return this.state.mode == 'printing';
+        return this.state.mode === 'printing';
     }
 
     get resumeClassName() {
@@ -105,23 +105,39 @@ class Resume extends React.Component<{}, ResumeState> {
     childMapper(elem: object, idx: number, arr: object[]) {
         const uniqueId = elem['uuid'];
 
+        const addId = (set: Set<string>, id: string) => {
+            set.add(id);
+            return set;
+        };
+
         // Add an ID to the set of nodes we are hovering over
         const hoverInsert = (id: string) => {
-            this.state.hovering.add(id);
-        }
+            this.setState({
+                hovering: addId(this.state.hovering, id)
+            });
+        };
 
+        const removeId = (set: Set<string>, id: string) => {
+            set.delete(id);
+            return set;
+        }
+        
         // Remove an ID from the set of nodes we are hovering over
         const hoverOut = (id: string) => {
-            this.state.hovering.delete(id);
-        }
+            this.setState({
+                hovering: removeId(this.state.hovering, id)
+            });
+        };
 
         return <React.Fragment key={uniqueId}>
             {loadComponent(elem, idx, arr.length, {
                 uuid: uniqueId,
                 mode: this.state.mode,
                 addChild: this.addNestedChild.bind(this, idx),
+                isHovering: this.isHovering.bind(this),
                 hoverInsert: hoverInsert.bind(this),
                 hoverOut: hoverOut.bind(this),
+                isSelected: this.isSelected.bind(this),
                 isSelectBlocked: this.isSelectBlocked.bind(this),
                 moveUp: this.moveUp.bind(this, idx),
                 moveDown: this.moveDown.bind(this, idx),
@@ -139,7 +155,7 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param mode Mode to check
      */
     toggleMode(mode: EditorMode = 'normal') {
-        const newMode = (this.state.mode == mode) ? 'normal' : mode;
+        const newMode = (this.state.mode === mode) ? 'normal' : mode;
         this.setState({ mode: newMode });
     }
 
@@ -210,14 +226,9 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param node Node to be added
      */
     addChild(node: object) {
-        // Generate UUIDs
-        node['uuid'] = uuid();
-        if (node['children']) {
-            node['children'] = assignIds(node['children']);
-        }
-
-        this.state.children.push(node);
-        this.setState({ children: this.state.children });
+        this.setState({
+            children: [...this.state.children, assignIds(node)]
+        });
     }
 
     /**
@@ -226,20 +237,10 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param node Grandchild to be added
      */
     addNestedChild(idx: number, node: object) {
-        if (!this.state.children[idx]['children']) {
-            this.state.children[idx]['children'] = new Array<object>();
-        }
+        const newChildren = [...this.state.children];
+        pushArray(newChildren[idx]['children'], node);
 
-        let children = this.state.children[idx]['children'];
-
-        // Generate UUIDs
-        node['uuid'] = uuid();
-        if (node['children']) {
-            node['children'] = assignIds(node['children']);
-        }
-
-        children.push(node);
-        this.setState({ children: this.state.children });
+        this.setState({ children: newChildren });
     }
 
     deleteChild(idx: number) {
@@ -249,20 +250,18 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     updateData(idx: number, key: string, data: any) {
-        this.state.children[idx][key] = data;
+        const newChildren = [...this.state.children];
+        newChildren[idx][key] = data;
 
-        this.setState({
-            children: this.state.children
-        });
+        this.setState({ children: newChildren });
     }
 
     toggleEdit(idx: number) {
-        let currentValue = this.state.children[idx]['isEditing'];
-        this.state.children[idx]['isEditing'] = !currentValue;
+        const currentValue = this.state.children[idx]['isEditing'];
+        const newChildren = [...this.state.children];
+        newChildren[idx]['isEditing'] = !currentValue;
 
-        this.setState({
-            children: this.state.children
-        });
+        this.setState({ children: newChildren });
     }
 
     // Move the child at idx up one position
@@ -295,6 +294,8 @@ class Resume extends React.Component<{}, ResumeState> {
     pasteClipboard() {
         if (this.state.selectedNode && this.state.selectedNode.addChild) {
             let node = deepCopy(this.state.clipboard);
+
+            // UUIDs will be added in the method below
             (this.state.selectedNode.addChild as AddChild)(node);
         }
     }
@@ -302,24 +303,45 @@ class Resume extends React.Component<{}, ResumeState> {
 
     //#region Node Selection
     /** Determine if a node shouldn't be allowed to be selected */
-    isSelectBlocked(id: string) {
+    // TODO: Cache this value
+    deepestHoverId(): string {
+        /** Return the deepest hover node ID */
         const ids = Array.from(this.state.hovering);
-        for (let i in ids) {
-            const otherId = ids[i];
+        let depth = 0;
+        let cand = "";
 
-            if (otherId.search(id) >= 0 && otherId != id) {
-                return true;
+        for (let i in ids) {
+            const id = ids[i];
+            const currentDepth = id.split("-").length;
+
+            if (currentDepth > depth) {
+                depth = currentDepth;
+                cand = id;
             }
+        }
+
+        return cand;
+    }
+    
+    isSelectBlocked(id: string) {
+        const otherId = this.deepestHoverId();
+        return (id !== otherId) &&
+            (id.split("-").length < otherId.split("-").length);
+    }
+
+    isSelected(uuid: string) {
+        if (this.state.selectedNode) {
+            return uuid === this.state.selectedNode.uuid;
         }
 
         return false;
     }
 
-    unselect() {
-        if (this.state.selectedNode) {
-            this.state.selectedNode.unselect();
-        }
+    isHovering(id: string) {
+        return this.state.hovering.has(id);
+    }
 
+    unselect() {
         this.setState({ selectedNode: undefined });
     }
 
@@ -332,7 +354,7 @@ class Resume extends React.Component<{}, ResumeState> {
     loadData(data: object) {
         let savedData = data as ResumeSaveData;
         this.setState({
-            children: assignIds(savedData.children),
+            children: assignIds(savedData.children) as Array<object>,
             css: savedData.css as string,
             mode: 'normal'
         });
@@ -360,7 +382,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
     //#region Helper Component Props
     get toolbarProps() {
-        const pasteEnabled = this.isNodeSelected && this.state.clipboard != undefined;
+        const pasteEnabled = this.isNodeSelected && !isNullOrUndefined(this.state.clipboard);
 
         let props = {
             mode: this.state.mode,
@@ -434,7 +456,7 @@ class Resume extends React.Component<{}, ResumeState> {
         switch (this.state.mode) {
             case 'editingStyle':
             case 'help':
-                if (this.state.mode == 'editingStyle') {
+                if (this.state.mode === 'editingStyle') {
                     sidebar = <StyleEditor {...this.styleEditorProps} />
                 }
                 else {

@@ -1,7 +1,5 @@
 ﻿import { SectionHeaderPosition } from "./Section";
-import uuid from 'uuid/v4';
-import { assignIds } from "./Helpers";
-import Resume from "src/Resume";
+import { assignIds, deepCopy } from "./Helpers";
 
 export default class ResumeTemplateProvider {
     static defaultCss = `#resume {
@@ -221,25 +219,27 @@ export default class ResumeTemplateProvider {
         ]
     };
 
-    static resumeChildren = [
-        ResumeTemplateProvider.header,
-        ResumeTemplateProvider.objective,
-        ResumeTemplateProvider.experience,
-        ResumeTemplateProvider.techSkills,
-        ResumeTemplateProvider.education
-    ]
+    static get resumeChildren(): Array<object> {
+        return deepCopy([
+            ResumeTemplateProvider.header,
+            ResumeTemplateProvider.objective,
+            ResumeTemplateProvider.experience,
+            ResumeTemplateProvider.techSkills,
+            ResumeTemplateProvider.education
+        ]) as Array<object>;
+    }
 
     static templates = {
         "Traditional 1": () => {
             let data = {
-                children: assignIds(ResumeTemplateProvider.resumeChildren),
+                children: assignIds(ResumeTemplateProvider.resumeChildren) as Array<object>,
                 css: ResumeTemplateProvider.defaultCss,
                 sectionTitlePosition: "top" as SectionHeaderPosition
             };
 
             for (let k in data.children) {
                 const node = data.children[k];
-                if (node['type'] == 'Section') {
+                if (node['type'] === 'Section') {
                     node['headerPosition'] = 'top';
                 }
             }
@@ -249,14 +249,14 @@ export default class ResumeTemplateProvider {
 
         "Traditional 2": () => {
             let data = {
-                children: assignIds(ResumeTemplateProvider.resumeChildren),
+                children: assignIds(ResumeTemplateProvider.resumeChildren) as Array<object>,
                 css: ResumeTemplateProvider.defaultCss,
                 sectionTitlePosition: "left" as SectionHeaderPosition
             };
 
             for (let k in data.children) {
                 const node = data.children[k];
-                if (node['type'] == 'Section') {
+                if (node['type'] === 'Section') {
                     node['headerPosition'] = 'left';
                 }
             }
@@ -287,7 +287,7 @@ export default class ResumeTemplateProvider {
                             }
                         ]
                     }
-                ]),
+                ]) as Array<object>,
                 css: ResumeTemplateProvider.defaultCss,
             };
 

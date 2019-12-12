@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
 import * as Helpers from "./Helpers";
-import ResumeNodeBase, { ResumeNodeProps } from "./ResumeComponent";
+import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import EditButton, { DownButton, UpButton, DeleteButton } from "./controls/Buttons";
 import { ButtonGroup, Dropdown, DropdownButton } from "react-bootstrap";
 import Placeholder from "./Placeholder";

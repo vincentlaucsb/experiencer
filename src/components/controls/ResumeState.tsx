@@ -1,6 +1,6 @@
-﻿import { EditorMode } from "../LoadComponent";
+﻿import { EditorMode } from "../ResumeComponent";
 import { SectionHeaderPosition } from "../Section";
-import { SelectedNodeProps } from "../ResumeComponent";
+import { SelectedNodeProps } from "../ResumeNodeBase";
 import { IdType } from "../utility/HoverTracker";
 
 export interface ResumeSaveData {

@@ -1,10 +1,10 @@
-﻿import { Action } from "../ResumeComponent";
+﻿import { Action } from "../ResumeNodeBase";
 import React from "react";
 import { ButtonProps, ButtonGroup, Button, Navbar, Nav } from "react-bootstrap";
 import FileLoader from "./FileLoader";
 import FileSaver from "./FileSaver";
 import GitHub from '../../icons/mark-github.svg';
-import { EditorMode } from "../LoadComponent";
+import { EditorMode } from "../ResumeComponent";
 import { isUndefined } from "util";
 import { withTooltip } from "./Buttons";
 

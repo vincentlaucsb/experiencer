@@ -1,6 +1,6 @@
 ﻿import React from "react";
 import { Container, } from "react-bootstrap";
-import { Action } from "../ResumeComponent";
+import { Action } from "../ResumeNodeBase";
 
 import CloseIcon from "../../icons/close-24px.svg";
 import { withTooltip } from "../controls/Buttons";

@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import ResumeNodeBase from "./ResumeComponent";
+import ResumeNodeBase from "./ResumeNodeBase";
 import { ButtonGroup, Dropdown, DropdownButton, Button } from "react-bootstrap";
 import { DeleteButton, UpButton, DownButton } from "./controls/Buttons";
 

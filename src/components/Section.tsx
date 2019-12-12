@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
 import EditButton, { DeleteButton, DownButton, UpButton } from "./controls/Buttons";
-import ResumeNodeBase, { ResumeNodeProps } from "./ResumeComponent";
+import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import { Dropdown, ButtonGroup, Button, DropdownButton } from "react-bootstrap";
 import RotateLeft from "../icons/rotate_left-24px.svg";
 import RotateRight from "../icons/rotate_right-24px.svg";

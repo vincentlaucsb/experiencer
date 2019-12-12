@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import { ResumeNodeProps, Action } from "../ResumeComponent";
+import { ResumeNodeProps, Action } from "../ResumeNodeBase";
 
 import AddIcon from "../../icons/add-24px.svg";
 import DeleteIcon from "../../icons/delete-24px.svg";

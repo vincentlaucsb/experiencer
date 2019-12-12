@@ -2,7 +2,7 @@ import React from "react";
 import { Nav } from "react-bootstrap";
 import HotkeysHelp from "./HotkeysHelp";
 import HelpPage from "./HelpPage";
-import { Action } from "../ResumeComponent";
+import { Action } from "../ResumeNodeBase";
 import SavingHelp from "./SavingHelp";
 import StartHelp from "./StartHelp";
 

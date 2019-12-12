@@ -5,10 +5,10 @@ import './css/index.css';
 import './scss/custom.scss';
 import 'react-quill/dist/quill.snow.css';
 
-import { EditorMode } from './components/LoadComponent';
+import ResumeComponent, { EditorMode } from './components/ResumeComponent';
 import { Button, ButtonToolbar, Nav } from 'react-bootstrap';
 import { deleteAt, moveUp, moveDown, assignIds, deepCopy, arraysEqual } from './components/Helpers';
-import { SelectedNodeProps, AddChild, Action } from './components/ResumeComponent';
+import { SelectedNodeProps, AddChild, Action } from './components/ResumeNodeBase';
 import ResumeTemplateProvider from './components/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
 import Landing from './components/help/Landing';
@@ -19,7 +19,6 @@ import StyleEditor from './components/controls/StyleEditor';
 import Help from './components/help/Help';
 import { isNullOrUndefined } from 'util';
 import HoverTracker, { IdType } from './components/utility/HoverTracker';
-import ResumeComponent from './components/LoadComponent';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering: HoverTracker;

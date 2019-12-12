@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import ResumeNodeBase, { AddChild, UpdateChild, Action, ResumeNodeProps } from "./ResumeComponent";
+import ResumeNodeBase, { AddChild, UpdateChild, Action, ResumeNodeProps } from "./ResumeNodeBase";
 import EditButton, { DeleteButton, DownButton, UpButton } from "./controls/Buttons";
 import { Button, ButtonGroup, Form, InputGroup, ButtonToolbar } from "react-bootstrap";
 import ReactQuill from "react-quill";

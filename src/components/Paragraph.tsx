@@ -1,11 +1,11 @@
 ﻿import * as React from "react";
 import * as Helpers from "./Helpers";
 import ReactQuill from 'react-quill';
-import EditButton, { DeleteButton, DownButton, UpButton } from "./Buttons";
-import ResumeComponent from "./ResumeComponent";
+import EditButton, { DeleteButton, DownButton, UpButton } from "./controls/Buttons";
+import ResumeNodeBase from "./ResumeNodeBase";
 import { ButtonGroup } from "react-bootstrap";
 
-export default class Paragraph extends ResumeComponent {
+export default class Paragraph extends ResumeNodeBase {
     constructor(props) {
         super(props);
 
@@ -57,7 +57,7 @@ export default class Paragraph extends ResumeComponent {
             onChange={((this.props.updateData as (key: string, data: any) => void).bind(this, "value") as (data: any) => void)}
         /> : <span className="resume-paragraph" dangerouslySetInnerHTML={{ __html: Paragraph.process(this.props.value) as string }} />;
 
-        return <div className={this.className} {...this.getSelectTriggerProps()}>
+        return <div className={this.className} {...this.selectTriggerProps}>
             {this.renderEditingMenu()}
             {value}
         </div>;

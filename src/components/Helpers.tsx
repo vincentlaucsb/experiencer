@@ -53,21 +53,18 @@ export function moveDown<T>(arr: Array<T>, i: number) {
     return arr;
 }
 
-/**
- * Push data to arr, creating an array if necessary
- * @param arr
- * @param data
- */
-export function pushArray(arr: object, data: any) {
-    if (isUndefined(arr)) {
-        arr = new Array<object>();
+export function arraysEqual<T>(left: Array<T>, right: Array<T>) {
+    if (left.length !== right.length) {
+        return false;
     }
 
-    if (Array.isArray(arr)) {
-        arr.push(data);
+    for (let i = 0; i < left.length; i++) {
+        if (left[i] !== right[i]) {
+            return false;
+        }
     }
 
-    return arr;
+    return true;
 }
 
 /**

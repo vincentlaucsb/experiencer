@@ -1,24 +1,20 @@
 ﻿import * as React from "react";
 import * as Helpers from "./Helpers";
-import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
-import EditButton, { DownButton, UpButton, DeleteButton } from "./Buttons";
-import { ButtonGroup, Button, Dropdown, DropdownButton } from "react-bootstrap";
+import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
+import EditButton, { DownButton, UpButton, DeleteButton } from "./controls/Buttons";
+import { ButtonGroup, Dropdown, DropdownButton } from "react-bootstrap";
 import Placeholder from "./Placeholder";
 
-export interface EntryProps extends ResumeComponentProps {
+export interface EntryProps extends ResumeNodeProps {
     title?: string;
     titleExtras?: string[];
     subtitle?: string;
     subtitleExtras?: string[];
 }
 
-export default class Entry extends ResumeComponent<EntryProps> {
+export default class Entry extends ResumeNodeBase<EntryProps> {
     constructor(props) {
         super(props);
-
-        this.state = {
-            isSelected: false
-        };
 
         this.addTitleField = this.addTitleField.bind(this);
         this.addSubtitleField = this.addSubtitleField.bind(this);
@@ -133,7 +129,7 @@ export default class Entry extends ResumeComponent<EntryProps> {
             subtitle = <input onChange={this.updateDataEvent.bind(this, "subtitle")} value={this.props.subtitle || ""} />
         }
 
-        return <div className={this.className} {...this.getSelectTriggerProps()}>
+        return <div className={this.className} {...this.selectTriggerProps}>
             {this.renderEditingMenu()}
             <div className="entry-title">
                 <h3 className="flex-row flex-spread">{title} {this.getTitleExtras()}</h3>

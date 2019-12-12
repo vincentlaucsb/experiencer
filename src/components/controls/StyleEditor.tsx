@@ -5,7 +5,7 @@ import "ace-builds/src-noconflict/theme-github";
 import ResumeState from "./ResumeState";
 import React from "react";
 import { ButtonToolbar, Button } from "react-bootstrap";
-import { Action } from "../ResumeComponent";
+import { Action } from "../ResumeNodeBase";
 
 interface StyleEditorProps extends ResumeState {
     onStyleChange: (css: string) => void;

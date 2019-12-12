@@ -1,12 +1,12 @@
 ﻿import * as React from "react";
-import ResumeComponent from "./ResumeComponent";
+import ResumeNodeBase from "./ResumeNodeBase";
 import { ButtonGroup, Dropdown, DropdownButton, Button } from "react-bootstrap";
-import { DeleteButton, UpButton, DownButton } from "./Buttons";
+import { DeleteButton, UpButton, DownButton } from "./controls/Buttons";
 
-export class FlexibleColumn extends ResumeComponent {
+export class FlexibleColumn extends ResumeNodeBase {
     /** Get the index of this column */
-    get position(): string {
-        return ((this.props.id.split('-')).slice(-1))[0];
+    get position(): number {
+        return this.props.id[this.props.id.length - 1];
     }
 
     get className(): string {
@@ -45,11 +45,11 @@ export class FlexibleColumn extends ResumeComponent {
 
     render() {
         let helperText = <></>;
-        if (this.isEmpty && !this.props.isSelected) {
+        if (this.isEmpty && !this.isSelected) {
             helperText = <span>Column {this.position}: Click to select and add content</span>
         }
 
-        return <div {...this.getSelectTriggerProps()} className={this.className} style={{ minWidth: "100px", minHeight: "100px" }}>
+        return <div {...this.selectTriggerProps} className={this.className} style={{ minWidth: "100px", minHeight: "100px" }}>
             {this.renderEditingMenu()}
             <div>
                 {this.renderGrabHandle()}
@@ -60,7 +60,7 @@ export class FlexibleColumn extends ResumeComponent {
     }
 }
 
-export default class FlexibleRow extends ResumeComponent {
+export default class FlexibleRow extends ResumeNodeBase {
     constructor(props) {
         super(props);
 
@@ -102,7 +102,7 @@ export default class FlexibleRow extends ResumeComponent {
     }
     
     render() {
-        return <div {...this.getSelectTriggerProps()}>
+        return <div {...this.selectTriggerProps}>
             {this.renderEditingMenu()}
             <div className={this.className} style={{ width: "100%", minWidth: "100px", minHeight: "100px" }}>
                 {this.renderGrabHandle()}

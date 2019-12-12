@@ -1,6 +1,6 @@
 ﻿import React from "react";
 import { GlobalHotKeys, KeyMap, ExtendedKeyMapOptions } from "react-hotkeys";
-import { Action } from "../ResumeComponent";
+import { Action } from "../ResumeNodeBase";
 import ResumeState from "./ResumeState";
 
 export interface ResumeHotKeysProps extends ResumeState {
@@ -14,10 +14,6 @@ export interface ResumeHotKeysProps extends ResumeState {
 };
 
 export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
-    constructor(props) {
-        super(props);
-    }
-
     public static readonly keyMap: KeyMap = {
         COPY_SELECTED: {
             name: 'Copy Node',

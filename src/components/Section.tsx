@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
-import EditButton, { DeleteButton, DownButton, UpButton } from "./Buttons";
-import ResumeComponent, { ResumeComponentProps } from "./ResumeComponent";
+import EditButton, { DeleteButton, DownButton, UpButton } from "./controls/Buttons";
+import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import { Dropdown, ButtonGroup, Button, DropdownButton } from "react-bootstrap";
 import RotateLeft from "../icons/rotate_left-24px.svg";
 import RotateRight from "../icons/rotate_right-24px.svg";
@@ -8,12 +8,12 @@ import Placeholder from "./Placeholder";
 
 export type SectionHeaderPosition = "left" | "top";
 
-export interface SectionProps extends ResumeComponentProps {
+export interface SectionProps extends ResumeNodeProps {
     title: string;
     headerPosition?: SectionHeaderPosition;
 }
 
-export default class Section extends ResumeComponent<SectionProps> {
+export default class Section extends ResumeNodeBase<SectionProps> {
     constructor(props: SectionProps) {
         super(props);
 
@@ -73,12 +73,12 @@ export default class Section extends ResumeComponent<SectionProps> {
             title = <input onChange={this.updateDataEvent.bind(this, "title")} type="text" value={this.props.title || ""} />;
         }
 
-        if (this.isEmpty && !this.props.isSelected) {
+        if (this.isEmpty && !this.isSelected) {
             helperText = <p>This section is empty. Click here to select it and add content.</p>
         }
 
         return <>
-            <section className={this.sectionClassName} {...this.getSelectTriggerProps()}>
+            <section className={this.sectionClassName} {...this.selectTriggerProps}>
                 {this.renderEditingMenu()}
                 <h2 className={this.h2ClassName}>
                     {title}

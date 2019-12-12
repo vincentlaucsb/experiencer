@@ -1,18 +1,18 @@
 ﻿import * as React from "react";
-import ResumeComponent, { AddChild, UpdateChild, Action, ResumeComponentProps } from "./ResumeComponent";
-import EditButton, { DeleteButton, DownButton, UpButton } from "./Buttons";
+import ResumeNodeBase, { AddChild, UpdateChild, Action, ResumeNodeProps } from "./ResumeNodeBase";
+import EditButton, { DeleteButton, DownButton, UpButton } from "./controls/Buttons";
 import { Button, ButtonGroup, Form, InputGroup, ButtonToolbar } from "react-bootstrap";
 import ReactQuill from "react-quill";
 import { Menu, Item, MenuProvider } from 'react-contexify';
 import AddIcon from "../icons/add-24px.svg";
 import 'react-contexify/dist/ReactContexify.min.css';
 
-interface ListProps extends ResumeComponentProps {
+interface ListProps extends ResumeNodeProps {
     isMoving?: boolean;
 }
 
 /** Represents an individual item in a list */
-export class ListItem<P extends ListProps = ListProps> extends ResumeComponent<P> {
+export class ListItem<P extends ListProps = ListProps> extends ResumeNodeBase<P> {
     static quillModules = {
         toolbar: [
             ['bold', 'italic', 'underline', 'strike'],
@@ -70,7 +70,7 @@ export class ListItem<P extends ListProps = ListProps> extends ResumeComponent<P
 }
 
 /** Represents a list component */
-export default class List extends ResumeComponent<ListProps> {
+export default class List extends ResumeNodeBase<ListProps> {
     constructor(props) {
         super(props);
 
@@ -125,7 +125,7 @@ export default class List extends ResumeComponent<ListProps> {
     }
 
     renderContextMenu() {
-        return <Menu id={this.props.id}>
+        return <Menu id={this.props.uuid}>
             <Item onClick={this.addChild}>Add Bullet</Item>
             <Item onClick={this.moveBullets}>{this.moveText}</Item>
             <Item onClick={this.toggleHidden}>{this.hideText}</Item>
@@ -138,7 +138,7 @@ export default class List extends ResumeComponent<ListProps> {
             return <></>
         }
 
-        return <ul className={this.className} {...this.getSelectTriggerProps()}>
+        return <ul className={this.className} {...this.selectTriggerProps}>
             {this.renderEditingMenu()}
             {this.renderChildren()}
         </ul>
@@ -146,7 +146,7 @@ export default class List extends ResumeComponent<ListProps> {
     
     render() {
         return <React.Fragment>
-            <MenuProvider id={this.props.id}>
+            <MenuProvider id={this.props.uuid}>
                 {this.renderList()}
             </MenuProvider>
             {this.renderContextMenu()}
@@ -200,7 +200,7 @@ export class DescriptionList extends List {
     }
 
     renderList() {
-        return <dl className={this.className} {...this.getSelectTriggerProps()}>
+        return <dl className={this.className} {...this.selectTriggerProps}>
             {this.renderEditingMenu()}
             {this.renderChildren()}
         </dl>

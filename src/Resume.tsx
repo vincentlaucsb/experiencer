@@ -5,10 +5,10 @@ import './css/index.css';
 import './scss/custom.scss';
 import 'react-quill/dist/quill.snow.css';
 
-import loadComponent, { EditorMode } from './components/LoadComponent';
+import ResumeComponent, { EditorMode } from './components/ResumeComponent';
 import { Button, ButtonToolbar, Nav } from 'react-bootstrap';
-import { deleteAt, moveUp, moveDown, assignIds, deepCopy, pushArray } from './components/Helpers';
-import { SelectedNodeProps, AddChild } from './components/ResumeComponent';
+import { deleteAt, moveUp, moveDown, assignIds, deepCopy, arraysEqual } from './components/Helpers';
+import { SelectedNodeProps, AddChild, Action } from './components/ResumeNodeBase';
 import ResumeTemplateProvider from './components/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
 import Landing from './components/help/Landing';
@@ -18,9 +18,12 @@ import ResumeState, { ResumeSaveData } from './components/controls/ResumeState';
 import StyleEditor from './components/controls/StyleEditor';
 import Help from './components/help/Help';
 import { isNullOrUndefined } from 'util';
+import HoverTracker, { IdType } from './components/utility/HoverTracker';
 
 class Resume extends React.Component<{}, ResumeState> {
+    hovering: HoverTracker;
     style: HTMLStyleElement;
+    unselect: Action;
 
     constructor(props) {
         super(props);
@@ -30,11 +33,11 @@ class Resume extends React.Component<{}, ResumeState> {
         this.style = document.createElement("style");
         this.style.innerHTML = "";
         head.appendChild(this.style);
-        
+
+        this.hovering = new HoverTracker();
         this.state = {
             children: [],
             css: "",
-            hovering: new Set<string>(),
             mode: "landing",
             sectionTitlePosition: "top"
         };
@@ -63,10 +66,8 @@ class Resume extends React.Component<{}, ResumeState> {
         this.copyClipboard = this.copyClipboard.bind(this);
         this.pasteClipboard = this.pasteClipboard.bind(this);
 
-        /** Selection Methods */
-        this.isHovering = this.isHovering.bind(this);
-        this.unselect = this.unselect.bind(this);
-        this.isSelectBlocked = this.isSelectBlocked.bind(this);
+        // Unselect the currently selected node
+        this.unselect = () => { this.setState({ selectedNode: undefined }); };
     }
 
     /** Prevent component from being edited from the template changing screen */
@@ -91,6 +92,47 @@ class Resume extends React.Component<{}, ResumeState> {
         return classNames.join(' ');
     }
 
+    /** Return props related to hover/select functionality */
+    get hoverProps() {
+        return {
+            // Add an ID to the set of nodes we are hovering over
+            hoverOver: (id: IdType) => {
+                this.hovering.hoverOver(id);
+                this.setState({
+                    hoverNode: this.hovering.currentId
+                });
+            },
+
+            // Remove an ID from the set of nodes we are hovering over
+            hoverOut: (id: IdType) => {
+                this.hovering.hoverOut(id);
+                this.setState({
+                    hoverNode: this.hovering.currentId
+                });
+            },
+
+            // Determines if we are currently hovering over a node
+            isHovering: this.hovering.isHovering,
+
+            // Determines if a node is selectable or not
+            isSelectBlocked: (id: IdType) => {
+                return !arraysEqual(id, this.hovering.currentId);
+            },
+
+            // Returns true if the given node is currently selected
+            isSelected: (uuid: string) => {
+                return this.state.selectedNode ? uuid === this.state.selectedNode.uuid : false;
+            },
+
+            // Update the selected node
+            updateSelected: (data?: SelectedNodeProps) => {
+                this.setState({ selectedNode: data });
+            },
+
+            unselect: this.unselect
+        }
+    }
+
     // Push style changes to browser
     renderStyle() {
         this.style.innerHTML = this.state.css;
@@ -104,50 +146,23 @@ class Resume extends React.Component<{}, ResumeState> {
      */
     childMapper(elem: object, idx: number, arr: object[]) {
         const uniqueId = elem['uuid'];
+        const props = {
+            ...elem,
+            uuid: uniqueId,
+            mode: this.state.mode,
+            addChild: this.addNestedChild.bind(this, idx),
+            moveUp: this.moveUp.bind(this, idx),
+            moveDown: this.moveDown.bind(this, idx),
+            deleteChild: this.deleteChild.bind(this, idx),
+            toggleEdit: this.toggleEdit.bind(this, idx),
+            updateData: this.updateData.bind(this, idx),
+            ...this.hoverProps,
 
-        const addId = (set: Set<string>, id: string) => {
-            set.add(id);
-            return set;
+            index: idx,
+            numChildren: arr.length
         };
 
-        // Add an ID to the set of nodes we are hovering over
-        const hoverInsert = (id: string) => {
-            this.setState({
-                hovering: addId(this.state.hovering, id)
-            });
-        };
-
-        const removeId = (set: Set<string>, id: string) => {
-            set.delete(id);
-            return set;
-        }
-        
-        // Remove an ID from the set of nodes we are hovering over
-        const hoverOut = (id: string) => {
-            this.setState({
-                hovering: removeId(this.state.hovering, id)
-            });
-        };
-
-        return <React.Fragment key={uniqueId}>
-            {loadComponent(elem, idx, arr.length, {
-                uuid: uniqueId,
-                mode: this.state.mode,
-                addChild: this.addNestedChild.bind(this, idx),
-                isHovering: this.isHovering.bind(this),
-                hoverInsert: hoverInsert.bind(this),
-                hoverOut: hoverOut.bind(this),
-                isSelected: this.isSelected.bind(this),
-                isSelectBlocked: this.isSelectBlocked.bind(this),
-                moveUp: this.moveUp.bind(this, idx),
-                moveDown: this.moveDown.bind(this, idx),
-                deleteChild: this.deleteChild.bind(this, idx),
-                toggleEdit: this.toggleEdit.bind(this, idx),
-                updateData: this.updateData.bind(this, idx),
-                unselect: this.unselect,
-                updateSelected: this.updateSelected.bind(this)
-            })}
-        </React.Fragment>
+        return <ResumeComponent key={uniqueId} {...props} />
     }
 
     /**
@@ -238,7 +253,11 @@ class Resume extends React.Component<{}, ResumeState> {
      */
     addNestedChild(idx: number, node: object) {
         const newChildren = [...this.state.children];
-        pushArray(newChildren[idx]['children'], node);
+        if (!newChildren[idx]['children']) {
+            newChildren[idx]['children'] = new Array<object>();
+        }
+
+        newChildren[idx]['children'].push(assignIds(node));
 
         this.setState({ children: newChildren });
     }
@@ -300,56 +319,7 @@ class Resume extends React.Component<{}, ResumeState> {
         }
     }
     //#endregion
-
-    //#region Node Selection
-    /** Determine if a node shouldn't be allowed to be selected */
-    // TODO: Cache this value
-    deepestHoverId(): string {
-        /** Return the deepest hover node ID */
-        const ids = Array.from(this.state.hovering);
-        let depth = 0;
-        let cand = "";
-
-        for (let i in ids) {
-            const id = ids[i];
-            const currentDepth = id.split("-").length;
-
-            if (currentDepth > depth) {
-                depth = currentDepth;
-                cand = id;
-            }
-        }
-
-        return cand;
-    }
     
-    isSelectBlocked(id: string) {
-        const otherId = this.deepestHoverId();
-        return (id !== otherId) &&
-            (id.split("-").length < otherId.split("-").length);
-    }
-
-    isSelected(uuid: string) {
-        if (this.state.selectedNode) {
-            return uuid === this.state.selectedNode.uuid;
-        }
-
-        return false;
-    }
-
-    isHovering(id: string) {
-        return this.state.hovering.has(id);
-    }
-
-    unselect() {
-        this.setState({ selectedNode: undefined });
-    }
-
-    updateSelected(data?: SelectedNodeProps) {
-        this.setState({ selectedNode: data });
-    }
-    //#endregion
-
     //#region Serialization
     loadData(data: object) {
         let savedData = data as ResumeSaveData;

@@ -70,6 +70,7 @@ class Resume extends React.Component<{}, ResumeState> {
         // Unselect the currently selected node
         this.unselect = () => { this.setState({ selectedNode: undefined }); };
     }
+    
 
     /** Prevent component from being edited from the template changing screen */
     get isEditable(): boolean {
@@ -297,6 +298,55 @@ class Resume extends React.Component<{}, ResumeState> {
             children: moveDown(this.state.children, idx)
         });
     }
+
+    // TODO: Move this method
+    /** Given an array of nodes and a hierarchical ID, return a reference to the 
+     *  node pointed to by id */
+    getNodeById(arr: Array<object>, id: IdType) {
+        let targetNode, parentNode;
+        targetNode = arr[id[0]];
+
+        for (let i = 1; i < id.length; i++) {
+            if (i + 1 == id.length) {
+                parentNode = targetNode;
+            }
+
+            targetNode = targetNode['children'][id[i]];
+        }
+
+        return [targetNode, parentNode];
+    }
+
+    modifySelectedParent(callback: (id: IdType, targetNode: object, parentNode: object) => void) {
+        let newChildren = [...this.state.children];
+
+        const selectedNode = this.state.selectedNode as SelectedNodeProps;
+        if (selectedNode) {
+            const id = selectedNode.id;
+            let [targetNode, parentNode] = this.getNodeById(newChildren, id);
+            callback(id, targetNode, parentNode);
+        }
+
+        this.setState({ children: newChildren });
+    }
+
+    moveSelectedUp() {
+        this.modifySelectedParent((id, targetNode, parentNode) => {
+            moveUp(parentNode['children'], id[id.length - 1]);
+        });
+    }
+
+    moveSelectedDown() {
+        this.modifySelectedParent((id, targetNode, parentNode) => {
+            moveDown(parentNode['children'], id[id.length - 1]);
+        });
+    }
+
+    deleteSelected() {
+        this.modifySelectedParent((id, targetNode, parentNode) => {
+            deleteAt(parentNode['children'], id[id.length - 1]);
+        });
+    }
     //#endregion
 
     //#region Clipboard
@@ -424,10 +474,13 @@ class Resume extends React.Component<{}, ResumeState> {
         let sidebar: JSX.Element;
 
         // TODO: Clean up... maybe
-        const selected = this.state.selectedNode as SelectedNodeProps;
         const editingTop = <>
             {topNav}
-            <TopEditingBar {...this.state.selectedNode} />
+            <TopEditingBar {...this.state.selectedNode}
+                moveUp={this.moveSelectedUp.bind(this)}
+                moveDown={this.moveSelectedDown.bind(this)}
+                delete={this.deleteSelected.bind(this)}
+            />
         </>
 
         // Render the final layout based on editor mode

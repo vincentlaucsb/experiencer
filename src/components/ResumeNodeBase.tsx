@@ -4,13 +4,17 @@ import { deleteAt, moveUp, moveDown, deepCopy, assignIds } from "./Helpers";
 import { IdType } from "./utility/HoverTracker";
 import ResumeComponent from "./ResumeComponent";
 
-export interface BasicNodeProps {
-    id: IdType;   // Hierarchical ID based on the node's position in the resume; subject to change
-    uuid: string; // Unique ID that never changes
-
+export interface NodeActions {
     addChild?: AddChild;
     deleteChild: Action;
+    moveUp: Action;
+    moveDown: Action;
     toggleEdit?: Action;
+}
+
+export interface BasicNodeProps extends NodeActions {
+    id: IdType;   // Hierarchical ID based on the node's position in the resume; subject to change
+    uuid: string; // Unique ID that never changes
 }
 
 export interface SelectedNodeProps extends BasicNodeProps {
@@ -20,24 +24,18 @@ export interface SelectedNodeProps extends BasicNodeProps {
 /** Represents resume prop properties and methods passed
  *  from the top down
  * */
-export interface ResumePassProps {
+export interface ResumePassProps extends NodeActions {
     uuid: string;
     mode: EditorMode;
 
-    deleteChild: Action;
     hoverOver: (id: IdType) => void;
     hoverOut: (id: IdType) => void;
     isHovering: (id: IdType) => boolean;
     isSelected: (id: string) => boolean;
     isSelectBlocked: (id: IdType) => boolean;
-    moveUp: Action;
-    moveDown: Action;
     unselect: Action;
     updateData: (key: string, data: any) => void;
     updateSelected: (data?: SelectedNodeProps) => void;
-
-    addChild?: AddChild;
-    toggleEdit?: Action;
 }
 
 export interface ResumeNodeProps extends BasicNodeProps, ResumePassProps {
@@ -150,6 +148,14 @@ export default class ResumeNodeBase<P
             onMouseEnter: () => this.props.hoverOver(this.props.id),
             onMouseLeave: () => this.props.hoverOut(this.props.id)
         };
+    }
+    
+    componentDidUpdate() {
+        if (this.isSelected) {
+            console.log("Selected component has re-rendered", this.props.id);
+
+            // TODO: Update
+        }
     }
 
     componentWillUnmount() {
@@ -353,6 +359,8 @@ export default class ResumeNodeBase<P
                 uuid: this.props.uuid,
                 addChild: this.addChild,
                 deleteChild: this.props.deleteChild,
+                moveUp: this.props.moveUp,
+                moveDown: this.props.moveDown,
                 getData: this.getData,
                 toggleEdit: this.props.toggleEdit as Action
             });

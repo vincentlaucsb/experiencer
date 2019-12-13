@@ -88,7 +88,9 @@ export default class List extends ResumeNodeBase<ListProps> {
 
     addChild() {
         if (this.props.addChild as AddChild) {
-            (this.props.addChild as AddChild)({
+            (this.props.addChild as AddChild)(
+            this.props.id,
+                {
                 type: 'ListItem'
             });
         }
@@ -193,7 +195,9 @@ export class DescriptionListItem extends ListItem<DescriptionItemProps> {
 export class DescriptionList extends List {
     addChild() {
         if (this.props.addChild as AddChild) {
-            (this.props.addChild as AddChild)({
+            (this.props.addChild as AddChild)(
+            this.props.id,
+                {
                 type: 'DescriptionListItem'
             });
         }

@@ -152,7 +152,7 @@ class Resume extends React.Component<{}, ResumeState> {
             ...elem,
             uuid: uniqueId,
             mode: this.state.mode,
-            addChild: this.addNestedChild.bind(this, idx),
+            addChild: this.addNestedChild.bind(this),
             moveUp: this.moveUp.bind(this, idx),
             moveDown: this.moveDown.bind(this, idx),
             deleteChild: this.deleteChild.bind(this, idx),
@@ -249,19 +249,19 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     /**
-     * Add a child for some child node of this resume
-     * @param idx  Index of the child
-     * @param node Grandchild to be added
+     * Add node as a child to the node identified by id
+     * @param id   Hierarchical id pointing to some node
+     * @param node Node to be added
      */
-    addNestedChild(idx: number, node: object) {
-        const newChildren = [...this.state.children];
-        if (!newChildren[idx]['children']) {
-            newChildren[idx]['children'] = new Array<object>();
+    addNestedChild(id: IdType, node: object) {
+        let newRoot = { ...this.state };
+        let targetNode = this.getNodeById(newRoot, id)[0];
+        if (!('children' in targetNode)) {
+            targetNode['children'] = new Array<object>();
         }
 
-        newChildren[idx]['children'].push(assignIds(node));
-
-        this.setState({ children: newChildren });
+        targetNode['children'].push(assignIds(node));
+        this.setState(newRoot);
     }
 
     deleteChild(idx: number) {
@@ -366,7 +366,7 @@ class Resume extends React.Component<{}, ResumeState> {
             let node = deepCopy(this.state.clipboard);
 
             // UUIDs will be added in the method below
-            (this.state.selectedNode.addChild as AddChild)(node);
+            (this.state.selectedNode.addChild as AddChild)(this.state.selectedNode.id, node);
         }
     }
     //#endregion

@@ -50,7 +50,7 @@ export interface ResumeNodeProps extends BasicNodeProps, ResumePassProps {
 }
 
 export type Action = (() => void);
-export type AddChild = ((node: object) => void);
+export type AddChild = ((id: IdType, node: object) => void);
 export type UpdateChild = ((key: string, data: any) => void);
 
 // Represents a node that is part of the user's resume
@@ -68,7 +68,6 @@ export default class ResumeNodeBase<P
         this.addChild = this.addChild.bind(this);
         this.getData = this.getData.bind(this);
         this.updateDataEvent = this.updateDataEvent.bind(this);
-        this.addNestedChild = this.addNestedChild.bind(this);
         this.deleteNestedChild = this.deleteNestedChild.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
         this.toggleNestedEdit = this.toggleNestedEdit.bind(this);
@@ -178,7 +177,7 @@ export default class ResumeNodeBase<P
 
     addChild(node: object) {
         if (this.props.addChild as AddChild) {
-            (this.props.addChild as AddChild)(node);
+            (this.props.addChild as AddChild)(this.props.id, node);
         }
     }
 
@@ -217,21 +216,6 @@ export default class ResumeNodeBase<P
         this.addChild({
             type: 'Section'
         })
-    }
-
-    /**
-     * Add a grandchild node to this component
-     * @param idx  The parent of the node to be added (where the parent is a child of this component)
-     * @param node JSON description of the node to be added
-     */
-    addNestedChild(idx: number, node: object) {
-        let newChildren = this.props.children as Array<object>;
-        if (!newChildren[idx]['children']) {
-            newChildren[idx]['children'] = new Array<object>();
-        }
-
-        newChildren[idx]['children'].push(assignIds(node));
-        this.updateData("children", newChildren);
     }
 
     /**
@@ -313,7 +297,7 @@ export default class ResumeNodeBase<P
                     ...elem,
                     uuid: uniqueId,
                     mode: this.props.mode,
-                    addChild: this.addNestedChild.bind(this, idx),
+                    addChild: this.props.addChild,
                     isHovering: this.props.isHovering,
                     isSelected: this.props.isSelected,
                     isSelectBlocked: this.props.isSelectBlocked,

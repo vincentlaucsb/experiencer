@@ -19,6 +19,7 @@ import StyleEditor from './components/controls/StyleEditor';
 import Help from './components/help/Help';
 import { isNullOrUndefined } from 'util';
 import HoverTracker, { IdType } from './components/utility/HoverTracker';
+import TopEditingBar from './components/controls/TopEditingBar';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering: HoverTracker;
@@ -422,6 +423,13 @@ class Resume extends React.Component<{}, ResumeState> {
         let main = resume;
         let sidebar: JSX.Element;
 
+        // TODO: Clean up... maybe
+        const selected = this.state.selectedNode as SelectedNodeProps;
+        const editingTop = <>
+            {topNav}
+            <TopEditingBar {...this.state.selectedNode} />
+        </>
+
         // Render the final layout based on editor mode
         switch (this.state.mode) {
             case 'editingStyle':
@@ -434,7 +442,7 @@ class Resume extends React.Component<{}, ResumeState> {
                 }
 
                 return <ResizableSidebarLayout
-                    topNav={topNav}
+                    topNav={editingTop}
                     main={resume}
                     sideBar={sidebar}
                 />
@@ -448,7 +456,7 @@ class Resume extends React.Component<{}, ResumeState> {
                 main = <Landing className={this.resumeClassName} />
             default:
                 return <DefaultLayout
-                    topNav={topNav}
+                    topNav={editingTop}
                     main={main} />
         }
     }

@@ -302,10 +302,10 @@ class Resume extends React.Component<{}, ResumeState> {
     // TODO: Move this method
     /** Given an array of nodes and a hierarchical ID, return a reference to the 
      *  node pointed to by id */
-    getNodeById(arr: Array<object>, id: IdType) {
-        let targetNode, parentNode;
-        targetNode = arr[id[0]];
-
+    getNodeById(data: object, id: IdType) {
+        let targetNode = data['children'][id[0]],
+            parentNode = data['children'];
+        
         for (let i = 1; i < id.length; i++) {
             if (i + 1 == id.length) {
                 parentNode = targetNode;
@@ -318,16 +318,16 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     modifySelectedParent(callback: (id: IdType, targetNode: object, parentNode: object) => void) {
-        let newChildren = [...this.state.children];
+        let newRoot = { ...this.state };
 
         const selectedNode = this.state.selectedNode as SelectedNodeProps;
         if (selectedNode) {
             const id = selectedNode.id;
-            let [targetNode, parentNode] = this.getNodeById(newChildren, id);
+            let [targetNode, parentNode] = this.getNodeById(newRoot, id);
             callback(id, targetNode, parentNode);
         }
 
-        this.setState({ children: newChildren });
+        this.setState(newRoot);
     }
 
     moveSelectedUp() {

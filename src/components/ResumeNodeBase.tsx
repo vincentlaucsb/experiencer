@@ -4,12 +4,17 @@ import { deleteAt, moveUp, moveDown, deepCopy, assignIds } from "./Helpers";
 import { IdType } from "./utility/HoverTracker";
 import ResumeComponent from "./ResumeComponent";
 
+export type Action = (() => void);
+export type ModifyChild = (id: IdType) => void;
+export type AddChild = ((id: IdType, node: object) => void);
+export type UpdateChild = ((id: IdType, key: string, data: any) => void);
+
 export interface NodeActions {
     addChild?: AddChild;
-    deleteChild: Action;
-    moveUp: Action;
-    moveDown: Action;
-    toggleEdit?: (id: IdType) => void;
+    deleteChild: ModifyChild;
+    moveUp: ModifyChild;
+    moveDown: ModifyChild;
+    toggleEdit?: ModifyChild;
 }
 
 export interface BasicNodeProps extends NodeActions {
@@ -49,10 +54,6 @@ export interface ResumeNodeProps extends BasicNodeProps, ResumePassProps {
     isEditing?: boolean
     value?: string;
 }
-
-export type Action = (() => void);
-export type AddChild = ((id: IdType, node: object) => void);
-export type UpdateChild = ((id: IdType, key: string, data: any) => void);
 
 // Represents a node that is part of the user's resume
 export default class ResumeNodeBase<P
@@ -150,7 +151,7 @@ export default class ResumeNodeBase<P
     
     componentDidUpdate() {
         if (this.isSelected) {
-            console.log("Selected component has re-rendered", this.props.id);
+            // console.log("Selected component has re-rendered", this.props.id);
 
             // TODO: Update
         }

@@ -22,7 +22,7 @@ export default function TopEditingBar(props: any) {
 
         return <Box>
             <Button>Add</Button>
-            <Button onClick={props.delete}>Delete</Button>
+            <Button onClick={() => props.delete(id)}>Delete</Button>
             <Button onClick={edit}>Edit</Button>
             <Button onClick={() => props.moveUp(id)}>Move Up</Button>
             <Button onClick={() => props.moveDown(id)}>Move Down</Button>

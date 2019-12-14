@@ -21,10 +21,10 @@ export interface BasicNodeProps extends NodeActions {
 }
 
 export interface SelectedNodeProps extends BasicNodeProps {
+    type: string;
     moveUp: Action;
     moveDown: Action;
 
-    getId: () => IdType;
     getData: () => object;
 }
 
@@ -307,14 +307,14 @@ export default class ResumeNodeBase<P
             
             // Pass this node's unselect back up to <Resume />
             this.props.updateSelected({
+                type: this.props['type'],
                 id: this.props.id,
                 uuid: this.props.uuid,
-                addChild: this.addChild,
+                addChild: this.props.addChild,
                 deleteChild: this.props.deleteChild,
                 moveUp: this.moveUp.bind(this),
                 moveDown: this.moveDown.bind(this),
                 getData: this.getData,
-                getId: () => { return this.props.id }, 
                 toggleEdit: this.toggleEdit as Action
             });
         }

@@ -4,7 +4,7 @@ import { assignIds, deleteAt, moveUp, moveDown } from "../Helpers";
 export default class ResumeNodeTree {
     children = new Array<object>();
 
-    constructor(children) {
+    constructor(children = []) {
         this.children = children;
     }
 
@@ -17,6 +17,7 @@ export default class ResumeNodeTree {
                 parentNode = targetNode;
             }
 
+            console.log(id, targetNode);
             targetNode = targetNode['children'][id[i]];
         }
 
@@ -47,7 +48,7 @@ export default class ResumeNodeTree {
      * @param node Node to be added
      */
     addNestedChild(id: IdType, node: object) {
-        let targetNode = this.getNodeById(id)[0];
+        let targetNode = this.getParentOfId(id);
         if (!('children' in targetNode)) {
             targetNode['children'] = new Array<object>();
         }
@@ -56,17 +57,17 @@ export default class ResumeNodeTree {
     }
 
     deleteChild(id: IdType) {
-        let parentNode = this.getNodeById(id)[1];
+        let parentNode = this.getParentOfId(id);
         deleteAt(parentNode['children'], id[id.length - 1]);
     }
 
     updateChild(id: IdType, key: string, data: any) {
-        let targetNode = this.getNodeById(id)[0];
+        let targetNode = this.getNodeById(id);
         targetNode[key] = data;
     }
 
     toggleEdit(id: IdType) {
-        let targetNode = this.getNodeById(id)[0];
+        let targetNode = this.getNodeById(id);
         const currentValue = targetNode['isEditing'];
         targetNode['isEditing'] = !currentValue;
     }

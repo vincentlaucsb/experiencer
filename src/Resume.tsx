@@ -20,9 +20,11 @@ import Help from './components/help/Help';
 import { isNullOrUndefined } from 'util';
 import HoverTracker, { IdType } from './components/utility/HoverTracker';
 import TopEditingBar from './components/controls/TopEditingBar';
+import ResumeNodeTree from './components/utility/NodeTree';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering: HoverTracker;
+    nodes: ResumeNodeTree;
     style: HTMLStyleElement;
     unselect: Action;
 
@@ -36,6 +38,7 @@ class Resume extends React.Component<{}, ResumeState> {
         head.appendChild(this.style);
 
         this.hovering = new HoverTracker();
+        this.nodes = new ResumeNodeTree();
         this.state = {
             children: [],
             css: "",
@@ -197,6 +200,9 @@ class Resume extends React.Component<{}, ResumeState> {
                 ...ResumeTemplateProvider.templates[key]()
             });
 
+            // TODO: Clean up this code
+            this.nodes.children = ResumeTemplateProvider.templates[key]()['children'];
+
             // Update loaded CSS
             this.renderStyle();
         };
@@ -254,20 +260,19 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param node Node to be added
      */
     addNestedChild(id: IdType, node: object) {
-        let newRoot = { ...this.state };
-        let targetNode = this.getNodeById(newRoot, id)[0];
-        if (!('children' in targetNode)) {
-            targetNode['children'] = new Array<object>();
-        }
-
-        targetNode['children'].push(assignIds(node));
-        this.setState(newRoot);
+        this.nodes.addNestedChild(id, node);
+        this.setState({ children: this.nodes.children });
     }
 
     deleteChild(idx: number) {
         this.setState({
             children: deleteAt(this.state.children, idx)
         });
+    }
+
+    deleteNested(id: IdType) {
+        this.nodes.deleteChild(id);
+        this.setState({ children: this.nodes.children });
     }
 
     updateData(idx: number, key: string, data: any) {
@@ -278,21 +283,13 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     updateNestedChild(id: IdType, key: string, data: any) {
-        let newRoot = { ...this.state };
-        let targetNode = this.getNodeById(newRoot, id)[0];
-        targetNode[key] = data;
-        this.setState(newRoot);
+        this.nodes.updateChild(id, key, data);
+        this.setState({ children: this.nodes.children });
     }
 
     toggleNestedEdit(id: IdType) {
-        let newRoot = { ...this.state };
-
-        console.log(id);
-        let targetNode = this.getNodeById(newRoot, id)[0];
-        const currentValue = targetNode['isEditing'];
-        targetNode['isEditing'] = !currentValue;
-        
-        this.setState(newRoot);
+        this.nodes.toggleEdit(id);
+        this.setState({ children: this.nodes.children });
     }
 
     // Move the child at idx up one position
@@ -310,69 +307,13 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     moveNestedUp(id: IdType) {
-        console.log("MOVING UP");
-        let newRoot = { ...this.state };
-        let parentNode = this.getNodeById(newRoot, id)[1];
-        parentNode = moveUp(parentNode['children'], id[id.length - 1]);
-
-        this.setState(newRoot);
+        this.nodes.moveUp(id);
+        this.setState({ children: this.nodes.children });
     }
 
     moveNestedDown(id: IdType) {
-        let newRoot = { ...this.state };
-        let parentNode = this.getNodeById(newRoot, id)[1];
-        moveDown(parentNode['children'], id[id.length - 1]);
-
-        this.setState(newRoot);
-    }
-
-    // TODO: Move this method
-    /** Given an array of nodes and a hierarchical ID, return a reference to the 
-     *  node pointed to by id */
-    getNodeById(data: object, id: IdType) {
-        let targetNode = data['children'][id[0]],
-            parentNode = data['children'];
-        
-        for (let i = 1; i < id.length; i++) {
-            if (i + 1 == id.length) {
-                parentNode = targetNode;
-            }
-
-            targetNode = targetNode['children'][id[i]];
-        }
-
-        return [targetNode, parentNode];
-    }
-
-    modifySelectedParent(callback: (id: IdType, targetNode: object, parentNode: object) => void) {
-        let newRoot = { ...this.state };
-
-        const selectedNode = this.state.selectedNode as SelectedNodeProps;
-        if (selectedNode) {
-            const id = selectedNode.id;
-            let [targetNode, parentNode] = this.getNodeById(newRoot, id);
-            callback(id, targetNode, parentNode);
-        }
-
-        this.setState(newRoot);
-    }
-
-    moveSelectedUp() {
-        this.modifySelectedParent((id, targetNode, parentNode) => {
-            moveUp(parentNode['children'], id[id.length - 1]);
-        });
-    }
-
-    moveSelectedDown() {
-        this.modifySelectedParent((id, targetNode, parentNode) => {
-            moveDown(parentNode['children'], id[id.length - 1]);
-        });
-    }
-
-    deleteSelected() {
-        this.modifySelectedParent((id, targetNode, parentNode) => {
-            deleteAt(parentNode['children'], id[id.length - 1]);
-        });
+        this.nodes.moveDown(id);
+        this.setState({ children: this.nodes.children });
     }
     //#endregion
 
@@ -401,8 +342,10 @@ class Resume extends React.Component<{}, ResumeState> {
     //#region Serialization
     loadData(data: object) {
         let savedData = data as ResumeSaveData;
+        this.nodes.children = assignIds(savedData.children) as Array<object>;
+
         this.setState({
-            children: assignIds(savedData.children) as Array<object>,
+            children: this.nodes.children,
             css: savedData.css as string,
             mode: 'normal'
         });
@@ -508,7 +451,7 @@ class Resume extends React.Component<{}, ResumeState> {
             <TopEditingBar {...this.state.selectedNode}
                 moveUp={this.moveNestedUp.bind(this)}
                 moveDown={this.moveNestedDown.bind(this)}
-                delete={this.deleteSelected.bind(this)}
+                delete={this.deleteNested.bind(this)}
             />
         </>
 

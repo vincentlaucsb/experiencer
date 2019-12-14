@@ -48,7 +48,7 @@ export default class ResumeNodeTree {
      * @param node Node to be added
      */
     addNestedChild(id: IdType, node: object) {
-        let targetNode = this.getParentOfId(id);
+        let targetNode = this.getNodeById(id);
         if (!('children' in targetNode)) {
             targetNode['children'] = new Array<object>();
         }
@@ -73,12 +73,12 @@ export default class ResumeNodeTree {
     }
 
     moveUp(id: IdType) {
-        let parentNode = this.getNodeById(id)[1];
+        let parentNode = this.getParentOfId(id);
         parentNode = moveUp(parentNode['children'], id[id.length - 1]);
     }
 
     moveDown(id: IdType) {
-        let parentNode = this.getNodeById(id)[1];
+        let parentNode = this.getParentOfId(id);
         moveDown(parentNode['children'], id[id.length - 1]);
     }
 }

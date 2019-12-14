@@ -156,9 +156,9 @@ class Resume extends React.Component<{}, ResumeState> {
             uuid: uniqueId,
             mode: this.state.mode,
             addChild: this.addNestedChild.bind(this),
-            moveUp: this.moveUp.bind(this, idx),
-            moveDown: this.moveDown.bind(this, idx),
-            deleteChild: this.deleteChild.bind(this, idx),
+            moveUp: this.moveNestedUp.bind(this),
+            moveDown: this.moveNestedDown.bind(this),
+            deleteChild: this.deleteNested.bind(this),
             toggleEdit: this.toggleNestedEdit.bind(this),
             updateData: this.updateNestedChild,
             ...this.hoverProps,
@@ -249,9 +249,8 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param node Node to be added
      */
     addChild(node: object) {
-        this.setState({
-            children: [...this.state.children, assignIds(node)]
-        });
+        this.nodes.addChild(node);
+        this.setState({ children: this.nodes.children });
     }
 
     /**
@@ -262,12 +261,6 @@ class Resume extends React.Component<{}, ResumeState> {
     addNestedChild(id: IdType, node: object) {
         this.nodes.addNestedChild(id, node);
         this.setState({ children: this.nodes.children });
-    }
-
-    deleteChild(idx: number) {
-        this.setState({
-            children: deleteAt(this.state.children, idx)
-        });
     }
 
     deleteNested(id: IdType) {
@@ -290,20 +283,6 @@ class Resume extends React.Component<{}, ResumeState> {
     toggleNestedEdit(id: IdType) {
         this.nodes.toggleEdit(id);
         this.setState({ children: this.nodes.children });
-    }
-
-    // Move the child at idx up one position
-    moveUp(idx: number) {
-        this.setState({
-            children: moveUp(this.state.children, idx)
-        });
-    }
-
-    // Move the child at idx down one position
-    moveDown(idx: number) {
-        this.setState({
-            children: moveDown(this.state.children, idx)
-        });
     }
 
     moveNestedUp(id: IdType) {

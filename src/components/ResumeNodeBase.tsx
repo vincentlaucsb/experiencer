@@ -18,6 +18,7 @@ export interface BasicNodeProps extends NodeActions {
 }
 
 export interface SelectedNodeProps extends BasicNodeProps {
+    getId: () => IdType;
     getData: () => object;
 }
 
@@ -333,6 +334,7 @@ export default class ResumeNodeBase<P
                 moveUp: this.props.moveUp,
                 moveDown: this.props.moveDown,
                 getData: this.getData,
+                getId: () => { return this.props.id }, 
                 toggleEdit: this.toggleEdit as Action
             });
         }

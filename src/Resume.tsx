@@ -54,7 +54,6 @@ class Resume extends React.Component<{}, ResumeState> {
         this.childMapper = this.childMapper.bind(this);
         this.updateData = this.updateData.bind(this);
         this.updateNestedChild = this.updateNestedChild.bind(this);
-        this.toggleEdit = this.toggleEdit.bind(this);
 
         /** Templates and Styling **/
         this.changeTemplate = this.changeTemplate.bind(this);
@@ -285,14 +284,6 @@ class Resume extends React.Component<{}, ResumeState> {
         this.setState(newRoot);
     }
 
-    toggleEdit(idx: number) {
-        const currentValue = this.state.children[idx]['isEditing'];
-        const newChildren = [...this.state.children];
-        newChildren[idx]['isEditing'] = !currentValue;
-
-        this.setState({ children: newChildren });
-    }
-
     toggleNestedEdit(id: IdType) {
         let newRoot = { ...this.state };
 
@@ -316,6 +307,23 @@ class Resume extends React.Component<{}, ResumeState> {
         this.setState({
             children: moveDown(this.state.children, idx)
         });
+    }
+
+    moveNestedUp(id: IdType) {
+        console.log("MOVING UP");
+        let newRoot = { ...this.state };
+        let parentNode = this.getNodeById(newRoot, id)[1];
+        parentNode = moveUp(parentNode['children'], id[id.length - 1]);
+
+        this.setState(newRoot);
+    }
+
+    moveNestedDown(id: IdType) {
+        let newRoot = { ...this.state };
+        let parentNode = this.getNodeById(newRoot, id)[1];
+        moveDown(parentNode['children'], id[id.length - 1]);
+
+        this.setState(newRoot);
     }
 
     // TODO: Move this method
@@ -493,11 +501,13 @@ class Resume extends React.Component<{}, ResumeState> {
         let sidebar: JSX.Element;
 
         // TODO: Clean up... maybe
+
+
         const editingTop = <>
             {topNav}
             <TopEditingBar {...this.state.selectedNode}
-                moveUp={this.moveSelectedUp.bind(this)}
-                moveDown={this.moveSelectedDown.bind(this)}
+                moveUp={this.moveNestedUp.bind(this)}
+                moveDown={this.moveNestedDown.bind(this)}
                 delete={this.deleteSelected.bind(this)}
             />
         </>

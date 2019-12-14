@@ -1,7 +1,6 @@
 ﻿import * as React from "react";
 import * as Helpers from "./Helpers";
 import ReactQuill from 'react-quill';
-import EditButton, { DeleteButton, DownButton, UpButton } from "./controls/Buttons";
 import ResumeNodeBase from "./ResumeNodeBase";
 import { ButtonGroup } from "react-bootstrap";
 import { IdType } from "./utility/HoverTracker";
@@ -40,17 +39,6 @@ export default class Paragraph extends ResumeNodeBase {
         return Helpers.process(text);
     }
 
-    getEditingMenu() {
-        if (this.isSelected) {
-            return <ButtonGroup size="sm">
-                <EditButton {...this.props} extended={true} />
-                <DeleteButton {...this.props} extended={true} />
-                <UpButton {...this.props} extended={true} />
-                <DownButton {...this.props} extended={true} />
-            </ButtonGroup>
-        }
-    }
-
     render(): JSX.Element {
         let value = this.props.isEditing ? <ReactQuill
             modules={Paragraph.quillModules}
@@ -59,7 +47,6 @@ export default class Paragraph extends ResumeNodeBase {
         /> : <span className="resume-paragraph" dangerouslySetInnerHTML={{ __html: Paragraph.process(this.props.value) as string }} />;
 
         return <div className={this.className} {...this.selectTriggerProps}>
-            {this.renderEditingMenu()}
             {value}
         </div>;
     }

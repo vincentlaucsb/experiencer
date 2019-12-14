@@ -65,10 +65,6 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
                     <Dropdown.Item onClick={this.removeTitleField}>Remove title field (from right)</Dropdown.Item>
                     <Dropdown.Item onClick={this.removeSubtitleField}>Remove subtitle field (from right)</Dropdown.Item>
                 </DropdownButton>
-                <EditButton {...this.props} extended={true} />
-                <DeleteButton {...this.props} extended={true} />
-                <UpButton {...this.props} extended={true} />
-                <DownButton {...this.props} extended={true} />
             </ButtonGroup>
         }
     }

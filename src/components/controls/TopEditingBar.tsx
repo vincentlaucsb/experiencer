@@ -7,6 +7,14 @@ import { IdType } from "../utility/HoverTracker";
 export default function TopEditingBar(props: any) {
     const selectedNode = props as SelectedNodeProps;
     if (selectedNode) {
+        let getData: any;
+
+        let id = new Array<number>();
+        if (selectedNode.getId) {
+            id = selectedNode.getId();
+            console.log("GOT ID", id);
+        }
+
         let edit: any = () => { };
         if (selectedNode.toggleEdit) {
             edit = (selectedNode.toggleEdit as (id: IdType) => void).bind(props.id);
@@ -16,8 +24,8 @@ export default function TopEditingBar(props: any) {
             <Button>Add</Button>
             <Button onClick={props.delete}>Delete</Button>
             <Button onClick={edit}>Edit</Button>
-            <Button onClick={props.moveUp}>Move Up</Button>
-            <Button onClick={props.moveDown}>Move Down</Button>
+            <Button onClick={() => props.moveUp(id)}>Move Up</Button>
+            <Button onClick={() => props.moveDown(id)}>Move Down</Button>
         </Box>
     }
 

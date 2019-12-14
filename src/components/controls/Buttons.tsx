@@ -88,7 +88,7 @@ export default function EditButton<P extends ButtonProps>(props: P) {
         return <Button onClick={(props.toggleEdit as any).bind(props.id) as Action}><img src={imgSrc} alt={text}/>{text}</Button>
     }
 
-    return <ButtonWithTooltip onClick={props.toggleEdit as Action} imgSrc={imgSrc} tooltip="Edit" />
+    return <ButtonWithTooltip onClick={(props.toggleEdit as any).bind(props.id) as Action} imgSrc={imgSrc} tooltip="Edit" />
 }
 
 export function DeleteButton<P extends ResumeNodeProps>(props: P) {

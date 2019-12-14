@@ -1,37 +1,15 @@
 ﻿import React from "react";
 import { Box, Button } from "@material-ui/core";
-import { Action, SelectedNodeProps } from "../ResumeNodeBase";
-import { AddButton } from "./Buttons";
-import { IdType } from "../utility/HoverTracker";
+import { Action, SelectedNodeProps, ModifyChild } from "../ResumeNodeBase";
 
-export default function TopEditingBar(props: any) {
-    const selectedNode = props as SelectedNodeProps;
-    if (selectedNode) {
-        let getData: any;
-
-        let id = new Array<number>();
-        if (selectedNode.getId) {
-            id = selectedNode.getId();
-            console.log("GOT ID", id);
-        }
-
-        let edit: any = () => { };
-        if (selectedNode.toggleEdit) {
-            edit = (selectedNode.toggleEdit as (id: IdType) => void).bind(props.id);
-        }
-
-        return <Box>
-            <Button>Add</Button>
-            <Button onClick={() => props.delete(id)}>Delete</Button>
-            <Button onClick={edit}>Edit</Button>
-            <Button onClick={() => props.moveUp(id)}>Move Up</Button>
-            <Button onClick={() => props.moveDown(id)}>Move Down</Button>
-        </Box>
-    }
+export default function TopEditingBar(props: SelectedNodeProps) {
+    const id = props.getId();
 
     return <Box>
         <Button>Add</Button>
-        <Button>Delete</Button>
-        <Button>Edit</Button>
+        <Button onClick={() => props.deleteChild(id)}>Delete</Button>
+        <Button onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Button>
+        <Button onClick={props.moveUp}>Move Up</Button>
+        <Button onClick={props.moveDown}>Move Down</Button>
     </Box>
 }

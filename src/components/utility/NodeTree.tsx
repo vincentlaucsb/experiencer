@@ -17,7 +17,6 @@ export default class ResumeNodeTree {
                 parentNode = targetNode;
             }
 
-            console.log(id, targetNode);
             targetNode = targetNode['children'][id[i]];
         }
 

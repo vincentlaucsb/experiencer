@@ -424,14 +424,12 @@ class Resume extends React.Component<{}, ResumeState> {
 
         // TODO: Clean up... maybe
 
+        const topEditingBar = this.state.selectedNode ? <TopEditingBar {...this.state.selectedNode} /> : <></>
+
 
         const editingTop = <>
             {topNav}
-            <TopEditingBar {...this.state.selectedNode}
-                moveUp={this.moveNestedUp.bind(this)}
-                moveDown={this.moveNestedDown.bind(this)}
-                delete={this.deleteNested.bind(this)}
-            />
+            {topEditingBar}
         </>
 
         // Render the final layout based on editor mode

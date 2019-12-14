@@ -12,8 +12,6 @@ export type UpdateChild = ((id: IdType, key: string, data: any) => void);
 export interface NodeActions {
     addChild?: AddChild;
     deleteChild: ModifyChild;
-    moveUp: ModifyChild;
-    moveDown: ModifyChild;
     toggleEdit?: ModifyChild;
 }
 
@@ -23,6 +21,9 @@ export interface BasicNodeProps extends NodeActions {
 }
 
 export interface SelectedNodeProps extends BasicNodeProps {
+    moveUp: Action;
+    moveDown: Action;
+
     getId: () => IdType;
     getData: () => object;
 }
@@ -39,6 +40,8 @@ export interface ResumePassProps extends NodeActions {
     isHovering: (id: IdType) => boolean;
     isSelected: (id: string) => boolean;
     isSelectBlocked: (id: IdType) => boolean;
+    moveUp: ModifyChild;
+    moveDown: ModifyChild;
     unselect: Action;
     updateData: (id: IdType, key: string, data: any) => void;
     updateSelected: (data?: SelectedNodeProps) => void;
@@ -247,22 +250,6 @@ export default class ResumeNodeBase<P
         return data;
     }
 
-    moveNestedChildUp(idx: number) {
-        let replChildren = this.props.children as Array<object>;
-        if (replChildren) {
-            // Replace node's children with new list of children that excludes deleted node
-            this.updateData("children", moveUp(replChildren, idx));
-        }
-    }
-
-    moveNestedChildDown(idx: number) {
-        let replChildren = this.props.children as Array<object>;
-        if (replChildren) {
-            // Replace node's children with new list of children that excludes deleted node
-            this.updateData("children", moveDown(replChildren, idx));
-        }
-    }
-
     toggleEdit(event: any) {
         if (this.props.toggleEdit) {
             this.props.toggleEdit(this.props.id);
@@ -292,8 +279,8 @@ export default class ResumeNodeBase<P
                     isSelectBlocked: this.props.isSelectBlocked,
                     hoverOver: this.props.hoverOver,
                     hoverOut: this.props.hoverOut,
-                    moveDown: this.moveNestedChildDown.bind(this, idx),
-                    moveUp: this.moveNestedChildUp.bind(this, idx),
+                    moveDown: this.props.moveDown,
+                    moveUp: this.props.moveUp,
                     deleteChild: this.deleteNestedChild.bind(this, idx),
                     toggleEdit: this.props.toggleEdit,
                     updateData: this.props.updateData,
@@ -318,6 +305,14 @@ export default class ResumeNodeBase<P
         this.updateData('isHidden', !this.props.isHidden);
     }
 
+    moveUp() {
+        this.props.moveUp(this.props.id);
+    }
+
+    moveDown() {
+        this.props.moveDown(this.props.id);
+    }
+
     setSelected() {
         // this.props.isSelectBlocked prevents a node from being selected if we are directly hovering
         // over one of its child nodes
@@ -332,8 +327,8 @@ export default class ResumeNodeBase<P
                 uuid: this.props.uuid,
                 addChild: this.addChild,
                 deleteChild: this.props.deleteChild,
-                moveUp: this.props.moveUp,
-                moveDown: this.props.moveDown,
+                moveUp: this.moveUp.bind(this),
+                moveDown: this.moveDown.bind(this),
                 getData: this.getData,
                 getId: () => { return this.props.id }, 
                 toggleEdit: this.toggleEdit as Action

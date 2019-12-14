@@ -9,7 +9,7 @@ export interface NodeActions {
     deleteChild: Action;
     moveUp: Action;
     moveDown: Action;
-    toggleEdit?: Action;
+    toggleEdit?: (id: IdType) => void;
 }
 
 export interface BasicNodeProps extends NodeActions {
@@ -34,7 +34,7 @@ export interface ResumePassProps extends NodeActions {
     isSelected: (id: string) => boolean;
     isSelectBlocked: (id: IdType) => boolean;
     unselect: Action;
-    updateData: (key: string, data: any) => void;
+    updateData: (id: IdType, key: string, data: any) => void;
     updateSelected: (data?: SelectedNodeProps) => void;
 }
 
@@ -51,7 +51,7 @@ export interface ResumeNodeProps extends BasicNodeProps, ResumePassProps {
 
 export type Action = (() => void);
 export type AddChild = ((id: IdType, node: object) => void);
-export type UpdateChild = ((key: string, data: any) => void);
+export type UpdateChild = ((id: IdType, key: string, data: any) => void);
 
 // Represents a node that is part of the user's resume
 export default class ResumeNodeBase<P
@@ -70,9 +70,7 @@ export default class ResumeNodeBase<P
         this.updateDataEvent = this.updateDataEvent.bind(this);
         this.deleteNestedChild = this.deleteNestedChild.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
-        this.toggleNestedEdit = this.toggleNestedEdit.bind(this);
         this.toggleHidden = this.toggleHidden.bind(this);
-        this.updateNestedData = this.updateNestedData.bind(this);
         this.setSelected = this.setSelected.bind(this);
     }
 
@@ -264,24 +262,13 @@ export default class ResumeNodeBase<P
     }
 
     toggleEdit(event: any) {
-        if (this.props.toggleEdit as Action) {
-            (this.props.toggleEdit as Action)();
+        if (this.props.toggleEdit) {
+            this.props.toggleEdit(this.props.id);
         }
     }
 
-    toggleNestedEdit(idx: number) {
-        let currentChildData = this.props.children[idx]['isEditing'];
-        this.updateNestedData(idx, "isEditing", !currentChildData);
-    }
-    
-    updateNestedData(idx: number, key: string, data: any) {
-        let newChildren = this.props.children as Array<object>;
-        newChildren[idx][key] = data;
-        this.updateData("children", newChildren);
-    }
-
     updateData(key: string, data: string | boolean | object | Array<any>) {
-        this.props.updateData(key, data);
+        this.props.updateData(this.props.id, key, data);
     }
 
     updateDataEvent(key: string, event: any) {
@@ -306,8 +293,8 @@ export default class ResumeNodeBase<P
                     moveDown: this.moveNestedChildDown.bind(this, idx),
                     moveUp: this.moveNestedChildUp.bind(this, idx),
                     deleteChild: this.deleteNestedChild.bind(this, idx),
-                    toggleEdit: this.toggleNestedEdit.bind(this, idx),
-                    updateData: this.updateNestedData.bind(this, idx),
+                    toggleEdit: this.props.toggleEdit,
+                    updateData: this.props.updateData,
                     unselect: this.props.unselect,
                     updateSelected: this.props.updateSelected,
 
@@ -346,7 +333,7 @@ export default class ResumeNodeBase<P
                 moveUp: this.props.moveUp,
                 moveDown: this.props.moveDown,
                 getData: this.getData,
-                toggleEdit: this.props.toggleEdit as Action
+                toggleEdit: this.toggleEdit as Action
             });
         }
     }

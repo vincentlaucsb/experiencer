@@ -67,7 +67,7 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
 
             EDIT_SELECTED: (event) => {
                 if (this.props.selectedNode && this.props.selectedNode.toggleEdit) {
-                    this.props.selectedNode.toggleEdit();
+                    this.props.selectedNode.toggleEdit(this.props.selectedNode.id);
                 }
             },
 

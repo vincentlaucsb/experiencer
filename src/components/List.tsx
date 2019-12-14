@@ -56,7 +56,7 @@ export class ListItem<P extends ListProps = ListProps> extends ResumeNodeBase<P>
             value = <ReactQuill
                 modules={ListItem.quillModules}
                 value={this.props.value || ""}
-                onChange={((this.props.updateData as UpdateChild).bind(this, "value") as (data: any) => void)}
+                onChange={((this.props.updateData as UpdateChild).bind(this, this.props.id, "value") as (data: any) => void)}
             />
         }
 

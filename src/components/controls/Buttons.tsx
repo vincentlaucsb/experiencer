@@ -84,7 +84,8 @@ export default function EditButton<P extends ButtonProps>(props: P) {
     let text = props.isEditing ? "Done" : "Edit";
 
     if (props.extended) {
-        return <Button onClick={props.toggleEdit as Action}><img src={imgSrc} alt={text}/>{text}</Button>
+        // TODO: Remove to any type cast
+        return <Button onClick={(props.toggleEdit as any).bind(props.id) as Action}><img src={imgSrc} alt={text}/>{text}</Button>
     }
 
     return <ButtonWithTooltip onClick={props.toggleEdit as Action} imgSrc={imgSrc} tooltip="Edit" />
@@ -94,7 +95,7 @@ export function DeleteButton<P extends ResumeNodeProps>(props: P) {
     const [show, setShow] = React.useState(false);
 
     let confirmDelete = () => {
-        (props.deleteChild as Action)();
+        (props.deleteChild.bind(props.id) as Action)();
 
         // Workaround
         setShow(false);

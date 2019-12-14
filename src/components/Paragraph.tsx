@@ -4,6 +4,7 @@ import ReactQuill from 'react-quill';
 import EditButton, { DeleteButton, DownButton, UpButton } from "./controls/Buttons";
 import ResumeNodeBase from "./ResumeNodeBase";
 import { ButtonGroup } from "react-bootstrap";
+import { IdType } from "./utility/HoverTracker";
 
 export default class Paragraph extends ResumeNodeBase {
     constructor(props) {
@@ -54,7 +55,7 @@ export default class Paragraph extends ResumeNodeBase {
         let value = this.props.isEditing ? <ReactQuill
             modules={Paragraph.quillModules}
             value={this.props.value}
-            onChange={((this.props.updateData as (key: string, data: any) => void).bind(this, "value") as (data: any) => void)}
+            onChange={((this.props.updateData as (id: IdType, key: string, data: any) => void).bind(this, this.props.id, "value") as (data: any) => void)}
         /> : <span className="resume-paragraph" dangerouslySetInnerHTML={{ __html: Paragraph.process(this.props.value) as string }} />;
 
         return <div className={this.className} {...this.selectTriggerProps}>

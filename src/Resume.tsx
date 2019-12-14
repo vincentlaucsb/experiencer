@@ -53,6 +53,7 @@ class Resume extends React.Component<{}, ResumeState> {
         this.addNestedChild = this.addNestedChild.bind(this);
         this.childMapper = this.childMapper.bind(this);
         this.updateData = this.updateData.bind(this);
+        this.updateNestedChild = this.updateNestedChild.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
 
         /** Templates and Styling **/
@@ -156,8 +157,8 @@ class Resume extends React.Component<{}, ResumeState> {
             moveUp: this.moveUp.bind(this, idx),
             moveDown: this.moveDown.bind(this, idx),
             deleteChild: this.deleteChild.bind(this, idx),
-            toggleEdit: this.toggleEdit.bind(this, idx),
-            updateData: this.updateData.bind(this, idx),
+            toggleEdit: this.toggleNestedEdit.bind(this),
+            updateData: this.updateNestedChild,
             ...this.hoverProps,
 
             index: idx,
@@ -277,12 +278,30 @@ class Resume extends React.Component<{}, ResumeState> {
         this.setState({ children: newChildren });
     }
 
+    updateNestedChild(id: IdType, key: string, data: any) {
+        let newRoot = { ...this.state };
+        let targetNode = this.getNodeById(newRoot, id)[0];
+        targetNode[key] = data;
+        this.setState(newRoot);
+    }
+
     toggleEdit(idx: number) {
         const currentValue = this.state.children[idx]['isEditing'];
         const newChildren = [...this.state.children];
         newChildren[idx]['isEditing'] = !currentValue;
 
         this.setState({ children: newChildren });
+    }
+
+    toggleNestedEdit(id: IdType) {
+        let newRoot = { ...this.state };
+
+        console.log(id);
+        let targetNode = this.getNodeById(newRoot, id)[0];
+        const currentValue = targetNode['isEditing'];
+        targetNode['isEditing'] = !currentValue;
+        
+        this.setState(newRoot);
     }
 
     // Move the child at idx up one position

@@ -23,9 +23,6 @@ export class FlexibleColumn extends ResumeNodeBase {
                     <Dropdown.Item onClick={this.addDescriptionList}>Description List</Dropdown.Item>
                     <Dropdown.Item onClick={this.addParagraph}>Paragraph</Dropdown.Item>
                 </DropdownButton>
-                <DeleteButton {...this.props} extended={true} />
-                <UpButton {...this.props} extended={true} />
-                <DownButton {...this.props} extended={true} />
             </ButtonGroup>
         }
     }
@@ -81,9 +78,6 @@ export default class FlexibleRow extends ResumeNodeBase {
         if (this.isSelected) {
             return <ButtonGroup size="sm">
                 <Button onClick={this.addColumn}>Add Column</Button>
-                <DeleteButton {...this.props} extended={true} />
-                <UpButton {...this.props} extended={true} />
-                <DownButton {...this.props} extended={true} />
             </ButtonGroup>
         }
     }

@@ -55,7 +55,6 @@ class Resume extends React.Component<{}, ResumeState> {
         this.addSection = this.addSection.bind(this);
         this.addNestedChild = this.addNestedChild.bind(this);
         this.childMapper = this.childMapper.bind(this);
-        this.updateData = this.updateData.bind(this);
         this.updateNestedChild = this.updateNestedChild.bind(this);
 
         /** Templates and Styling **/
@@ -249,7 +248,7 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param node Node to be added
      */
     addChild(node: object) {
-        this.nodes.addChild(node);
+        this.nodes.addChild(assignIds(node));
         this.setState({ children: this.nodes.children });
     }
 
@@ -259,20 +258,13 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param node Node to be added
      */
     addNestedChild(id: IdType, node: object) {
-        this.nodes.addNestedChild(id, node);
+        this.nodes.addNestedChild(id, assignIds(node));
         this.setState({ children: this.nodes.children });
     }
 
     deleteNested(id: IdType) {
         this.nodes.deleteChild(id);
         this.setState({ children: this.nodes.children });
-    }
-
-    updateData(idx: number, key: string, data: any) {
-        const newChildren = [...this.state.children];
-        newChildren[idx][key] = data;
-
-        this.setState({ children: newChildren });
     }
 
     updateNestedChild(id: IdType, key: string, data: any) {
@@ -422,11 +414,8 @@ class Resume extends React.Component<{}, ResumeState> {
         let main = resume;
         let sidebar: JSX.Element;
 
-        // TODO: Clean up... maybe
-
         const topEditingBar = this.state.selectedNode ? <TopEditingBar {...this.state.selectedNode} /> : <></>
-
-
+        
         const editingTop = <>
             {topNav}
             {topEditingBar}
@@ -456,6 +445,9 @@ class Resume extends React.Component<{}, ResumeState> {
                 />
             case 'landing':
                 main = <Landing className={this.resumeClassName} />
+                return <DefaultLayout
+                    topNav={topNav}
+                    main={main} />
             default:
                 return <DefaultLayout
                     topNav={editingTop}

@@ -12,7 +12,7 @@ export type UpdateChild = ((id: IdType, key: string, data: any) => void);
 export interface NodeActions {
     addChild?: AddChild;
     deleteChild: ModifyChild;
-    toggleEdit?: ModifyChild;
+    toggleEdit: ModifyChild;
 }
 
 export interface BasicNodeProps extends NodeActions {
@@ -73,7 +73,6 @@ export default class ResumeNodeBase<P
         this.addChild = this.addChild.bind(this);
         this.getData = this.getData.bind(this);
         this.updateDataEvent = this.updateDataEvent.bind(this);
-        this.deleteNestedChild = this.deleteNestedChild.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
         this.toggleHidden = this.toggleHidden.bind(this);
         this.setSelected = this.setSelected.bind(this);
@@ -221,19 +220,6 @@ export default class ResumeNodeBase<P
         })
     }
 
-    /**
-     * Delete a grandchild
-     * @param idx       Index of the parent of the node to be deleted
-     * @param gchildIdx Index of the grandchild to be deleted
-     */
-    deleteNestedChild(idx: number) {
-        let replChildren = this.props.children as Array<object>;
-        if (replChildren) {
-            // Replace node's children with new list of children that excludes deleted node
-            this.updateData("children", deleteAt(replChildren, idx));
-        }
-    }
-
     // TODO: Just copy it from this child's parent's data
     /** Return an object representation of this item's essential attributes */
     getData() {
@@ -248,12 +234,6 @@ export default class ResumeNodeBase<P
         }
 
         return data;
-    }
-
-    toggleEdit(event: any) {
-        if (this.props.toggleEdit) {
-            this.props.toggleEdit(this.props.id);
-        }
     }
 
     updateData(key: string, data: string | boolean | object | Array<any>) {
@@ -281,7 +261,7 @@ export default class ResumeNodeBase<P
                     hoverOut: this.props.hoverOut,
                     moveDown: this.props.moveDown,
                     moveUp: this.props.moveUp,
-                    deleteChild: this.deleteNestedChild.bind(this, idx),
+                    deleteChild: this.props.deleteChild,
                     toggleEdit: this.props.toggleEdit,
                     updateData: this.props.updateData,
                     unselect: this.props.unselect,
@@ -301,16 +281,20 @@ export default class ResumeNodeBase<P
         return <React.Fragment />
     }
 
-    toggleHidden() {
-        this.updateData('isHidden', !this.props.isHidden);
-    }
-
     moveUp() {
         this.props.moveUp(this.props.id);
     }
 
     moveDown() {
         this.props.moveDown(this.props.id);
+    }
+
+    toggleEdit() {
+        this.props.toggleEdit(this.props.id);
+    }
+
+    toggleHidden() {
+        this.props.updateData(this.props.id, 'isHidden', !this.props.isHidden);
     }
 
     setSelected() {

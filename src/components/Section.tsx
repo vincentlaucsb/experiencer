@@ -38,10 +38,6 @@ export default class Section extends ResumeNodeBase<SectionProps> {
                     <Dropdown.Item onClick={this.addDescriptionList}>Description List</Dropdown.Item>
                     <Dropdown.Item onClick={this.addParagraph}>Paragraph</Dropdown.Item>
                 </DropdownButton>
-                <EditButton {...this.props} extended={true} />
-                <DeleteButton {...this.props} extended={true} />
-                <UpButton {...this.props} extended={true} />
-                <DownButton {...this.props} extended={true} />
                 {rotateButton}
             </ButtonGroup>
         }

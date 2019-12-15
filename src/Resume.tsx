@@ -21,6 +21,7 @@ import { isNullOrUndefined } from 'util';
 import HoverTracker, { IdType } from './components/utility/HoverTracker';
 import TopEditingBar from './components/controls/TopEditingBar';
 import ResumeNodeTree from './components/utility/NodeTree';
+import { Paper, Theme, makeStyles, createStyles, styled } from '@material-ui/core';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering: HoverTracker;
@@ -265,8 +266,22 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     deleteNested(id: IdType) {
+        const deletedNode = this.nodes.getNodeById(id);
         this.nodes.deleteChild(id);
         this.setState({ children: this.nodes.children });
+
+        // If node to be deleted is selected, unset
+        // selected node data to avoid memory leaks
+        const selectedNode = this.state.selectedNode as SelectedNodeProps;
+        if (selectedNode as SelectedNodeProps) {
+            if (selectedNode.uuid == deletedNode['uuid']) {
+                this.hovering.hoverOut(selectedNode.id);
+                this.setState({
+                    selectedNode: undefined,
+                    hoverNode: this.hovering.currentId
+                });
+            }
+        }
     }
 
     updateNestedChild(id: IdType, key: string, data: any) {
@@ -404,12 +419,21 @@ class Resume extends React.Component<{}, ResumeState> {
             <Button className="mr-2" onClick={this.addColumn}>Add Multi-Column Row</Button>
         </ButtonToolbar> : <></>
 
-        const resume = <div id="resume" className={this.resumeClassName}>
-            <ResumeHotKeys {...this.resumeHotKeysProps} {...this.state} />
-            {this.state.children.map(this.childMapper)}
+        const MyPaper = styled(Paper)({
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            padding: '0.5in',
+            width: '8.5in'
+        });
 
-            {resumeToolbar}
-        </div>
+        const resume = <MyPaper>
+            <div id="resume" className={this.resumeClassName}>
+                <ResumeHotKeys {...this.resumeHotKeysProps} {...this.state} />
+                {this.state.children.map(this.childMapper)}
+
+                {resumeToolbar}
+            </div>
+        </MyPaper>
 
         const topNav = <TopNavBar {...this.toolbarProps} />
 

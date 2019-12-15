@@ -157,32 +157,6 @@ export default class ResumeNodeBase<P
             onMouseLeave: () => this.props.hoverOut(this.props.id)
         };
     }
-    
-    componentDidUpdate() {
-        if (this.isSelected) {
-            // console.log("Selected component has re-rendered", this.props.id);
-
-            // TODO: Update
-        }
-    }
-
-    componentWillUnmount() {
-        // Since the node is being deleted, remove callback to this node's unselect
-        // method from <Resume /> to prevent memory leaks
-        if (this.isSelected) {
-            // NOTE: This can cause issues if an item is unmounted because it has 
-            // been vastly modified via render() but not deleted from the resume,
-            // i.e. unselect functionality will not work correctly.
-            //
-            // When that starts happening, either make render() not return vastly 
-            // different structures in different scenarios or refactor the select/unselect
-            // system to handle this by keeping unselect() bindings fresh
-            this.props.updateSelected(undefined);
-
-            // Remove self from set of active hover IDs
-            this.props.hoverOut(this.props.id);
-        }
-    }
 
     addChild(node: object) {
         if (this.props.addChild as AddChild) {

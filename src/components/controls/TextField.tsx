@@ -2,41 +2,42 @@
 import { TextField } from "@material-ui/core";
 
 interface ResumeTextFieldProps {
+    isEditing?: boolean;
+
     value?: string;
     label?: string;
     defaultText?: string;
 
+    /** A callback which modifies the display text */
+    displayProcessor?: (text?: string) => string;
+
     onChange: (text: string) => void;
+
+    /** Callback when display text is clicked */
+    onClick?: () => void;
+
+    /** Callback when enter key is pressed */
+    onEnterDown?: () => void;
 }
 
 export default function ResumeTextField(props: ResumeTextFieldProps) {
-    const initialValue = props.value || "";
-
-    let [isEditing, toggleEditing] = React.useState(false);
-    let [textValue, setTextValue] = React.useState(initialValue);
-
     const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-        if (event.key == 'Enter') {
-            toggleEditing(false);
-            props.onChange(textValue);
-        }
-        else if (event.key == 'Escape') {
-            // Cancel changes
-            toggleEditing(false);
-            setTextValue(initialValue);
+        if (event.key === 'Enter' && props.onEnterDown) {
+            props.onEnterDown();
         }
     };
 
-    if (isEditing) {
+    if (props.isEditing) {
         return <TextField
-            onChange={ (event) => setTextValue(event.target.value) }
+            onChange={(event) => props.onChange(event.target.value)}
             onKeyDown={onKeyDown}
             label={props.label || "Value"}
-            value={textValue}
+            value={props.value || ""}
         />
     }
+
+    const displayValue = props.displayProcessor ? props.displayProcessor(props.value) : props.value;
     
-    return <span
-        onClick={() => toggleEditing(true)}
-    >{props.value || props.defaultText || "Enter a value"}</span>
+    return <span onClick={props.onClick}
+    >{displayValue || props.defaultText || "Enter a value"}</span>
 }

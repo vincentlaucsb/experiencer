@@ -1,9 +1,7 @@
 ﻿import * as React from "react";
 import * as Helpers from "./Helpers";
 import ResumeNodeBase, { ResumeNodeProps, Action } from "./ResumeNodeBase";
-import EditButton, { DownButton, UpButton, DeleteButton } from "./controls/Buttons";
-import { ButtonGroup, Dropdown, DropdownButton } from "react-bootstrap";
-import Placeholder from "./Placeholder";
+import ResumeTextField from "./controls/TextField";
 
 export interface EntryProps extends ResumeNodeProps {
     title?: string;
@@ -49,6 +47,15 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         ];
     }
 
+    get textFieldProps() {
+        return {
+            displayProcessor: Entry.process,
+            isEditing: this.props.isEditing,
+            onClick: this.isSelected ? this.toggleEdit : undefined,
+            onEnterDown: this.toggleEdit
+        };
+    }
+
     addTitleField() {
         let replTitle = this.props.titleExtras || [];
         replTitle.push("");
@@ -76,13 +83,16 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
     getExtras(key: string, updater: (idx: number, event: any) => void) {
         const extraData = this.props[key];
         if (extraData) {
-            if (this.props.isEditing) {
-                return extraData.map((text, index) =>
-                    <input key={index} onChange={updater.bind(this, index)} value={text || ""} />
-                );
-            }
-
-            return extraData.map((text, index) => <span key={index}>{Entry.process(text) || "Enter a value"}</span>);
+            return extraData.map((text, index) =>
+                <ResumeTextField
+                    key={index}
+                    onChange={updater.bind(this, index)}
+                    value={text || ""}
+                    label="Extra Field"
+                    defaultText="Enter a value"
+                    {...this.textFieldProps}
+                />
+            );
         }
 
         return <></>
@@ -121,13 +131,21 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
     }
     
     render() {
-        let title = <Placeholder text={Entry.process(this.props.title)} alt="Enter a title" />;
-        let subtitle = <Placeholder text={Entry.process(this.props.subtitle)} alt="Enter a subtitle" />;
+        const title = <ResumeTextField 
+            onChange={this.updateData.bind(this, "title")}
+            value={this.props.title}
+            label="Title"
+            defaultText="Enter a title"
+            {...this.textFieldProps}
+        />
 
-        if (this.props.isEditing) {
-            title = <input onChange={this.updateDataEvent.bind(this, "title")} value={this.props.title || ""} />;
-            subtitle = <input onChange={this.updateDataEvent.bind(this, "subtitle")} value={this.props.subtitle || ""} />
-        }
+        const subtitle = <ResumeTextField
+            onChange={this.updateData.bind(this, "subtitle")}
+            value={this.props.subtitle}
+            label="Subitle"
+            defaultText="Enter a subtitle"
+            {...this.textFieldProps}
+        />
 
         return <div className={this.className} {...this.selectTriggerProps}>
             <div className="entry-title">

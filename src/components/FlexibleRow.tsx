@@ -14,19 +14,6 @@ export class FlexibleColumn extends ResumeNodeBase {
         return [positionClsName, 'flex-col', super.className].join(' ');
     }
 
-    getEditingMenu() {
-        if (this.isSelected) {
-            return <ButtonGroup size="sm">
-                <DropdownButton as={ButtonGroup} title="Add" id="add-options" size="sm">
-                    <Dropdown.Item onClick={this.addSection}>Section</Dropdown.Item>
-                    <Dropdown.Item onClick={this.addList}>Bulleted List</Dropdown.Item>
-                    <Dropdown.Item onClick={this.addDescriptionList}>Description List</Dropdown.Item>
-                    <Dropdown.Item onClick={this.addParagraph}>Paragraph</Dropdown.Item>
-                </DropdownButton>
-            </ButtonGroup>
-        }
-    }
-
     /** Returns a "handle" which can be used to select the column itself and not the columns it contains */
     renderGrabHandle() {
         if (this.displayBorder && !this.isSelected) {
@@ -47,7 +34,6 @@ export class FlexibleColumn extends ResumeNodeBase {
         }
 
         return <div {...this.selectTriggerProps} className={this.className} style={{ minWidth: "100px", minHeight: "100px" }}>
-            {this.renderEditingMenu()}
             <div>
                 {this.renderGrabHandle()}
                 {this.renderChildren()}

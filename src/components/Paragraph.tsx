@@ -39,6 +39,20 @@ export default class Paragraph extends ResumeNodeBase {
         return Helpers.process(text);
     }
 
+    get selectTriggerProps() {
+        const baseProps = super.selectTriggerProps;
+
+        // Click to edit
+        if (this.isSelected && !this.props.isEditing) {
+            baseProps.onClick = () => {
+                this.setSelected();
+                this.toggleEdit();
+            }
+        }
+
+        return baseProps;
+    }
+
     render(): JSX.Element {
         let value = this.props.isEditing ? <ReactQuill
             modules={Paragraph.quillModules}

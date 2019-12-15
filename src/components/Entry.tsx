@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
 import * as Helpers from "./Helpers";
-import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
+import ResumeNodeBase, { ResumeNodeProps, Action } from "./ResumeNodeBase";
 import EditButton, { DownButton, UpButton, DeleteButton } from "./controls/Buttons";
 import { ButtonGroup, Dropdown, DropdownButton } from "react-bootstrap";
 import Placeholder from "./Placeholder";
@@ -52,23 +52,6 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         this.updateData('subtitleExtras', replTitle);
    }
 
-    getEditingMenu() {
-        if (this.isSelected) {
-            return <ButtonGroup size="sm">
-                <DropdownButton as={ButtonGroup} title="Add" id="add-options" size="sm">
-                    <Dropdown.Item onClick={this.addList}>Bulleted List</Dropdown.Item>
-                    <Dropdown.Item onClick={this.addDescriptionList}>Description List</Dropdown.Item>
-                    <Dropdown.Item onClick={this.addParagraph}>Paragraph</Dropdown.Item>
-                    <Dropdown.Divider />
-                    <Dropdown.Item onClick={this.addTitleField}>Add another title field</Dropdown.Item>
-                    <Dropdown.Item onClick={this.addSubtitleField}>Add another subtitle field</Dropdown.Item>
-                    <Dropdown.Item onClick={this.removeTitleField}>Remove title field (from right)</Dropdown.Item>
-                    <Dropdown.Item onClick={this.removeSubtitleField}>Remove subtitle field (from right)</Dropdown.Item>
-                </DropdownButton>
-            </ButtonGroup>
-        }
-    }
-
     getExtras(key: string, updater: (idx: number, event: any) => void) {
         const extraData = this.props[key];
         if (extraData) {
@@ -106,6 +89,47 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
 
     updateSubtitleExtras(idx: number, event: any) {
         this.updateExtras('subtitleExtras', idx, event);
+    }
+
+    setSelected() {
+        // this.props.isSelectBlocked prevents a node from being selected if we are directly hovering
+        // over one of its child nodes
+
+        if (!this.isSelected && !this.isSelectBlocked) {
+            // Unselect the previous component
+            this.props.unselect();
+
+            // Pass this node's unselect back up to <Resume />
+            this.props.updateSelected({
+                type: this.props['type'],
+                id: this.props.id,
+                uuid: this.props.uuid,
+                addChild: this.props.addChild,
+                deleteChild: this.props.deleteChild,
+                moveUp: this.moveUp.bind(this),
+                moveDown: this.moveDown.bind(this),
+                getData: this.getData,
+                toggleEdit: this.toggleEdit as Action,
+                customOptions: [
+                    {
+                        text: 'Add another title field',
+                        action: this.addTitleField,
+                    },
+                    {
+                        text: 'Add another subtitle field',
+                        action: this.addSubtitleField,
+                    },
+                    {
+                        text: 'Remove title field (from right)',
+                        action: this.removeTitleField,
+                    },
+                    {
+                        text: 'Remove subtitle field (from right)',
+                        action: this.removeSubtitleField,
+                    },
+                ]
+            });
+        }
     }
 
     /**

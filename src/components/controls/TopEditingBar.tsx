@@ -133,8 +133,15 @@ export function AddMenu(props: AddMenuProps) {
     </>
 }
 
+
+
 export default function TopEditingBar(props: SelectedNodeProps) {
     const id = props.id;
+    const additionalOptions = props.customOptions ? <>
+        {props.customOptions.map((item) =>
+            <Button onClick={item.action}>{item.text}</Button>
+        )}
+    </> : <></>
 
     return <Box>
         <AddOption id={id} addChild={props.addChild as AddChild} options={addMap(props.type)} />
@@ -142,5 +149,6 @@ export default function TopEditingBar(props: SelectedNodeProps) {
         <Button onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Button>
         <Button onClick={props.moveUp}>Move Up</Button>
         <Button onClick={props.moveDown}>Move Down</Button>
+        {additionalOptions}
     </Box>
 }

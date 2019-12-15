@@ -24,6 +24,7 @@ export interface SelectedNodeProps extends BasicNodeProps {
     type: string;
     moveUp: Action;
     moveDown: Action;
+    customOptions?: Array<{ text: string, action: Action }>;
 
     getData: () => object;
 }

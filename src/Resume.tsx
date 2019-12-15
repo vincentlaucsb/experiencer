@@ -70,7 +70,9 @@ class Resume extends React.Component<{}, ResumeState> {
         this.pasteClipboard = this.pasteClipboard.bind(this);
 
         // Unselect the currently selected node
-        this.unselect = () => { this.setState({ selectedNode: undefined }); };
+        this.unselect = () => {
+            this.setState({ selectedNode: undefined });
+        };
     }
     
 

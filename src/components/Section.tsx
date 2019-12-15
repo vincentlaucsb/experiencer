@@ -13,34 +13,13 @@ export interface SectionProps extends ResumeNodeProps {
     headerPosition?: SectionHeaderPosition;
 }
 
+/** Represents a section in a resume */
 export default class Section extends ResumeNodeBase<SectionProps> {
     constructor(props: SectionProps) {
         super(props);
 
         this.rotateLeft = this.rotateLeft.bind(this);
         this.rotateRight = this.rotateRight.bind(this);
-    }
-
-    getEditingMenu() {
-        let editToolsClassName = this.props.headerPosition === 'left' ? 'btn-group-vertical' : '';
-        let rotateButton = <Button onClick={this.rotateLeft}><img src={RotateLeft} alt="Place header on left" />Place Header on Left</Button>
-        if (this.props.headerPosition === 'left') {
-            rotateButton = <Button onClick={this.rotateRight}>
-                <img src={RotateRight} alt="Place header on right" />Place Header on Top
-            </Button>
-        }
-
-        if (this.isSelected) {
-            return <ButtonGroup className={editToolsClassName} size="sm">
-                <DropdownButton as={ButtonGroup} title="Add" id="add-options" size="sm">
-                    <Dropdown.Item onClick={this.addEntry}>Entry</Dropdown.Item>
-                    <Dropdown.Item onClick={this.addList}>Bulleted List</Dropdown.Item>
-                    <Dropdown.Item onClick={this.addDescriptionList}>Description List</Dropdown.Item>
-                    <Dropdown.Item onClick={this.addParagraph}>Paragraph</Dropdown.Item>
-                </DropdownButton>
-                {rotateButton}
-            </ButtonGroup>
-        }
     }
     
     rotateLeft() {
@@ -75,7 +54,6 @@ export default class Section extends ResumeNodeBase<SectionProps> {
 
         return <>
             <section className={this.sectionClassName} {...this.selectTriggerProps}>
-                {this.renderEditingMenu()}
                 <h2 className={this.h2ClassName}>
                     {title}
                 </h2>

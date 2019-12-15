@@ -258,7 +258,7 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param node Node to be added
      */
     addNestedChild(id: IdType, node: object) {
-        this.nodes.addNestedChild(id, assignIds(node));
+        this.nodes.addNestedChild(id, node);
         this.setState({ children: this.nodes.children });
     }
 

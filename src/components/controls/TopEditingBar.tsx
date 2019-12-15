@@ -3,23 +3,84 @@ import { Box, Button, Menu, MenuItem } from "@material-ui/core";
 import { Action, SelectedNodeProps, ModifyChild, AddChild } from "../ResumeNodeBase";
 import { IdType } from "../utility/HoverTracker";
 
-type AddOptions = Array<{ text: string; node: object }>;
+interface NodeOption {
+    text: string;
+    node: object;
+}
 
-const addOptions: AddOptions = [
-    {
+type AddOptions = Array<NodeOption>;
+
+const addOptions: Map<string, NodeOption> = new Map<string, NodeOption>([
+    ['Column', {
+        text: 'Flexible Column',
+        node: {
+            type: 'FlexibleColumn'
+        }
+    }],
+
+    [ 'Section', {
         text: 'Section',
         node: {
             type: 'Section'
         }
-    },
+    }],
 
-    {
+    [ 'Entry', {
         text: 'Entry',
         node: {
             type: 'Entry'
         }
+    }],
+
+    [ 'Paragraph', {
+        text: 'Paragraph',
+        node: { type: 'Paragraph' }
+    } ],
+
+    ['Description List', {
+        text: 'Description List',
+        node: { type: 'DescriptionList' }
+    }]
+]);
+
+function addMap(type: string) {
+    switch (type) {
+        case 'FlexibleRow':
+            return 'Column';
+
+        default:
+            return ['Section', 'Entry', 'Paragraph', 'Description List'];
     }
-];
+}
+
+interface AddOptionProps {
+    options: string | Array<string>;
+    addChild: AddChild;
+    id: IdType;
+}
+
+/**
+ * Return the button or menu for adding children to a node
+ * @param options
+ */
+export function AddOption(props: AddOptionProps) {
+    const options = props.options;
+
+    if (Array.isArray(options)) {
+        let optionsDetail: AddOptions = [];
+
+        options.forEach((nodeType: string) => {
+            optionsDetail.push(addOptions.get(nodeType) as NodeOption)
+        });
+
+        return <AddMenu options={optionsDetail} addChild={props.addChild} id={props.id} />
+    }
+
+    const node: NodeOption = addOptions.get(options as string) as NodeOption;
+    return <Button onClick={() => props.addChild(props.id, node.node)}>
+        Add {options}
+    </Button>
+}
 
 interface AddMenuProps {
     options: AddOptions;
@@ -50,7 +111,7 @@ export function AddMenu(props: AddMenuProps) {
             onClose={handleClose}
         >
             {props.options.map((opt) =>
-                <MenuItem onClick={() => props.addChild(props.id, opt.node)}>{opt.text}</MenuItem>
+                <MenuItem key={opt.text} onClick={() => props.addChild(props.id, opt.node)}>{opt.text}</MenuItem>
             )}
         </Menu>
     </>
@@ -58,10 +119,9 @@ export function AddMenu(props: AddMenuProps) {
 
 export default function TopEditingBar(props: SelectedNodeProps) {
     const id = props.id;
-    
 
     return <Box>
-        <AddMenu addChild={props.addChild as AddChild} id={id} options={addOptions} />
+        <AddOption id={id} addChild={props.addChild as AddChild} options={addMap(props.type)} />
         <Button onClick={() => props.deleteChild(id)}>Delete</Button>
         <Button onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Button>
         <Button onClick={props.moveUp}>Move Up</Button>

@@ -1,5 +1,5 @@
 ﻿import { IdType } from "./HoverTracker";
-import { assignIds, deleteAt, moveUp, moveDown } from "../Helpers";
+import { assignIds, deleteAt, moveUp, moveDown, deepCopy } from "../Helpers";
 
 export default class ResumeNodeTree {
     children = new Array<object>();
@@ -52,7 +52,7 @@ export default class ResumeNodeTree {
             targetNode['children'] = new Array<object>();
         }
 
-        targetNode['children'].push(assignIds(node));
+        targetNode['children'].push(assignIds(deepCopy(node)));
     }
 
     deleteChild(id: IdType) {

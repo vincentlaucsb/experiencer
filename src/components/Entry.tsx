@@ -28,6 +28,27 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         return classes.join(' ');
     }
 
+    get customMenuOptions() {
+        return [
+            {
+                text: 'Add another title field',
+                action: this.addTitleField,
+            },
+            {
+                text: 'Add another subtitle field',
+                action: this.addSubtitleField,
+            },
+            {
+                text: 'Remove title field (from right)',
+                action: this.removeTitleField,
+            },
+            {
+                text: 'Remove subtitle field (from right)',
+                action: this.removeSubtitleField,
+            },
+        ];
+    }
+
     addTitleField() {
         let replTitle = this.props.titleExtras || [];
         replTitle.push("");
@@ -89,47 +110,6 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
 
     updateSubtitleExtras(idx: number, event: any) {
         this.updateExtras('subtitleExtras', idx, event);
-    }
-
-    setSelected() {
-        // this.props.isSelectBlocked prevents a node from being selected if we are directly hovering
-        // over one of its child nodes
-
-        if (!this.isSelected && !this.isSelectBlocked) {
-            // Unselect the previous component
-            this.props.unselect();
-
-            // Pass this node's unselect back up to <Resume />
-            this.props.updateSelected({
-                type: this.props['type'],
-                id: this.props.id,
-                uuid: this.props.uuid,
-                addChild: this.props.addChild,
-                deleteChild: this.props.deleteChild,
-                moveUp: this.moveUp.bind(this),
-                moveDown: this.moveDown.bind(this),
-                getData: this.getData,
-                toggleEdit: this.toggleEdit as Action,
-                customOptions: [
-                    {
-                        text: 'Add another title field',
-                        action: this.addTitleField,
-                    },
-                    {
-                        text: 'Add another subtitle field',
-                        action: this.addSubtitleField,
-                    },
-                    {
-                        text: 'Remove title field (from right)',
-                        action: this.removeTitleField,
-                    },
-                    {
-                        text: 'Remove subtitle field (from right)',
-                        action: this.removeSubtitleField,
-                    },
-                ]
-            });
-        }
     }
 
     /**

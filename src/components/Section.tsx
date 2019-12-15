@@ -21,6 +21,18 @@ export default class Section extends ResumeNodeBase<SectionProps> {
         this.rotateLeft = this.rotateLeft.bind(this);
         this.rotateRight = this.rotateRight.bind(this);
     }
+
+    get customMenuOptions() {
+        const flipHeader = this.props.headerPosition === 'top' ? {
+            text: 'Header on Left',
+            action: this.rotateLeft
+        } : {
+                text: 'Header on Top',
+                action: this.rotateRight
+            };
+
+        return [ flipHeader ];
+    }
     
     rotateLeft() {
         this.updateData('headerPosition', 'left');

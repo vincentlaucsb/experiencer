@@ -143,7 +143,7 @@ export default function TopEditingBar(props: SelectedNodeProps) {
         )}
     </> : <></>
 
-    return <Box>
+    return <Box position="sticky">
         <AddOption id={id} addChild={props.addChild as AddChild} options={addMap(props.type)} />
         <Button onClick={() => props.deleteChild(id)}>Delete</Button>
         <Button onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Button>

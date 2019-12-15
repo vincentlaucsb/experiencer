@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
 import { EditorMode } from "./ResumeComponent";
-import { deleteAt, moveUp, moveDown, deepCopy, assignIds } from "./Helpers";
+import { deepCopy } from "./Helpers";
 import { IdType } from "./utility/HoverTracker";
 import ResumeComponent from "./ResumeComponent";
 
@@ -97,6 +97,11 @@ export default class ResumeNodeBase<P
         }
 
         return classes.join(' ');
+    }
+
+    // TODO: change any declaration
+    get customMenuOptions() : any {
+        return undefined;
     }
 
     get displayBorder(): boolean {
@@ -316,7 +321,8 @@ export default class ResumeNodeBase<P
                 moveUp: this.moveUp.bind(this),
                 moveDown: this.moveDown.bind(this),
                 getData: this.getData,
-                toggleEdit: this.toggleEdit as Action
+                toggleEdit: this.toggleEdit as Action,
+                customOptions: this.customMenuOptions
             });
         }
     }

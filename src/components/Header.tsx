@@ -15,6 +15,19 @@ export default class Header extends ResumeNodeBase<HeaderProps> {
         this.orientRow = this.orientRow.bind(this);
     }
 
+    get customMenuOptions() {
+        return [
+            {
+                text: 'Orient Items Horizontally',
+                action: this.orientRow
+            },
+            {
+                text: 'Orient Items Vertically',
+                action: this.orientColumn
+            }
+        ]
+    }
+
     get className(): string {
         let classNames = [super.className];
 
@@ -27,15 +40,6 @@ export default class Header extends ResumeNodeBase<HeaderProps> {
         return classNames.join(' ');
     }
 
-    get editToolsClassName(): string {
-        let classNames = ['flex-wrap'];
-        if (this.props.orientation === 'row') {
-            classNames.push('btn-group-vertical');
-        }
-
-        return classNames.join(' ');
-    }
-
     orientColumn() {
         this.updateData('orientation', 'column');
     }
@@ -43,28 +47,12 @@ export default class Header extends ResumeNodeBase<HeaderProps> {
     orientRow() {
         this.updateData('orientation', 'row');
     }
-
-    getEditingMenu() {
-        if (this.isSelected) {
-            return <ButtonGroup className={this.editToolsClassName} size="sm">
-                <DropdownButton as={ButtonGroup} title="Distribute Items" id="distribute-options" size="sm">
-                    <Dropdown.Item onClick={this.orientColumn}>Top-to-bottom (column)</Dropdown.Item>
-                    <Dropdown.Item onClick={this.orientRow}>Left-to-right (row)</Dropdown.Item>
-                </DropdownButton>
-                <EditButton {...this.props} extended={true} />
-                <DeleteButton {...this.props} extended={true} />
-                <UpButton {...this.props} extended={true} />
-                <DownButton {...this.props} extended={true} />
-            </ButtonGroup>
-        }
-    }
-
+    
     render() {
         let value = this.props.isEditing ? <input onChange={this.updateDataEvent.bind(this, "value")}
             value={this.props.value} type="text" /> : this.props.value || "Enter a title";
 
         return <header className={this.className}>
-            {this.renderEditingMenu()}
             <h1 {...this.selectTriggerProps}>
                 {value}
             </h1>

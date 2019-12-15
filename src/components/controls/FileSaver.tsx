@@ -1,5 +1,19 @@
 ﻿import * as React from "react";
-import { Button, TextField } from "@material-ui/core";
+import { Button, TextField, Popover, makeStyles, createStyles, Theme } from "@material-ui/core";
+
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        root: {
+            display: 'flex',
+            flexDirection: 'column',
+            padding: theme.spacing(2),
+
+            '& button': {
+                marginTop: theme.spacing(2)
+            }
+        }
+    }),
+);
 
 interface FileSaverProps {
     saveFile: (filename: string) => void;
@@ -7,32 +21,48 @@ interface FileSaverProps {
 
 // Form used for saving resume data
 export default function FileSaver(props: FileSaverProps) {
+    const classes = useStyles();
+    const id = 'file-saver';
     const [filename, setFilename] = React.useState('resume.json');
-    const [isOpen, setOpen] = React.useState(false);
-    const onChange = (event: any) => {
-        const filename = event.target.value;
-        setFilename(filename);
-    }
+    const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
 
-    const expanded = isOpen ? 
-        <form>
-            <TextField
-                onChange={onChange}
-                value={filename}
-                id="filename"
-                label="Filename"
-                variant="outlined" />
-            <Button
-                color="inherit"
-                onClick={() => props.saveFile(filename)}>Save</Button>
-        </form> : <></>
+    const onChange = (event: any) => { setFilename(event.target.value); }
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
 
-    return <>
-        <Button
-            color="inherit"
-            onClick={() => setOpen(!isOpen)}>
+    const handleClose = () => { setAnchorEl(null); };
+    const open = Boolean(anchorEl);
+
+    // TODO: Make popover close when "Save" is clicked
+    const form = <form className={classes.root}>
+        <TextField onChange={onChange} value={filename}
+            id="filename" label="Filename" />
+        <Button variant="contained" color="primary"
+            onClick={() => props.saveFile(filename)}>Save</Button>
+    </form>
+
+    return (
+        <>
+        <Button aria-describedby={id} color="inherit" onClick={handleClick}>
             Save to File
         </Button>
-        {expanded}
-    </>
+            <Popover
+                id={id}
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+            >
+                {form}
+            </Popover>
+        </>
+    );
 }

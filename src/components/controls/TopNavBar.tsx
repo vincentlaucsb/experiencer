@@ -67,6 +67,11 @@ export default function TopNavBar(props: TopNavBarProps) {
 
     const classes = useStyles();
 
+    const editStyleProps = {
+        onClick: props.toggleStyleEditor,
+        // variant: isEditingStyle ? "light" : "outline-light" as ButtonProps["variant"]
+    };
+
     /** Return some controls for editing the resume */
     function renderEditorControls() {
         if (['changingTemplate', 'landing'].indexOf(props.mode) >= 0) {
@@ -78,10 +83,7 @@ export default function TopNavBar(props: TopNavBarProps) {
         const unselectProps = getButtonProps(props.unselect);
 
         // Highlight "Edit Style" button conditionally
-        const editStyleProps = {
-            onClick: props.toggleStyleEditor,
-            // variant: isEditingStyle ? "light" : "outline-light" as ButtonProps["variant"]
-        };
+        
 
         const CopyButton = withTooltip(Button, 'Shift + C', 'copy-button');
         const PasteButton = withTooltip(Button, 'Shift + V', 'paste-button');
@@ -98,7 +100,7 @@ export default function TopNavBar(props: TopNavBarProps) {
                 <UnselectButton {...unselectProps}>Unselect</UnselectButton>
             </ButtonGroup>
             <ButtonGroup className="mr-2">
-                <Button {...editStyleProps}>Edit Style</Button>
+                
             </ButtonGroup>
         </>
         **/
@@ -108,19 +110,11 @@ export default function TopNavBar(props: TopNavBarProps) {
     const helpButton = helpOk ? <Button onClick={props.toggleHelp}>
         Help</Button> : <></>
 
-    /**
-                <FileSaver saveFile={this.props.saveFile} />
-                {helpButton}
-            </Nav>
-
-            {this.renderEditorControls()}
-
-            <Nav>
+/** <Nav>
                 <Nav.Link href="https://github.com/vincentlaucsb/experiencer"><img src={GitHub} style={{ filter: "invert(1)", height: "30px" }} alt="GitHub" /></Nav.Link>
-            </Nav>
-            */
-    if (!isPrinting) {
+            </Nav> */
 
+    if (!isPrinting) {
         return (
             <div className={classes.root}>
                 <AppBar position="static">
@@ -136,6 +130,7 @@ export default function TopNavBar(props: TopNavBarProps) {
                         <FileSaver saveFile={props.saveFile} />
                         {helpButton}
                         <Button color="inherit">Login</Button>
+                        <Button {...editStyleProps}>Edit Style</Button>
                     </Toolbar>
                 </AppBar>
             </div>

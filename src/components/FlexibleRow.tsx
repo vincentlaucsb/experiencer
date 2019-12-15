@@ -34,38 +34,16 @@ export class FlexibleColumn extends ResumeNodeBase {
         }
 
         return <div {...this.selectTriggerProps} className={this.className} style={{ minWidth: "100px", minHeight: "100px" }}>
-            <div>
-                {this.renderGrabHandle()}
-                {this.renderChildren()}
-                {helperText}
-            </div>
+            {this.renderGrabHandle()}
+            {this.renderChildren()}
+            {helperText}
         </div>
     }
 }
 
 export default class FlexibleRow extends ResumeNodeBase {
-    constructor(props) {
-        super(props);
-
-        this.addColumn = this.addColumn.bind(this);
-    }
-
     get className(): string {
         return ['flex-row', 'flex-spread', super.className].join(' ');
-    }
-
-    addColumn() {
-        this.addChild({
-            type: 'FlexibleColumn'
-        });
-    }
-
-    getEditingMenu() {
-        if (this.isSelected) {
-            return <ButtonGroup size="sm">
-                <Button onClick={this.addColumn}>Add Column</Button>
-            </ButtonGroup>
-        }
     }
 
     /** Returns a "handle" which can be used to select the row itself and not the columns it contains */
@@ -82,12 +60,9 @@ export default class FlexibleRow extends ResumeNodeBase {
     }
     
     render() {
-        return <div {...this.selectTriggerProps}>
-            {this.renderEditingMenu()}
-            <div className={this.className} style={{ width: "100%", minWidth: "100px", minHeight: "100px" }}>
-                {this.renderGrabHandle()}
-                {this.renderChildren()}
-            </div>
+        return <div className={this.className} style={{ width: "100%", minWidth: "100px", minHeight: "100px" }} {...this.selectTriggerProps}>
+            {this.renderGrabHandle()}
+            {this.renderChildren()}
         </div>
     }
 }

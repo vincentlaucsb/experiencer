@@ -24,6 +24,8 @@ export interface SelectedNodeProps extends BasicNodeProps {
     type: string;
     moveUp: Action;
     moveDown: Action;
+
+    childTypes: string | Array<string>;
     customOptions?: Array<{ text: string, action: Action }>;
 
     getData: () => object;
@@ -65,14 +67,9 @@ export default class ResumeNodeBase<P
     constructor(props: P) {
         super(props);
         
-        this.addDescriptionList = this.addDescriptionList.bind(this);
-        this.addEntry = this.addEntry.bind(this);
-        this.addList = this.addList.bind(this);
-        this.addParagraph = this.addParagraph.bind(this);
-        this.addSection = this.addSection.bind(this);
-
         this.addChild = this.addChild.bind(this);
         this.getData = this.getData.bind(this);
+        this.updateData = this.updateData.bind(this);
         this.updateDataEvent = this.updateDataEvent.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
         this.toggleHidden = this.toggleHidden.bind(this);
@@ -97,6 +94,10 @@ export default class ResumeNodeBase<P
         }
 
         return classes.join(' ');
+    }
+
+    get childTypes(): string | Array<string> {
+        return ['Section', 'Entry', 'Paragraph', 'Bulleted List', 'Description List'];
     }
 
     // TODO: change any declaration
@@ -187,43 +188,6 @@ export default class ResumeNodeBase<P
         if (this.props.addChild as AddChild) {
             (this.props.addChild as AddChild)(this.props.id, node);
         }
-    }
-
-    addParagraph() {
-        this.addChild({
-            type: "Paragraph",
-            value: "Enter value here"
-        });
-    }
-
-    addEntry() {
-        this.addChild({
-            type: "Entry"
-        });
-    }
-
-    addDescriptionList() {
-        this.addChild({
-            type: 'DescriptionList',
-            children: [{
-                type: 'DescriptionListItem'
-            }]
-        });
-    }
-
-    addList() {
-        this.addChild({
-            type: 'List',
-            children: [{
-                type: 'ListItem'
-            }]
-        });
-    }
-
-    addSection() {
-        this.addChild({
-            type: 'Section'
-        })
     }
 
     // TODO: Just copy it from this child's parent's data
@@ -322,26 +286,9 @@ export default class ResumeNodeBase<P
                 moveDown: this.moveDown.bind(this),
                 getData: this.getData,
                 toggleEdit: this.toggleEdit as Action,
+                childTypes: this.childTypes,
                 customOptions: this.customMenuOptions
             });
         }
-    }
-
-    // Get the buttons for editing a menu
-    getEditingMenu() : any {
-        return <></>
-    }
-
-    // Actually render the editing controls after checking that
-    // they should be rendered
-    renderEditingMenu() {
-        if (this.isEditable) {
-            const menu = this.getEditingMenu();
-            if (menu) {
-                return this.getEditingMenu();
-            }
-        }
-
-        return <></>
     }
 }

@@ -6,6 +6,8 @@ import ReactQuill from "react-quill";
 import { Menu, Item, MenuProvider } from 'react-contexify';
 import AddIcon from "../icons/add-24px.svg";
 import 'react-contexify/dist/ReactContexify.min.css';
+import Placeholder from "./Placeholder";
+import ResumeTextField from "./controls/TextField";
 
 interface ListProps extends ResumeNodeProps {
     isMoving?: boolean;
@@ -63,7 +65,6 @@ export class ListItem<P extends ListProps = ListProps> extends ResumeNodeBase<P>
         return <li>
             <span className="iflex-row">
                 <span>{value}</span>
-                {this.renderEditingMenu()}
             </span>
         </li>
     }
@@ -141,7 +142,6 @@ export default class List extends ResumeNodeBase<ListProps> {
         }
 
         return <ul className={this.className} {...this.selectTriggerProps}>
-            {this.renderEditingMenu()}
             {this.renderChildren()}
         </ul>
     }
@@ -161,16 +161,28 @@ interface DescriptionItemProps extends ListProps {
 }
 
 export class DescriptionListItem extends ListItem<DescriptionItemProps> {
+    get className() {
+        return super.className + " resume-definition";
+    }
+
     render() {
-        let term: any = this.props.term || "";
         let value: any = this.props.value || "";
 
+        const term = <ResumeTextField
+            label="Term"
+            onChange={this.updateData.bind(this, "term") as (text: string) => void}
+            value={this.props.term}
+            defaultText="Enter a term"
+        />
+
         if (this.props.isEditing) {
+            /*
             term = <InputGroup size="sm">
                 <Form.Control value={term}
                     onChange={this.updateDataEvent.bind(this, "term")}
                             placeholder="Term" />
                     </InputGroup>
+                    */
             value = <InputGroup size="sm">
                 <Form.Control value={value}
                     onChange={this.updateDataEvent.bind(this, "value")}
@@ -178,15 +190,13 @@ export class DescriptionListItem extends ListItem<DescriptionItemProps> {
                     </InputGroup>
         }
 
-        return <div className="resume-definition"
-            onClick={() => this.props.toggleEdit(this.props.id)}>
+        return <div className={this.className}>
             <dt>
                 <span>{term}</span>
             </dt>
             <dd>
                 <span className="flex-row">
-                    {value}
-                    {this.renderEditingMenu()}
+                    <Placeholder text={value} />
                 </span>
             </dd>
         </div>
@@ -194,19 +204,12 @@ export class DescriptionListItem extends ListItem<DescriptionItemProps> {
 }
 
 export class DescriptionList extends List {
-    addChild() {
-        if (this.props.addChild as AddChild) {
-            (this.props.addChild as AddChild)(
-            this.props.id,
-                {
-                type: 'DescriptionListItem'
-            });
-        }
+    get childTypes() {
+        return 'Description List Item';
     }
 
     renderList() {
         return <dl className={this.className} {...this.selectTriggerProps}>
-            {this.renderEditingMenu()}
             {this.renderChildren()}
         </dl>
     }

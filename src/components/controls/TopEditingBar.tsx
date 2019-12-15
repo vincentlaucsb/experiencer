@@ -53,6 +53,11 @@ const addOptions: Map<string, NodeOption> = new Map<string, NodeOption>([
                 type: 'DescriptionListItem'
             }]
         }
+    }],
+
+    ['Description List Item', {
+        text: 'Description List Item',
+        node: { type: 'DescriptionListItem' }
     }]
 ]);
 
@@ -60,6 +65,8 @@ function addMap(type: string) {
     switch (type) {
         case 'FlexibleRow':
             return 'Column';
+        case 'DescriptionList':
+            return 'Description List Item';
         case 'Entry':
             return ['Bulleted List', 'Description List', 'Paragraph'];
         case 'Section':
@@ -133,8 +140,6 @@ export function AddMenu(props: AddMenuProps) {
     </>
 }
 
-
-
 export default function TopEditingBar(props: SelectedNodeProps) {
     const id = props.id;
     const additionalOptions = props.customOptions ? <>
@@ -144,7 +149,7 @@ export default function TopEditingBar(props: SelectedNodeProps) {
     </> : <></>
 
     return <Box position="sticky">
-        <AddOption id={id} addChild={props.addChild as AddChild} options={addMap(props.type)} />
+        <AddOption id={id} addChild={props.addChild as AddChild} options={props.childTypes} />
         <Button onClick={() => props.deleteChild(id)}>Delete</Button>
         <Button onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Button>
         <Button onClick={props.moveUp}>Move Up</Button>

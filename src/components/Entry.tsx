@@ -130,7 +130,6 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         }
 
         return <div className={this.className} {...this.selectTriggerProps}>
-            {this.renderEditingMenu()}
             <div className="entry-title">
                 <h3 className="flex-row flex-spread">{title} {this.getTitleExtras()}</h3>
                 <p className="flex-row flex-spread subtitle">{subtitle} {this.getSubtitleExtras()}</p>

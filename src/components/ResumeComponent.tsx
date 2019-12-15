@@ -6,7 +6,7 @@ import Entry, { EntryProps } from "./Entry";
 import List, { ListItem, DescriptionList, DescriptionListItem } from "./List";
 import Paragraph from "./Paragraph";
 import Header from "./Header";
-import { ResumeNodeProps, ResumePassProps } from "./ResumeNodeBase";
+import { ResumeNodeProps, ResumePassProps, Action } from "./ResumeNodeBase";
 import { IdType } from "./utility/HoverTracker";
 
 export type EditorMode = 'normal'

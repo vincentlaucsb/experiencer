@@ -36,6 +36,20 @@
 @import "~bootstrap/scss/utilities";
 
 /* App Stuff */
+body {
+    background: #efefef;
+}
+
+#resume {
+    background: #ffffff;
+    border: 1px solid #dddddd;
+    max-width: 8.5in;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0.5in;
+}
+
 .button-disabled {
     filter: opacity(0.3);
 }

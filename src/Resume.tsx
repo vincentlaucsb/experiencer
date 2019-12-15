@@ -21,10 +21,12 @@ import HoverTracker, { IdType } from './components/utility/HoverTracker';
 import TopEditingBar from './components/controls/TopEditingBar';
 import ResumeNodeTree from './components/utility/NodeTree';
 import { Button, Paper, Theme, makeStyles, createStyles, styled, Toolbar } from '@material-ui/core';
+import CssTree from './components/utility/CssTree';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering: HoverTracker;
     nodes: ResumeNodeTree;
+    css: CssTree;
     style: HTMLStyleElement;
     unselect: Action;
 
@@ -37,6 +39,7 @@ class Resume extends React.Component<{}, ResumeState> {
         this.style.innerHTML = "";
         head.appendChild(this.style);
 
+        this.css = new CssTree();
         this.hovering = new HoverTracker();
         this.nodes = new ResumeNodeTree();
         this.state = {
@@ -424,14 +427,12 @@ class Resume extends React.Component<{}, ResumeState> {
             width: '8.5in'
         });
 
-        const resume = <MyPaper>
-            <div id="resume" className={this.resumeClassName}>
-                <ResumeHotKeys {...this.resumeHotKeysProps} {...this.state} />
-                {this.state.children.map(this.childMapper)}
+        const resume = <div id="resume" className={this.resumeClassName}>
+            <ResumeHotKeys {...this.resumeHotKeysProps} {...this.state} />
+            {this.state.children.map(this.childMapper)}
 
-                {resumeToolbar}
-            </div>
-        </MyPaper>
+            {resumeToolbar}
+        </div>
 
         const topNav = <TopNavBar {...this.toolbarProps} />
 

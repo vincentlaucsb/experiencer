@@ -1,12 +1,13 @@
 ﻿import { Action } from "../ResumeNodeBase";
 import React from "react";
-import { ButtonProps, ButtonGroup, Button, Navbar, Nav } from "react-bootstrap";
 import FileLoader from "./FileLoader";
 import FileSaver from "./FileSaver";
 import GitHub from '../../icons/mark-github.svg';
 import { EditorMode } from "../ResumeComponent";
 import { isUndefined } from "util";
 import { withTooltip } from "./Buttons";
+import { AppBar, makeStyles, Theme, createStyles, Toolbar, IconButton, Typography, Button } from "@material-ui/core";
+import MenuIcon from '@material-ui/icons/Menu';
 
 interface TopNavBarProps {
     mode: EditorMode;
@@ -27,55 +28,70 @@ interface TopNavBarProps {
     toggleStyleEditor: Action;
 }
 
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        root: {
+            flexGrow: 1,
+        },
+        menuButton: {
+            marginRight: theme.spacing(2),
+        },
+        title: {
+            flexGrow: 1,
+        },
+    }),
+);
+
+/** Conditionally render buttons
+ * @param onClick Click action if button is enabled
+ */
+function getButtonProps(onClick?: any) {
+    const enabled = !isUndefined(onClick);
+
+    let props = {
+        disabled: !enabled,
+        // variant: "outline-light" as ButtonProps["variant"]
+    };
+
+    if (enabled) {
+        props['onClick'] = onClick;
+    }
+
+    return props;
+}
+
 /** The top nav bar for the resume editor */
-export default class TopNavBar extends React.Component<TopNavBarProps> {
-    get isEditingStyle(): boolean {
-        return this.props.mode === 'editingStyle';
-    }
+export default function TopNavBar(props: TopNavBarProps) {
+    const isEditingStyle = props.mode === 'editingStyle';
+    const isPrinting = props.mode === 'printing';
 
-    get isPrinting(): boolean {
-        return this.props.mode === 'printing';
-    }
-
-    /** Conditionally render buttons
-     * @param onClick Click action if button is enabled
-     */
-    getProps(onClick?: any) {
-        const enabled = !isUndefined(onClick);
-
-        let props = {
-            disabled: !enabled,
-            variant: "outline-light" as ButtonProps["variant"]
-        };
-
-        if (enabled) {
-            props['onClick'] = onClick;
-        }
-
-        return props;
-    }
+    const classes = useStyles();
 
     /** Return some controls for editing the resume */
-    renderEditorControls() {
-        if (['changingTemplate', 'landing'].indexOf(this.props.mode) >= 0) {
+    function renderEditorControls() {
+        if (['changingTemplate', 'landing'].indexOf(props.mode) >= 0) {
             return <></>
         }
 
-        const copyProps = this.getProps(this.props.copyClipboard);
-        const pasteProps = this.getProps(this.props.pasteClipboard);
-        const unselectProps = this.getProps(this.props.unselect);
+        const copyProps = getButtonProps(props.copyClipboard);
+        const pasteProps = getButtonProps(props.pasteClipboard);
+        const unselectProps = getButtonProps(props.unselect);
 
         // Highlight "Edit Style" button conditionally
         const editStyleProps = {
-            onClick: this.props.toggleStyleEditor,
-            variant: this.isEditingStyle ? "light" : "outline-light" as ButtonProps["variant"]
+            onClick: props.toggleStyleEditor,
+            // variant: isEditingStyle ? "light" : "outline-light" as ButtonProps["variant"]
         };
 
         const CopyButton = withTooltip(Button, 'Shift + C', 'copy-button');
         const PasteButton = withTooltip(Button, 'Shift + V', 'paste-button');
         const UnselectButton = withTooltip(Button, 'Esc', 'unselect-button');
 
+
+        return <></>
+        /**
         return <>
+
             <ButtonGroup className="mr-2">
                 <CopyButton {...copyProps}>Copy</CopyButton>
                 <PasteButton {...pasteProps}>Paste</PasteButton>
@@ -85,31 +101,46 @@ export default class TopNavBar extends React.Component<TopNavBarProps> {
                 <Button {...editStyleProps}>Edit Style</Button>
             </ButtonGroup>
         </>
+        **/
     }
 
-    render() {
-        const helpOk = ['normal', 'help', 'editingStyle'].indexOf(this.props.mode) >= 0; 
-        const helpButton = helpOk ? <Nav.Link onClick={this.props.toggleHelp}>
-            Help</Nav.Link> : <></>
+    const helpOk = ['normal', 'help', 'editingStyle'].indexOf(props.mode) >= 0; 
+    const helpButton = helpOk ? <Button onClick={props.toggleHelp}>
+        Help</Button> : <></>
 
-        if (!this.isPrinting) {
-            return <Navbar bg="dark" variant="dark" sticky="top">
-                <Navbar.Brand className="cursor-pointer" onClick={this.props.toggleLanding}>Experiencer</Navbar.Brand>
-                <Nav className="mr-auto">
-                    <Nav.Link onClick={this.props.changeTemplate}>New</Nav.Link>
-                    <FileLoader loadData={this.props.loadData} />
-                    <FileSaver saveFile={this.props.saveFile} />
-                    {helpButton}
-                </Nav>
+    /**
+                <FileSaver saveFile={this.props.saveFile} />
+                {helpButton}
+            </Nav>
 
-                {this.renderEditorControls()}
+            {this.renderEditorControls()}
 
-                <Nav>
-                    <Nav.Link href="https://github.com/vincentlaucsb/experiencer"><img src={GitHub} style={{ filter: "invert(1)", height: "30px" }} alt="GitHub" /></Nav.Link>
-                </Nav>
-            </Navbar>
-        }
+            <Nav>
+                <Nav.Link href="https://github.com/vincentlaucsb/experiencer"><img src={GitHub} style={{ filter: "invert(1)", height: "30px" }} alt="GitHub" /></Nav.Link>
+            </Nav>
+            */
+    if (!isPrinting) {
 
-        return <></>
+        return (
+            <div className={classes.root}>
+                <AppBar position="static">
+                    <Toolbar>
+                        <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+                            <MenuIcon />
+                        </IconButton>
+                        <Typography variant="h6" className={classes.title}>
+                            Experiencer
+                        </Typography>
+                        <Button color="inherit" onClick={props.changeTemplate}>New</Button>
+                        <FileLoader loadData={props.loadData} />
+                        <FileSaver saveFile={props.saveFile} />
+                        {helpButton}
+                        <Button color="inherit">Login</Button>
+                    </Toolbar>
+                </AppBar>
+            </div>
+        );
     }
+
+    return <></>
 }

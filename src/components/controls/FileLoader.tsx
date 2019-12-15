@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import { Form, Nav } from "react-bootstrap";
+import { Button } from "@material-ui/core";
 
 interface FileLoaderProps {
     loadData: (data: object) => void;
@@ -59,15 +59,19 @@ export default class FileLoader extends React.Component<FileLoaderProps, FileLoa
 
     render() {
         const expanded = this.state.isOpen ? 
-            <Form inline>
-                <div className="custom-file">
-                    <input type="file" className="custom-file-input" onChange={this.onFileSelect} ref={this.fileInput} id="customFile" />
-                    <label className="custom-file-label" form="customFile">Choose file</label>
+            <form>
+                <div>
+                    <input type="file" onChange={this.onFileSelect} ref={this.fileInput} id="customFile" />
+                    <label form="customFile">Choose file</label>
                 </div>
-            </Form> : <></>
+            </form> : <></>
 
         return <>
-            <Nav.Link onClick={() => this.setState({ isOpen: !this.state.isOpen })}>Load</Nav.Link>
+            <Button
+                color="inherit"
+                onClick={() => this.setState({ isOpen: !this.state.isOpen })}>
+                Load
+            </Button>
             {expanded}
         </>
     }

@@ -1,53 +1,38 @@
 ﻿import * as React from "react";
-import { Form, Nav, InputGroup, Button } from "react-bootstrap";
+import { Button, TextField } from "@material-ui/core";
 
 interface FileSaverProps {
     saveFile: (filename: string) => void;
 }
 
-interface FileLoaderState {
-    isOpen: boolean;
-    filename: string;
-}
-
 // Form used for saving resume data
-export default class FileSaver extends React.Component<FileSaverProps, FileLoaderState> {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            filename: 'resume.json',
-            isOpen: false
-        };
-
-        this.onChange = this.onChange.bind(this);
-    }
-
-    onChange(event: any) {
+export default function FileSaver(props: FileSaverProps) {
+    const [filename, setFilename] = React.useState('resume.json');
+    const [isOpen, setOpen] = React.useState(false);
+    const onChange = (event: any) => {
         const filename = event.target.value;
-        this.setState({ filename: filename });
+        setFilename(filename);
     }
 
-    render() {
-        const expanded = this.state.isOpen ? 
-            <Form inline>
-                <InputGroup>
-                    <Form.Control
-                        onChange={this.onChange}
-                        value={this.state.filename}
-                    />
-                    <InputGroup.Append>
-                        <Button onClick={() => this.props.saveFile(this.state.filename)} variant="outline-light">Save</Button>
-                    </InputGroup.Append>
-                </InputGroup>
-            </Form> : <></>
+    const expanded = isOpen ? 
+        <form>
+            <TextField
+                onChange={onChange}
+                value={filename}
+                id="filename"
+                label="Filename"
+                variant="outlined" />
+            <Button
+                color="inherit"
+                onClick={() => props.saveFile(filename)}>Save</Button>
+        </form> : <></>
 
-        return <>
-            <Nav.Link
-                onClick={() => this.setState({ isOpen: !this.state.isOpen })}>
-                Save to File
-            </Nav.Link>
-            {expanded}
-        </>
-    }
+    return <>
+        <Button
+            color="inherit"
+            onClick={() => setOpen(!isOpen)}>
+            Save to File
+        </Button>
+        {expanded}
+    </>
 }

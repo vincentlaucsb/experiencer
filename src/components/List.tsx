@@ -178,7 +178,8 @@ export class DescriptionListItem extends ListItem<DescriptionItemProps> {
                     </InputGroup>
         }
 
-        return <div className="resume-definition">
+        return <div className="resume-definition"
+            onClick={() => this.props.toggleEdit(this.props.id)}>
             <dt>
                 <span>{term}</span>
             </dt>

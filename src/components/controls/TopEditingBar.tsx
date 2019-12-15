@@ -35,11 +35,24 @@ const addOptions: Map<string, NodeOption> = new Map<string, NodeOption>([
     [ 'Paragraph', {
         text: 'Paragraph',
         node: { type: 'Paragraph' }
-    } ],
+    }],
+
+    ['Bulleted List', {
+        text: 'Bulleted List',
+        node: {
+            type: 'Paragraph',
+            value: '<ul><li></li></ul>'
+        }
+    }],
 
     ['Description List', {
         text: 'Description List',
-        node: { type: 'DescriptionList' }
+        node: {
+            type: 'DescriptionList',
+            children: [{
+                type: 'DescriptionListItem'
+            }]
+        }
     }]
 ]);
 
@@ -47,9 +60,12 @@ function addMap(type: string) {
     switch (type) {
         case 'FlexibleRow':
             return 'Column';
-
+        case 'Entry':
+            return ['Bulleted List', 'Description List', 'Paragraph'];
+        case 'Section':
+            return ['Entry', 'Paragraph', 'Bulleted List', 'Description List'];
         default:
-            return ['Section', 'Entry', 'Paragraph', 'Description List'];
+            return ['Section', 'Entry', 'Paragraph', 'Bulleted List', 'Description List'];
     }
 }
 

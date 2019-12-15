@@ -6,8 +6,7 @@ import './scss/custom.scss';
 import 'react-quill/dist/quill.snow.css';
 
 import ResumeComponent, { EditorMode } from './components/ResumeComponent';
-import { Button, ButtonToolbar, Nav } from 'react-bootstrap';
-import { deleteAt, moveUp, moveDown, assignIds, deepCopy, arraysEqual } from './components/Helpers';
+import { assignIds, deepCopy, arraysEqual } from './components/Helpers';
 import { SelectedNodeProps, AddChild, Action } from './components/ResumeNodeBase';
 import ResumeTemplateProvider from './components/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
@@ -21,7 +20,7 @@ import { isNullOrUndefined } from 'util';
 import HoverTracker, { IdType } from './components/utility/HoverTracker';
 import TopEditingBar from './components/controls/TopEditingBar';
 import ResumeNodeTree from './components/utility/NodeTree';
-import { Paper, Theme, makeStyles, createStyles, styled } from '@material-ui/core';
+import { Button, Paper, Theme, makeStyles, createStyles, styled, Toolbar } from '@material-ui/core';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering: HoverTracker;
@@ -211,18 +210,17 @@ class Resume extends React.Component<{}, ResumeState> {
 
         const templateNames = Object.keys(ResumeTemplateProvider.templates);
         let navItems = templateNames.map((key: string) =>
-            <Nav.Item key={key}>
-                <Nav.Link eventKey={key} onClick={() => loadTemplate(key)}>
+            <nav key={key}>
+                <a onClick={() => loadTemplate(key)}>
                     {key}
-                </Nav.Link>
-            </Nav.Item>);
+                </a>
+            </nav>);
 
         return <div className="ml-2 mr-2 mt-2 mb-2" style={{ maxWidth: "300px", width: "30%" }}>
-            <Nav variant="pills"
-                activeKey={this.state.activeTemplate}
+            <nav 
                 className="flex-column mb-2">
                 {navItems}
-            </Nav>
+            </nav>
             <Button onClick={() => this.toggleMode()}>Use this Template</Button>
         </div>
     }
@@ -414,10 +412,10 @@ class Resume extends React.Component<{}, ResumeState> {
     //#endregion
 
     render() {
-        const resumeToolbar = this.isEditable ? <ButtonToolbar>
-            <Button className="mr-2" onClick={this.addSection}>Add Section</Button>
-            <Button className="mr-2" onClick={this.addColumn}>Add Multi-Column Row</Button>
-        </ButtonToolbar> : <></>
+        const resumeToolbar = this.isEditable ? <Toolbar>
+            <Button variant="outlined" onClick={this.addSection}>Add Section</Button>
+            <Button variant="outlined" onClick={this.addColumn}>Add Multi-Column Row</Button>
+        </Toolbar> : <></>
 
         const MyPaper = styled(Paper)({
             marginLeft: 'auto',

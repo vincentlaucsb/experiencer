@@ -4,7 +4,7 @@ import { assignIds, deleteAt, moveUp, moveDown, deepCopy } from "../Helpers";
 export default class ResumeNodeTree {
     children = new Array<object>();
 
-    constructor(children = []) {
+    constructor(children = new Array<object>()) {
         this.children = children;
     }
 

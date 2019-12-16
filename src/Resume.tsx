@@ -57,7 +57,7 @@ sectionCss.add(new CssNode(
 let sectionTitle = defaultCss.add(new CssNode('Section Titles', {
     'font-family': 'Verdana, sans-serif',
     'font-weight': 'bold',
-    'font-size': '16pt',
+    'font-size': '15pt',
     'text-transform': 'uppercase'
 }, 'h2'));
 
@@ -71,10 +71,14 @@ let entryTitleCss = sectionCss.add(new CssNode('Entry Titles',
         'margin-bottom': '4px'
     }, '.entry-title'));
 
-entryTitleCss.add(new CssNode('Entry Title Headings', {
-    'font-size': '14pt',
+let entryTitleHeadingCss = entryTitleCss.add(new CssNode('Entry Title Headings', {
+    'font-size': '13pt',
     'font-weight': 'bold'
 }, 'h3'));
+
+entryTitleHeadingCss.add(new CssNode('Entry Title Headings ...', {
+   'font-weight': 'normal'
+}, '.extra-field'));
 
 entryTitleCss.add(new CssNode('Entry Subtitles', {
     'font-family': 'Verdana, sans-serif',

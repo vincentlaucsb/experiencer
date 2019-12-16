@@ -85,6 +85,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         if (extraData) {
             return extraData.map((text, index) =>
                 <ResumeTextField
+                    displayClassName="extra-field"
                     key={index}
                     onChange={updater.bind(this, index)}
                     value={text || ""}
@@ -132,6 +133,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
     
     render() {
         const title = <ResumeTextField 
+            displayClassName="title-text"
             onChange={this.updateData.bind(this, "title")}
             value={this.props.title}
             label="Title"
@@ -140,6 +142,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         />
 
         const subtitle = <ResumeTextField
+            displayClassName="subtitle-text"
             onChange={this.updateData.bind(this, "subtitle")}
             value={this.props.subtitle}
             label="Subitle"

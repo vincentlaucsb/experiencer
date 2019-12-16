@@ -1,20 +1,6 @@
-@import "~bootstrap/scss/functions";
-@import "~bootstrap/scss/variables";
-
-$light-spacing: 2px;
-$spacing: 1rem;
-
-$porcelain: #ecf2f2;
-$lynch: #6a869a;
-$oxford-blue: #192739;
-$san-marino: #4375a1;
-$baltic-sea: #151318;
-
-$light-shade: $porcelain;
-$light-accent: $lynch;
-$main: $oxford-blue;
-$dark-accent: $san-marino;
-$dark-shade: $baltic-sea;
+@import "variables";
+@import "landing";
+@import "resume-hover";
 
 %flex-row {
     display: flex;
@@ -49,6 +35,7 @@ header#app-header {
        h1 {
           margin: $spacing;
           font-size: 20pt;
+          cursor: pointer;
        }
 
         .pure-menu-horizontal {
@@ -68,6 +55,11 @@ header#app-header {
         .pure-menu-link:hover {
             background: $dark-accent;
             color: $light-shade;
+        }
+
+        // GitHub Icon
+        svg {
+            color: $light-accent;
         }
     }
 
@@ -95,10 +87,12 @@ header#app-header {
     background: #ffffff;
     border: 1px solid #dddddd;
     max-width: 8.5in;
+    min-height: 11in;
     width: 80%;
     margin-left: auto;
     margin-right: auto;
     padding: 0.5in;
+    margin-bottom: $spacing;
 }
 
 .button-disabled {
@@ -120,75 +114,6 @@ div.button-tooltip {
 
 input {
     width: 100%;
-}
-
-.resume-hovering, .resume-selected {
-    background: $gray-100;
-}
-
-.resume-hovering {
-    border: 1px dashed $blue;
-    cursor: pointer;
-}
-
-.resume-selected, .resume-hovering.resume-selected {
-    border: 2px solid $blue;
-    cursor: auto;
-}
-
-.resume-hidden {
-    font-style: italic;
-    color: #aaaaaa;
-}
-
-.resume-default {
-    font-style: italic;
-}
-
-$grab-handle-size: 35px;
-
-.row-grab-handle-container, .column-grab-handle-container {
-    position: relative;
-}
-
-.row-grab-handle, .column-grab-handle {
-    position: absolute;
-    font-family: $font-family-base;
-    color: $white;
-    cursor: pointer;
-}
-
-.row-grab-handle-container {
-    .row-grab-handle {
-        left: -$grab-handle-size;
-        width: $grab-handle-size;
-        height: 100%;
-        background: $blue;
-        writing-mode: vertical-rl;
-        transform: rotate(-180deg);
-        padding-top: 0.5rem;
-    }
-}
-
-.column-grab-handle-container {
-    .column-grab-handle {
-        top: -$grab-handle-size;
-        width: 100%;
-        height: $grab-handle-size;
-        background: $gray-600;
-        padding-left: 0.5rem;
-    }
-}
-
-#resume {
-    a.dropdown-item, button {
-        /** Use Bootstrap style for editing controls */
-        font-family: $font-family-base;
-    }
-
-    li.list-options {
-        list-style-type: none;
-    }
 }
 
 /** Helper Classes */

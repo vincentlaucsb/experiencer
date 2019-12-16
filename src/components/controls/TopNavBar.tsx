@@ -2,12 +2,11 @@
 import React from "react";
 import FileLoader from "./FileLoader";
 import FileSaver from "./FileSaver";
-import GitHub from '../../icons/mark-github.svg';
 import { EditorMode } from "../ResumeComponent";
 import { isUndefined } from "util";
 import { Button, withTooltip } from "./Buttons";
 import PureMenu, { PureMenuItem, PureMenuLink } from "./PureMenu";
-import Octicon, { DesktopDownload, Home } from "@primer/octicons-react";
+import Octicon, { DesktopDownload, Home, MarkGithub } from "@primer/octicons-react";
 
 interface TopNavBarProps {
     mode: EditorMode;
@@ -41,32 +40,6 @@ function getButtonProps(onClick?: any) {
     return props;
 }
 
-interface TopTabsProps {
-    activeKey: 'File' | 'Edit' | 'Edit Style';
-}
-
-function TopTabs(props: TopTabsProps) {
-    const Item = PureMenuItem;
-    const Link = PureMenuLink;
-
-    const items = ['File', 'Edit', 'Edit Style'];
-    
-    return (
-        <PureMenu horizontal>
-            {items.map((item) => {
-                const selected = props.activeKey === item;
-
-                return (
-                    <Item selected={selected}>
-                        <Link>{item}</Link>
-                    </Item>
-                );
-            }
-            )}
-        </PureMenu>
-    );
-}
-
 interface ButtonProps {
     children?: any;
     onClick?: any;
@@ -85,17 +58,28 @@ export default function TopNavBar(props: TopNavBarProps) {
     const helpButton = helpOk ? <Button onClick={props.toggleHelp}>
         Help</Button> : <></>
 
-/** <Nav>
-                <Nav.Link href="https://github.com/vincentlaucsb/experiencer"><img src={GitHub} style={{ filter: "invert(1)", height: "30px" }} alt="GitHub" /></Nav.Link>
-            </Nav> */
-
     const Item = PureMenuItem;
     const Link = PureMenuLink;
 
     return (
         <div id="brand">
-            <h1>Experiencer</h1>
-            <TopTabs activeKey="File" />
+            <h1 onClick={props.toggleLanding}>Experiencer</h1>
+            <PureMenu horizontal>
+                <Item>
+                    <Link>File</Link>
+                </Item>
+                <Item onClick={props.toggleStyleEditor}>
+                    <Link>Edit Style</Link>
+                </Item>
+                <Item onClick={props.toggleHelp}>
+                    <Link>Help</Link>
+                </Item>
+            </PureMenu>
+            <div>
+                <a href="https://github.com/vincentlaucsb/experiencer">
+                    <Octicon icon={MarkGithub} />
+                </a>
+            </div>
         </div>
     );
 }

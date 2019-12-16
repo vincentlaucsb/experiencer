@@ -4,7 +4,7 @@ import "ace-builds/src-noconflict/theme-github";
 
 import ResumeState from "./ResumeState";
 import React from "react";
-import { ButtonToolbar, Button } from "react-bootstrap";
+import { Button } from "./Buttons";
 import { Action } from "../ResumeNodeBase";
 
 interface StyleEditorProps extends ResumeState {
@@ -24,9 +24,9 @@ export default function StyleEditor(props: StyleEditorProps) {
             editorProps={{ $blockScrolling: true }}
         />
 
-        <ButtonToolbar className="mt-2">
+        <div>
             <Button onClick={props.renderStyle}>Apply</Button>
             <Button onClick={props.toggleStyleEditor}>Done</Button>
-        </ButtonToolbar>
+        </div>
     </>
 }

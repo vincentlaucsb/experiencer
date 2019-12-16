@@ -1,5 +1,4 @@
 ﻿import React from "react";
-import { TextField } from "@material-ui/core";
 
 interface ResumeTextFieldProps {
     isEditing?: boolean;
@@ -7,6 +6,7 @@ interface ResumeTextFieldProps {
     value?: string;
     label?: string;
     defaultText?: string;
+    displayClassName?: string;
 
     /** A callback which modifies the display text */
     displayProcessor?: (text?: string) => string;
@@ -28,16 +28,18 @@ export default function ResumeTextField(props: ResumeTextFieldProps) {
     };
 
     if (props.isEditing) {
-        return <TextField
+        return <>
+            <label>{props.label || "Value"}</label>
+            <input
             onChange={(event) => props.onChange(event.target.value)}
             onKeyDown={onKeyDown}
-            label={props.label || "Value"}
             value={props.value || ""}
-        />
+            />
+        </>
     }
 
     const displayValue = props.displayProcessor ? props.displayProcessor(props.value) : props.value;
     
-    return <span onClick={props.onClick}
+    return <span className={props.displayClassName} onClick={props.onClick}
     >{displayValue || props.defaultText || "Enter a value"}</span>
 }

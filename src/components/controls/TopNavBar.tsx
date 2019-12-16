@@ -136,11 +136,9 @@ export default function TopNavBar(props: TopNavBarProps) {
     const Link = PureMenuLink;
 
     return (
-        <header id="app-header">
-            <div id="brand">
-                <h1>Experiencer</h1>
-                <TopTabs activeKey="File" />
-            </div>
-        </header>
+        <div id="brand">
+            <h1>Experiencer</h1>
+            <TopTabs activeKey="File" />
+        </div>
     );
 }

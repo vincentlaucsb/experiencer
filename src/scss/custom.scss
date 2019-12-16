@@ -28,7 +28,9 @@ body {
 }
 
 header#app-header {
-    background: $main;
+    $header-background: $main;
+
+    background: $header-background;
     color: $light-shade;
 
     /** Keep toolbar at top */
@@ -36,20 +38,24 @@ header#app-header {
     top: 0;
     margin-bottom: $spacing;
 
-    div {
+    div#brand, div#toolbar {
         @extend %flex-row;
+        align-content: center;
     }
 
     div#brand {
-        padding-left: $spacing;
+        padding-left: $spacing * 0.5;
 
        h1 {
           margin: $spacing;
+          font-size: 20pt;
        }
 
         .pure-menu-horizontal {
             margin-left: $spacing * 2;
-            align-self: flex-end;
+            display: flex;
+            flex-direction: column;
+            align-self: center;
         }
 
         .pure-menu-selected {
@@ -66,12 +72,12 @@ header#app-header {
     }
 
     div#toolbar {
-        background: $dark-shade;
+        border-top: 1px solid $light-accent;
         color: $light-shade;
         padding: $spacing * 0.5;
 
         button.pure-button {
-            background: $dark-shade;
+            background: $header-background;
             color: $light-shade;
 
             svg {

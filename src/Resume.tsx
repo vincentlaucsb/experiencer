@@ -499,8 +499,6 @@ class Resume extends React.Component<{}, ResumeState> {
             {resumeToolbar}
         </div>
 
-        const topNav = <TopNavBar {...this.toolbarProps} />
-
         let main = resume;
         let sidebar: JSX.Element;
 
@@ -511,10 +509,10 @@ class Resume extends React.Component<{}, ResumeState> {
             <Button><Octicon icon={DesktopDownload} />Save</Button>
         </div>
         
-        const editingTop = <>
-            {topNav}
+        const editingTop = <header id="app-header">
+            <TopNavBar {...this.toolbarProps} />
             {topEditingBar}
-        </>
+        </header>
 
         // Render the final layout based on editor mode
         switch (this.state.mode) {

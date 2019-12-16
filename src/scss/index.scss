@@ -11,6 +11,15 @@
 body {
     background: $light-shade;
     color: $dark-shade;
+    margin: 0;
+}
+
+/* Resizer */
+.Resizer.vertical {
+    width: 2px;
+    border-left: 2px solid #000000;
+    padding: 0 0.5rem;
+    cursor: col-resize;
 }
 
 header#app-header {

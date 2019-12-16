@@ -1,7 +1,5 @@
 ﻿import * as React from "react";
-import EditButton, { DeleteButton, UpButton, DownButton } from "./controls/Buttons";
 import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
-import { ButtonGroup, DropdownButton, Dropdown } from "react-bootstrap";
 
 export interface HeaderProps extends ResumeNodeProps {
     orientation?: 'row' | 'column';

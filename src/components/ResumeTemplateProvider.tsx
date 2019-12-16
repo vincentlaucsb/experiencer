@@ -2,47 +2,18 @@
 import { assignIds, deepCopy } from "./Helpers";
 
 export default class ResumeTemplateProvider {
-    static defaultCss = `#resume {
-    font-family: Georgia, serif;
-    font-size: 10pt;
-}
-
+    static defaultCss = `
 #resume * {
     /* Set all margins to zero, and then re-set them later */
     margin: 0;
 }
 
-#resume a, a:hover {
-    color: #000000;
-}
-
-#resume header .resume-paragraph {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-}
-
-#resume header .resume-paragraph p {
-    margin-right: 1.0rem;
-}
-
 /** Headers **/
-#resume h1 {
-    font-size: 1.8rem;
-    text-align: center;
-}
-
 #resume h2.flex-col {
     /* Section with header on left */
     padding-right: 0.5rem;
     margin-right: 0.5rem;
     width: 150px;
-}
-
-#resume h2.flex-row.flex-spread {
-    /* Section with header on top */
-    align-items: self-end;
 }
 
 /** Lists **/
@@ -70,6 +41,12 @@ export default class ResumeTemplateProvider {
 }
 
 /** Key Classes: Modify at your own risk **/
+#resume div.text-inline p {
+    /** Disabled line breaks */
+    display: inline;
+    margin-right: 1rem;
+}
+
 #resume .iflex-row {
     display: inline-flex;
 }
@@ -92,122 +69,131 @@ export default class ResumeTemplateProvider {
 }
 `;
 
-    static header = {
-        type: 'Header',
-        value: 'Your Name Here',
-        children: [
-            {
-                type: 'Paragraph',
-                value: '<p>Email: spamMePlz@spicymail.com</p><p>Phone: 123-456-7890</p>'
-            }
-        ]
+    static get header() {
+        return {
+            type: 'Header',
+            value: 'Your Name Here',
+            children: [
+                {
+                    type: 'Paragraph',
+                    value: '<p>Email: spamMePlz@spicymail.com</p><p>Phone: 123-456-7890</p>'
+                }
+            ]
+        };
+    }
+
+    static get objective() {
+        return {
+            type: 'Section',
+            title: 'Objective',
+            children: [
+                {
+                    type: 'Paragraph',
+                    value: 'To conquer the world.'
+                }
+            ]
+        };
+    }
+
+    static get experience() {
+        return {
+            type: 'Section',
+            title: 'Experience',
+            children: [
+                {
+                    type: 'Entry',
+                    title: 'Another Company',
+                    titleExtras: ['2019 -- Present'],
+                    subtitle: 'Senior Software Engineer',
+                    subtitleExtras: ['Sometown, USA'],
+                    children: [
+                        {
+                            type: 'List',
+                            children: [
+                                {
+                                    type: 'ListItem',
+                                    value: 'Increased productivity by conducting telepathic SCRUM meetings'
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    type: 'Entry',
+                    title: 'Some Company',
+                    titleExtras: ['2014 -- 2016'],
+                    subtitle: 'Software Engineer',
+                    subtitleExtras: ['Big City, USA'],
+                    children: [
+                        {
+                            type: 'List',
+                            children: [
+                                {
+                                    type: 'ListItem',
+                                    value: 'Did things with code while looking at a computer monitor'
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
     };
 
-    static objective = {
-        type: 'Section',
-        title: 'Objective',
-        children: [
-            {
-                type: 'Paragraph',
-                value: 'To conquer the world.'
-            }
-        ]
+    static get techSkills() {
+        return {
+            type: 'Section',
+            title: 'Technical Skills',
+            children: [
+                {
+                    type: 'List',
+                    children: [
+                        {
+                            type: 'ListItem',
+                            value: 'C++'
+                        },
+                        {
+                            type: 'ListItem',
+                            value: 'Web Development'
+                        },
+                        {
+                            type: 'ListItem',
+                            value: 'Agile/SCRUM'
+                        }
+                    ]
+                }
+            ]
+        }
     };
 
-    static experience = {
-        type: 'Section',
-        title: 'Experience',
-        children: [
-            {
-                type: 'Entry',
-                title: 'Another Company',
-                titleExtras: ['2019 -- Present'],
-                subtitle: 'Senior Software Engineer',
-                subtitleExtras: ['Sometown, USA'],
-                children: [
-                    {
-                        type: 'List',
-                        children: [
-                            {
-                                type: 'ListItem',
-                                value: 'Increased productivity by conducting telepathic SCRUM meetings'
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                type: 'Entry',
-                title: 'Some Company',
-                titleExtras: ['2014 -- 2016'],
-                subtitle: 'Software Engineer',
-                subtitleExtras: ['Big City, USA'],
-                children: [
-                    {
-                        type: 'List',
-                        children: [
-                            {
-                                type: 'ListItem',
-                                value: 'Did things with code while looking at a computer monitor'
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
-    };
-
-    static techSkills = {
-        type: 'Section',
-        title: 'Technical Skills',
-        children: [
-            {
-                type: 'List',
-                children: [
-                    {
-                        type: 'ListItem',
-                        value: 'C++'
-                    },
-                    {
-                        type: 'ListItem',
-                        value: 'Web Development'
-                    },
-                    {
-                        type: 'ListItem',
-                        value: 'Agile/SCRUM'
-                    }
-                ]
-            }
-        ]
-    };
-
-    static education = {
-        type: 'Section',
-        title: 'Education',
-        children: [
-            {
-                type: 'Entry',
-                title: 'Some College',
-                titleExtras: ['2010 -- 2014'],
-                subtitle: 'BS in Some Major'
-            }
-        ]
-    };
-
-    static get resumeChildren(): Array<object> {
-        return deepCopy([
-            ResumeTemplateProvider.header,
-            ResumeTemplateProvider.objective,
-            ResumeTemplateProvider.experience,
-            ResumeTemplateProvider.techSkills,
-            ResumeTemplateProvider.education
-        ]) as Array<object>;
+    static get education() {
+        return {
+            type: 'Section',
+            title: 'Education',
+            children: [
+                {
+                    type: 'Entry',
+                    title: 'Some College',
+                    titleExtras: ['2010 -- 2014'],
+                    subtitle: 'BS in Some Major'
+                }
+            ]
+        };
     }
 
     static templates = {
         "Traditional 1": () => {
+            let header = ResumeTemplateProvider.header;
+            header.children[0]['disableLineBreaks'] = true;
+
             let data = {
-                children: assignIds(ResumeTemplateProvider.resumeChildren) as Array<object>,
+                children: assignIds([
+                    header,
+                    ResumeTemplateProvider.objective,
+                    ResumeTemplateProvider.experience,
+                    ResumeTemplateProvider.techSkills,
+                    ResumeTemplateProvider.education
+                ]) as Array<object>,
                 css: ResumeTemplateProvider.defaultCss,
                 sectionTitlePosition: "top" as SectionHeaderPosition
             };
@@ -223,19 +209,26 @@ export default class ResumeTemplateProvider {
         },
 
         "Traditional 2": () => {
+            let header = ResumeTemplateProvider.header;
+            header.children[0]['disableLineBreaks'] = true;
+
             let data = {
-                children: assignIds(ResumeTemplateProvider.resumeChildren) as Array<object>,
+                children: assignIds([
+                    header,
+                    ResumeTemplateProvider.objective,
+                    ResumeTemplateProvider.experience,
+                    ResumeTemplateProvider.techSkills,
+                    ResumeTemplateProvider.education
+                ]) as Array<object>,
                 css: ResumeTemplateProvider.defaultCss,
                 sectionTitlePosition: "left" as SectionHeaderPosition
             };
 
-            for (let k in data.children) {
-                const node = data.children[k];
+            data.children.forEach((node) => {
                 if (node['type'] === 'Section') {
                     node['headerPosition'] = 'left';
-                }
-            }
-
+            }});
+            
             return data;
         },
 

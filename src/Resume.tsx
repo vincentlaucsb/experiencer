@@ -1,11 +1,9 @@
 import * as React from 'react';
 import { saveAs } from 'file-saver';
 
-import '../node_modules/purecss/build/pure-min.css';
-
-import './css/index.css';
-import './scss/custom.scss';
+import 'purecss/build/pure-min.css';
 import 'react-quill/dist/quill.snow.css';
+import './scss/index.scss';
 
 import ResumeComponent, { EditorMode } from './components/ResumeComponent';
 import { assignIds, deepCopy, arraysEqual } from './components/Helpers';
@@ -28,17 +26,26 @@ import { Button } from './components/controls/Buttons';
 import Octicon, { DesktopDownload, Home } from "@primer/octicons-react";
 import { RenderIf } from './components/controls/HelperComponents';
 
-let defaultCss = new CssNode('Basics', {}, '#resume');
-defaultCss.add(new CssNode(
-    'Body', {
-        'font-family': 'Georgia, serif',
-        'font-size': '10pt'
-    }, 'body'
-));
+let defaultCss = new CssNode('Basics', {
+    'font-family': 'Georgia, serif',
+    'font-size': '10pt'
+}, '#resume');
+
+defaultCss.add(new CssNode('Links', {
+    'color': '#000000'
+}, 'a, a:hover'));
 
 let headerCss = defaultCss.add(new CssNode('Header', {
     'margin-bottom': '16px'
 }, 'header'));
+
+let listCss = defaultCss.add(new CssNode('Lists', {
+    'padding-left': '1.5em' /** Reduced padding */
+}, 'ul'));
+
+listCss.add(new CssNode('List Item', {
+    'list-style-type': 'square' /** Default: circle */
+}, 'li'));
 
 let sectionCss = defaultCss.add(new CssNode('Sections', {
     'margin-bottom': '16px'

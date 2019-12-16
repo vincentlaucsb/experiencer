@@ -1,15 +1,18 @@
 ﻿import * as React from "react";
 import * as Helpers from "./Helpers";
 import ReactQuill from 'react-quill';
-import ResumeNodeBase from "./ResumeNodeBase";
-import { ButtonGroup } from "react-bootstrap";
+import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import { IdType } from "./utility/HoverTracker";
 
-export default class Paragraph extends ResumeNodeBase {
+interface ParagraphProps extends ResumeNodeProps {
+    disableLineBreaks?: boolean;
+}
+
+export default class Paragraph extends ResumeNodeBase<ParagraphProps> {
     constructor(props) {
         super(props);
 
-        this.updateDataEvent = this.updateDataEvent.bind(this);
+        this.disableLineBreaks = this.disableLineBreaks.bind(this);
     }
 
     get className(): string {
@@ -18,7 +21,20 @@ export default class Paragraph extends ResumeNodeBase {
             classNames.push('flex-col');
         }
 
+        if (this.props.disableLineBreaks) {
+            classNames.push('text-inline');
+        }
+
         return classNames.join(' ');
+    }
+
+    get customMenuOptions() {
+        return [
+            {
+                text: 'Disable Line Breaks',
+                action: this.disableLineBreaks
+            }
+        ];
     }
 
     static quillModules = {
@@ -37,6 +53,10 @@ export default class Paragraph extends ResumeNodeBase {
      */
     static process(text?: string) {
         return Helpers.process(text);
+    }
+
+    disableLineBreaks() {
+        this.updateData('disableLineBreaks', true);
     }
 
     get selectTriggerProps() {

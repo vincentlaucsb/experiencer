@@ -21,12 +21,29 @@ import HoverTracker, { IdType } from './components/utility/HoverTracker';
 import TopEditingBar from './components/controls/TopEditingBar';
 import ResumeNodeTree from './components/utility/NodeTree';
 import { Button, Paper, Theme, makeStyles, createStyles, styled, Toolbar } from '@material-ui/core';
-import CssTree from './components/utility/CssTree';
+import CssNode from './components/utility/CssTree';
+
+let defaultCss = new CssNode('Basics', {});
+defaultCss.add(new CssNode(
+    'Body', {
+        'font-family': 'Georgia, serif',
+        'font-size': '10pt'
+    }, 'body'
+));
+
+let sectionCss = defaultCss.add(new CssNode('Sections', {}, 'section'));
+sectionCss.add(new CssNode(
+    'Section Contents', {
+        'padding': '1em'
+    }, '.entry-content'
+));
+
+console.log(defaultCss.stylesheet());
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering: HoverTracker;
     nodes: ResumeNodeTree;
-    css: CssTree;
+    css: CssNode;
     style: HTMLStyleElement;
     unselect: Action;
 
@@ -39,7 +56,7 @@ class Resume extends React.Component<{}, ResumeState> {
         this.style.innerHTML = "";
         head.appendChild(this.style);
 
-        this.css = new CssTree();
+        this.css = defaultCss;
         this.hovering = new HoverTracker();
         this.nodes = new ResumeNodeTree();
         this.state = {

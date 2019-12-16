@@ -140,7 +140,8 @@ export interface EditingBarProps {
     id: IdType;
     addChild: AddChild;
     toggleEdit: ModifyChild;
-    moveUp: ModifyChild;
+    moveUp: Action;
+    moveUpEnabled: boolean;
     moveDown: ModifyChild;
     deleteChild: ModifyChild;
 
@@ -202,8 +203,8 @@ export default function TopEditingBar(props: EditingBarProps) {
             <PureMenu horizontal>
                 <Item onClick={() => props.deleteChild(id)}>Delete</Item>
                 <Item onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Item>
-                <Item onClick={props.moveUp}>Move Up</Item>
-                <Item onClick={props.moveDown}>Move Down</Item>
+                <Item onClick={() => props.moveUp()}>Move Up</Item>
+                <Item onClick={() => props.moveDown(props.id)}>Move Down</Item>
             </PureMenu>
         </div>
         <div>

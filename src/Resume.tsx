@@ -151,7 +151,7 @@ class Resume extends React.Component<{}, ResumeState> {
         this.saveFile = this.saveFile.bind(this);
 
         this.deleteNested = this.deleteNested.bind(this);
-        this.moveNestedUp = this.moveNestedUp.bind(this);
+        this.moveSelectedUp = this.moveSelectedUp.bind(this);
         this.moveNestedDown = this.moveNestedDown.bind(this);
 
         /** Cut & Paste */
@@ -256,7 +256,7 @@ class Resume extends React.Component<{}, ResumeState> {
             uuid: uniqueId,
             mode: this.state.mode,
             addChild: this.addNestedChild.bind(this),
-            moveUp: this.moveNestedUp.bind(this),
+            moveUp: this.moveSelectedUp.bind(this),
             moveDown: this.moveNestedDown.bind(this),
             deleteChild: this.deleteNested.bind(this),
             toggleEdit: this.toggleNestedEdit.bind(this),
@@ -390,14 +390,41 @@ class Resume extends React.Component<{}, ResumeState> {
         this.setState({ children: this.nodes.children });
     }
 
-    moveNestedUp(id: IdType) {
-        this.nodes.moveUp(id);
-        this.setState({ children: this.nodes.children });
+    get moveSelectedUpEnabled() {
+        const id = this.state.selectedNode as IdType;
+        return id && id[id.length - 1] > 0;
+    }
+
+    moveSelectedUp() {
+        const id = this.state.selectedNode as IdType;
+        if (this.moveSelectedUpEnabled) {
+            // TODO: Move ID calculating logic elsewhere
+            let newId = [ ...id ];
+            newId[newId.length - 1] = id[newId.length - 1] - 1;
+
+            this.nodes.moveUp(id);
+            this.setState({
+                children: this.nodes.children,
+                selectedNode: newId
+            });
+        }
+    }
+
+    get moveSelectedDownEnabled() {
+        const id = this.state.selectedNode as IdType;
+        return id && id[id.length - 1] < id.length - 1;
     }
 
     moveNestedDown(id: IdType) {
         this.nodes.moveDown(id);
-        this.setState({ children: this.nodes.children });
+        if (this.moveSelectedDownEnabled) {
+            let newId = [...id];
+            newId[newId.length - 1] = id[newId.length - 1] + 1;
+            this.setState({
+                children: this.nodes.children,
+                selectedNode: newId
+            });
+        }
     }
     //#endregion
 
@@ -489,9 +516,10 @@ class Resume extends React.Component<{}, ResumeState> {
             props['id'] = this.state.selectedNode;
             props['addChild'] = this.addNestedChild;
             props['toggleEdit'] = this.toggleNestedEdit;
-            props['moveUp'] = this.moveNestedUp;
+            props['moveUp'] = this.moveSelectedUp;
             props['moveDown'] = this.moveNestedDown;
             props['deleteChild'] = this.deleteNested;
+            props['moveUpEnabled'] = this.moveSelectedUpEnabled;
         }
 
         if (this.isNodeSelected) {

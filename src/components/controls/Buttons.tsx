@@ -1,5 +1,4 @@
 ﻿import * as React from "react";
-import { ResumeNodeProps, Action } from "../ResumeNodeBase";
 
 interface ButtonProps {
     children?: any;

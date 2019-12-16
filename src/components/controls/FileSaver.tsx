@@ -17,10 +17,11 @@ export default function FileSaver(props: FileSaverProps) {
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         props.saveFile(filename);
+
+        // Make popover close when "Save" is clicked
         setOpen(false);
     }
 
-    // TODO: Make popover close when "Save" is clicked
     const form = (
         <form id="file-saver" className="pure-form pure-form-stacked">
             <div>

@@ -21,14 +21,6 @@ export default class ResumeTemplateProvider {
     padding-left: 0.5rem;
 }
 
-#resume ul {
-    padding-left: 1.5em; /** Reduced padding */
-}
-
-#resume ul li {
-    list-style-type: square; /** Default: circle */
-}
-
 /** Multi-Column Layouts */
 #resume .column-0 {
     width: 33%;
@@ -241,17 +233,17 @@ export default class ResumeTemplateProvider {
                     header,
                     ResumeTemplateProvider.objective,
                     {
-                        type: 'FlexibleRow',
+                        type: 'Row',
                         children: [
                             {
-                                type: 'FlexibleColumn',
+                                type: 'Column',
                                 children: [
                                     ResumeTemplateProvider.education,
                                     ResumeTemplateProvider.techSkills
                                 ]
                             },
                             {
-                                type: 'FlexibleColumn',
+                                type: 'Column',
                                 children: [
                                     ResumeTemplateProvider.experience
                                 ]

@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
 
-import FlexibleRow, { FlexibleColumn } from "./FlexibleRow";
+import Row, { Column } from "./FlexibleRow";
 import Section, { SectionProps } from "./Section";
 import Entry, { EntryProps } from "./Entry";
 import List, { ListItem, DescriptionList, DescriptionListItem } from "./List";
@@ -43,10 +43,12 @@ export default function ResumeComponent(props: ResumeComponentProps) {
             return <DescriptionList {...newProps} />;
         case 'DescriptionListItem':
             return <DescriptionListItem {...newProps} />;
+        case Column.getType():
         case 'FlexibleColumn':
-            return <FlexibleColumn {...newProps} />;
+            return <Column {...newProps} />;
+        case Row.getType():
         case 'FlexibleRow':
-            return <FlexibleRow {...newProps} />;
+            return <Row {...newProps} />;
         case 'Header':
             return <Header {...newProps} />
         case 'Section':

@@ -74,11 +74,13 @@ export default class Paragraph extends ResumeNodeBase<ParagraphProps> {
     }
 
     render(): JSX.Element {
+        const textValue = Paragraph.process(this.props.value) as string || "Empty text";
+
         let value = this.props.isEditing ? <ReactQuill
             modules={Paragraph.quillModules}
-            value={this.props.value}
+            value={this.props.value || ""}
             onChange={((this.props.updateData as (id: IdType, key: string, data: any) => void).bind(this, this.props.id, "value") as (data: any) => void)}
-        /> : <span className="resume-paragraph" dangerouslySetInnerHTML={{ __html: Paragraph.process(this.props.value) as string }} />;
+        /> : <span className="resume-paragraph" dangerouslySetInnerHTML={{ __html: textValue }} />;
 
         return <div className={this.className} {...this.selectTriggerProps}>
             {value}

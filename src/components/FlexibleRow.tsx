@@ -1,9 +1,11 @@
 ﻿import * as React from "react";
 import ResumeNodeBase from "./ResumeNodeBase";
-import { ButtonGroup, Dropdown, DropdownButton, Button } from "react-bootstrap";
-import { DeleteButton, UpButton, DownButton } from "./controls/Buttons";
 
-export class FlexibleColumn extends ResumeNodeBase {
+export class Column extends ResumeNodeBase {
+    static getType() {
+        return 'Column';
+    }
+
     /** Get the index of this column */
     get position(): number {
         return this.props.id[this.props.id.length - 1];
@@ -41,9 +43,17 @@ export class FlexibleColumn extends ResumeNodeBase {
     }
 }
 
-export default class FlexibleRow extends ResumeNodeBase {
+export default class Row extends ResumeNodeBase {
+    static getType() {
+        return 'Row';
+    }
+
     get className(): string {
         return ['flex-row', 'flex-spread', super.className].join(' ');
+    }
+
+    get childTypes() {
+        return 'Column';
     }
 
     /** Returns a "handle" which can be used to select the row itself and not the columns it contains */

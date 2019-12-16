@@ -2,10 +2,10 @@
 
 test('getNodeById Test', () => {
     const resumeData = [{
-        type: 'FlexibleRow',
+        type: 'Row',
         children: [
-            { type: 'FlexibleColumn' },
-            { type: 'FlexibleColumn' }
+            { type: 'Column' },
+            { type: 'Column' }
         ]
     }];
     

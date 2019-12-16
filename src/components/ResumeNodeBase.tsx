@@ -3,6 +3,7 @@ import { EditorMode } from "./ResumeComponent";
 import { deepCopy } from "./Helpers";
 import { IdType } from "./utility/HoverTracker";
 import ResumeComponent from "./ResumeComponent";
+import Row, { Column } from "./FlexibleRow";
 
 export type Action = (() => void);
 export type ModifyChild = (id: IdType) => void;
@@ -106,7 +107,11 @@ export default class ResumeNodeBase<P
     }
 
     get displayBorder(): boolean {
-        const isExcepted = ['FlexibleColumn', 'FlexibleRow'].indexOf(this.props['type']) >= 0;
+        const isExcepted = [
+            Column.getType(),
+            Row.getType()
+        ].indexOf(this.props['type']) >= 0;
+
         return this.isHovering && (!this.isSelectBlocked || isExcepted);
     }
 

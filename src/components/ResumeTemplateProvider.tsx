@@ -16,10 +16,6 @@ export default class ResumeTemplateProvider {
     color: #000000;
 }
 
-#resume header, #resume section {
-    margin-bottom: 1.5em;
-}
-
 #resume header .resume-paragraph {
     display: flex;
     flex-direction: row;
@@ -31,22 +27,10 @@ export default class ResumeTemplateProvider {
     margin-right: 1.0rem;
 }
 
-#resume .entry {
-    margin-bottom: 0.75em;
-}
-
 /** Headers **/
 #resume h1 {
     font-size: 1.8rem;
     text-align: center;
-}
-
-#resume h2 {
-    font-size: 1.1rem;
-}
-
-#resume h3 {
-    font-size: 1.05rem;
 }
 
 #resume h2.flex-col {
@@ -58,16 +42,7 @@ export default class ResumeTemplateProvider {
 
 #resume h2.flex-row.flex-spread {
     /* Section with header on top */
-    border-bottom: 1px solid;
     align-items: self-end;
-}
-
-#resume p.subtitle {
-    font-style: italic;
-}
-
-.entry-content, .entry {
-    width: 100%;
 }
 
 /** Lists **/

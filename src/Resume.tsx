@@ -23,7 +23,7 @@ import ResumeNodeTree from './components/utility/NodeTree';
 import { Button, Paper, Theme, makeStyles, createStyles, styled, Toolbar } from '@material-ui/core';
 import CssNode from './components/utility/CssTree';
 
-let defaultCss = new CssNode('Basics', {});
+let defaultCss = new CssNode('Basics', {}, '#resume');
 defaultCss.add(new CssNode(
     'Body', {
         'font-family': 'Georgia, serif',
@@ -31,12 +31,36 @@ defaultCss.add(new CssNode(
     }, 'body'
 ));
 
-let sectionCss = defaultCss.add(new CssNode('Sections', {}, 'section'));
+let sectionCss = defaultCss.add(new CssNode('Sections', {
+    'margin-bottom': '16px'
+}, 'section'));
+
 sectionCss.add(new CssNode(
     'Section Contents', {
-        'padding': '1em'
+        'margin-top': '8px',
+        'margin-left': '8px',
+        'padding-left': '16px',
+        'padding-right': '8px',
+        'border-left': '3px dotted #dddddd',
     }, '.entry-content'
 ));
+
+let sectionTitle = defaultCss.add(new CssNode('Section Titles', {
+    'font-family': 'Tahoma, sans-serif',
+    'font-weight': 'bold',
+    'text-transform': 'uppercase'
+}, 'h2'));
+
+let entryCss = sectionCss.add(new CssNode('Entries',
+    {
+        'margin-bottom': '16px'
+    }, '.entry'));
+
+let entryTitleCss = sectionCss.add(new CssNode('Entry Titles',
+    {
+        'font-weight': 'bold',
+        'margin-bottom': '4px'
+    }, '.entry-title'));
 
 console.log(defaultCss.stylesheet());
 
@@ -44,7 +68,12 @@ class Resume extends React.Component<{}, ResumeState> {
     hovering: HoverTracker;
     nodes: ResumeNodeTree;
     css: CssNode;
+
+    /** Additional CSS */
     style: HTMLStyleElement;
+
+    /** Base CSS */
+    style2: HTMLStyleElement;
     unselect: Action;
 
     constructor(props) {
@@ -57,6 +86,10 @@ class Resume extends React.Component<{}, ResumeState> {
         head.appendChild(this.style);
 
         this.css = defaultCss;
+        this.style2 = document.createElement("style");
+        this.style2.innerHTML = this.css.stylesheet();
+        head.appendChild(this.style2);
+
         this.hovering = new HoverTracker();
         this.nodes = new ResumeNodeTree();
         this.state = {

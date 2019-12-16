@@ -4,7 +4,7 @@ import FileLoader from "./FileLoader";
 import FileSaver from "./FileSaver";
 import { EditorMode } from "../ResumeComponent";
 import { isUndefined } from "util";
-import { Button, withTooltip } from "./Buttons";
+import { Button } from "./Buttons";
 import PureMenu, { PureMenuItem, PureMenuLink } from "./PureMenu";
 import Octicon, { DesktopDownload, Home, MarkGithub } from "@primer/octicons-react";
 

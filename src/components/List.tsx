@@ -1,7 +1,5 @@
 ﻿import * as React from "react";
 import ResumeNodeBase, { AddChild, UpdateChild, Action, ResumeNodeProps } from "./ResumeNodeBase";
-import EditButton, { DeleteButton, DownButton, UpButton } from "./controls/Buttons";
-import { Button, ButtonGroup, Form, InputGroup, ButtonToolbar } from "react-bootstrap";
 import ReactQuill from "react-quill";
 import { Menu, Item, MenuProvider } from 'react-contexify';
 import AddIcon from "../icons/add-24px.svg";
@@ -23,20 +21,7 @@ export class ListItem<P extends ListProps = ListProps> extends ResumeNodeBase<P>
             ['clean']
         ],
     };
-
-    getEditingMenu() {
-        let moveButtons = this.props.isMoving ? <>
-            <UpButton {...this.props} />
-            <DownButton {...this.props} />
-        </> : <></>
-
-        return <span className="ml-auto">
-            <EditButton {...this.props} />
-            <DeleteButton {...this.props} />
-            {moveButtons}
-        </span>
-    }
-
+    
     render() {
         let value: any = "";
 
@@ -96,25 +81,7 @@ export default class List extends ResumeNodeBase<ListProps> {
             });
         }
     }
-
-    /** Get editing controls for this list */
-    getEditingMenu() {
-        if (this.isSelected) {
-            return <li className="list-options">
-                <ButtonToolbar>
-                    <ButtonGroup size="sm" className="mr-2" >
-                        <Button onClick={this.addChild} size="sm"><img src={AddIcon} alt="Add Item" />Add Item</Button>
-                        <Button onClick={this.moveBullets} size="sm">{this.moveText}</Button>
-                        <Button onClick={this.toggleHidden} size="sm">{this.hideText}</Button>
-                        <DeleteButton {...this.props} extended={true} />
-                        <UpButton {...this.props} extended={true} />
-                        <DownButton {...this.props} extended={true} />
-                    </ButtonGroup>
-                </ButtonToolbar>
-            </li>
-        }
-    }
-
+    
     moveBullets() {
         let children = this.props.children as Array<object>;
         let isMoving = this.props.isMoving ? false : true; // Flip
@@ -175,6 +142,7 @@ export class DescriptionListItem extends ListItem<DescriptionItemProps> {
             defaultText="Enter a term"
         />
 
+        /**
         if (this.props.isEditing) {
             value = <InputGroup size="sm">
                 <Form.Control value={value}
@@ -182,6 +150,7 @@ export class DescriptionListItem extends ListItem<DescriptionItemProps> {
                     placeholder="Value" />
                     </InputGroup>
         }
+        **/
 
         return <div className={this.className}>
             <dt>

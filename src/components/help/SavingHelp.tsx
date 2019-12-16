@@ -1,6 +1,5 @@
 ﻿import HelpPage, { HelpPageActions } from "./HelpPage";
 import React from "react";
-import { Button } from "react-bootstrap";
 
 export default function SavingHelp(props: HelpPageActions) {
     return <HelpPage title="Saving and Printing" {...props}>
@@ -29,7 +28,7 @@ export default function SavingHelp(props: HelpPageActions) {
             <li>Click the <strong>Save to File</strong> button in the top left of your screen at any time to save your resume
             for editing later.
             </li>
-            <li>After typing in your desired file name, click the <Button size="sm" variant="outline-dark">Save</Button> button to download your file.</li>
+            <li>After typing in your desired file name, click the <strong>Save</strong> button to download your file.</li>
             <li>When you return, you can click the <strong>Load</strong> button in the top left (next to the Save to File button)
             to load your resume.</li>
         </ul>

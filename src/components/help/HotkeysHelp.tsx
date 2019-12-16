@@ -1,5 +1,4 @@
 ﻿import React from "react";
-import { Container, Table } from "react-bootstrap";
 import { getApplicationKeyMap, ApplicationKeyMap } from 'react-hotkeys';
 import HelpPage, { HelpPageActions } from "./HelpPage";
 
@@ -24,7 +23,7 @@ export default function HotkeysHelp(props: HelpPageActions) {
         </tr>);
 
     return <HelpPage title="Keyboard Shortcuts" {...props}>
-        <Table striped bordered>
+        <table>
             <thead>
                 <tr>
                     <th>Command</th>
@@ -35,6 +34,6 @@ export default function HotkeysHelp(props: HelpPageActions) {
             <tbody>
                 {tableContent}
             </tbody>
-        </Table>
+        </table>
     </HelpPage>
 }

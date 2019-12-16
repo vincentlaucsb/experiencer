@@ -3,8 +3,6 @@ import { EditorMode } from "./ResumeComponent";
 import { deepCopy } from "./Helpers";
 import { IdType } from "./utility/HoverTracker";
 import ResumeComponent from "./ResumeComponent";
-import Row, { Column } from "./FlexibleRow";
-import { DescriptionList } from "./List";
 
 export type Action = (() => void);
 export type ModifyChild = (id: IdType) => void;
@@ -36,7 +34,6 @@ export interface ResumePassProps extends NodeActions {
     isSelectBlocked: (id: IdType) => boolean;
     moveUp: ModifyChild;
     moveDown: ModifyChild;
-    unselect: Action;
     updateData: (id: IdType, key: string, data: any) => void;
     updateSelected: (id?: IdType) => void;
 }
@@ -59,7 +56,6 @@ export default class ResumeNodeBase<P
         super(props);
         
         this.addChild = this.addChild.bind(this);
-        this.getData = this.getData.bind(this);
         this.updateData = this.updateData.bind(this);
         this.updateDataEvent = this.updateDataEvent.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
@@ -154,28 +150,16 @@ export default class ResumeNodeBase<P
         };
     }
 
+    toggleEdit() {
+        this.props.toggleEdit(this.props.id);
+    }
+
     addChild(node: object) {
         if (this.props.addChild as AddChild) {
             (this.props.addChild as AddChild)(this.props.id, node);
         }
     }
-
-    // TODO: Just copy it from this child's parent's data
-    /** Return an object representation of this item's essential attributes */
-    getData() {
-        let data = {
-            children: this.props.children ? deepCopy(this.props.children as Array<object>) : []
-        };
-
-        for (let k in this.props) {
-            if (typeof(this.props[k]) == "string") {
-                data[k] = this.props[k];
-            }
-        }
-
-        return data;
-    }
-
+    
     updateData(key: string, data: string | boolean | object | Array<any>) {
         this.props.updateData(this.props.id, key, data);
     }
@@ -204,7 +188,6 @@ export default class ResumeNodeBase<P
                     deleteChild: this.props.deleteChild,
                     toggleEdit: this.props.toggleEdit,
                     updateData: this.props.updateData,
-                    unselect: this.props.unselect,
                     updateSelected: this.props.updateSelected,
 
                     index: idx,
@@ -221,18 +204,6 @@ export default class ResumeNodeBase<P
         return <React.Fragment />
     }
 
-    moveUp() {
-        this.props.moveUp(this.props.id);
-    }
-
-    moveDown() {
-        this.props.moveDown(this.props.id);
-    }
-
-    toggleEdit() {
-        this.props.toggleEdit(this.props.id);
-    }
-
     toggleHidden() {
         this.props.updateData(this.props.id, 'isHidden', !this.props.isHidden);
     }
@@ -242,9 +213,6 @@ export default class ResumeNodeBase<P
         // over one of its child nodes
 
         if (!this.isSelected && !this.isSelectBlocked) {
-            // Unselect the previous component
-            this.props.unselect();
-            
             // Pass this node's unselect back up to <Resume />
             this.props.updateSelected(this.props.id);
         }

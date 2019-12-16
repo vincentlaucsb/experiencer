@@ -150,9 +150,10 @@ class Resume extends React.Component<{}, ResumeState> {
         this.loadData = this.loadData.bind(this);
         this.saveFile = this.saveFile.bind(this);
 
-        this.deleteNested = this.deleteNested.bind(this);
+        this.toggleNestedEdit = this.toggleNestedEdit.bind(this);
+        this.deleteSelected = this.deleteSelected.bind(this);
         this.moveSelectedUp = this.moveSelectedUp.bind(this);
-        this.moveNestedDown = this.moveNestedDown.bind(this);
+        this.moveSelectedDown = this.moveSelectedDown.bind(this);
 
         /** Cut & Paste */
         this.copyClipboard = this.copyClipboard.bind(this);
@@ -257,8 +258,8 @@ class Resume extends React.Component<{}, ResumeState> {
             mode: this.state.mode,
             addChild: this.addNestedChild.bind(this),
             moveUp: this.moveSelectedUp.bind(this),
-            moveDown: this.moveNestedDown.bind(this),
-            deleteChild: this.deleteNested.bind(this),
+            moveDown: this.moveSelectedDown.bind(this),
+            deleteChild: this.deleteSelected.bind(this),
             toggleEdit: this.toggleNestedEdit.bind(this),
             updateData: this.updateNestedChild,
             ...this.hoverProps,
@@ -364,20 +365,19 @@ class Resume extends React.Component<{}, ResumeState> {
         this.setState({ children: this.nodes.children });
     }
 
-    deleteNested(id: IdType) {
-        const deletedNode = this.nodes.getNodeById(id);
-        this.nodes.deleteChild(id);
-        this.setState({ children: this.nodes.children });
+    deleteSelected() {
+        const id = this.state.selectedNode as IdType;
+        if (id) {
+            this.nodes.deleteChild(id);
+            this.setState({ children: this.nodes.children });
 
-        // If node to be deleted is selected, unset
-        // selected node data to avoid memory leaks
-        if (this.state.selectedNode as IdType === deletedNode['id']) {
+            // Unset selected node data
             this.hovering.hoverOut(id);
             this.setState({
                 selectedNode: undefined,
                 hoverNode: this.hovering.currentId
             });
-        }
+    }
     }
 
     updateNestedChild(id: IdType, key: string, data: any) {
@@ -412,14 +412,17 @@ class Resume extends React.Component<{}, ResumeState> {
 
     get moveSelectedDownEnabled() {
         const id = this.state.selectedNode as IdType;
-        return id && id[id.length - 1] < id.length - 1;
+        // return id && id[id.length - 1] < id.length - 1;
+        return id;
     }
 
-    moveNestedDown(id: IdType) {
-        this.nodes.moveDown(id);
+    moveSelectedDown() {
+        const id = this.state.selectedNode as IdType;
         if (this.moveSelectedDownEnabled) {
             let newId = [...id];
             newId[newId.length - 1] = id[newId.length - 1] + 1;
+
+            this.nodes.moveDown(id);
             this.setState({
                 children: this.nodes.children,
                 selectedNode: newId
@@ -443,9 +446,7 @@ class Resume extends React.Component<{}, ResumeState> {
         // Implement as Copy + Delete
         if (this.selectedNode) {
             this.copyClipboard();
-
-            // TODO: Might be unsafe
-            this.deleteNested(this.state.selectedNode as IdType);
+            this.deleteSelected();
         }
     }
 
@@ -517,8 +518,8 @@ class Resume extends React.Component<{}, ResumeState> {
             props['addChild'] = this.addNestedChild;
             props['toggleEdit'] = this.toggleNestedEdit;
             props['moveUp'] = this.moveSelectedUp;
-            props['moveDown'] = this.moveNestedDown;
-            props['deleteChild'] = this.deleteNested;
+            props['moveDown'] = this.moveSelectedDown;
+            props['deleteChild'] = this.deleteSelected;
             props['moveUpEnabled'] = this.moveSelectedUpEnabled;
         }
 

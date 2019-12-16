@@ -26,6 +26,7 @@ import CssNode from './components/utility/CssTree';
 import PureMenu, { PureMenuLink, PureMenuItem } from './components/controls/PureMenu';
 import { Button } from './components/controls/Buttons';
 import Octicon, { DesktopDownload, Home } from "@primer/octicons-react";
+import { RenderIf } from './components/controls/HelperComponents';
 
 let defaultCss = new CssNode('Basics', {}, '#resume');
 defaultCss.add(new CssNode(
@@ -137,6 +138,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
         /** Cut & Paste */
         this.copyClipboard = this.copyClipboard.bind(this);
+        this.cutClipboard = this.cutClipboard.bind(this);
         this.pasteClipboard = this.pasteClipboard.bind(this);
 
         // Unselect the currently selected node
@@ -384,6 +386,14 @@ class Resume extends React.Component<{}, ResumeState> {
         }
     }
 
+    cutClipboard() {
+        // Implement as Copy + Delete
+        if (this.state.selectedNode) {
+            this.copyClipboard();
+            this.state.selectedNode.deleteChild(this.state.selectedNode.id);
+        }
+    }
+
     /** Paste whatever is currently in the clipboard */
     pasteClipboard() {
         if (this.state.selectedNode && this.state.selectedNode.addChild) {
@@ -429,8 +439,6 @@ class Resume extends React.Component<{}, ResumeState> {
 
     //#region Helper Component Props
     get toolbarProps() {
-        const pasteEnabled = this.isNodeSelected && !isNullOrUndefined(this.state.clipboard);
-
         let props = {
             mode: this.state.mode,
             loadData: this.loadData,
@@ -441,8 +449,16 @@ class Resume extends React.Component<{}, ResumeState> {
             toggleStyleEditor: () => this.toggleMode('editingStyle')
         }
 
+        return props;
+    }
+
+    get editingBarProps() {
+        const pasteEnabled = this.isNodeSelected && !isNullOrUndefined(this.state.clipboard);
+        let props = this.state.selectedNode as SelectedNodeProps;
+
         if (this.isNodeSelected) {
             props['copyClipboard'] = this.copyClipboard;
+            props['cutClipboard'] = this.cutClipboard;
             props['unselect'] = this.unselect;
         }
 
@@ -457,6 +473,7 @@ class Resume extends React.Component<{}, ResumeState> {
         return {
             copyClipboard: this.copyClipboard,
             pasteClipboard: this.pasteClipboard,
+            cutClipboard: this.cutClipboard,
             togglePrintMode: () => this.toggleMode('printing'),
             reset: () => {
                 this.unselect();
@@ -502,17 +519,19 @@ class Resume extends React.Component<{}, ResumeState> {
         let main = resume;
         let sidebar: JSX.Element;
 
-        const topEditingBar = this.state.selectedNode ? <TopEditingBar {...this.state.selectedNode} /> : <div id="toolbar">
+        const topEditingBar = this.state.selectedNode ? <TopEditingBar {...this.editingBarProps} /> : <div id="toolbar">
             <Button><Octicon icon={Home} />Home</Button>
             <Button onClick={this.changeTemplate}>New</Button>
             <Button>Load</Button>
             <Button><Octicon icon={DesktopDownload} />Save</Button>
         </div>
         
-        const editingTop = <header id="app-header">
-            <TopNavBar {...this.toolbarProps} />
-            {topEditingBar}
-        </header>
+        const editingTop = <RenderIf render={!this.isPrinting}>
+            <header id="app-header">
+                <TopNavBar {...this.toolbarProps} />
+                {topEditingBar}
+            </header>
+        </RenderIf>
 
         // Render the final layout based on editor mode
         switch (this.state.mode) {

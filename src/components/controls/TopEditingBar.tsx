@@ -3,6 +3,7 @@ import { Button } from "./Buttons";
 import { Action, SelectedNodeProps, ModifyChild, AddChild } from "../ResumeNodeBase";
 import { IdType } from "../utility/HoverTracker";
 import PureMenu, { PureDropdown, PureMenuItem, PureMenuLink } from "./PureMenu";
+import ResumeHotKeys from "./ResumeHotkeys";
 
 interface NodeOption {
     text: string;
@@ -134,7 +135,44 @@ export function AddMenu(props: AddMenuProps) {
     );
 }
 
-export default function TopEditingBar(props: SelectedNodeProps) {
+interface EditingBarProps extends SelectedNodeProps {
+    /** Clipboard Actions */
+    copyClipboard?: Action;
+    cutClipboard?: Action;
+    pasteClipboard?: Action;
+}
+
+function ClipboardMenu(props: EditingBarProps) {
+    const DropdownItem = (props: any) => <PureMenuItem onClick={props.onClick}>
+        <PureMenuLink>{props.children}</PureMenuLink>
+    </PureMenuItem>
+
+    /**
+     * Get the keyboard shortcut associated with key
+     * @param key Resume hotkey key
+     */
+    const getShortcut = (key: string) : string => {
+        return ResumeHotKeys.keyMap[key]['sequence'];
+    }
+
+    const copySc = getShortcut('COPY_SELECTED');
+    const pasteSc = getShortcut('PASTE_SELECTED');
+    const cutSc = getShortcut('CUT_SELECTED');
+
+    return (
+        <PureMenu horizontal>
+            <PureDropdown content={<Button>Clipboard</Button>}>
+                <DropdownItem onClick={props.cutClipboard}>Cut ({cutSc})</DropdownItem>
+                <DropdownItem onClick={props.copyClipboard}>
+                    Copy ({copySc})
+                </DropdownItem>
+                <DropdownItem onClick={props.pasteClipboard}>Paste ({pasteSc})</DropdownItem>
+            </PureDropdown>
+        </PureMenu>
+    );
+}
+
+export default function TopEditingBar(props: EditingBarProps) {
     const id = props.id;
     const additionalOptions = props.customOptions ? <>
         {props.customOptions.map((item) =>
@@ -147,13 +185,18 @@ export default function TopEditingBar(props: SelectedNodeProps) {
     </PureMenuItem>
 
     return <div id="toolbar">
-        <PureMenu horizontal>
-            <AddOption id={id} addChild={props.addChild as AddChild} options={props.childTypes} />
-            <Item onClick={() => props.deleteChild(id)}>Delete</Item>
-            <Item onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Item>
-            <Item onClick={props.moveUp}>Move Up</Item>
-            <Item onClick={props.moveDown}>Move Down</Item>
-                {additionalOptions}
-        </PureMenu>
+        <div>
+            <PureMenu horizontal>
+                <AddOption id={id} addChild={props.addChild as AddChild} options={props.childTypes} />
+                <Item onClick={() => props.deleteChild(id)}>Delete</Item>
+                <Item onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Item>
+                <Item onClick={props.moveUp}>Move Up</Item>
+                <Item onClick={props.moveDown}>Move Down</Item>
+                    {additionalOptions}
+            </PureMenu>
+        </div>
+        <div>
+            <ClipboardMenu {...props} />
+        </div>
     </div>
 }

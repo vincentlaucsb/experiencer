@@ -16,11 +16,6 @@ interface TopNavBarProps {
     loadData: (data: object) => void;
     saveFile: (filename: string) => void;
 
-    /** Clipboard Actions */
-    copyClipboard?: Action;
-    pasteClipboard?: Action;
-    unselect?: Action;
-
     /** Sidebar Actions */
     changeTemplate: Action;
     toggleLanding: Action;
@@ -81,48 +76,10 @@ interface ButtonProps {
 export default function TopNavBar(props: TopNavBarProps) {
     const isEditingStyle = props.mode === 'editingStyle';
 
-    if (props.mode === 'printing') {
-        return <></>
-    }
-
     const editStyleProps = {
         onClick: props.toggleStyleEditor,
         // variant: isEditingStyle ? "light" : "outline-light" as ButtonProps["variant"]
     };
-
-    /** Return some controls for editing the resume */
-    function renderEditorControls() {
-        if (['changingTemplate', 'landing'].indexOf(props.mode) >= 0) {
-            return <></>
-        }
-
-        const copyProps = getButtonProps(props.copyClipboard);
-        const pasteProps = getButtonProps(props.pasteClipboard);
-        const unselectProps = getButtonProps(props.unselect);
-
-        // Highlight "Edit Style" button conditionally
-        
-
-        const CopyButton = withTooltip(Button, 'Shift + C', 'copy-button');
-        const PasteButton = withTooltip(Button, 'Shift + V', 'paste-button');
-        const UnselectButton = withTooltip(Button, 'Esc', 'unselect-button');
-
-
-        return <></>
-        /**
-        return <>
-
-            <ButtonGroup className="mr-2">
-                <CopyButton {...copyProps}>Copy</CopyButton>
-                <PasteButton {...pasteProps}>Paste</PasteButton>
-                <UnselectButton {...unselectProps}>Unselect</UnselectButton>
-            </ButtonGroup>
-            <ButtonGroup className="mr-2">
-                
-            </ButtonGroup>
-        </>
-        **/
-    }
 
     const helpOk = ['normal', 'help', 'editingStyle'].indexOf(props.mode) >= 0; 
     const helpButton = helpOk ? <Button onClick={props.toggleHelp}>

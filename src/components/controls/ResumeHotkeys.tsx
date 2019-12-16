@@ -6,6 +6,7 @@ import ResumeState from "./ResumeState";
 export interface ResumeHotKeysProps extends ResumeState {
     /** Editing */
     copyClipboard: Action;
+    cutClipboard: Action;
     pasteClipboard: Action;
 
     /** Editor Modes */
@@ -18,7 +19,13 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
         COPY_SELECTED: {
             name: 'Copy Node',
             description: 'Copy the selected node',
-            sequence: "shift+c"
+            sequence: "ctrl+c"
+        } as ExtendedKeyMapOptions,
+
+        CUT_SELECTED: {
+            name: 'Cut Node',
+            description: 'Cut the selected node',
+            sequence: "ctrl+x"
         } as ExtendedKeyMapOptions,
 
         EDIT_SELECTED: {
@@ -30,7 +37,7 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
         PASTE_SELECTED: {
             name: 'Paste Node',
             description: 'Paste the clipboard as a child of the currently selected node',
-            sequence: 'shift+v'
+            sequence: 'ctrl+v'
         } as ExtendedKeyMapOptions,
 
         DELETE_SELECTED: {
@@ -63,6 +70,10 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
         const handlers = {
             COPY_SELECTED: (event) => {
                 this.props.copyClipboard();
+            },
+
+            CUT_SELECTED: (event) => {
+                this.props.cutClipboard();
             },
 
             EDIT_SELECTED: (event) => {

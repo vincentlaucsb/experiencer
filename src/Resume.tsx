@@ -7,7 +7,7 @@ import './scss/index.scss';
 
 import ResumeComponent, { EditorMode } from './components/ResumeComponent';
 import { assignIds, deepCopy, arraysEqual } from './components/Helpers';
-import { SelectedNodeProps, AddChild, Action } from './components/ResumeNodeBase';
+import { AddChild, Action } from './components/ResumeNodeBase';
 import ResumeTemplateProvider from './components/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
 import Landing from './components/help/Landing';
@@ -18,7 +18,7 @@ import StyleEditor from './components/controls/StyleEditor';
 import Help from './components/help/Help';
 import { isNullOrUndefined } from 'util';
 import HoverTracker, { IdType } from './components/utility/HoverTracker';
-import TopEditingBar from './components/controls/TopEditingBar';
+import TopEditingBar, { EditingBarProps } from './components/controls/TopEditingBar';
 import ResumeNodeTree from './components/utility/NodeTree';
 import CssNode from './components/utility/CssTree';
 import PureMenu, { PureMenuLink, PureMenuItem } from './components/controls/PureMenu';
@@ -150,6 +150,10 @@ class Resume extends React.Component<{}, ResumeState> {
         this.loadData = this.loadData.bind(this);
         this.saveFile = this.saveFile.bind(this);
 
+        this.deleteNested = this.deleteNested.bind(this);
+        this.moveNestedUp = this.moveNestedUp.bind(this);
+        this.moveNestedDown = this.moveNestedDown.bind(this);
+
         /** Cut & Paste */
         this.copyClipboard = this.copyClipboard.bind(this);
         this.cutClipboard = this.cutClipboard.bind(this);
@@ -213,16 +217,25 @@ class Resume extends React.Component<{}, ResumeState> {
 
             // Returns true if the given node is currently selected
             isSelected: (uuid: string) => {
-                return this.state.selectedNode ? uuid === this.state.selectedNode.uuid : false;
+                return this.selectedNode ? uuid === this.selectedNode['uuid'] : false;
             },
 
             // Update the selected node
-            updateSelected: (data?: SelectedNodeProps) => {
-                this.setState({ selectedNode: data });
+            updateSelected: (id?: IdType) => {
+                this.setState({ selectedNode: id });
             },
 
             unselect: this.unselect
         }
+    }
+
+    /** Retrieve the selected node **/
+    get selectedNode() {
+        if (this.state.selectedNode) {
+            return this.nodes.getNodeById(this.state.selectedNode);
+        }
+
+        return;
     }
 
     // Push style changes to browser
@@ -282,13 +295,15 @@ class Resume extends React.Component<{}, ResumeState> {
 
     renderTemplateChanger() {
         const loadTemplate = (key: string) => {
+            const template = ResumeTemplateProvider.templates[key]();
+
             this.setState({
                 activeTemplate: key,
-                ...ResumeTemplateProvider.templates[key]()
+                ...template
             });
 
             // TODO: Clean up this code
-            this.nodes.children = ResumeTemplateProvider.templates[key]()['children'];
+            this.nodes.children = template['children'];
 
             // Update loaded CSS
             this.renderStyle();
@@ -356,15 +371,12 @@ class Resume extends React.Component<{}, ResumeState> {
 
         // If node to be deleted is selected, unset
         // selected node data to avoid memory leaks
-        const selectedNode = this.state.selectedNode as SelectedNodeProps;
-        if (selectedNode as SelectedNodeProps) {
-            if (selectedNode.uuid == deletedNode['uuid']) {
-                this.hovering.hoverOut(selectedNode.id);
-                this.setState({
-                    selectedNode: undefined,
-                    hoverNode: this.hovering.currentId
-                });
-            }
+        if (this.state.selectedNode as IdType === deletedNode['id']) {
+            this.hovering.hoverOut(id);
+            this.setState({
+                selectedNode: undefined,
+                hoverNode: this.hovering.currentId
+            });
         }
     }
 
@@ -392,8 +404,8 @@ class Resume extends React.Component<{}, ResumeState> {
     //#region Clipboard
     /** Copy the currently selected node */
     copyClipboard() {
-        if (this.state.selectedNode) {
-            const data = this.state.selectedNode.getData();
+        if (this.selectedNode) {
+            const data = deepCopy(this.selectedNode);
             this.setState({
                 clipboard: data
             });
@@ -402,19 +414,21 @@ class Resume extends React.Component<{}, ResumeState> {
 
     cutClipboard() {
         // Implement as Copy + Delete
-        if (this.state.selectedNode) {
+        if (this.selectedNode) {
             this.copyClipboard();
-            this.state.selectedNode.deleteChild(this.state.selectedNode.id);
+
+            // TODO: Might be unsafe
+            this.deleteNested(this.state.selectedNode as IdType);
         }
     }
 
     /** Paste whatever is currently in the clipboard */
     pasteClipboard() {
-        if (this.state.selectedNode && this.state.selectedNode.addChild) {
+        if (this.selectedNode) {
             let node = deepCopy(this.state.clipboard);
 
             // UUIDs will be added in the method below
-            (this.state.selectedNode.addChild as AddChild)(this.state.selectedNode.id, node);
+            this.addNestedChild(this.state.selectedNode as IdType, node);
         }
     }
     //#endregion
@@ -468,7 +482,17 @@ class Resume extends React.Component<{}, ResumeState> {
 
     get editingBarProps() {
         const pasteEnabled = this.isNodeSelected && !isNullOrUndefined(this.state.clipboard);
-        let props = this.state.selectedNode as SelectedNodeProps;
+
+        let props = {};
+
+        if (this.isNodeSelected) {
+            props['id'] = this.state.selectedNode;
+            props['addChild'] = this.addNestedChild;
+            props['toggleEdit'] = this.toggleNestedEdit;
+            props['moveUp'] = this.moveNestedUp;
+            props['moveDown'] = this.moveNestedDown;
+            props['deleteChild'] = this.deleteNested;
+        }
 
         if (this.isNodeSelected) {
             props['copyClipboard'] = this.copyClipboard;
@@ -533,7 +557,7 @@ class Resume extends React.Component<{}, ResumeState> {
         let main = resume;
         let sidebar: JSX.Element;
 
-        const topEditingBar = this.state.selectedNode ? <TopEditingBar {...this.editingBarProps} /> : <div id="toolbar">
+        const topEditingBar = this.state.selectedNode ? <TopEditingBar {...this.editingBarProps as EditingBarProps} /> : <div id="toolbar">
             <Button><Octicon icon={Home} />Home</Button>
             <Button onClick={this.changeTemplate}>New</Button>
             <FileLoader loadData={this.loadData} />

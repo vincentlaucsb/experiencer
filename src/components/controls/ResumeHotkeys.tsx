@@ -62,7 +62,8 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
     /** Delete the currently selected node */
     deleteSelected() {
         if (this.props.selectedNode) {
-            this.props.selectedNode.deleteChild(this.props.selectedNode.id);
+            // TODO: Reimplement
+            // this.props.selectedNode.deleteChild(this.props.selectedNode.id);
         }
     }
 
@@ -77,9 +78,11 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
             },
 
             EDIT_SELECTED: (event) => {
+                /** TODO
                 if (this.props.selectedNode && this.props.selectedNode.toggleEdit) {
                     this.props.selectedNode.toggleEdit(this.props.selectedNode.id);
                 }
+                */
             },
 
             PASTE_SELECTED: (event) => {

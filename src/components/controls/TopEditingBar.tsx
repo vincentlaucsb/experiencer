@@ -1,6 +1,6 @@
 ﻿import React from "react";
 import { Button } from "./Buttons";
-import { Action, SelectedNodeProps, ModifyChild, AddChild } from "../ResumeNodeBase";
+import { Action, ModifyChild, AddChild } from "../ResumeNodeBase";
 import { IdType } from "../utility/HoverTracker";
 import PureMenu, { PureDropdown, PureMenuItem, PureMenuLink } from "./PureMenu";
 import ResumeHotKeys from "./ResumeHotkeys";
@@ -136,7 +136,14 @@ export function AddMenu(props: AddMenuProps) {
     );
 }
 
-interface EditingBarProps extends SelectedNodeProps {
+export interface EditingBarProps {
+    id: IdType;
+    addChild: AddChild;
+    toggleEdit: ModifyChild;
+    moveUp: ModifyChild;
+    moveDown: ModifyChild;
+    deleteChild: ModifyChild;
+
     /** Clipboard Actions */
     copyClipboard?: Action;
     cutClipboard?: Action;
@@ -175,25 +182,28 @@ function ClipboardMenu(props: EditingBarProps) {
 
 export default function TopEditingBar(props: EditingBarProps) {
     const id = props.id;
+    /*
     const additionalOptions = props.customOptions ? <>
         {props.customOptions.map((item) =>
             <Button onClick={item.action}>{item.text}</Button>
         )}
     </> : <></>
+    {additionalOptions}
+*/
 
     const Item = (props: any) => <PureMenuItem onClick={props.onClick}>
         <Button>{props.children}</Button>
     </PureMenuItem>
 
+    // 
+
     return <div id="toolbar">
         <div>
             <PureMenu horizontal>
-                <AddOption id={id} addChild={props.addChild as AddChild} options={props.childTypes} />
                 <Item onClick={() => props.deleteChild(id)}>Delete</Item>
                 <Item onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Item>
                 <Item onClick={props.moveUp}>Move Up</Item>
                 <Item onClick={props.moveDown}>Move Down</Item>
-                    {additionalOptions}
             </PureMenu>
         </div>
         <div>

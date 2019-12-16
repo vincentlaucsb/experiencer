@@ -22,17 +22,6 @@ export interface BasicNodeProps extends NodeActions {
     uuid: string; // Unique ID that never changes
 }
 
-export interface SelectedNodeProps extends BasicNodeProps {
-    type: string;
-    moveUp: Action;
-    moveDown: Action;
-
-    childTypes: string | Array<string>;
-    customOptions?: Array<{ text: string, action: Action }>;
-
-    getData: () => object;
-}
-
 /** Represents resume prop properties and methods passed
  *  from the top down
  * */
@@ -49,7 +38,7 @@ export interface ResumePassProps extends NodeActions {
     moveDown: ModifyChild;
     unselect: Action;
     updateData: (id: IdType, key: string, data: any) => void;
-    updateSelected: (data?: SelectedNodeProps) => void;
+    updateSelected: (id?: IdType) => void;
 }
 
 export interface ResumeNodeProps extends BasicNodeProps, ResumePassProps {
@@ -257,19 +246,7 @@ export default class ResumeNodeBase<P
             this.props.unselect();
             
             // Pass this node's unselect back up to <Resume />
-            this.props.updateSelected({
-                type: this.props['type'],
-                id: this.props.id,
-                uuid: this.props.uuid,
-                addChild: this.props.addChild,
-                deleteChild: this.props.deleteChild,
-                moveUp: this.moveUp.bind(this),
-                moveDown: this.moveDown.bind(this),
-                getData: this.getData,
-                toggleEdit: this.toggleEdit as Action,
-                childTypes: this.childTypes,
-                customOptions: this.customMenuOptions
-            });
+            this.props.updateSelected(this.props.id);
         }
     }
 }

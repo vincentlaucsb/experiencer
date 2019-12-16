@@ -1,7 +1,8 @@
 ﻿import React from "react";
-import { Box, Button, Menu, MenuItem } from "@material-ui/core";
+import { Button } from "./Buttons";
 import { Action, SelectedNodeProps, ModifyChild, AddChild } from "../ResumeNodeBase";
 import { IdType } from "../utility/HoverTracker";
+import PureMenu, { PureDropdown, PureMenuItem, PureMenuLink } from "./PureMenu";
 
 interface NodeOption {
     text: string;
@@ -100,9 +101,11 @@ export function AddOption(props: AddOptionProps) {
     }
 
     const node: NodeOption = addOptions.get(options as string) as NodeOption;
-    return <Button onClick={() => props.addChild(props.id, node.node)}>
-        Add {options}
-    </Button>
+    return (
+            <Button onClick={() => props.addChild(props.id, node.node)}>
+                Add {options}
+            </Button>
+    );
 }
 
 interface AddMenuProps {
@@ -111,33 +114,24 @@ interface AddMenuProps {
     id: IdType;
 }
 
+/**
+ * Dropdown menu with add options
+ * @param props
+ */
 export function AddMenu(props: AddMenuProps) {
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const button = <Button>Insert</Button>
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    return <>
-        <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
-            Add Items
-        </Button>
-        <Menu
-            id="add-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-        >
+    return (
+        <PureDropdown content={button}>
             {props.options.map((opt) =>
-                <MenuItem key={opt.text} onClick={() => props.addChild(props.id, opt.node)}>{opt.text}</MenuItem>
+                <PureMenuItem key={opt.text} onClick={() => props.addChild(props.id, opt.node)}>
+                    <PureMenuLink>
+                        {opt.text}
+                    </PureMenuLink>
+                </PureMenuItem>
             )}
-        </Menu>
-    </>
+        </PureDropdown>
+    );
 }
 
 export default function TopEditingBar(props: SelectedNodeProps) {
@@ -148,12 +142,18 @@ export default function TopEditingBar(props: SelectedNodeProps) {
         )}
     </> : <></>
 
-    return <Box position="sticky">
-        <AddOption id={id} addChild={props.addChild as AddChild} options={props.childTypes} />
-        <Button onClick={() => props.deleteChild(id)}>Delete</Button>
-        <Button onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Button>
-        <Button onClick={props.moveUp}>Move Up</Button>
-        <Button onClick={props.moveDown}>Move Down</Button>
-        {additionalOptions}
-    </Box>
+    const Item = (props: any) => <PureMenuItem onClick={props.onClick}>
+        <Button>{props.children}</Button>
+    </PureMenuItem>
+
+    return <div id="toolbar">
+        <PureMenu horizontal>
+            <AddOption id={id} addChild={props.addChild as AddChild} options={props.childTypes} />
+            <Item onClick={() => props.deleteChild(id)}>Delete</Item>
+            <Item onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Item>
+            <Item onClick={props.moveUp}>Move Up</Item>
+            <Item onClick={props.moveDown}>Move Down</Item>
+                {additionalOptions}
+        </PureMenu>
+    </div>
 }

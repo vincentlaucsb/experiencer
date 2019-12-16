@@ -141,12 +141,6 @@ export default function TopNavBar(props: TopNavBarProps) {
                 <h1>Experiencer</h1>
                 <TopTabs activeKey="File" />
             </div>
-            <div id="toolbar">
-                <Button><Octicon icon={Home} />Home</Button>
-                <Button onClick={props.changeTemplate}>New</Button>
-                <Button>Load</Button>
-                <Button><Octicon icon={DesktopDownload} />Save</Button>
-            </div>
         </header>
     );
 }

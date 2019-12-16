@@ -25,6 +25,7 @@ import ResumeNodeTree from './components/utility/NodeTree';
 import CssNode from './components/utility/CssTree';
 import PureMenu, { PureMenuLink, PureMenuItem } from './components/controls/PureMenu';
 import { Button } from './components/controls/Buttons';
+import Octicon, { DesktopDownload, Home } from "@primer/octicons-react";
 
 let defaultCss = new CssNode('Basics', {}, '#resume');
 defaultCss.add(new CssNode(
@@ -503,7 +504,12 @@ class Resume extends React.Component<{}, ResumeState> {
         let main = resume;
         let sidebar: JSX.Element;
 
-        const topEditingBar = this.state.selectedNode ? <TopEditingBar {...this.state.selectedNode} /> : <></>
+        const topEditingBar = this.state.selectedNode ? <TopEditingBar {...this.state.selectedNode} /> : <div id="toolbar">
+            <Button><Octicon icon={Home} />Home</Button>
+            <Button onClick={this.changeTemplate}>New</Button>
+            <Button>Load</Button>
+            <Button><Octicon icon={DesktopDownload} />Save</Button>
+        </div>
         
         const editingTop = <>
             {topNav}
@@ -528,14 +534,14 @@ class Resume extends React.Component<{}, ResumeState> {
                 />
             case 'changingTemplate':
                 return <StaticSidebarLayout
-                    topNav={topNav}
+                    topNav={editingTop}
                     main={resume}
                     sideBar={this.renderTemplateChanger()}
                 />
             case 'landing':
                 main = <Landing className={this.resumeClassName} />
                 return <DefaultLayout
-                    topNav={topNav}
+                    topNav={editingTop}
                     main={main} />
             default:
                 return <DefaultLayout

@@ -176,13 +176,6 @@ export class DescriptionListItem extends ListItem<DescriptionItemProps> {
         />
 
         if (this.props.isEditing) {
-            /*
-            term = <InputGroup size="sm">
-                <Form.Control value={term}
-                    onChange={this.updateDataEvent.bind(this, "term")}
-                            placeholder="Term" />
-                    </InputGroup>
-                    */
             value = <InputGroup size="sm">
                 <Form.Control value={value}
                     onChange={this.updateDataEvent.bind(this, "value")}

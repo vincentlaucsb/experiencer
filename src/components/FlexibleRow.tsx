@@ -70,6 +70,7 @@ export default class Row extends ResumeNodeBase {
     }
     
     render() {
+        // TODO: Only have minHeight if this row's columns have no children
         return <div className={this.className} style={{ width: "100%", minWidth: "100px", minHeight: "100px" }} {...this.selectTriggerProps}>
             {this.renderGrabHandle()}
             {this.renderChildren()}

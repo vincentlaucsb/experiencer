@@ -1,6 +1,7 @@
 ﻿import * as React from "react";
 import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import Placeholder from "./Placeholder";
+import { DescriptionList } from "./List";
 
 export type SectionHeaderPosition = "left" | "top";
 
@@ -16,6 +17,16 @@ export default class Section extends ResumeNodeBase<SectionProps> {
 
         this.rotateLeft = this.rotateLeft.bind(this);
         this.rotateRight = this.rotateRight.bind(this);
+    }
+
+    static get type() {
+        return 'Section';
+    }
+
+    get childTypes() {
+        return ['Entry', 'Paragraph', 'Bulleted List',
+            DescriptionList.name
+        ];
     }
 
     get customMenuOptions() {

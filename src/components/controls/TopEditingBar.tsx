@@ -4,6 +4,7 @@ import { Action, SelectedNodeProps, ModifyChild, AddChild } from "../ResumeNodeB
 import { IdType } from "../utility/HoverTracker";
 import PureMenu, { PureDropdown, PureMenuItem, PureMenuLink } from "./PureMenu";
 import ResumeHotKeys from "./ResumeHotkeys";
+import { DescriptionList } from "../List";
 
 interface NodeOption {
     text: string;
@@ -47,10 +48,10 @@ const addOptions: Map<string, NodeOption> = new Map<string, NodeOption>([
         }
     }],
 
-    ['Description List', {
+    [DescriptionList.name, {
         text: 'Description List',
         node: {
-            type: 'DescriptionList',
+            type: DescriptionList.name,
             children: [{
                 type: 'DescriptionListItem'
             }]
@@ -71,8 +72,8 @@ function addMap(type: string) {
             return 'Description List Item';
         case 'Entry':
             return ['Bulleted List', 'Description List', 'Paragraph'];
-        case 'Section':
-            return ['Entry', 'Paragraph', 'Bulleted List', 'Description List'];
+        ///case 'Section':
+         //   return ['Entry', 'Paragraph', 'Bulleted List', 'Description List'];
         default:
             return ['Section', 'Entry', 'Paragraph', 'Bulleted List', 'Description List'];
     }

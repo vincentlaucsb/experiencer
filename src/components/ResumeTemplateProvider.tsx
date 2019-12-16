@@ -1,5 +1,7 @@
-﻿import { SectionHeaderPosition } from "./Section";
-import { assignIds, deepCopy } from "./Helpers";
+﻿import Section, { SectionHeaderPosition } from "./Section";
+import { assignIds } from "./Helpers";
+import Header from "./Header";
+import Entry from "./Entry";
 
 export default class ResumeTemplateProvider {
     static defaultCss = `
@@ -63,7 +65,7 @@ export default class ResumeTemplateProvider {
 
     static get header() {
         return {
-            type: 'Header',
+            type: Header.type,
             value: 'Your Name Here',
             children: [
                 {
@@ -76,7 +78,7 @@ export default class ResumeTemplateProvider {
 
     static get objective() {
         return {
-            type: 'Section',
+            type: Section.type,
             title: 'Objective',
             children: [
                 {
@@ -89,11 +91,11 @@ export default class ResumeTemplateProvider {
 
     static get experience() {
         return {
-            type: 'Section',
+            type: Section.type,
             title: 'Experience',
             children: [
                 {
-                    type: 'Entry',
+                    type: Entry.type,
                     title: 'Another Company',
                     titleExtras: ['2019 -- Present'],
                     subtitle: 'Senior Software Engineer',
@@ -111,7 +113,7 @@ export default class ResumeTemplateProvider {
                     ]
                 },
                 {
-                    type: 'Entry',
+                    type: Entry.type,
                     title: 'Some Company',
                     titleExtras: ['2014 -- 2016'],
                     subtitle: 'Software Engineer',
@@ -134,7 +136,7 @@ export default class ResumeTemplateProvider {
 
     static get techSkills() {
         return {
-            type: 'Section',
+            type: Section.type,
             title: 'Technical Skills',
             children: [
                 {
@@ -160,11 +162,11 @@ export default class ResumeTemplateProvider {
 
     static get education() {
         return {
-            type: 'Section',
+            type: Section.type,
             title: 'Education',
             children: [
                 {
-                    type: 'Entry',
+                    type: Entry.type,
                     title: 'Some College',
                     titleExtras: ['2010 -- 2014'],
                     subtitle: 'BS in Some Major'

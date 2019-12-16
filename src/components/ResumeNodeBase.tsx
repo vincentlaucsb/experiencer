@@ -4,6 +4,7 @@ import { deepCopy } from "./Helpers";
 import { IdType } from "./utility/HoverTracker";
 import ResumeComponent from "./ResumeComponent";
 import Row, { Column } from "./FlexibleRow";
+import { DescriptionList } from "./List";
 
 export type Action = (() => void);
 export type ModifyChild = (id: IdType) => void;
@@ -98,7 +99,9 @@ export default class ResumeNodeBase<P
     }
 
     get childTypes(): string | Array<string> {
-        return ['Section', 'Entry', 'Paragraph', 'Bulleted List', 'Description List'];
+        return ['Section', 'Entry', 'Paragraph', 'Bulleted List',
+            'DescriptionList'
+        ];
     }
 
     // TODO: change any declaration

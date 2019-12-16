@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { saveAs } from 'file-saver';
 
+import '../node_modules/purecss/build/pure-min.css';
+
 import './css/index.css';
 import './scss/custom.scss';
 import 'react-quill/dist/quill.snow.css';
@@ -20,8 +22,9 @@ import { isNullOrUndefined } from 'util';
 import HoverTracker, { IdType } from './components/utility/HoverTracker';
 import TopEditingBar from './components/controls/TopEditingBar';
 import ResumeNodeTree from './components/utility/NodeTree';
-import { Button, Paper, Theme, makeStyles, createStyles, styled, Toolbar } from '@material-ui/core';
 import CssNode from './components/utility/CssTree';
+import PureMenu, { PureMenuLink, PureMenuItem } from './components/controls/PureMenu';
+import { Button } from './components/controls/Buttons';
 
 let defaultCss = new CssNode('Basics', {}, '#resume');
 defaultCss.add(new CssNode(
@@ -276,19 +279,19 @@ class Resume extends React.Component<{}, ResumeState> {
 
         const templateNames = Object.keys(ResumeTemplateProvider.templates);
         let navItems = templateNames.map((key: string) =>
-            <nav key={key}>
-                <a onClick={() => loadTemplate(key)}>
-                    {key}
-                </a>
-            </nav>);
+            <PureMenuItem onClick={() => loadTemplate(key)}>
+                <PureMenuLink>{key}</PureMenuLink>
+            </PureMenuItem>
+        );
 
-        return <div className="ml-2 mr-2 mt-2 mb-2" style={{ maxWidth: "300px", width: "30%" }}>
-            <nav 
-                className="flex-column mb-2">
-                {navItems}
-            </nav>
-            <Button onClick={() => this.toggleMode()}>Use this Template</Button>
-        </div>
+        return (
+            <>
+                <PureMenu>
+                    {navItems}
+                </PureMenu>
+                <Button onClick={() => this.toggleMode()}>Use this Template</Button>
+            </>
+        );
     }
     //#endregion
 
@@ -478,17 +481,15 @@ class Resume extends React.Component<{}, ResumeState> {
     //#endregion
 
     render() {
-        const resumeToolbar = this.isEditable ? <Toolbar>
-            <Button variant="outlined" onClick={this.addSection}>Add Section</Button>
-            <Button variant="outlined" onClick={this.addColumn}>Add Multi-Column Row</Button>
-        </Toolbar> : <></>
+        // TODO: Make this moar better
+        const Toolbar = (props: any) => {
+           return <>{props.children}</>
+        };
 
-        const MyPaper = styled(Paper)({
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            padding: '0.5in',
-            width: '8.5in'
-        });
+        const resumeToolbar = this.isEditable ? <Toolbar>
+            <Button onClick={this.addSection}>Add Section</Button>
+            <Button onClick={this.addColumn}>Add Multi-Column Row</Button>
+        </Toolbar> : <></>
 
         const resume = <div id="resume" className={this.resumeClassName}>
             <ResumeHotKeys {...this.resumeHotKeysProps} {...this.state} />

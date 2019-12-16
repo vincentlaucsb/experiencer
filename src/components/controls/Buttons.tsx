@@ -7,7 +7,15 @@ import EditIcon from "../../icons/edit-24px.svg";
 import DoneIcon from "../../icons/done-24px.svg";
 import UpIcon from "../../icons/keyboard_arrow_up-24px.svg";
 import DownIcon from "../../icons/keyboard_arrow_down-24px.svg";
-import { Overlay, Button, Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Overlay, Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
+
+export function Button(props: any) {
+    return (
+        <button className="pure-button" onClick={props.onClick}>
+            {props.children}
+        </button>
+    );
+}
 
 /**
  * HOC which returns a component wrapped with a tooltip

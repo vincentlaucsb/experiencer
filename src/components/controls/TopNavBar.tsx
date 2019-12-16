@@ -5,9 +5,9 @@ import FileSaver from "./FileSaver";
 import GitHub from '../../icons/mark-github.svg';
 import { EditorMode } from "../ResumeComponent";
 import { isUndefined } from "util";
-import { withTooltip } from "./Buttons";
-import { AppBar, makeStyles, Theme, createStyles, Toolbar, IconButton, Typography, Button } from "@material-ui/core";
-import MenuIcon from '@material-ui/icons/Menu';
+import { Button, withTooltip } from "./Buttons";
+import PureMenu, { PureMenuItem, PureMenuLink } from "./PureMenu";
+import Octicon, { DesktopDownload, Home } from "@primer/octicons-react";
 
 interface TopNavBarProps {
     mode: EditorMode;
@@ -28,20 +28,6 @@ interface TopNavBarProps {
     toggleStyleEditor: Action;
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
-            flexGrow: 1,
-        },
-        menuButton: {
-            marginRight: theme.spacing(2),
-        },
-        title: {
-            flexGrow: 1,
-        },
-    }),
-);
-
 /** Conditionally render buttons
  * @param onClick Click action if button is enabled
  */
@@ -60,12 +46,44 @@ function getButtonProps(onClick?: any) {
     return props;
 }
 
+interface TopTabsProps {
+    activeKey: 'File' | 'Edit' | 'Edit Style';
+}
+
+function TopTabs(props: TopTabsProps) {
+    const Item = PureMenuItem;
+    const Link = PureMenuLink;
+
+    const items = ['File', 'Edit', 'Edit Style'];
+    
+    return (
+        <PureMenu horizontal>
+            {items.map((item) => {
+                const selected = props.activeKey === item;
+
+                return (
+                    <Item selected={selected}>
+                        <Link>{item}</Link>
+                    </Item>
+                );
+            }
+            )}
+        </PureMenu>
+    );
+}
+
+interface ButtonProps {
+    children?: any;
+    onClick?: any;
+}
+
 /** The top nav bar for the resume editor */
 export default function TopNavBar(props: TopNavBarProps) {
     const isEditingStyle = props.mode === 'editingStyle';
-    const isPrinting = props.mode === 'printing';
 
-    const classes = useStyles();
+    if (props.mode === 'printing') {
+        return <></>
+    }
 
     const editStyleProps = {
         onClick: props.toggleStyleEditor,
@@ -114,28 +132,21 @@ export default function TopNavBar(props: TopNavBarProps) {
                 <Nav.Link href="https://github.com/vincentlaucsb/experiencer"><img src={GitHub} style={{ filter: "invert(1)", height: "30px" }} alt="GitHub" /></Nav.Link>
             </Nav> */
 
-    if (!isPrinting) {
-        return (
-            <div className={classes.root}>
-                <AppBar position="static">
-                    <Toolbar>
-                        <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                            <MenuIcon />
-                        </IconButton>
-                        <Typography variant="h6" className={classes.title}>
-                            Experiencer
-                        </Typography>
-                        <Button color="inherit" onClick={props.changeTemplate}>New</Button>
-                        <FileLoader loadData={props.loadData} />
-                        <FileSaver saveFile={props.saveFile} />
-                        {helpButton}
-                        <Button color="inherit">Login</Button>
-                        <Button {...editStyleProps}>Edit Style</Button>
-                    </Toolbar>
-                </AppBar>
-            </div>
-        );
-    }
+    const Item = PureMenuItem;
+    const Link = PureMenuLink;
 
-    return <></>
+    return (
+        <header id="app-header">
+            <div id="brand">
+                <h1>Experiencer</h1>
+                <TopTabs activeKey="File" />
+            </div>
+            <div id="toolbar">
+                <Button><Octicon icon={Home} />Home</Button>
+                <Button onClick={props.changeTemplate}>New</Button>
+                <Button>Load</Button>
+                <Button><Octicon icon={DesktopDownload} />Save</Button>
+            </div>
+        </header>
+    );
 }

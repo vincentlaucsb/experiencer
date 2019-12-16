@@ -20,9 +20,13 @@ export function DefaultLayout(props: DefaultLayoutProps) {
 export function StaticSidebarLayout(props: SidebarLayoutProps) {
     return <React.Fragment>
         {props.topNav}
-        <div className="d-flex flex-row">
-            {props.main}
-            {props.sideBar}
+        <div className="pure-g">
+            <div className="pure-u-4-5">
+                {props.main}
+            </div>
+            <div className="pure-u-1-5">
+                {props.sideBar}
+            </div>
         </div>
     </React.Fragment>
 }

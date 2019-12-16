@@ -1,43 +1,88 @@
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
-@import "~bootstrap/scss/mixins";
-@import "~bootstrap/scss/root";
-@import "~bootstrap/scss/reboot";
-@import "~bootstrap/scss/type";
-@import "~bootstrap/scss/images";
-@import "~bootstrap/scss/code";
-@import "~bootstrap/scss/grid";
-@import "~bootstrap/scss/tables";
-@import "~bootstrap/scss/forms";
-@import "~bootstrap/scss/buttons";
-@import "~bootstrap/scss/transitions";
-@import "~bootstrap/scss/dropdown";
-@import "~bootstrap/scss/button-group";
-@import "~bootstrap/scss/input-group";
-@import "~bootstrap/scss/custom-forms";
-@import "~bootstrap/scss/nav";
-@import "~bootstrap/scss/navbar";
-@import "~bootstrap/scss/card";
-@import "~bootstrap/scss/breadcrumb";
-@import "~bootstrap/scss/pagination";
-@import "~bootstrap/scss/badge";
-@import "~bootstrap/scss/jumbotron";
-@import "~bootstrap/scss/alert";
-@import "~bootstrap/scss/progress";
-@import "~bootstrap/scss/media";
-@import "~bootstrap/scss/list-group";
-@import "~bootstrap/scss/close";
-@import "~bootstrap/scss/toasts";
-@import "~bootstrap/scss/modal";
-@import "~bootstrap/scss/tooltip";
-@import "~bootstrap/scss/popover";
-@import "~bootstrap/scss/carousel";
-@import "~bootstrap/scss/spinners";
-@import "~bootstrap/scss/utilities";
+
+$light-spacing: 2px;
+$spacing: 1rem;
+
+$porcelain: #ecf2f2;
+$lynch: #6a869a;
+$oxford-blue: #192739;
+$san-marino: #4375a1;
+$baltic-sea: #151318;
+
+$light-shade: $porcelain;
+$light-accent: $lynch;
+$main: $oxford-blue;
+$dark-accent: $san-marino;
+$dark-shade: $baltic-sea;
+
+%flex-row {
+    display: flex;
+    flex-direction: row;
+}
 
 /* App Stuff */
 body {
-    background: #efefef;
+    background: $light-shade;
+    color: $dark-shade;
+}
+
+header#app-header {
+    background: $main;
+    color: $light-shade;
+
+    /** Keep toolbar at top */
+    position: sticky;
+    top: 0;
+    margin-bottom: $spacing;
+
+    div {
+        @extend %flex-row;
+    }
+
+    div#brand {
+        padding-left: $spacing;
+
+       h1 {
+          margin: $spacing;
+       }
+
+        .pure-menu-horizontal {
+            margin-left: $spacing * 2;
+            align-self: flex-end;
+        }
+
+        .pure-menu-selected {
+            a {
+                color: $light-shade;
+                font-weight: bold;
+            }
+        }
+
+        .pure-menu-link:hover {
+            background: $dark-accent;
+            color: $light-shade;
+        }
+    }
+
+    div#toolbar {
+        background: $dark-shade;
+        color: $light-shade;
+        padding: $spacing * 0.5;
+
+        button.pure-button {
+            background: $dark-shade;
+            color: $light-shade;
+
+            svg {
+                margin-right: $spacing * 0.25;
+            }
+        }
+
+        button.pure-button:hover {
+            background: $dark-accent;
+        }
+    }
 }
 
 #resume:not(.resume-printing) {

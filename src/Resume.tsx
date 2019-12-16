@@ -25,6 +25,9 @@ import PureMenu, { PureMenuLink, PureMenuItem } from './components/controls/Pure
 import { Button } from './components/controls/Buttons';
 import Octicon, { DesktopDownload, Home } from "@primer/octicons-react";
 import { RenderIf } from './components/controls/HelperComponents';
+import Row, { Column } from './components/FlexibleRow';
+import FileLoader from './components/controls/FileLoader';
+import FileSaver from './components/controls/FileSaver';
 
 let defaultCss = new CssNode('Basics', {
     'font-family': 'Georgia, serif',
@@ -319,10 +322,10 @@ class Resume extends React.Component<{}, ResumeState> {
 
     addColumn() {
         this.addChild({
-            type: 'FlexibleRow',
+            type: Row.name,
             children: [
-                { type: 'FlexibleColumn' },
-                { type: 'FlexibleColumn' }
+                { type: Column.name },
+                { type: Column.name }
             ]
         });
     }
@@ -533,8 +536,8 @@ class Resume extends React.Component<{}, ResumeState> {
         const topEditingBar = this.state.selectedNode ? <TopEditingBar {...this.editingBarProps} /> : <div id="toolbar">
             <Button><Octicon icon={Home} />Home</Button>
             <Button onClick={this.changeTemplate}>New</Button>
-            <Button>Load</Button>
-            <Button><Octicon icon={DesktopDownload} />Save</Button>
+            <FileLoader loadData={this.loadData} />
+            <FileSaver saveFile={this.saveFile} />
         </div>
         
         const editingTop = <RenderIf render={!this.isPrinting}>

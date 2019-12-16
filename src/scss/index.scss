@@ -1,6 +1,7 @@
 @import "variables";
 @import "landing";
 @import "resume-hover";
+@import "forms";
 
 %flex-row {
     display: flex;
@@ -119,10 +120,6 @@ div.button-tooltip {
     background: rgba(15, 15, 15, 1);
     color: rgba(240, 240, 240, 1);
     padding: 5px;
-}
-
-input {
-    width: 100%;
 }
 
 /** Helper Classes */

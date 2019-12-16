@@ -2,6 +2,7 @@
 import { assignIds } from "./Helpers";
 import Header from "./Header";
 import Entry from "./Entry";
+import Paragraph from "./Paragraph";
 
 export default class ResumeTemplateProvider {
     static defaultCss = `
@@ -65,7 +66,7 @@ export default class ResumeTemplateProvider {
 
     static get header() {
         return {
-            type: Header.type,
+            type: Header.name,
             value: 'Your Name Here',
             children: [
                 {
@@ -78,7 +79,7 @@ export default class ResumeTemplateProvider {
 
     static get objective() {
         return {
-            type: Section.type,
+            type: Section.name,
             title: 'Objective',
             children: [
                 {
@@ -91,43 +92,31 @@ export default class ResumeTemplateProvider {
 
     static get experience() {
         return {
-            type: Section.type,
+            type: Section.name,
             title: 'Experience',
             children: [
                 {
-                    type: Entry.type,
+                    type: Entry.name,
                     title: 'Another Company',
                     titleExtras: ['2019 -- Present'],
                     subtitle: 'Senior Software Engineer',
                     subtitleExtras: ['Sometown, USA'],
                     children: [
-                        {
-                            type: 'List',
-                            children: [
-                                {
-                                    type: 'ListItem',
-                                    value: 'Increased productivity by conducting telepathic SCRUM meetings'
-                                }
-                            ]
-                        }
+                        this.makeList([
+                            'Increased productivity by conducting telepathic SCRUM meetings'
+                        ])
                     ]
                 },
                 {
-                    type: Entry.type,
+                    type: Entry.name,
                     title: 'Some Company',
                     titleExtras: ['2014 -- 2016'],
                     subtitle: 'Software Engineer',
                     subtitleExtras: ['Big City, USA'],
                     children: [
-                        {
-                            type: 'List',
-                            children: [
-                                {
-                                    type: 'ListItem',
-                                    value: 'Did things with code while looking at a computer monitor'
-                                }
-                            ]
-                        }
+                        this.makeList([
+                            'Did things with code while looking at a computer monitor'
+                        ])
                     ]
                 }
             ]
@@ -136,42 +125,42 @@ export default class ResumeTemplateProvider {
 
     static get techSkills() {
         return {
-            type: Section.type,
+            type: Section.name,
             title: 'Technical Skills',
             children: [
-                {
-                    type: 'List',
-                    children: [
-                        {
-                            type: 'ListItem',
-                            value: 'C++'
-                        },
-                        {
-                            type: 'ListItem',
-                            value: 'Web Development'
-                        },
-                        {
-                            type: 'ListItem',
-                            value: 'Agile/SCRUM'
-                        }
-                    ]
-                }
+                this.makeList([ 'C++', 'Web Development', 'Agile/SCRUM' ])
             ]
         }
     };
 
     static get education() {
         return {
-            type: Section.type,
+            type: Section.name,
             title: 'Education',
             children: [
                 {
-                    type: Entry.type,
+                    type: Entry.name,
                     title: 'Some College',
                     titleExtras: ['2010 -- 2014'],
                     subtitle: 'BS in Some Major'
                 }
             ]
+        };
+    }
+
+    /**
+     * Construct a bulleted list
+     * @param items A list of items
+     */
+    static makeList(items: Array<string>) {
+        let value = "";
+        items.forEach((i) => {
+            value += `<li>${i}</li>`
+        });
+
+        return {
+            type: Paragraph.name,
+            value: `<ul>${value}</ul>`
         };
     }
 

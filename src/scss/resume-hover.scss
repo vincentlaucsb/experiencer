@@ -64,6 +64,7 @@ $grab-handle-size: 35px;
 /** Disable background if are hovering over a node's children */
 .resume-hovering-over-children {
     background: none;
+    border: none;
 }
 
 .resume-row.resume-hovering-over-children {

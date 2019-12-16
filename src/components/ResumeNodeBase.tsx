@@ -175,7 +175,7 @@ export default class ResumeNodeBase<P
     /** Return an object representation of this item's essential attributes */
     getData() {
         let data = {
-            children: deepCopy(this.props.children as Array<object>)
+            children: this.props.children ? deepCopy(this.props.children as Array<object>) : []
         };
 
         for (let k in this.props) {

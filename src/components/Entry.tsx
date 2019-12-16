@@ -107,20 +107,20 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         return this.getExtras('subtitleExtras', this.updateSubtitleExtras);
     }
 
-    updateExtras(key: string, idx: number, event: any) {
+    updateExtras(key: string, idx: number, text: string) {
         let replTitle = this.props[key] || [];
 
         // Replace contents
-        replTitle[idx] = event.target.value;
+        replTitle[idx] = text;
         this.updateData(key, replTitle);
     }
 
-    updateTitleExtras(idx: number, event: any) {
-        this.updateExtras('titleExtras', idx, event);
+    updateTitleExtras(idx: number, text: string) {
+        this.updateExtras('titleExtras', idx, text);
     }
 
-    updateSubtitleExtras(idx: number, event: any) {
-        this.updateExtras('subtitleExtras', idx, event);
+    updateSubtitleExtras(idx: number, text: string) {
+        this.updateExtras('subtitleExtras', idx, text);
     }
 
     /**

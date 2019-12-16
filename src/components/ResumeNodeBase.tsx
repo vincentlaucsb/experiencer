@@ -83,9 +83,17 @@ export default class ResumeNodeBase<P
         let classes = new Array<string>();
 
         if (!this.isPrinting) {
-            if (this.displayBorder) {
+            if (this.isHovering) {
                 classes.push('resume-hovering');
+
+                if (this.isSelectBlocked) {
+                    classes.push('resume-hovering-over-children');
+                }
+                else {
+                    classes.push('resume-hovering-over-self');
+                }
             }
+
             if (this.isSelected) {
                 classes.push('resume-selected');
             }
@@ -107,15 +115,6 @@ export default class ResumeNodeBase<P
     // TODO: change any declaration
     get customMenuOptions() : any {
         return undefined;
-    }
-
-    get displayBorder(): boolean {
-        const isExcepted = [
-            Column.name,
-            Row.name
-        ].indexOf(this.props['type']) >= 0;
-
-        return this.isHovering && (!this.isSelectBlocked || isExcepted);
     }
 
     /** Returns true if this node has no children */

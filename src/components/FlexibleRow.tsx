@@ -9,14 +9,14 @@ export class Column extends ResumeNodeBase {
 
     get className(): string {
         let positionClsName = 'column-' + this.position;
-        return [positionClsName, 'flex-col', super.className].join(' ');
+        return [positionClsName, 'resume-column', 'flex-col', super.className].join(' ');
     }
 
     /** Returns a "handle" which can be used to select the column itself and not the columns it contains */
     renderGrabHandle() {
-        if (this.displayBorder && !this.isSelected) {
+        if (this.isHovering && !this.isSelected) {
             return <div className="column-grab-handle-container">
-                <div className="d-flex align-items-center column-grab-handle">
+                <div className="column-grab-handle">
                     Click here to select column
                 </div>
             </div>
@@ -41,7 +41,7 @@ export class Column extends ResumeNodeBase {
 
 export default class Row extends ResumeNodeBase {
     get className(): string {
-        return ['flex-row', 'flex-spread', super.className].join(' ');
+        return ['resume-row', 'flex-row', 'flex-spread', super.className].join(' ');
     }
 
     get childTypes() {
@@ -50,9 +50,9 @@ export default class Row extends ResumeNodeBase {
 
     /** Returns a "handle" which can be used to select the row itself and not the columns it contains */
     renderGrabHandle() {
-        if (this.displayBorder && !this.isSelected) {
+        if (this.isHovering && !this.isSelected) {
             return <div className="row-grab-handle-container">
-                <div className="d-flex align-items-center row-grab-handle">
+                <div className="row-grab-handle">
                     Click here to select row
                 </div>
             </div>

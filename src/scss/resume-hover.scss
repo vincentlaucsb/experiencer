@@ -27,9 +27,11 @@ $grab-handle-size: 35px;
 
 .row-grab-handle-container, .column-grab-handle-container {
     position: relative;
+
 }
 
 .row-grab-handle, .column-grab-handle {
+    display: flex;
     position: absolute;
     font-family: $font-family-base;
     color: $light-shade;
@@ -51,11 +53,25 @@ $grab-handle-size: 35px;
 .column-grab-handle-container {
     .column-grab-handle {
         top: -$grab-handle-size;
-        width: 100%;
+        left: -1px;
+        width: calc(100% - 1rem + 3px);
         height: $grab-handle-size;
         background: $dark-accent;
-        padding-left: 0.5rem;
+        padding-left: $spacing;
     }
+}
+
+/** Disable background if are hovering over a node's children */
+.resume-hovering-over-children {
+    background: none;
+}
+
+.resume-row.resume-hovering-over-children {
+    border: 1px solid $dark-accent;
+}
+
+.resume-column.resume-hovering-over-children {
+    border: 1px solid $dark-accent;
 }
 
 #resume {

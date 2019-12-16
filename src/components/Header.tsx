@@ -6,10 +6,6 @@ export interface HeaderProps extends ResumeNodeProps {
 }
 
 export default class Header extends ResumeNodeBase<HeaderProps> {
-    static get type() {
-        return 'Header';
-    }
-
     constructor(props: ResumeNodeProps) {
         super(props);
 

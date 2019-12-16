@@ -18,11 +18,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         this.addSubtitleField = this.addSubtitleField.bind(this);
         this.removeTitleField = this.removeTitleField.bind(this);
         this.removeSubtitleField = this.removeSubtitleField.bind(this);
-    }
-
-    static get type() {
-        return 'Entry';
-    }
+    }    
 
     /** Get the class name for the main <div> container */
     get className(): string {

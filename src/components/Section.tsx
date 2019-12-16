@@ -18,11 +18,7 @@ export default class Section extends ResumeNodeBase<SectionProps> {
         this.rotateLeft = this.rotateLeft.bind(this);
         this.rotateRight = this.rotateRight.bind(this);
     }
-
-    static get type() {
-        return 'Section';
-    }
-
+    
     get childTypes() {
         return ['Entry', 'Paragraph', 'Bulleted List',
             DescriptionList.name

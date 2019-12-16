@@ -111,8 +111,8 @@ export default class ResumeNodeBase<P
 
     get displayBorder(): boolean {
         const isExcepted = [
-            Column.getType(),
-            Row.getType()
+            Column.name,
+            Row.name
         ].indexOf(this.props['type']) >= 0;
 
         return this.isHovering && (!this.isSelectBlocked || isExcepted);

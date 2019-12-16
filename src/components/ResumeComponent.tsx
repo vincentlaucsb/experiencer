@@ -39,27 +39,27 @@ export default function ResumeComponent(props: ResumeComponentProps) {
     } as ResumeNodeProps;
     
     switch (props['type']) {
-        case 'DescriptionList':
+        case DescriptionList.name:
             return <DescriptionList {...newProps} />;
-        case 'DescriptionListItem':
+        case DescriptionListItem.name:
             return <DescriptionListItem {...newProps} />;
-        case Column.getType():
+        case Column.name:
         case 'FlexibleColumn':
             return <Column {...newProps} />;
-        case Row.getType():
+        case Row.name:
         case 'FlexibleRow':
             return <Row {...newProps} />;
-        case 'Header':
+        case Header.name:
             return <Header {...newProps} />
-        case 'Section':
+        case Section.name:
             return <Section {...newProps as SectionProps} />;
-        case 'Entry':
+        case Entry.name:
             return <Entry {...newProps as EntryProps} />;
         case 'List':
             return <List {...newProps} />;
         case 'ListItem':
             return <ListItem {...newProps} />;
-        case 'Paragraph':
+        case Paragraph.name:
             return <Paragraph {...newProps} />;
         default:
             return <React.Fragment></React.Fragment>

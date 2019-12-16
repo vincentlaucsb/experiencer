@@ -2,10 +2,6 @@
 import ResumeNodeBase from "./ResumeNodeBase";
 
 export class Column extends ResumeNodeBase {
-    static getType() {
-        return 'Column';
-    }
-
     /** Get the index of this column */
     get position(): number {
         return this.props.id[this.props.id.length - 1];
@@ -44,10 +40,6 @@ export class Column extends ResumeNodeBase {
 }
 
 export default class Row extends ResumeNodeBase {
-    static getType() {
-        return 'Row';
-    }
-
     get className(): string {
         return ['flex-row', 'flex-spread', super.className].join(' ');
     }

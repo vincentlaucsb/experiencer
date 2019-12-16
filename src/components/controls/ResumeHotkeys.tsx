@@ -1,14 +1,9 @@
 ﻿import React from "react";
 import { GlobalHotKeys, KeyMap, ExtendedKeyMapOptions } from "react-hotkeys";
 import { Action } from "../ResumeNodeBase";
-import ResumeState from "./ResumeState";
+import { SelectedNodeActions } from "./SelectedNodeActions";
 
-export interface ResumeHotKeysProps extends ResumeState {
-    /** Editing */
-    copyClipboard: Action;
-    cutClipboard: Action;
-    pasteClipboard: Action;
-
+export interface ResumeHotKeysProps extends SelectedNodeActions {
     /** Editor Modes */
     togglePrintMode: Action;
     reset: Action;
@@ -59,14 +54,6 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
         } as ExtendedKeyMapOptions
     };
 
-    /** Delete the currently selected node */
-    deleteSelected() {
-        if (this.props.selectedNode) {
-            // TODO: Reimplement
-            // this.props.selectedNode.deleteChild(this.props.selectedNode.id);
-        }
-    }
-
     getHandlers() {
         const handlers = {
             COPY_SELECTED: (event) => {
@@ -94,7 +81,7 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
             },
 
             DELETE_SELECTED: (event) => {
-                this.deleteSelected();
+                this.props.delete();
             },
 
             PRINT_MODE: (event) => {

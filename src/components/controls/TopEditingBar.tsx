@@ -5,6 +5,7 @@ import { IdType } from "../utility/HoverTracker";
 import PureMenu, { PureDropdown, PureMenuItem, PureMenuLink } from "./PureMenu";
 import ResumeHotKeys from "./ResumeHotkeys";
 import { DescriptionList } from "../List";
+import { SelectedNodeActions } from "./SelectedNodeActions";
 
 interface NodeOption {
     text: string;
@@ -136,19 +137,11 @@ export function AddMenu(props: AddMenuProps) {
     );
 }
 
-export interface EditingBarProps {
+export interface EditingBarProps extends SelectedNodeActions {
     id: IdType;
     addChild: AddChild;
     toggleEdit: ModifyChild;
-    moveUp: Action;
     moveUpEnabled: boolean;
-    moveDown: Action;
-    deleteChild: ModifyChild;
-
-    /** Clipboard Actions */
-    copyClipboard?: Action;
-    cutClipboard?: Action;
-    pasteClipboard?: Action;
 }
 
 function ClipboardMenu(props: EditingBarProps) {
@@ -201,7 +194,7 @@ export default function TopEditingBar(props: EditingBarProps) {
     return <div id="toolbar">
         <div>
             <PureMenu horizontal>
-                <Item onClick={() => props.deleteChild(id)}>Delete</Item>
+                <Item onClick={props.delete}>Delete</Item>
                 <Item onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Item>
                 <Item onClick={() => props.moveUp()}>Move Up</Item>
                 <Item onClick={() => props.moveDown()}>Move Down</Item>

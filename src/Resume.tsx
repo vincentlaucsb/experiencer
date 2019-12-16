@@ -28,6 +28,7 @@ import { RenderIf } from './components/controls/HelperComponents';
 import Row, { Column } from './components/FlexibleRow';
 import FileLoader from './components/controls/FileLoader';
 import FileSaver from './components/controls/FileSaver';
+import { SelectedNodeActions } from './components/controls/SelectedNodeActions';
 
 let defaultCss = new CssNode('Basics', {
     'font-family': 'Georgia, serif',
@@ -494,6 +495,18 @@ class Resume extends React.Component<{}, ResumeState> {
     //#endregion
 
     //#region Helper Component Props
+    get selectedNodeActions() : SelectedNodeActions {
+        return {
+            delete: this.deleteSelected,
+            moveUp: this.moveSelectedUp,
+            moveDown: this.moveSelectedDown,
+
+            copyClipboard: this.copyClipboard,
+            cutClipboard: this.cutClipboard,
+            pasteClipboard: this.pasteClipboard
+        }
+    }
+
     get toolbarProps() {
         let props = {
             mode: this.state.mode,
@@ -509,38 +522,19 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     get editingBarProps() {
-        const pasteEnabled = this.isNodeSelected && !isNullOrUndefined(this.state.clipboard);
-
-        let props = {};
-
-        if (this.isNodeSelected) {
-            props['id'] = this.state.selectedNode;
-            props['addChild'] = this.addNestedChild;
-            props['toggleEdit'] = this.toggleNestedEdit;
-            props['moveUp'] = this.moveSelectedUp;
-            props['moveDown'] = this.moveSelectedDown;
-            props['deleteChild'] = this.deleteSelected;
-            props['moveUpEnabled'] = this.moveSelectedUpEnabled;
+        return {
+            ...this.selectedNodeActions,
+            id: this.state.selectedNode,
+            addChild: this.addNestedChild,
+            toggleEdit: this.toggleNestedEdit,
+            moveUpEnabled: this.moveSelectedUpEnabled,
+            unselect: this.unselect
         }
-
-        if (this.isNodeSelected) {
-            props['copyClipboard'] = this.copyClipboard;
-            props['cutClipboard'] = this.cutClipboard;
-            props['unselect'] = this.unselect;
-        }
-
-        if (pasteEnabled) {
-            props['pasteClipboard'] = this.pasteClipboard;
-        }
-
-        return props;
     }
 
     get resumeHotKeysProps() {
         return {
-            copyClipboard: this.copyClipboard,
-            pasteClipboard: this.pasteClipboard,
-            cutClipboard: this.cutClipboard,
+            ...this.selectedNodeActions,
             togglePrintMode: () => this.toggleMode('printing'),
             reset: () => {
                 this.unselect();
@@ -577,7 +571,7 @@ class Resume extends React.Component<{}, ResumeState> {
         </Toolbar> : <></>
 
         const resume = <div id="resume" className={this.resumeClassName}>
-            <ResumeHotKeys {...this.resumeHotKeysProps} {...this.state} />
+            <ResumeHotKeys {...this.resumeHotKeysProps} />
             {this.state.children.map(this.childMapper)}
 
             {resumeToolbar}

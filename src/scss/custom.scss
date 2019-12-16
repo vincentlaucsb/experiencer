@@ -40,7 +40,7 @@ body {
     background: #efefef;
 }
 
-#resume {
+#resume:not(.resume-printing) {
     background: #ffffff;
     border: 1px solid #dddddd;
     max-width: 8.5in;

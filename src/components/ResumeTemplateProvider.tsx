@@ -240,9 +240,12 @@ export default class ResumeTemplateProvider {
         },
 
         "Multi-Column 1": () => {
+            let header = ResumeTemplateProvider.header;
+            header['orientation'] = 'row';
+
             let data = {
                 children: assignIds([
-                    ResumeTemplateProvider.header,
+                    header,
                     ResumeTemplateProvider.objective,
                     {
                         type: 'FlexibleRow',

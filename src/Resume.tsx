@@ -31,6 +31,10 @@ defaultCss.add(new CssNode(
     }, 'body'
 ));
 
+let headerCss = defaultCss.add(new CssNode('Header', {
+    'margin-bottom': '16px'
+}, 'header'));
+
 let sectionCss = defaultCss.add(new CssNode('Sections', {
     'margin-bottom': '16px'
 }, 'section'));
@@ -46,21 +50,30 @@ sectionCss.add(new CssNode(
 ));
 
 let sectionTitle = defaultCss.add(new CssNode('Section Titles', {
-    'font-family': 'Tahoma, sans-serif',
+    'font-family': 'Verdana, sans-serif',
     'font-weight': 'bold',
+    'font-size': '16pt',
     'text-transform': 'uppercase'
 }, 'h2'));
 
 let entryCss = sectionCss.add(new CssNode('Entries',
     {
-        'margin-bottom': '16px'
+        'margin-bottom': '15px'
     }, '.entry'));
 
 let entryTitleCss = sectionCss.add(new CssNode('Entry Titles',
     {
-        'font-weight': 'bold',
         'margin-bottom': '4px'
     }, '.entry-title'));
+
+entryTitleCss.add(new CssNode('Entry Title Headings', {
+    'font-size': '14pt',
+    'font-weight': 'bold'
+}, 'h3'));
+
+entryTitleCss.add(new CssNode('Entry Subtitles', {
+    'font-family': 'Verdana, sans-serif',
+}, '.subtitle'));
 
 console.log(defaultCss.stylesheet());
 

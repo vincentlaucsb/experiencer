@@ -29,6 +29,7 @@ import Row, { Column } from './components/FlexibleRow';
 import FileLoader from './components/controls/FileLoader';
 import FileSaver from './components/controls/FileSaver';
 import { SelectedNodeActions } from './components/controls/SelectedNodeActions';
+import CssEditor from './components/utility/CssEditor';
 
 let defaultCss = new CssNode('Basics', {
     'font-family': 'Georgia, serif',
@@ -630,9 +631,16 @@ class Resume extends React.Component<{}, ResumeState> {
                     topNav={editingTop}
                     main={main} />
             default:
+                /**
                 return <DefaultLayout
                     topNav={editingTop}
                     main={main} />
+                    */
+                return <ResizableSidebarLayout
+                    topNav={editingTop}
+                    main={resume}
+                    sideBar={<CssEditor path={[]} root={this.css} />}
+            />
         }
     }
 }

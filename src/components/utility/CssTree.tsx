@@ -1,6 +1,6 @@
 ﻿export default class CssNode {
     /** A mapping of keys to CSS properties */
-    private children: Array<CssNode>;
+    children: Array<CssNode>;
     name: string;
     selector: string;
     properties: Map<string, string>;

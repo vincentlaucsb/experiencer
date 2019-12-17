@@ -18,3 +18,19 @@ form#file-saver {
         margin-bottom: $spacing;
     }
 }
+
+/** Quill */
+
+#resume {
+    .ql-container {
+        font-family: inherit;
+    }
+
+    .ql-editor {
+        padding: initial;
+
+        li {
+            list-style-type: none;
+        }
+    }
+}

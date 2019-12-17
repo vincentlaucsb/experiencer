@@ -88,6 +88,11 @@ let entryTitleHeadingCss = entryTitleCss.add(new CssNode('Entry Title Headings',
     'font-weight': 'bold'
 }, 'h3'));
 
+entryTitleHeadingCss.add(new CssNode('Title', {
+    'content': "','",
+    'padding-right': '0.33em'
+}, '.title-text::after'))
+
 entryTitleHeadingCss.add(new CssNode('Entry Title Headings ...', {
    'font-weight': 'normal'
 }, '.extra-field'));

@@ -90,6 +90,10 @@ export default class ResumeNodeBase<P
 
             if (this.isSelected) {
                 classes.push('resume-selected');
+
+                if (this.props.isEditing) {
+                    classes.push('resume-editing');
+                }
             }
         }
 

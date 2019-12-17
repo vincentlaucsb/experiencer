@@ -2,6 +2,7 @@
 import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import Placeholder from "./Placeholder";
 import { DescriptionList } from "./List";
+import ResumeTextField from "./controls/TextField";
 
 export type SectionHeaderPosition = "left" | "top";
 
@@ -56,13 +57,15 @@ export default class Section extends ResumeNodeBase<SectionProps> {
     }
 
     render() {
-        let title = <Placeholder text={this.props.title} alt="Add a title" />
+        const title = <ResumeTextField
+            onChange={this.updateData.bind(this, "title")}
+            value={this.props.title}
+            label="Title"
+            defaultText="Enter a title"
+            {...this.textFieldProps}
+        />
+
         let helperText = <></>
-
-        if (this.props.isEditing) {
-            title = <input onChange={this.updateDataEvent.bind(this, "title")} type="text" value={this.props.title || ""} />;
-        }
-
         if (this.isEmpty && !this.isSelected) {
             helperText = <p>This section is empty. Click here to select it and add content.</p>
         }

@@ -48,15 +48,6 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         ];
     }
 
-    get textFieldProps() {
-        return {
-            displayProcessor: Entry.process,
-            isEditing: this.props.isEditing && this.isSelected,
-            onClick: this.isSelected ? this.toggleEdit : undefined,
-            onEnterDown: this.toggleEdit
-        };
-    }
-
     addTitleField() {
         let replTitle = this.props.titleExtras || [];
         replTitle.push("");
@@ -122,14 +113,6 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
 
     updateSubtitleExtras(idx: number, text: string) {
         this.updateExtras('subtitleExtras', idx, text);
-    }
-
-    /**
-     * Perform helpful text processing
-     * @param text Text to be processed
-     */
-    static process(text?: string) {
-        return Helpers.process(text);
     }
     
     render() {

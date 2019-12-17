@@ -74,10 +74,22 @@ export default class ResumeNodeTree {
     moveUp(id: IdType) {
         let parentNode = this.getParentOfId(id);
         parentNode = moveUp(parentNode['children'], id[id.length - 1]);
+
+        // Return new ID of node
+        return [
+            ...id.slice(0, id.length - 1),
+            id[id.length - 1] - 1
+        ];
     }
 
     moveDown(id: IdType) {
         let parentNode = this.getParentOfId(id);
         moveDown(parentNode['children'], id[id.length - 1]);
+
+        // Return new ID of node
+        return [
+            ...id.slice(0, id.length - 1),
+            id[id.length - 1] + 1
+        ];
     }
 }

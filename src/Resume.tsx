@@ -388,7 +388,6 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     updateNestedChild(id: IdType, key: string, data: any) {
-        console.log("Updating", id, key, data);
         this.nodes.updateChild(id, key, data);
         this.setState({ children: this.nodes.children });
     }
@@ -409,18 +408,11 @@ class Resume extends React.Component<{}, ResumeState> {
     moveSelectedUp() {
         const id = this.state.selectedNode as IdType;
         if (this.moveSelectedUpEnabled) {
-            // TODO: Move ID calculating logic elsewhere
-            let newId = [ ...id ];
-            newId[newId.length - 1] = id[newId.length - 1] - 1;
-
-            this.nodes.moveUp(id);
-            this.setState({
-                children: this.nodes.children,
-            });
-
+            const newId = this.nodes.moveUp(id);
+            this.setState({ children: this.nodes.children, });
             this.setSelectedNode(newId);
         }
-    }
+    }   
 
     get moveSelectedDownEnabled() {
         const id = this.state.selectedNode as IdType;
@@ -431,14 +423,8 @@ class Resume extends React.Component<{}, ResumeState> {
     moveSelectedDown() {
         const id = this.state.selectedNode as IdType;
         if (this.moveSelectedDownEnabled) {
-            let newId = [...id];
-            newId[newId.length - 1] = id[newId.length - 1] + 1;
-
-            this.nodes.moveDown(id);
-            this.setState({
-                children: this.nodes.children
-            });
-
+            const newId = this.nodes.moveDown(id);
+            this.setState({ children: this.nodes.children });
             this.setSelectedNode(newId);
         }
     }

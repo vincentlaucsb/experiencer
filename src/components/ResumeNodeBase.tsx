@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
 import { EditorMode } from "./ResumeComponent";
-import { deepCopy } from "./Helpers";
+import { process } from "./Helpers";
 import { IdType } from "./utility/HoverTracker";
 import ResumeComponent from "./ResumeComponent";
 
@@ -148,6 +148,17 @@ export default class ResumeNodeBase<P
             onClick: this.setSelected,
             onMouseEnter: () => this.props.hoverOver(this.props.id),
             onMouseLeave: () => this.props.hoverOut(this.props.id)
+        };
+    }
+
+    /** Returns props which make a text input responsive to clicks and keyboard 
+     * events */
+    get textFieldProps() {
+        return {
+            displayProcessor: process,
+            isEditing: this.props.isEditing && this.isSelected,
+            onClick: this.isSelected ? this.toggleEdit : undefined,
+            onEnterDown: this.toggleEdit
         };
     }
 

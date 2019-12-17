@@ -7,7 +7,6 @@ import ResumeHotKeys from "./ResumeHotkeys";
 import { SelectedNodeActions } from "./SelectedNodeActions";
 import { ComponentTypes, NodeInformation } from "../ResumeComponent";
 import { DescriptionListItem, DescriptionList } from "../List";
-import Row from "../FlexibleRow";
 
 type AddOptions = Array<NodeInformation>;
 

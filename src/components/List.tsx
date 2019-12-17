@@ -1,9 +1,7 @@
 ﻿import * as React from "react";
 import 'react-contexify/dist/ReactContexify.min.css';
-import Placeholder from "./Placeholder";
 import ResumeTextField from "./controls/TextField";
 import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
-import ResumeComponent from "./ResumeComponent";
 
 interface DescriptionItemProps extends ResumeNodeProps {
     term?: string;
@@ -15,34 +13,25 @@ export class DescriptionListItem extends ResumeNodeBase<DescriptionItemProps> {
     }
 
     render() {
-        let value: any = this.props.value || "";
-
         const term = <ResumeTextField
             label="Term"
-            onChange={this.updateData.bind(this, "term") as (text: string) => void}
+            onChange={this.updateData.bind(this, "term")}
             value={this.props.term}
             defaultText="Enter a term"
+            {...this.textFieldProps}
         />
 
-        /**
-        if (this.props.isEditing) {
-            value = <InputGroup size="sm">
-                <Form.Control value={value}
-                    onChange={this.updateDataEvent.bind(this, "value")}
-                    placeholder="Value" />
-                    </InputGroup>
-        }
-        **/
+        const value = <ResumeTextField
+            label="Value"
+            onChange={this.updateData.bind(this, "value")}
+            value={this.props.value || ""}
+            defaultText="Enter a value"
+            {...this.textFieldProps}
+        />
 
         return <div className={this.className} {...this.selectTriggerProps}>
-            <dt>
-                <span>{term}</span>
-            </dt>
-            <dd>
-                <span className="flex-row">
-                    <Placeholder text={value} />
-                </span>
-            </dd>
+            <dt>{term}</dt>
+            <dd>{value}</dd>
         </div>
     }
 }

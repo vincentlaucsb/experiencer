@@ -2,6 +2,7 @@
 import * as Helpers from "./Helpers";
 import ResumeNodeBase, { ResumeNodeProps, Action } from "./ResumeNodeBase";
 import ResumeTextField from "./controls/TextField";
+import ResumeWrapper from "./ResumeWrapper";
 
 export interface EntryProps extends ResumeNodeProps {
     title?: string;
@@ -50,7 +51,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
     get textFieldProps() {
         return {
             displayProcessor: Entry.process,
-            isEditing: this.props.isEditing,
+            isEditing: this.props.isEditing && this.isSelected,
             onClick: this.isSelected ? this.toggleEdit : undefined,
             onEnterDown: this.toggleEdit
         };
@@ -150,13 +151,18 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
             {...this.textFieldProps}
         />
 
-        return <div className={this.className} {...this.selectTriggerProps}>
+        return <ResumeWrapper
+            customToolbar={this.customMenuOptions}
+            updateToolbar={this.props.updateCustomOptions}
+            id={this.props.id} isSelected={this.isSelected}>
+            <div className={this.className} {...this.selectTriggerProps}>
             <div className="entry-title">
                 <h3 className="flex-row flex-spread">{title} {this.getTitleExtras()}</h3>
                 <p className="flex-row flex-spread subtitle">{subtitle} {this.getSubtitleExtras()}</p>
             </div>
 
             {this.renderChildren()}
-        </div>
+            </div>
+        </ResumeWrapper>
     }
 }

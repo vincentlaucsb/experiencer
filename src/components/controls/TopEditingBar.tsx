@@ -1,84 +1,13 @@
 ﻿import React from "react";
 import { Button } from "./Buttons";
-import { Action, ModifyChild, AddChild } from "../ResumeNodeBase";
+import { Action, ModifyChild, AddChild, CustomToolbarOptions } from "../ResumeNodeBase";
 import { IdType } from "../utility/HoverTracker";
 import PureMenu, { PureDropdown, PureMenuItem, PureMenuLink } from "./PureMenu";
 import ResumeHotKeys from "./ResumeHotkeys";
-import { DescriptionList } from "../List";
 import { SelectedNodeActions } from "./SelectedNodeActions";
+import { ComponentTypes, NodeInformation } from "../ResumeComponent";
 
-interface NodeOption {
-    text: string;
-    node: object;
-}
-
-type AddOptions = Array<NodeOption>;
-
-const addOptions: Map<string, NodeOption> = new Map<string, NodeOption>([
-    ['Column', {
-        text: 'Flexible Column',
-        node: {
-            type: 'FlexibleColumn'
-        }
-    }],
-
-    [ 'Section', {
-        text: 'Section',
-        node: {
-            type: 'Section'
-        }
-    }],
-
-    [ 'Entry', {
-        text: 'Entry',
-        node: {
-            type: 'Entry'
-        }
-    }],
-
-    [ 'Paragraph', {
-        text: 'Paragraph',
-        node: { type: 'Paragraph' }
-    }],
-
-    ['Bulleted List', {
-        text: 'Bulleted List',
-        node: {
-            type: 'Paragraph',
-            value: '<ul><li></li></ul>'
-        }
-    }],
-
-    [DescriptionList.name, {
-        text: 'Description List',
-        node: {
-            type: DescriptionList.name,
-            children: [{
-                type: 'DescriptionListItem'
-            }]
-        }
-    }],
-
-    ['Description List Item', {
-        text: 'Description List Item',
-        node: { type: 'DescriptionListItem' }
-    }]
-]);
-
-function addMap(type: string) {
-    switch (type) {
-        case 'FlexibleRow':
-            return 'Column';
-        case 'DescriptionList':
-            return 'Description List Item';
-        case 'Entry':
-            return ['Bulleted List', 'Description List', 'Paragraph'];
-        ///case 'Section':
-         //   return ['Entry', 'Paragraph', 'Bulleted List', 'Description List'];
-        default:
-            return ['Section', 'Entry', 'Paragraph', 'Bulleted List', 'Description List'];
-    }
-}
+type AddOptions = Array<NodeInformation>;
 
 interface AddOptionProps {
     options: string | Array<string>;
@@ -92,18 +21,19 @@ interface AddOptionProps {
  */
 export function AddOption(props: AddOptionProps) {
     const options = props.options;
+    const nodeInfo = (type: string) => ComponentTypes.defaultValue(type);
 
     if (Array.isArray(options)) {
         let optionsDetail: AddOptions = [];
 
         options.forEach((nodeType: string) => {
-            optionsDetail.push(addOptions.get(nodeType) as NodeOption)
+            optionsDetail.push(nodeInfo(nodeType))
         });
 
         return <AddMenu options={optionsDetail} addChild={props.addChild} id={props.id} />
     }
 
-    const node: NodeOption = addOptions.get(options as string) as NodeOption;
+    const node: NodeInformation = nodeInfo(options as string);
     return (
             <Button onClick={() => props.addChild(props.id, node.node)}>
                 Add {options}
@@ -139,9 +69,12 @@ export function AddMenu(props: AddMenuProps) {
 
 export interface EditingBarProps extends SelectedNodeActions {
     id: IdType;
+    type: string;
     addChild: AddChild;
     toggleEdit: ModifyChild;
     moveUpEnabled: boolean;
+
+    customOptions?: CustomToolbarOptions;
 }
 
 function ClipboardMenu(props: EditingBarProps) {
@@ -176,28 +109,28 @@ function ClipboardMenu(props: EditingBarProps) {
 
 export default function TopEditingBar(props: EditingBarProps) {
     const id = props.id;
-    /*
     const additionalOptions = props.customOptions ? <>
         {props.customOptions.map((item) =>
             <Button onClick={item.action}>{item.text}</Button>
         )}
     </> : <></>
-    {additionalOptions}
-*/
+    console.log(props.customOptions);
 
     const Item = (props: any) => <PureMenuItem onClick={props.onClick}>
         <Button>{props.children}</Button>
     </PureMenuItem>
 
-    // 
+    const childTypes = ComponentTypes.childTypes(props.type);
 
     return <div id="toolbar">
         <div>
             <PureMenu horizontal>
+                <AddOption id={id} addChild={props.addChild as AddChild} options={childTypes} />
                 <Item onClick={props.delete}>Delete</Item>
                 <Item onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Item>
                 <Item onClick={() => props.moveUp()}>Move Up</Item>
                 <Item onClick={() => props.moveDown()}>Move Down</Item>
+                {additionalOptions}
             </PureMenu>
         </div>
         <div>

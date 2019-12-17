@@ -36,6 +36,7 @@ export interface ResumePassProps extends NodeActions {
     moveDown: ModifyChild;
     updateData: (id: IdType, key: string, data: any) => void;
     updateSelected: (id?: IdType) => void;
+    updateCustomOptions: (options: CustomToolbarOptions) => void;
 }
 
 export interface ResumeNodeProps extends BasicNodeProps, ResumePassProps {
@@ -48,6 +49,13 @@ export interface ResumeNodeProps extends BasicNodeProps, ResumePassProps {
     isEditing?: boolean
     value?: string;
 }
+
+export interface ToolbarOption {
+    text: string;
+    action: Action;
+}
+
+export type CustomToolbarOptions = Array<ToolbarOption>;
 
 // Represents a node that is part of the user's resume
 export default class ResumeNodeBase<P
@@ -97,9 +105,8 @@ export default class ResumeNodeBase<P
         ];
     }
 
-    // TODO: change any declaration
-    get customMenuOptions() : any {
-        return undefined;
+    get customToolbarOptions() : CustomToolbarOptions {
+        return [];
     }
 
     /** Returns true if this node has no children */
@@ -189,6 +196,7 @@ export default class ResumeNodeBase<P
                     toggleEdit: this.props.toggleEdit,
                     updateData: this.props.updateData,
                     updateSelected: this.props.updateSelected,
+                    updateCustomOptions: this.props.updateCustomOptions,
 
                     index: idx,
                     numChildren: arr.length,

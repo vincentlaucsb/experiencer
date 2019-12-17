@@ -7,7 +7,7 @@ import './scss/index.scss';
 
 import ResumeComponent, { EditorMode } from './components/ResumeComponent';
 import { assignIds, deepCopy, arraysEqual } from './components/Helpers';
-import { AddChild, Action } from './components/ResumeNodeBase';
+import { AddChild, Action, CustomToolbarOptions } from './components/ResumeNodeBase';
 import ResumeTemplateProvider from './components/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
 import Landing from './components/help/Landing';
@@ -163,7 +163,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
         // Unselect the currently selected node
         this.unselect = () => {
-            this.setState({ selectedNode: undefined });
+            this.setSelectedNode(undefined);
         };
     }
     
@@ -224,7 +224,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
             // Update the selected node
             updateSelected: (id?: IdType) => {
-                this.setState({ selectedNode: id });
+                this.setSelectedNode(id);
             },
 
             unselect: this.unselect
@@ -238,6 +238,13 @@ class Resume extends React.Component<{}, ResumeState> {
         }
 
         return;
+    }
+
+    setSelectedNode(id?: IdType) {
+        this.setState({
+            selectedNode: id,
+            selectedNodeCustomOptions: undefined
+        });
     }
 
     // Push style changes to browser
@@ -263,6 +270,7 @@ class Resume extends React.Component<{}, ResumeState> {
             deleteChild: this.deleteSelected.bind(this),
             toggleEdit: this.toggleNestedEdit.bind(this),
             updateData: this.updateNestedChild,
+            updateCustomOptions: this.updateCustomOptions.bind(this),
             ...this.hoverProps,
 
             index: idx,
@@ -374,10 +382,8 @@ class Resume extends React.Component<{}, ResumeState> {
 
             // Unset selected node data
             this.hovering.hoverOut(id);
-            this.setState({
-                selectedNode: undefined,
-                hoverNode: this.hovering.currentId
-            });
+            this.setState({ hoverNode: this.hovering.currentId });
+            this.setSelectedNode(undefined);
     }
     }
 
@@ -406,8 +412,9 @@ class Resume extends React.Component<{}, ResumeState> {
             this.nodes.moveUp(id);
             this.setState({
                 children: this.nodes.children,
-                selectedNode: newId
             });
+
+            this.setSelectedNode(newId);
         }
     }
 
@@ -425,10 +432,16 @@ class Resume extends React.Component<{}, ResumeState> {
 
             this.nodes.moveDown(id);
             this.setState({
-                children: this.nodes.children,
-                selectedNode: newId
+                children: this.nodes.children
             });
+
+            this.setSelectedNode(newId);
         }
+    }
+
+    updateCustomOptions(options: CustomToolbarOptions) {
+        console.log("Updating custom options", options);
+        this.setState({ selectedNodeCustomOptions: options });
     }
     //#endregion
 
@@ -524,7 +537,11 @@ class Resume extends React.Component<{}, ResumeState> {
     get editingBarProps() {
         return {
             ...this.selectedNodeActions,
+            customOptions: this.state.selectedNodeCustomOptions,
             id: this.state.selectedNode,
+
+            // TODO: Fix this type cast
+            type: this.selectedNode ? this.selectedNode['type'] : '',
             addChild: this.addNestedChild,
             toggleEdit: this.toggleNestedEdit,
             moveUpEnabled: this.moveSelectedUpEnabled,

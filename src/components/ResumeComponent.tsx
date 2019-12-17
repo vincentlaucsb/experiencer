@@ -65,3 +65,117 @@ export default function ResumeComponent(props: ResumeComponentProps) {
             return <React.Fragment></React.Fragment>
     }
 }
+
+export interface NodeInformation {
+    text: string;
+    node: object;
+}
+
+/** Stores schema information */
+export class ComponentTypes {
+
+    /**
+     * Given a type return what children its allowed to have
+     * @param type Type of resume node
+     */
+    static childTypes(type: string) : string | Array<string> {
+        switch (type) {
+            case Row.name:
+                return Column.name;
+            case DescriptionList.name:
+                return DescriptionListItem.name;
+            case Entry.name:
+                return [
+                    AliasTypes.BulletedList,
+                    DescriptionList.name,
+                    Paragraph.name
+                ];
+            default:
+                return [
+                    Section.name,
+                    Entry.name,
+                    Paragraph.name,
+                    AliasTypes.BulletedList,
+                    DescriptionList.name
+                ];
+        }
+    }
+
+    /**
+     * Given a type retrieve its JSON representation
+     * @param type
+     */
+    static defaultValue(type: string) : NodeInformation {
+        switch (type) {
+            case AliasTypes.BulletedList:
+                return {
+                    text: Paragraph.name,
+                    node: {
+                        type: Paragraph.name,
+                        value: '<ul><li></li></ul>'
+                    }
+                }
+            case Column.name:
+                return {
+                    text: Column.name,
+                    node: {
+                        type: Column.name
+                    }
+                }
+            case DescriptionList.name:
+                return {
+                    text: 'Description List',
+                    node: {
+                        type: DescriptionList.name,
+                        children: [
+                            {
+                                type: DescriptionListItem.name
+                            }
+                        ]
+                    }
+                }
+            case DescriptionListItem.name:
+                return {
+                    text: 'Description List Item',
+                    node: { type: DescriptionListItem.name }
+                }
+            case Entry.name:
+                return {
+                    text: 'Entry',
+                    node: {
+                        type: Entry.name
+                    }
+                }
+            case Paragraph.name:
+                return {
+                    text: 'Rich Text',
+                    node: {
+                        type: Paragraph.name
+                    }
+                }
+            case Row.name:
+                return {
+                    text: Row.name,
+                    node: {
+                        type: Row.name
+                    }
+                }
+            case Section.name:
+                return {
+                    text: Section.name,
+                    node: {
+                        type: Section.name
+                    }
+                }
+            default:
+                throw `Couldn't find information for component named ${type}`;
+        }
+    }
+}
+
+/** Stores types which are just an alias for another type */
+export class AliasTypes {
+    static get BulletedList() {
+        return 'BulletedList';
+    }
+}

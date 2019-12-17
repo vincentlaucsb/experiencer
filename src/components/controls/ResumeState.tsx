@@ -1,6 +1,7 @@
 ﻿import { EditorMode } from "../ResumeComponent";
 import { SectionHeaderPosition } from "../Section";
 import { IdType } from "../utility/HoverTracker";
+import { CustomToolbarOptions } from "../ResumeNodeBase";
 
 export interface ResumeSaveData {
     children: Array<object>;
@@ -16,4 +17,5 @@ export default interface ResumeState extends ResumeSaveData {
 
     hoverNode?: IdType;
     selectedNode?: IdType;
+    selectedNodeCustomOptions?: CustomToolbarOptions;
 }

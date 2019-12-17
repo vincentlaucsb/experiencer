@@ -12,7 +12,10 @@ export interface WrapperProps {
     isEditing?: boolean;
 }
 
-// Represents a node that is part of the user's resume
+/**
+ * Wrapper which performs callbacks when a resume node is (un)selected
+ * @param props
+ */
 export default function ResumeWrapper(props: WrapperProps) {
     React.useEffect(() => {
         if (props.isSelected) {

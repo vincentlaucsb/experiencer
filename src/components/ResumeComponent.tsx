@@ -3,7 +3,7 @@
 import Row, { Column } from "./FlexibleRow";
 import Section, { SectionProps } from "./Section";
 import Entry, { EntryProps } from "./Entry";
-import List, { ListItem, DescriptionList, DescriptionListItem } from "./List";
+import { DescriptionList, DescriptionListItem } from "./List";
 import Paragraph from "./Paragraph";
 import Header from "./Header";
 import { ResumeNodeProps, ResumePassProps } from "./ResumeNodeBase";
@@ -55,10 +55,6 @@ export default function ResumeComponent(props: ResumeComponentProps) {
             return <Section {...newProps as SectionProps} />;
         case Entry.name:
             return <Entry {...newProps as EntryProps} />;
-        case 'List':
-            return <List {...newProps} />;
-        case 'ListItem':
-            return <ListItem {...newProps} />;
         case Paragraph.name:
             return <Paragraph {...newProps} />;
         default:

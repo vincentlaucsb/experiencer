@@ -416,8 +416,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
     get moveSelectedDownEnabled() {
         const id = this.state.selectedNode as IdType;
-        // return id && id[id.length - 1] < id.length - 1;
-        return id;
+        return id && !this.nodes.isLastSibling(id);
     }
 
     moveSelectedDown() {
@@ -536,6 +535,7 @@ class Resume extends React.Component<{}, ResumeState> {
             addChild: this.addNestedChild,
             toggleEdit: this.editSelected,
             moveUpEnabled: this.moveSelectedUpEnabled,
+            moveDownEnabled: this.moveSelectedDownEnabled,
             unselect: this.unselect
         }
     }

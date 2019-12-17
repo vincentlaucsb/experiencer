@@ -60,6 +60,17 @@ export default class ResumeNodeTree {
         deleteAt(parentNode['children'], id[id.length - 1]);
     }
 
+    /**
+     * Returns true if node is the last sibling in its subtree
+     * @param id
+     */
+    isLastSibling(id: IdType) {
+        let parentNode = this.getParentOfId(id);
+        const position = id[id.length - 1];
+
+        return position + 1 == parentNode['children'].length;
+    }
+
     updateChild(id: IdType, key: string, data: any) {
         let targetNode = this.getNodeById(id);
         targetNode[key] = data;

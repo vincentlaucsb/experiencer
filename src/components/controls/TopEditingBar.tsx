@@ -75,6 +75,7 @@ export interface EditingBarProps extends SelectedNodeActions {
     addChild: AddChild;
     toggleEdit: ModifyChild;
     moveUpEnabled: boolean;
+    moveDownEnabled: boolean;
 
     customOptions?: CustomToolbarOptions;
 }
@@ -118,7 +119,7 @@ export default function TopEditingBar(props: EditingBarProps) {
     </> : <></>
 
     const Item = (props: any) => <PureMenuItem onClick={props.onClick}>
-        <Button>{props.children}</Button>
+        <Button disabled={props.disabled}>{props.children}</Button>
     </PureMenuItem>
 
     // If we are selecting a child of a container type,
@@ -140,8 +141,12 @@ export default function TopEditingBar(props: EditingBarProps) {
                 <AddOption id={id} addChild={props.addChild as AddChild} options={childTypes} />
                 <Item onClick={props.delete}>Delete</Item>
                 <Item onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Item>
-                <Item onClick={() => props.moveUp()}>Move Up</Item>
-                <Item onClick={() => props.moveDown()}>Move Down</Item>
+                <Item onClick={() => props.moveUp()}
+                    disabled={!props.moveUpEnabled}
+                >Move Up</Item>
+                <Item onClick={() => props.moveDown()}
+                    disabled={!props.moveDownEnabled}
+                >Move Down</Item>
                 {additionalOptions}
             </PureMenu>
         </div>

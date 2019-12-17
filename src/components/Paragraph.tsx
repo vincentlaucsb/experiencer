@@ -15,6 +15,10 @@ export default class Paragraph extends ResumeNodeBase<ParagraphProps> {
         this.disableLineBreaks = this.disableLineBreaks.bind(this);
     }
 
+    get isEditing() {
+        return this.props.isEditing && this.isSelected;
+    }
+
     get className(): string {
         let classNames = [super.className];
         if (this.isSelected) {
@@ -76,7 +80,7 @@ export default class Paragraph extends ResumeNodeBase<ParagraphProps> {
     render(): JSX.Element {
         const textValue = Paragraph.process(this.props.value) as string || "Empty text";
 
-        let value = this.props.isEditing ? <ReactQuill
+        let value = this.isEditing ? <ReactQuill
             modules={Paragraph.quillModules}
             value={this.props.value || ""}
             onChange={((this.props.updateData as (id: IdType, key: string, data: any) => void).bind(this, this.props.id, "value") as (data: any) => void)}

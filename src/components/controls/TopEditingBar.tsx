@@ -6,6 +6,8 @@ import PureMenu, { PureDropdown, PureMenuItem, PureMenuLink } from "./PureMenu";
 import ResumeHotKeys from "./ResumeHotkeys";
 import { SelectedNodeActions } from "./SelectedNodeActions";
 import { ComponentTypes, NodeInformation } from "../ResumeComponent";
+import { DescriptionListItem, DescriptionList } from "../List";
+import Row from "../FlexibleRow";
 
 type AddOptions = Array<NodeInformation>;
 
@@ -114,17 +116,27 @@ export default function TopEditingBar(props: EditingBarProps) {
             <Button onClick={item.action}>{item.text}</Button>
         )}
     </> : <></>
-    console.log(props.customOptions);
 
     const Item = (props: any) => <PureMenuItem onClick={props.onClick}>
         <Button>{props.children}</Button>
     </PureMenuItem>
 
+    // If we are selecting a child of a container type,
+    // give the option of adding another child to the parent
     const childTypes = ComponentTypes.childTypes(props.type);
+    let parentAddOption = <></>
+
+    if (props.type === DescriptionListItem.name) {
+        const parentId = id.slice(0, id.length - 1);
+        parentAddOption = <AddOption id={parentId} addChild={
+            props.addChild as AddChild
+        } options={ComponentTypes.childTypes(DescriptionList.name)} />
+    }
 
     return <div id="toolbar">
         <div>
             <PureMenu horizontal>
+                {parentAddOption}
                 <AddOption id={id} addChild={props.addChild as AddChild} options={childTypes} />
                 <Item onClick={props.delete}>Delete</Item>
                 <Item onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Item>

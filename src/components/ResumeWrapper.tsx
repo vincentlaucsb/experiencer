@@ -8,6 +8,8 @@ export interface WrapperProps {
     isSelected: boolean;
     customToolbar?: CustomToolbarOptions;
     updateToolbar: any;
+    toggleEdit: Action;
+    isEditing?: boolean;
 }
 
 // Represents a node that is part of the user's resume
@@ -17,6 +19,11 @@ export default function ResumeWrapper(props: WrapperProps) {
             if (props.customToolbar) {
                 props.updateToolbar(props.customToolbar);
             }
+        }
+        else if (props.isEditing) {
+            // A user was editing a node but selected 
+            // another node while editing
+            props.toggleEdit();
         }
     },
 

@@ -154,7 +154,10 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         return <ResumeWrapper
             customToolbar={this.customMenuOptions}
             updateToolbar={this.props.updateCustomOptions}
-            id={this.props.id} isSelected={this.isSelected}>
+            id={this.props.id} isSelected={this.isSelected}
+            toggleEdit={this.toggleEdit}
+            isEditing={this.props.isEditing}
+        >
             <div className={this.className} {...this.selectTriggerProps}>
             <div className="entry-title">
                 <h3 className="flex-row flex-spread">{title} {this.getTitleExtras()}</h3>

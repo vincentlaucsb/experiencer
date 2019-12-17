@@ -98,13 +98,7 @@ export default class ResumeNodeBase<P
 
         return classes.join(' ');
     }
-
-    get childTypes(): string | Array<string> {
-        return ['Section', 'Entry', 'Paragraph', 'Bulleted List',
-            'DescriptionList'
-        ];
-    }
-
+    
     get customToolbarOptions() : CustomToolbarOptions {
         return [];
     }

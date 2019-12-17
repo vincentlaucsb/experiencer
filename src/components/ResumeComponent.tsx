@@ -6,7 +6,7 @@ import Entry, { EntryProps } from "./Entry";
 import List, { ListItem, DescriptionList, DescriptionListItem } from "./List";
 import Paragraph from "./Paragraph";
 import Header from "./Header";
-import ResumeNodeBase, { ResumeNodeProps, ResumePassProps, Action } from "./ResumeNodeBase";
+import { ResumeNodeProps, ResumePassProps } from "./ResumeNodeBase";
 import { IdType } from "./utility/HoverTracker";
 
 export type EditorMode = 'normal'
@@ -23,7 +23,7 @@ interface ResumeComponentProps extends ResumePassProps {
 }
 
 /**
- * Load a resume node from a JavaScript object
+ * Factory for loading a resume node from a JavaScript object
  */
 export default function ResumeComponent(props: ResumeComponentProps) {
     const parentId = props.parentId;

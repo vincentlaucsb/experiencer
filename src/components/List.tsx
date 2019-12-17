@@ -109,10 +109,24 @@ export default class List extends ResumeNodeBase<ListProps> {
         }
 
         return <ul className={this.className} {...this.selectTriggerProps}>
+            {this.renderGrabHandle()}
             {this.renderChildren()}
         </ul>
     }
-    
+
+    /** Returns a "handle" which can be used to select the column itself and not the columns it contains */
+    renderGrabHandle() {
+        if (this.isHovering && !this.isSelected) {
+            return <div className="column-grab-handle-container">
+                <div className="column-grab-handle">
+                    Click here to select description list
+                </div>
+            </div>
+        }
+
+        return <></>
+    }
+
     render() {
         return <React.Fragment>
             <MenuProvider id={this.props.uuid}>
@@ -152,7 +166,7 @@ export class DescriptionListItem extends ListItem<DescriptionItemProps> {
         }
         **/
 
-        return <div className={this.className}>
+        return <div className={this.className} {...this.selectTriggerProps}>
             <dt>
                 <span>{term}</span>
             </dt>
@@ -166,13 +180,14 @@ export class DescriptionListItem extends ListItem<DescriptionItemProps> {
 }
 
 export class DescriptionList extends List {
-    get childTypes() {
-        return 'Description List Item';
-    }
-
     renderList() {
-        return <dl className={this.className} {...this.selectTriggerProps}>
+        if (this.props.isHidden && this.isPrinting) {
+            return <></>
+        }
+
+        return <ul className={this.className} {...this.selectTriggerProps}>
+            {this.renderGrabHandle()}
             {this.renderChildren()}
-        </dl>
+        </ul>
     }
 }

@@ -151,7 +151,7 @@ class Resume extends React.Component<{}, ResumeState> {
         this.loadData = this.loadData.bind(this);
         this.saveFile = this.saveFile.bind(this);
 
-        this.toggleNestedEdit = this.toggleNestedEdit.bind(this);
+        this.editSelected = this.editSelected.bind(this);
         this.deleteSelected = this.deleteSelected.bind(this);
         this.moveSelectedUp = this.moveSelectedUp.bind(this);
         this.moveSelectedDown = this.moveSelectedDown.bind(this);
@@ -268,7 +268,7 @@ class Resume extends React.Component<{}, ResumeState> {
             moveUp: this.moveSelectedUp.bind(this),
             moveDown: this.moveSelectedDown.bind(this),
             deleteChild: this.deleteSelected.bind(this),
-            toggleEdit: this.toggleNestedEdit.bind(this),
+            toggleEdit: this.editSelected.bind(this),
             updateData: this.updateNestedChild,
             updateCustomOptions: this.updateCustomOptions.bind(this),
             ...this.hoverProps,
@@ -388,13 +388,17 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     updateNestedChild(id: IdType, key: string, data: any) {
+        console.log("Updating", id, key, data);
         this.nodes.updateChild(id, key, data);
         this.setState({ children: this.nodes.children });
     }
 
-    toggleNestedEdit(id: IdType) {
-        this.nodes.toggleEdit(id);
-        this.setState({ children: this.nodes.children });
+    editSelected() {
+        const id = this.state.selectedNode as IdType;
+        if (id) {
+            this.nodes.toggleEdit(id);
+            this.setState({ children: this.nodes.children });
+        }
     }
 
     get moveSelectedUpEnabled() {
@@ -510,6 +514,7 @@ class Resume extends React.Component<{}, ResumeState> {
     //#region Helper Component Props
     get selectedNodeActions() : SelectedNodeActions {
         return {
+            edit: this.editSelected,
             delete: this.deleteSelected,
             moveUp: this.moveSelectedUp,
             moveDown: this.moveSelectedDown,
@@ -543,7 +548,7 @@ class Resume extends React.Component<{}, ResumeState> {
             // TODO: Fix this type cast
             type: this.selectedNode ? this.selectedNode['type'] : '',
             addChild: this.addNestedChild,
-            toggleEdit: this.toggleNestedEdit,
+            toggleEdit: this.editSelected,
             moveUpEnabled: this.moveSelectedUpEnabled,
             unselect: this.unselect
         }

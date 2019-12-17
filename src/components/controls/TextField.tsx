@@ -21,19 +21,45 @@ interface ResumeTextFieldProps {
 }
 
 export default function ResumeTextField(props: ResumeTextFieldProps) {
+    const initialValue = props.value || "";
+    let [value, setValue] = React.useState(initialValue);
+    let [escapePressed, setEscape] = React.useState(false);
+
     const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
         if (event.key === 'Enter' && props.onEnterDown) {
             props.onEnterDown();
         }
+        else if (event.key === 'Escape') {
+            setEscape(true);
+            setValue(initialValue);
+
+            // TODO: Add a different toggleEdit method
+            if (props.onClick) {
+                props.onClick();
+            }
+        }
     };
+
+    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setValue(event.target.value);
+    }
+
+    React.useEffect(() => {
+        if (props.isEditing) {
+            setEscape(false);
+        }
+        else if (value !== initialValue && !escapePressed) {
+            props.onChange(value);
+        }
+    }, [props.isEditing]);
 
     if (props.isEditing) {
         return <>
             <label>{props.label || "Value"}</label>
             <input
-            onChange={(event) => props.onChange(event.target.value)}
+            onChange={onChange}
             onKeyDown={onKeyDown}
-            value={props.value || ""}
+            value={value}
             />
         </>
     }

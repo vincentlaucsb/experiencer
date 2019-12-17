@@ -1,5 +1,6 @@
 ﻿import * as React from "react";
-import ResumeNodeBase from "./ResumeNodeBase";
+import ResumeNodeBase, { ToolbarOption, ResumeNodeProps } from "./ResumeNodeBase";
+import ResumeWrapper from "./ResumeWrapper";
 
 export class Column extends ResumeNodeBase {
     /** Get the index of this column */
@@ -39,13 +40,67 @@ export class Column extends ResumeNodeBase {
     }
 }
 
-export default class Row extends ResumeNodeBase {
+interface RowProps extends ResumeNodeProps {
+    justifyContent?: string;
+}
+
+export default class Row extends ResumeNodeBase<RowProps> {
     get className(): string {
-        return ['resume-row', 'flex-row', 'flex-spread', super.className].join(' ');
+        let classNames = ['resume-row', 'flex-row', super.className];
+        return classNames.join(' ');
     }
 
     get childTypes() {
         return 'Column';
+    }
+
+    get styles() : React.CSSProperties {
+        let properties = {
+            width: "100%",
+            minWidth: "100px",
+            minHeight: "100px",
+            justifyContent: this.props.justifyContent || 'space-between'
+        }
+
+        return properties;
+    }
+
+    get customToolbarOptions() {
+        return [
+            {
+                text: 'Justify Content',
+                actions: [
+                    {
+                        text: 'Space between',
+                        action: () => this.justifyContent('space-between')
+                    } as ToolbarOption,
+                    {
+                        text: 'Stack at beginning',
+                        action: () => this.justifyContent('flex-start')
+                    } as ToolbarOption,
+                    {
+                        text: 'Stack at end',
+                        action: () => this.justifyContent('flex-end')
+                    } as ToolbarOption,
+                    {
+                        text: 'Stack center',
+                        action: () => this.justifyContent('center')
+                    } as ToolbarOption,
+                    {
+                        text: 'Space around',
+                        action: () => this.justifyContent('space-around')
+                    } as ToolbarOption,
+                    {
+                        text: 'Space evenly',
+                        action: () => this.justifyContent('space-evenly')
+                    } as ToolbarOption
+                ]
+            }
+        ];
+    }
+
+    justifyContent(text: string) {
+        this.updateData('justifyContent', text);
     }
 
     /** Returns a "handle" which can be used to select the row itself and not the columns it contains */
@@ -63,9 +118,16 @@ export default class Row extends ResumeNodeBase {
     
     render() {
         // TODO: Only have minHeight if this row's columns have no children
-        return <div className={this.className} style={{ width: "100%", minWidth: "100px", minHeight: "100px" }} {...this.selectTriggerProps}>
+        return <ResumeWrapper
+            customToolbar={this.customToolbarOptions}
+            updateToolbar={this.props.updateCustomOptions}
+            id={this.props.id} isSelected={this.isSelected}
+            toggleEdit={this.toggleEdit}
+            isEditing={this.props.isEditing}
+        ><div className={this.className} style={this.styles} {...this.selectTriggerProps}>
             {this.renderGrabHandle()}
             {this.renderChildren()}
-        </div>
+            </div>
+        </ResumeWrapper>
     }
 }

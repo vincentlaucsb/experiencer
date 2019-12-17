@@ -24,17 +24,6 @@ export default class ResumeTemplateProvider {
     padding-left: 0.5rem;
 }
 
-/** Multi-Column Layouts */
-#resume .column-0 {
-    width: 33%;
-    margin-right: 1.5rem;
-    flex-shrink: 0; /** Do not shrink */
-}
-
-#resume .column-1 {
-    width: 100%; /** Fill up remaining space */
-}
-
 /** Key Classes: Modify at your own risk **/
 #resume div.text-inline p {
     /** Disabled line breaks */
@@ -57,10 +46,6 @@ export default class ResumeTemplateProvider {
 #resume .flex-col {
     display: flex;
     flex-direction: column;
-}
-
-#resume .flex-spread {
-    justify-content: space-between;
 }
 `;
 

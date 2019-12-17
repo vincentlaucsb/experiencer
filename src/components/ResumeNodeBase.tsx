@@ -52,7 +52,8 @@ export interface ResumeNodeProps extends BasicNodeProps, ResumePassProps {
 
 export interface ToolbarOption {
     text: string;
-    action: Action;
+    action?: Action;
+    actions?: Array<ToolbarOption>;
 }
 
 export type CustomToolbarOptions = Array<ToolbarOption>;

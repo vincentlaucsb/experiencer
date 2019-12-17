@@ -21,6 +21,7 @@ export default function ResumeWrapper(props: WrapperProps) {
             }
         }
         else if (props.isEditing) {
+
             // A user was editing a node but selected 
             // another node while editing
             props.toggleEdit();

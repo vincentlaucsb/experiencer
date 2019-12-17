@@ -26,14 +26,27 @@ export default class CssEditor extends React.Component<CssEditorProps> {
     }
 
     render() {
-        const cssProperties = this.props.root.properties;
         const sections = new Array<JSX.Element>();
+        const cssProperties = this.props.root.properties;
+
+        cssProperties.forEach((value, key) => {
+            sections.push(<li>{key}: {value}</li>);
+        })
+
         const root = this.props.root;
         const Heading = this.heading;
 
         return (
             <div>
-                <Heading>{this.props.root.name}</Heading>
+                <Heading>
+                    {this.props.root.name}
+                    <span>({this.props.root.selector})</span>
+                </Heading>
+
+                <ul>
+                    {sections.map((value) => <>{value}</>)}
+                </ul>
+
                 {root.children.map(
                     (css) => {
                         const path = [...this.props.path, css.name];

@@ -430,7 +430,6 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     updateCustomOptions(options: CustomToolbarOptions) {
-        console.log("Updating custom options", options);
         this.setState({ selectedNodeCustomOptions: options });
     }
     //#endregion
@@ -636,7 +635,7 @@ class Resume extends React.Component<{}, ResumeState> {
                     topNav={editingTop}
                     main={main} />
                     */
-                return <ResizableSidebarLayout
+                return <StaticSidebarLayout
                     topNav={editingTop}
                     main={resume}
                     sideBar={<CssEditor path={[]} root={this.css} />}

@@ -110,10 +110,25 @@ function ClipboardMenu(props: EditingBarProps) {
 }
 
 export default function TopEditingBar(props: EditingBarProps) {
+    const DropdownItem = (props: any) => <PureMenuItem onClick={props.onClick}>
+        <PureMenuLink>{props.children}</PureMenuLink>
+    </PureMenuItem>
+
     const id = props.id;
     const additionalOptions = props.customOptions ? <>
-        {props.customOptions.map((item) =>
-            <Button onClick={item.action}>{item.text}</Button>
+        {props.customOptions.map((item) => {
+            if (item.action) {
+                return <Button onClick={item.action}>{item.text}</Button>
+            }
+            else if (item.actions) {
+                return <PureDropdown content={<Button>{item.text}</Button>}>
+                    {item.actions.map((item) =>
+                        <DropdownItem onClick={item.action}>{item.text}</DropdownItem>
+                    )}
+                </PureDropdown>
+            }
+        }
+            
         )}
     </> : <></>
 

@@ -44,7 +44,7 @@ interface RowProps extends ResumeNodeProps {
     justifyContent?: string;
 }
 
-export default class Row extends ResumeNodeBase<RowProps> {
+export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> {
     get className(): string {
         let classNames = ['resume-row', 'flex-row', super.className];
         return classNames.join(' ');

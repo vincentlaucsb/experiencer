@@ -30,21 +30,26 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
     get customMenuOptions() {
         return [
             {
-                text: 'Add another title field',
-                action: this.addTitleField,
-            },
-            {
-                text: 'Add another subtitle field',
-                action: this.addSubtitleField,
-            },
-            {
-                text: 'Remove title field (from right)',
-                action: this.removeTitleField,
-            },
-            {
-                text: 'Remove subtitle field (from right)',
-                action: this.removeSubtitleField,
-            },
+                text: 'Title Options',
+                actions: [
+                    {
+                        text: 'Add another title field',
+                        action: this.addTitleField,
+                    },
+                    {
+                        text: 'Add another subtitle field',
+                        action: this.addSubtitleField,
+                    },
+                    {
+                        text: 'Remove title field (from right)',
+                        action: this.removeTitleField,
+                    },
+                    {
+                        text: 'Remove subtitle field (from right)',
+                        action: this.removeSubtitleField,
+                    }
+                ]
+            }
         ];
     }
 

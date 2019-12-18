@@ -1,7 +1,7 @@
 ﻿import * as React from "react";
 
 interface ButtonProps {
-    children?: any;
+    children?: Array<string | JSX.Element> | string | JSX.Element;
     onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
     primary?: boolean;
     disabled?: boolean;

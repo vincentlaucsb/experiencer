@@ -36,7 +36,7 @@ export default class ResumeNodeTree implements ResumeNode {
             parentNode: ResumeNode = this;
 
         for (let i = 1; i < id.length; i++) {
-            if (i + 1 == id.length) {
+            if (i + 1 === id.length) {
                 parentNode = targetNode;
             }
 
@@ -44,7 +44,7 @@ export default class ResumeNodeTree implements ResumeNode {
                 targetNode = targetNode.children[id[i]];
             }
             else {
-                throw "Target node has no children";
+                throw new Error("Parent has no children");
             }
         }
 
@@ -100,10 +100,10 @@ export default class ResumeNodeTree implements ResumeNode {
         const position = id[id.length - 1];
 
         if (parentNode.children) {
-            return position + 1 == parentNode.children.length;
+            return position + 1 === parentNode.children.length;
         }
 
-        throw "Parent has no children";
+        throw new Error("Parent has no children");
     }
 
     updateChild(id: IdType, key: string, data: any) {
@@ -123,7 +123,7 @@ export default class ResumeNodeTree implements ResumeNode {
              moveUp(parentNode.children, id[id.length - 1]);
         }
         else {
-            throw "Parent has no children";
+            throw new Error("Parent has no children");
         }
 
         // Return new ID of node
@@ -139,7 +139,7 @@ export default class ResumeNodeTree implements ResumeNode {
             moveDown(parentNode.children, id[id.length - 1]);
         }
         else {
-            throw "Parent has no children";
+            throw new Error("Parent has no children");
         }
 
         // Return new ID of node

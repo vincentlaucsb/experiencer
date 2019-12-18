@@ -1,6 +1,5 @@
 ﻿import * as React from "react";
 
-import Row, { Column } from "./FlexibleRow";
 import Section, { SectionProps } from "./Section";
 import Entry, { EntryProps } from "./Entry";
 import { DescriptionList, DescriptionListItem } from "./List";
@@ -9,6 +8,8 @@ import Header from "./Header";
 import { ResumeNodeProps, ResumePassProps } from "./ResumeNodeBase";
 import { IdType } from "./utility/HoverTracker";
 import { BasicResumeNode } from "./utility/NodeTree";
+import Row from "./Row";
+import Column from "./Column";
 
 export type EditorMode = 'normal'
     | 'landing'
@@ -101,7 +102,7 @@ export class ComponentTypes {
         switch (type) {
             case AliasTypes.BulletedList:
                 return {
-                    text: Paragraph.name,
+                    text: 'Bulleted List',
                     node: {
                         type: Paragraph.name,
                         value: '<ul><li></li></ul>'
@@ -149,7 +150,11 @@ export class ComponentTypes {
                 return {
                     text: Row.name,
                     node: {
-                        type: Row.name
+                        type: Row.name,
+                        children: [
+                            { type: Column.name },
+                            { type: Column.name }
+                        ]
                     }
                 }
             case Section.name:
@@ -160,7 +165,7 @@ export class ComponentTypes {
                     }
                 }
             default:
-                throw `Couldn't find information for component named ${type}`;
+                throw new Error(`Couldn't find information for component named ${type}`);
         }
     }
 }

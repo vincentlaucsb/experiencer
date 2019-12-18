@@ -5,9 +5,9 @@ import 'purecss/build/pure-min.css';
 import 'react-quill/dist/quill.snow.css';
 import './scss/index.scss';
 
-import ResumeComponent, { EditorMode } from './components/ResumeComponent';
+import ResumeComponent, { EditorMode, ComponentTypes } from './components/ResumeComponent';
 import { assignIds, deepCopy, arraysEqual } from './components/Helpers';
-import { AddChild, Action, CustomToolbarOptions } from './components/ResumeNodeBase';
+import { Action, CustomToolbarOptions } from './components/ResumeNodeBase';
 import ResumeTemplateProvider from './components/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
 import Landing from './components/help/Landing';
@@ -25,12 +25,13 @@ import PureMenu, { PureMenuLink, PureMenuItem } from './components/controls/Pure
 import { Button } from './components/controls/Buttons';
 import Octicon, { DesktopDownload, Home } from "@primer/octicons-react";
 import { RenderIf } from './components/controls/HelperComponents';
-import Row, { Column } from './components/FlexibleRow';
 import FileLoader from './components/controls/FileLoader';
 import FileSaver from './components/controls/FileSaver';
 import { SelectedNodeActions } from './components/controls/SelectedNodeActions';
 import CssEditor from './components/utility/CssEditor';
 import MappedTextFields from './components/controls/inputs/MappedTextFields';
+import Row from './components/Row';
+import Section from './components/Section';
 
 let defaultCss = new CssNode('Basics', {
     'font-family': 'Georgia, serif',
@@ -350,19 +351,13 @@ class Resume extends React.Component<{}, ResumeState> {
     //#region Creating/Editing Nodes
     addSection() {
         this.addChild({
-            type: 'Section',
+            type: Section.name,
             headerPosition: this.state.sectionTitlePosition
         });
     }
 
     addColumn() {
-        this.addChild({
-            type: Row.name,
-            children: [
-                { type: Column.name },
-                { type: Column.name }
-            ]
-        });
+        this.addChild(ComponentTypes.defaultValue(Row.name).node);
     }
 
     /**

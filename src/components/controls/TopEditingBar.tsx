@@ -22,44 +22,14 @@ interface AddOptionProps {
  * Return the button or menu for adding children to a node
  * @param options
  */
-export function AddOption(props: AddOptionProps) {
+function AddOption(props: AddOptionProps) {
     const options = props.options;
     const nodeInfo = (type: string) => ComponentTypes.defaultValue(type);
 
     if (Array.isArray(options)) {
-        let optionsDetail: AddOptions = [];
-
-        options.forEach((nodeType: string) => {
-            optionsDetail.push(nodeInfo(nodeType))
-        });
-
-        return <AddMenu options={optionsDetail} addChild={props.addChild} id={props.id} />
-    }
-
-    const node: NodeInformation = nodeInfo(options as string);
-    return (
-            <Button onClick={() => props.addChild(props.id, assignIds(node.node))}>
-                Add {options}
-            </Button>
-    );
-}
-
-interface AddMenuProps {
-    options: AddOptions;
-    addChild: AddChild;
-    id: IdType;
-}
-
-/**
- * Dropdown menu with add options
- * @param props
- */
-export function AddMenu(props: AddMenuProps) {
-    const button = <Button>Insert</Button>
-
-    return (
-        <PureDropdown content={button}>
-            {props.options.map((opt) =>
+        let optionsDetail: AddOptions = options.map((nodeType: string) => nodeInfo(nodeType));
+        return <PureDropdown content={<Button>Insert</Button>}>
+            {optionsDetail.map((opt) =>
                 <PureMenuItem key={opt.text} onClick={() => props.addChild(props.id, assignIds(opt.node))}>
                     <PureMenuLink>
                         {opt.text}
@@ -67,6 +37,13 @@ export function AddMenu(props: AddMenuProps) {
                 </PureMenuItem>
             )}
         </PureDropdown>
+    }
+
+    const node: NodeInformation = nodeInfo(options as string);
+    return (
+            <Button onClick={() => props.addChild(props.id, assignIds(node.node))}>
+                Add {node.text}
+            </Button>
     );
 }
 
@@ -113,14 +90,17 @@ function ClipboardMenu(props: EditingBarProps) {
     );
 }
 
-export default function TopEditingBar(props: EditingBarProps) {
+/**
+ * Subcomponent of TopEditingBar which returns the custom editing options for a node
+ * @param props
+ */
+export function CustomOptions(props: CustomToolbarOptions) {
     const DropdownItem = (props: any) => <PureMenuItem onClick={props.onClick}>
         <PureMenuLink>{props.children}</PureMenuLink>
     </PureMenuItem>
 
-    const id = props.id;
-    const additionalOptions = props.customOptions ? <>
-        {props.customOptions.map((item) => {
+    return <>
+        {props.map((item) => {
             if (item.action) {
                 return <Button onClick={item.action}>{item.text}</Button>
             }
@@ -131,14 +111,19 @@ export default function TopEditingBar(props: EditingBarProps) {
                     )}
                 </PureDropdown>
             }
-        }
-            
-        )}
-    </> : <></>
 
+            return <></>
+        })}
+    </>
+}
+
+export default function TopEditingBar(props: EditingBarProps) {
     const Item = (props: any) => <PureMenuItem onClick={props.onClick}>
         <Button disabled={props.disabled}>{props.children}</Button>
     </PureMenuItem>
+
+    const id = props.id;
+    const additionalOptions = props.customOptions ? <CustomOptions {...props.customOptions} /> : <></>
 
     // If we are selecting a child of a container type,
     // give the option of adding another child to the parent

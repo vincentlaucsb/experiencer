@@ -30,6 +30,8 @@ export default class Section extends ResumeNodeBase<SectionProps> {
         if (this.props.headerPosition === 'left') {
             return ResumeNodeBase.flexRowStyle;
         }
+
+        return {};
     }
 
     get customMenuOptions() {

@@ -3,10 +3,11 @@ import { EditorMode } from "./ResumeComponent";
 import { process } from "./Helpers";
 import { IdType } from "./utility/HoverTracker";
 import ResumeComponent from "./ResumeComponent";
+import { BasicResumeNode } from "./utility/NodeTree";
 
 export type Action = (() => void);
 export type ModifyChild = (id: IdType) => void;
-export type AddChild = ((id: IdType, node: object) => void);
+export type AddChild = ((id: IdType, node: BasicResumeNode) => void);
 export type UpdateChild = ((id: IdType, key: string, data: any) => void);
 
 export interface NodeActions {
@@ -179,7 +180,7 @@ export default class ResumeNodeBase<P
         this.props.toggleEdit(this.props.id);
     }
 
-    addChild(node: object) {
+    addChild(node: BasicResumeNode) {
         if (this.props.addChild as AddChild) {
             (this.props.addChild as AddChild)(this.props.id, node);
         }

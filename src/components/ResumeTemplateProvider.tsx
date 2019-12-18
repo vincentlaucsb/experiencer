@@ -129,7 +129,7 @@ section.header-left h2 {
                     ResumeTemplateProvider.experience,
                     ResumeTemplateProvider.techSkills,
                     ResumeTemplateProvider.education
-                ]) as Array<object>,
+                ]),
                 css: ResumeTemplateProvider.defaultCss,
                 sectionTitlePosition: "top" as SectionHeaderPosition
             };
@@ -155,7 +155,7 @@ section.header-left h2 {
                     ResumeTemplateProvider.experience,
                     ResumeTemplateProvider.techSkills,
                     ResumeTemplateProvider.education
-                ]) as Array<object>,
+                ]),
                 css: ResumeTemplateProvider.defaultCss,
                 sectionTitlePosition: "left" as SectionHeaderPosition
             };
@@ -194,7 +194,7 @@ section.header-left h2 {
                             }
                         ]
                     }
-                ]) as Array<object>,
+                ]),
                 css: ResumeTemplateProvider.defaultCss,
             };
 

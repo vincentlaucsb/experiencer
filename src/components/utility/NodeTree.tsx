@@ -4,15 +4,22 @@ import { BasicNodeProps } from "../ResumeNodeBase";
 
 /** The properties a node can be expected to have
  *  in a JSON representation
+ *  
+ *  This is a non-exclusive list... there may be others
  * */
 export interface BasicResumeNode {
     children?: Array<BasicResumeNode>;
+    value?: string;
+
+    // TODO: Change to 'Row' | 'Column' | etc. ?
+    type: string;
 }
 
 export default class ResumeNodeTree implements BasicResumeNode {
     children = new Array<BasicResumeNode>();
+    type = 'Resume';
 
-    constructor(children = new Array<object>()) {
+    constructor(children = new Array<BasicResumeNode>()) {
         this.children = children;
     }
 
@@ -50,7 +57,7 @@ export default class ResumeNodeTree implements BasicResumeNode {
      * Add an immediate child
      * @param node Node to be added
      */
-    addChild(node: object) {
+    addChild(node: BasicResumeNode) {
         this.children.push(node);
     }
 
@@ -59,10 +66,10 @@ export default class ResumeNodeTree implements BasicResumeNode {
      * @param id   Hierarchical id pointing to some node
      * @param node Node to be added
      */
-    addNestedChild(id: IdType, node: object) {
+    addNestedChild(id: IdType, node: BasicResumeNode) {
         let targetNode = this.getNodeById(id);
         if (!targetNode.children) {
-            targetNode.children = new Array<object>();
+            targetNode.children = new Array<BasicResumeNode>();
         }
 
         targetNode.children.push(assignIds(deepCopy(node)));

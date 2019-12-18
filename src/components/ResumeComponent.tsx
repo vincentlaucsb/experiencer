@@ -8,6 +8,7 @@ import Paragraph from "./Paragraph";
 import Header from "./Header";
 import { ResumeNodeProps, ResumePassProps } from "./ResumeNodeBase";
 import { IdType } from "./utility/HoverTracker";
+import { BasicResumeNode } from "./utility/NodeTree";
 
 export type EditorMode = 'normal'
     | 'landing'
@@ -64,7 +65,7 @@ export default function ResumeComponent(props: ResumeComponentProps) {
 
 export interface NodeInformation {
     text: string;
-    node: object;
+    node: BasicResumeNode;
 }
 
 /** Stores schema information */

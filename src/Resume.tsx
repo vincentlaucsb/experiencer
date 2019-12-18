@@ -19,7 +19,7 @@ import Help from './components/help/Help';
 import { isNullOrUndefined } from 'util';
 import HoverTracker, { IdType } from './components/utility/HoverTracker';
 import TopEditingBar, { EditingBarProps } from './components/controls/TopEditingBar';
-import ResumeNodeTree from './components/utility/NodeTree';
+import ResumeNodeTree, { BasicResumeNode } from './components/utility/NodeTree';
 import CssNode from './components/utility/CssTree';
 import PureMenu, { PureMenuLink, PureMenuItem } from './components/controls/PureMenu';
 import { Button } from './components/controls/Buttons';
@@ -274,7 +274,7 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param idx  Index of the object
      * @param arr  Array of component data
      */
-    childMapper(elem: object, idx: number, arr: object[]) {
+    childMapper(elem: BasicResumeNode, idx: number, arr: object[]) {
         const uniqueId = elem['uuid'];
         const props = {
             ...elem,
@@ -374,7 +374,7 @@ class Resume extends React.Component<{}, ResumeState> {
      * Add an immediate child
      * @param node Node to be added
      */
-    addChild(node: object) {
+    addChild<T extends BasicResumeNode>(node: T) {
         this.nodes.addChild(assignIds(node));
         this.setState({ children: this.nodes.children });
     }
@@ -384,7 +384,7 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param id   Hierarchical id pointing to some node
      * @param node Node to be added
      */
-    addNestedChild(id: IdType, node: object) {
+    addNestedChild(id: IdType, node: BasicResumeNode) {
         this.nodes.addNestedChild(id, node);
         this.setState({ children: this.nodes.children });
     }
@@ -489,7 +489,7 @@ class Resume extends React.Component<{}, ResumeState> {
     //#region Serialization
     loadData(data: object) {
         let savedData = data as ResumeSaveData;
-        this.nodes.children = assignIds(savedData.children) as Array<object>;
+        this.nodes.children = assignIds(savedData.children);
 
         this.setState({
             children: this.nodes.children,

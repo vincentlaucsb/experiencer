@@ -49,15 +49,12 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     }
 
     updateCssProperties(data: Map<string, string>) {
-        console.log("Updating CSS from <CssEditor />", data);
         this.css.properties = data;
         this.props.updateParentData(this.css);
-
         this.setState({ css: this.css });
     }
 
     render() {
-        const sections = new Array<JSX.Element>();
         const cssProperties = this.props.root.properties;
         const Heading = this.heading;
 
@@ -73,7 +70,6 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
                 </Heading>
 
                 <MappedTextFields value={cssProperties} updateValue={(data) => {
-                    console.log("Updating data", data);
                     this.updateCssProperties(data);
                 }} />
 

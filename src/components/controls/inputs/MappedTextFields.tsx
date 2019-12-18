@@ -22,20 +22,13 @@ function ValueField(props: ValueFieldProps) {
     let [isEditing, setEditing] = React.useState(props.isEditing);
     let [initialMount, setInitialMount] = React.useState(false);
 
+    /** This field will automatically be in an editing state when it first mounts
+     *  if shouldFocus is true
+     */
     if (props.shouldFocus && !initialMount) {
         setEditing(true);
         setInitialMount(true);
     }
-
-    React.useEffect(() => {
-        // When the parent tells this to stop editing, then stop editing
-        if (!props.isEditing && isEditing) {
-            setEditing(false);
-        }
-
-        // Update parent
-        props.updateText(value);
-    }, [props.isEditing]);
 
     const onClick = (event: React.MouseEvent<HTMLSpanElement>) => {
         setEditing(true);
@@ -50,6 +43,18 @@ function ValueField(props: ValueFieldProps) {
             setEditing(false);
         }
     }
+
+    React.useEffect(() => {
+        // When the parent tells this to stop editing, then stop editing
+        if (!props.isEditing && isEditing) {
+            setEditing(false);
+        }
+
+        // Update parent
+        if (!initialMount) {
+            props.updateText(value);
+        }
+    }, [props.isEditing, isEditing]);
 
     if (isEditing) {
         return <input autoFocus={props.shouldFocus} onChange={(event) => updateValue(event.target.value)}
@@ -90,6 +95,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
             displayMap: new Map<string, string>(props.value),
         };
 
+        this.addNewKey = this.addNewKey.bind(this);
         this.updateText = this.updateText.bind(this);
         this.setEditing = this.setEditing.bind(this);
     }
@@ -111,12 +117,25 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
         );
     }
 
+    addNewKey(key: string) {
+        /** If an empty key is entered, assume this is because the user wants to stop editing */
+        if (key.length == 0) {
+            this.setEditing(false);
+            return;
+        }
+
+        this.updateText(key, '');
+        this.setState({
+            isAddingKey: false,
+            newKey: key
+        });
+    }
+
     updateText(key: string, value: string) {
         this.data.set(key, value);
         this.setState({ displayMap: this.data });
 
         // Update parent
-        console.log(this.data, this.state.displayMap);
         this.props.updateValue(this.data);
     };
 
@@ -126,7 +145,6 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
             isAddingKey = false;
 
             // Update parent
-            console.log(this.data, this.state.displayMap);
             this.props.updateValue(this.data);
         }
 
@@ -137,51 +155,38 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
     }
 
     render() {
-        const setDisplayMap = (data: Map<string, string>) => this.setState({ displayMap: data });
-        const addNewKey = (key: string) => {
-            this.updateText(key, '');
-            this.setState({
-                isAddingKey: false,
-                newKey: key
-            });
-        }
-
         let keyAdder = <></>
         if (this.state.isAddingKey && this.state.isEditing) {
-            keyAdder = <>
+            keyAdder = <li>
                 <ValueField
                     isEditing={this.state.isEditing}
                     toggleParentEdit={() => this.setState({ isEditing: true })}
-                    shouldFocus={true} updateText={addNewKey} /> <input disabled />
-            </>
+                    shouldFocus={true} updateText={this.addNewKey} /> <input disabled />
+            </li>
         }
 
         return <React.Fragment>
+            <ul>
             {Array.from(this.state.displayMap.entries()).map(([key, value]) => {
                 const shouldFocus = key === this.state.newKey;
 
-                return <React.Fragment key={key}>
+                return <li key={key}>
                     <div onKeyDown={(event) => {
-                            // When the user is done editing the value field, allow them
-                            // to add another field
-                            if (event.key === 'Enter') {
-                                this.setState({ isAddingKey: true });
-                        }
-                    }}>
-                        {key}
-                        <ValueField
-                            isEditing={this.state.isEditing}
-                            toggleParentEdit={() => this.setState({ isEditing: true })}
-                            updateText={this.updateText.bind(this, key)}
-                            value={value}
-                            shouldFocus={shouldFocus}
-                        />
+                        // When the user is done editing the value field, allow them
+                        // to add another field
+                        if (event.key === 'Enter') {
+                            this.setState({ isAddingKey: true });
+                    }}}>{key}: <ValueField
+                        isEditing={this.state.isEditing}
+                        toggleParentEdit={() => this.setState({ isEditing: true })}
+                        updateText={this.updateText.bind(this, key)}
+                        value={value}
+                        shouldFocus={shouldFocus} />
                     </div>
-                </React.Fragment>
-            }
-            )}
+                </li>})}
 
-            {keyAdder}
+                {keyAdder}
+            </ul>
 
             <div>
                 {this.editingButton}

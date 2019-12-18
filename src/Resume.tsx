@@ -582,6 +582,21 @@ class Resume extends React.Component<{}, ResumeState> {
 
     //#endregion
 
+    renderCssEditor() {
+        if (this.selectedNode) {
+            return <></>
+        }
+
+        return <CssEditor path={[]}
+            isPrinting={this.isPrinting}
+            root={this.css}
+            updateParentData={(css: CssNode) => {
+                this.css = css;
+                this.style2.innerHTML = this.css.stylesheet();
+            }}
+        />
+    }
+
     render() {
         // TODO: Make this moar better
         const Toolbar = (props: any) => {
@@ -656,16 +671,7 @@ class Resume extends React.Component<{}, ResumeState> {
                     topNav={editingTop}
                     main={resume}
                     isPrinting={this.isPrinting}
-                    sideBar={<CssEditor path={[]}
-                        isPrinting={this.isPrinting}
-                        root={this.css}
-                        updateParentData={(css: CssNode) => {
-                            this.css = css;
-                            this.style2.innerHTML = this.css.stylesheet();
-                            console.log("Updating CSS", this.css.stylesheet());
-                            // this.setState({ css: this.css });
-                        }}
-                    />}
+                    sideBar={this.renderCssEditor()}
             />
         }
     }

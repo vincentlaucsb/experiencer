@@ -10,7 +10,16 @@ export class Column extends ResumeNodeBase {
 
     get className(): string {
         let positionClsName = 'column-' + this.position;
-        return [positionClsName, 'resume-column', 'flex-col', super.className].join(' ');
+        return [positionClsName, 'resume-column', super.className].join(' ');
+    }
+
+    get style(): React.CSSProperties {
+        return {
+            display: 'flex',
+            flexDirection: 'column',
+            minWidth: "100px",
+            minHeight: "100px"
+        }
     }
 
     /** Returns a "handle" which can be used to select the column itself and not the columns it contains */
@@ -32,7 +41,7 @@ export class Column extends ResumeNodeBase {
             helperText = <span>Column {this.position}: Click to select and add content</span>
         }
 
-        return <div {...this.selectTriggerProps} className={this.className} style={{ minWidth: "100px", minHeight: "100px" }}>
+        return <div {...this.selectTriggerProps} className={this.className} style={this.style}>
             {this.renderGrabHandle()}
             {this.renderChildren()}
             {helperText}
@@ -46,23 +55,23 @@ interface RowProps extends ResumeNodeProps {
 
 export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> {
     get className(): string {
-        let classNames = ['resume-row', 'flex-row', super.className];
+        let classNames = ['resume-row', super.className];
         return classNames.join(' ');
     }
 
-    get childTypes() {
-        return 'Column';
-    }
-
-    get styles() : React.CSSProperties {
-        let properties = {
+    /** Return the style for the main div */
+    get style() : React.CSSProperties {
+        return {
+            ...ResumeNodeBase.flexRowStyle,
             width: "100%",
             minWidth: "100px",
             minHeight: "100px",
             justifyContent: this.props.justifyContent || 'space-between'
         }
+    }
 
-        return properties;
+    get childTypes() {
+        return 'Column';
     }
 
     get customToolbarOptions() {
@@ -124,7 +133,7 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
             id={this.props.id} isSelected={this.isSelected}
             toggleEdit={this.toggleEdit}
             isEditing={this.props.isEditing}
-        ><div className={this.className} style={this.styles} {...this.selectTriggerProps}>
+        ><div className={this.className} style={this.style} {...this.selectTriggerProps}>
             {this.renderGrabHandle()}
             {this.renderChildren()}
             </div>

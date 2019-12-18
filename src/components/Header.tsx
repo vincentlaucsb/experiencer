@@ -27,7 +27,7 @@ export default class Header extends Row<HeaderProps> {
             id={this.props.id} isSelected={this.isSelected}
             toggleEdit={this.toggleEdit}
             isEditing={this.props.isEditing}
-        ><header className={this.className} style={this.styles} {...this.selectTriggerProps}>
+        ><header className={this.className} style={this.style} {...this.selectTriggerProps}>
                 {this.renderGrabHandle()}
                 <h1>
                     {value}

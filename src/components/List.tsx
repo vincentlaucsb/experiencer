@@ -55,9 +55,9 @@ export class DescriptionList extends ResumeNodeBase {
             return <></>
         }
 
-        return <ul className={this.className} {...this.selectTriggerProps}>
+        return <dl className={this.className} {...this.selectTriggerProps}>
             {this.renderGrabHandle()}
             {this.renderChildren()}
-        </ul>
+        </dl>
     }
 }

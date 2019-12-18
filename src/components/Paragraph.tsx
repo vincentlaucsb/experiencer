@@ -1,46 +1,11 @@
 ﻿import * as React from "react";
 import ReactQuill from 'react-quill';
+
 import * as Helpers from "./Helpers";
-import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
+import ResumeNodeBase from "./ResumeNodeBase";
 import { IdType } from "./utility/HoverTracker";
 
-interface ParagraphProps extends ResumeNodeProps {
-    disableLineBreaks?: boolean;
-}
-
-export default class Paragraph extends ResumeNodeBase<ParagraphProps> {
-    constructor(props) {
-        super(props);
-
-        this.disableLineBreaks = this.disableLineBreaks.bind(this);
-    }
-
-    get isEditing() {
-        return this.props.isEditing && this.isSelected;
-    }
-
-    get className(): string {
-        let classNames = [super.className];
-        if (this.isSelected) {
-            classNames.push('flex-col');
-        }
-
-        if (this.props.disableLineBreaks) {
-            classNames.push('text-inline');
-        }
-
-        return classNames.join(' ');
-    }
-
-    get customMenuOptions() {
-        return [
-            {
-                text: 'Disable Line Breaks',
-                action: this.disableLineBreaks
-            }
-        ];
-    }
-
+export default class Paragraph extends ResumeNodeBase {
     static quillModules = {
         toolbar: [
             ['bold', 'italic', 'underline', 'strike'],
@@ -50,19 +15,7 @@ export default class Paragraph extends ResumeNodeBase<ParagraphProps> {
             ['clean']
         ],
     };
-
-    /**
-     * Perform helpful text processing
-     * @param text Text to be processed
-     */
-    static process(text?: string) {
-        return Helpers.process(text);
-    }
-
-    disableLineBreaks() {
-        this.updateData('disableLineBreaks', true);
-    }
-
+    
     get selectTriggerProps() {
         const baseProps = super.selectTriggerProps;
 
@@ -78,7 +31,7 @@ export default class Paragraph extends ResumeNodeBase<ParagraphProps> {
     }
 
     render(): JSX.Element {
-        const textValue = Paragraph.process(this.props.value) as string || "Empty text";
+        const textValue = Helpers.process(this.props.value) as string || "Empty text";
 
         let value = this.isEditing ? <ReactQuill
             modules={Paragraph.quillModules}

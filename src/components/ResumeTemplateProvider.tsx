@@ -5,49 +5,17 @@ import Entry from "./Entry";
 import Paragraph from "./Paragraph";
 
 export default class ResumeTemplateProvider {
-    static defaultCss = `
-#resume * {
+    static defaultCss = `#resume * {
     /* Set all margins to zero, and then re-set them later */
     margin: 0;
 }
 
-/** Headers **/
-#resume h2.flex-col {
-    /* Section with header on left */
-    padding-right: 0.5rem;
-    margin-right: 0.5rem;
-    width: 150px;
-}
-
-/** Lists **/
-#resume dd {
-    padding-left: 0.5rem;
-}
-
-/** Key Classes: Modify at your own risk **/
-#resume div.text-inline p {
-    /** Disabled line breaks */
-    display: inline;
-    margin-right: 1rem;
-}
-
-#resume .iflex-row {
-    display: inline-flex;
-}
-
-#resume .flex-row {
-    display: flex;
-}
-
-#resume .iflex-row, flex-row {
-    flex-direction: row;
-}
-
-#resume .flex-col {
-    display: flex;
-    flex-direction: column;
-}
-`;
+/** Sections with Header on Left **/
+section.header-left h2 {
+    width: 20%;
+    flex-shrink: 0;
+    flex-grow: 0;
+}`;
 
     static get header() {
         return {

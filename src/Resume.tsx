@@ -53,6 +53,13 @@ listCss.add(new CssNode('List Item', {
     'list-style-type': 'square' /** Default: circle */
 }, 'li'));
 
+let dlCss = defaultCss.add(new CssNode('Description Lists', {
+}, 'dl'));
+
+dlCss.add(new CssNode('Definitions', {
+    'padding-left': '0.5rem'
+}, 'dd'));
+
 let sectionCss = defaultCss.add(new CssNode('Sections', {
     'margin-bottom': '16px'
 }, 'section'));

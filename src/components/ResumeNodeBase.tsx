@@ -73,6 +73,13 @@ export default class ResumeNodeBase<P
         this.setSelected = this.setSelected.bind(this);
     }
 
+    static get flexRowStyle(): React.CSSProperties {
+        return {
+            display: 'flex',
+            flexDirection: 'row'
+        }
+    }
+
     /** Get the class name for the main container */
     get className(): string {
         let classes = new Array<string>();
@@ -121,6 +128,10 @@ export default class ResumeNodeBase<P
 
     get isHovering(): boolean {
         return this.props.isHovering(this.props.id) && !this.isPrinting;
+    }
+
+    get isEditing() {
+        return this.props.isEditing && this.isSelected;
     }
 
     /** Prevent component from being edited from the template changing screen */

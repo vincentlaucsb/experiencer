@@ -1,7 +1,5 @@
 ﻿import * as React from "react";
 import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
-import Placeholder from "./Placeholder";
-import { DescriptionList } from "./List";
 import ResumeTextField from "./controls/TextField";
 
 export type SectionHeaderPosition = "left" | "top";
@@ -19,11 +17,19 @@ export default class Section extends ResumeNodeBase<SectionProps> {
         this.rotateLeft = this.rotateLeft.bind(this);
         this.rotateRight = this.rotateRight.bind(this);
     }
-    
-    get childTypes() {
-        return ['Entry', 'Paragraph', 'Bulleted List',
-            DescriptionList.name
-        ];
+
+    get className() {
+        let classNames = [ super.className ];
+        if (this.props.headerPosition === 'left') {
+            classNames.push('header-left');
+        }
+        return classNames.join(' ');
+    }
+
+    get style() {
+        if (this.props.headerPosition === 'left') {
+            return ResumeNodeBase.flexRowStyle;
+        }
     }
 
     get customMenuOptions() {
@@ -45,17 +51,7 @@ export default class Section extends ResumeNodeBase<SectionProps> {
     rotateRight() {
         this.updateData('headerPosition', 'top');
     }
-
-    get sectionClassName(): string {
-        let classNames = [this.className];
-        classNames.push(this.props.headerPosition === 'left' ? 'flex-row' : '');
-        return classNames.join(' ');
-    }
-
-    get h2ClassName(): string {
-        return this.props.headerPosition === 'left' ? 'flex-col' : 'flex-row flex-spread';
-    }
-
+    
     render() {
         const title = <ResumeTextField
             onChange={this.updateData.bind(this, "title")}
@@ -71,10 +67,8 @@ export default class Section extends ResumeNodeBase<SectionProps> {
         }
 
         return <>
-            <section className={this.sectionClassName} {...this.selectTriggerProps}>
-                <h2 className={this.h2ClassName}>
-                    {title}
-                </h2>
+            <section className={this.className} style={this.style} {...this.selectTriggerProps}>
+                <h2>{title}</h2>
                 <div className="entry-content">
                     {this.renderChildren()}
                     {helperText}

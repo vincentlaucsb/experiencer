@@ -19,13 +19,15 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     // Temporary instance copy
     css: CssNode;
 
-    constructor(props) {
+    constructor(props: CssEditorProps) {
         super(props);
 
-        this.css = props.css;
+        this.css = props.root;
         this.state = {
             css: props.root
         };
+
+        this.updateCssProperties = this.updateCssProperties.bind(this);
     }
 
 
@@ -47,6 +49,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     }
 
     updateCssProperties(data: Map<string, string>) {
+        console.log("Updating CSS from <CssEditor />", data);
         this.css.properties = data;
         this.props.updateParentData(this.css);
 
@@ -56,8 +59,6 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     render() {
         const sections = new Array<JSX.Element>();
         const cssProperties = this.props.root.properties;
-
-        const root = this.props.root;
         const Heading = this.heading;
 
         if (this.props.isPrinting) {
@@ -71,9 +72,12 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
                     <span>({this.props.root.selector})</span>
                 </Heading>
 
-                <MappedTextFields value={cssProperties} updateValue={(data) => this.updateCssProperties(data)} />
+                <MappedTextFields value={cssProperties} updateValue={(data) => {
+                    console.log("Updating data", data);
+                    this.updateCssProperties(data);
+                }} />
 
-                {root.children.map(
+                {this.state.css.children.map(
                     (css, index) => {
                         const path = [...this.props.path, css.name];
                         return <CssEditor key={index} path={path} root={css}

@@ -32,6 +32,9 @@ function ValueField(props: ValueFieldProps) {
         if (!props.isEditing && isEditing) {
             setEditing(false);
         }
+
+        // Update parent
+        props.updateText(value);
     }, [props.isEditing]);
 
     const onClick = (event: React.MouseEvent<HTMLSpanElement>) => {
@@ -45,9 +48,6 @@ function ValueField(props: ValueFieldProps) {
     const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             setEditing(false);
-
-            // Update parent
-            props.updateText(value);
         }
     }
 
@@ -89,6 +89,9 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
             // Actual map that gets rendered
             displayMap: new Map<string, string>(props.value),
         };
+
+        this.updateText = this.updateText.bind(this);
+        this.setEditing = this.setEditing.bind(this);
     }
 
     get editingButton() {
@@ -98,7 +101,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
             return (
                 <>
                     <button onClick={() => setAddingKey(true)}>Add New Item</button>
-                    <button onClick={() => this.setState({ isEditing: false })}>Done Editing</button>
+                    <button onClick={() => this.setEditing(false)}>Done Editing</button>
                 </>
             )
         }
@@ -108,12 +111,22 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
         );
     }
 
+    updateText(key: string, value: string) {
+        this.data.set(key, value);
+        this.setState({ displayMap: this.data });
+
+        // Update parent
+        console.log(this.data, this.state.displayMap);
+        this.props.updateValue(this.data);
+    };
+
     setEditing(isEditing: boolean) {
         let isAddingKey = this.state.isAddingKey;
         if (isEditing === false) {
             isAddingKey = false;
 
             // Update parent
+            console.log(this.data, this.state.displayMap);
             this.props.updateValue(this.data);
         }
 
@@ -126,9 +139,8 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
     render() {
         const setDisplayMap = (data: Map<string, string>) => this.setState({ displayMap: data });
         const addNewKey = (key: string) => {
-            this.data.set(key, '');
+            this.updateText(key, '');
             this.setState({
-                displayMap: this.data,
                 isAddingKey: false,
                 newKey: key
             });
@@ -143,11 +155,6 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                     shouldFocus={true} updateText={addNewKey} /> <input disabled />
             </>
         }
-
-        const updateText = (key: string, value: string) => {
-            this.data.set(key, value);
-            setDisplayMap(this.data);
-        };
 
         return <React.Fragment>
             {Array.from(this.state.displayMap.entries()).map(([key, value]) => {
@@ -165,7 +172,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                         <ValueField
                             isEditing={this.state.isEditing}
                             toggleParentEdit={() => this.setState({ isEditing: true })}
-                            updateText={updateText.bind(this, key)}
+                            updateText={this.updateText.bind(this, key)}
                             value={value}
                             shouldFocus={shouldFocus}
                         />

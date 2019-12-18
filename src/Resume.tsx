@@ -662,6 +662,7 @@ class Resume extends React.Component<{}, ResumeState> {
                         updateParentData={(css: CssNode) => {
                             this.css = css;
                             this.style2.innerHTML = this.css.stylesheet();
+                            console.log("Updating CSS", this.css.stylesheet());
                             // this.setState({ css: this.css });
                         }}
                     />}

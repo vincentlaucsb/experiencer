@@ -18,7 +18,7 @@ export default class Header extends Row<HeaderProps> {
     }
     
     render() {
-        let value = this.props.isEditing ? <input onChange={this.updateDataEvent.bind(this, "value")}
+        let value = this.props.isEditing ? <input onChange={(event) => this.updateData("value", event.target.value)}
             value={this.props.value} type="text" /> : this.props.value || "Enter a title";
 
         return <ResumeWrapper

@@ -32,8 +32,6 @@ export interface ResumePassProps extends NodeActions {
     isHovering: (id: IdType) => boolean;
     isSelected: (id: string) => boolean;
     isSelectBlocked: (id: IdType) => boolean;
-    moveUp: ModifyChild;
-    moveDown: ModifyChild;
     updateData: (id: IdType, key: string, data: any) => void;
     updateSelected: (id?: IdType) => void;
     updateCustomOptions: (options: CustomToolbarOptions) => void;
@@ -67,7 +65,6 @@ export default class ResumeNodeBase<P
         
         this.addChild = this.addChild.bind(this);
         this.updateData = this.updateData.bind(this);
-        this.updateDataEvent = this.updateDataEvent.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
         this.toggleHidden = this.toggleHidden.bind(this);
         this.setSelected = this.setSelected.bind(this);
@@ -193,10 +190,6 @@ export default class ResumeNodeBase<P
         this.props.updateData(this.props.id, key, data);
     }
 
-    updateDataEvent(key: string, event: any) {
-        this.updateData(key, event.target.value);
-    }
-
     renderChildren() {
         const children = this.props.children as Array<object>;
         if (children) {
@@ -212,8 +205,6 @@ export default class ResumeNodeBase<P
                     isSelectBlocked: this.props.isSelectBlocked,
                     hoverOver: this.props.hoverOver,
                     hoverOut: this.props.hoverOut,
-                    moveDown: this.props.moveDown,
-                    moveUp: this.props.moveUp,
                     deleteChild: this.props.deleteChild,
                     toggleEdit: this.props.toggleEdit,
                     updateData: this.props.updateData,
@@ -239,9 +230,8 @@ export default class ResumeNodeBase<P
     }
 
     setSelected() {
-        // this.props.isSelectBlocked prevents a node from being selected if we are directly hovering
+        // !this.isSelectBlocked prevents a node from being selected if we are directly hovering
         // over one of its child nodes
-
         if (!this.isSelected && !this.isSelectBlocked) {
             // Pass this node's unselect back up to <Resume />
             this.props.updateSelected(this.props.id);

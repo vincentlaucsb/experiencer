@@ -1,5 +1,5 @@
 ﻿import uuid from 'uuid/v4';
-import { BasicResumeNode } from './utility/NodeTree';
+import { ResumeNode, BasicResumeNode } from './utility/NodeTree';
 
 /**
  * Return a copy of an array with the i-th element removed
@@ -71,21 +71,21 @@ export function arraysEqual<T>(left: Array<T>, right: Array<T>) {
  * Assign unique IDs to a node and its children, or an array of nodes by reference
  * @param nodeOrArray An object describing a node or an array of nodes
  */
-export function assignIds(nodeOrArray: BasicResumeNode) : BasicResumeNode;
-export function assignIds(nodeOrArray: Array<BasicResumeNode>) : Array<BasicResumeNode>;
+export function assignIds(nodeOrArray: BasicResumeNode): ResumeNode;
+export function assignIds(nodeOrArray: Array<BasicResumeNode>) : Array<ResumeNode>;
 export function assignIds(nodeOrArray: BasicResumeNode | Array<BasicResumeNode>) {
     if (nodeOrArray instanceof Array) {
         assignIdsToNodeArray(nodeOrArray);
-        return nodeOrArray as Array<BasicResumeNode>;
+        return nodeOrArray as Array<ResumeNode>;
     }
 
     nodeOrArray['uuid'] = uuid();
-    let children = nodeOrArray.children as Array<BasicResumeNode>;
+    let children = nodeOrArray.children as Array<ResumeNode>;
     if (children) {
         assignIdsToNodeArray(children);
     }
 
-    return nodeOrArray;
+    return nodeOrArray as ResumeNode;
 }
 
 /**

@@ -15,17 +15,25 @@ export interface BasicResumeNode {
     type: string;
 }
 
-export default class ResumeNodeTree implements BasicResumeNode {
-    children = new Array<BasicResumeNode>();
-    type = 'Resume';
+export interface ResumeNode extends BasicResumeNode {
+    children?: Array<ResumeNode>;
 
-    constructor(children = new Array<BasicResumeNode>()) {
+    // UUIDs are assigned by the app and need not be saved
+    uuid: string;
+}
+
+export default class ResumeNodeTree implements ResumeNode {
+    children = new Array<ResumeNode>();
+    type = 'Resume';
+    uuid = '';
+
+    constructor(children = new Array<ResumeNode>()) {
         this.children = children;
     }
 
     traverse(id: IdType) {
-        let targetNode: BasicResumeNode = this.children[id[0]],
-            parentNode: BasicResumeNode = this;
+        let targetNode: ResumeNode = this.children[id[0]],
+            parentNode: ResumeNode = this;
 
         for (let i = 1; i < id.length; i++) {
             if (i + 1 == id.length) {
@@ -57,7 +65,7 @@ export default class ResumeNodeTree implements BasicResumeNode {
      * Add an immediate child
      * @param node Node to be added
      */
-    addChild(node: BasicResumeNode) {
+    addChild(node: ResumeNode) {
         this.children.push(node);
     }
 
@@ -66,10 +74,10 @@ export default class ResumeNodeTree implements BasicResumeNode {
      * @param id   Hierarchical id pointing to some node
      * @param node Node to be added
      */
-    addNestedChild(id: IdType, node: BasicResumeNode) {
+    addNestedChild(id: IdType, node: ResumeNode) {
         let targetNode = this.getNodeById(id);
         if (!targetNode.children) {
-            targetNode.children = new Array<BasicResumeNode>();
+            targetNode.children = new Array<ResumeNode>();
         }
 
         targetNode.children.push(assignIds(deepCopy(node)));

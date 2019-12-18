@@ -8,7 +8,7 @@ import Paragraph from "./Paragraph";
 import Header from "./Header";
 import { ResumeNodeProps, ResumePassProps } from "./ResumeNodeBase";
 import { IdType } from "./utility/HoverTracker";
-import { BasicResumeNode } from "./utility/NodeTree";
+import { ResumeNode, BasicResumeNode } from "./utility/NodeTree";
 
 export type EditorMode = 'normal'
     | 'landing'

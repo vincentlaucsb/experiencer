@@ -19,7 +19,7 @@ import Help from './components/help/Help';
 import { isNullOrUndefined } from 'util';
 import HoverTracker, { IdType } from './components/utility/HoverTracker';
 import TopEditingBar, { EditingBarProps } from './components/controls/TopEditingBar';
-import ResumeNodeTree, { BasicResumeNode } from './components/utility/NodeTree';
+import ResumeNodeTree, { ResumeNode, BasicResumeNode } from './components/utility/NodeTree';
 import CssNode from './components/utility/CssTree';
 import PureMenu, { PureMenuLink, PureMenuItem } from './components/controls/PureMenu';
 import { Button } from './components/controls/Buttons';
@@ -274,7 +274,7 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param idx  Index of the object
      * @param arr  Array of component data
      */
-    childMapper(elem: BasicResumeNode, idx: number, arr: BasicResumeNode[]) {
+    childMapper(elem: ResumeNode, idx: number) {
         const uniqueId = elem['uuid'];
         const props = {
             ...elem,
@@ -383,7 +383,7 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param id   Hierarchical id pointing to some node
      * @param node Node to be added
      */
-    addNestedChild(id: IdType, node: BasicResumeNode) {
+    addNestedChild(id: IdType, node: ResumeNode) {
         this.nodes.addNestedChild(id, node);
         this.setState({ children: this.nodes.children });
     }

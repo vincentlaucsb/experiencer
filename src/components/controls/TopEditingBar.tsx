@@ -8,6 +8,7 @@ import { SelectedNodeActions } from "./SelectedNodeActions";
 import { ComponentTypes, NodeInformation } from "../ResumeComponent";
 import { DescriptionListItem, DescriptionList } from "../List";
 import CssIdAdder from "./CssIdAdder";
+import { assignIds } from "../Helpers";
 
 type AddOptions = Array<NodeInformation>;
 
@@ -37,7 +38,7 @@ export function AddOption(props: AddOptionProps) {
 
     const node: NodeInformation = nodeInfo(options as string);
     return (
-            <Button onClick={() => props.addChild(props.id, node.node)}>
+            <Button onClick={() => props.addChild(props.id, assignIds(node.node))}>
                 Add {options}
             </Button>
     );
@@ -59,7 +60,7 @@ export function AddMenu(props: AddMenuProps) {
     return (
         <PureDropdown content={button}>
             {props.options.map((opt) =>
-                <PureMenuItem key={opt.text} onClick={() => props.addChild(props.id, opt.node)}>
+                <PureMenuItem key={opt.text} onClick={() => props.addChild(props.id, assignIds(opt.node))}>
                     <PureMenuLink>
                         {opt.text}
                     </PureMenuLink>

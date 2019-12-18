@@ -2,10 +2,10 @@
 import { SectionHeaderPosition } from "../Section";
 import { IdType } from "../utility/HoverTracker";
 import { CustomToolbarOptions } from "../ResumeNodeBase";
-import { BasicResumeNode } from "../utility/NodeTree";
+import { BasicResumeNode, ResumeNode } from "../utility/NodeTree";
 
 export interface ResumeSaveData {
-    children: Array<BasicResumeNode>;
+    children: Array<ResumeNode>;
     css: string;
 }
 

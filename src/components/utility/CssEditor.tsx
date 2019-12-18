@@ -84,6 +84,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
                             updateParentData={
                                 (css: CssNode) => {
                                     this.css.children[index] = css;
+                                    this.props.updateParentData(this.css);
                                     this.setState({
                                         css: this.css
                                     });

@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
-import * as Helpers from "./Helpers";
 import ReactQuill from 'react-quill';
+import * as Helpers from "./Helpers";
 import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import { IdType } from "./utility/HoverTracker";
 

@@ -140,6 +140,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
         this.renderStyle();
 
+        this.print = this.print.bind(this);
         this.toggleMode = this.toggleMode.bind(this);
 
         /** Resume Nodes */
@@ -570,6 +571,14 @@ class Resume extends React.Component<{}, ResumeState> {
         }
     }
 
+    print() {
+        requestAnimationFrame(() => {
+            this.setState({ mode: 'printing' });
+            window.print();
+            this.setState({ mode: 'normal' });
+        });
+    }
+
     //#endregion
 
     render() {
@@ -593,15 +602,17 @@ class Resume extends React.Component<{}, ResumeState> {
         let main = resume;
         let sidebar: JSX.Element;
 
-        const topEditingBar = this.state.selectedNode ? <TopEditingBar {...this.editingBarProps as EditingBarProps} /> : <div id="toolbar">
+        const topEditingBar = this.state.selectedNode ? <TopEditingBar {...this.editingBarProps as EditingBarProps} /> : <div id="toolbar"
+            className="no-print">
             <Button><Octicon icon={Home} />Home</Button>
             <Button onClick={this.changeTemplate}>New</Button>
             <FileLoader loadData={this.loadData} />
             <FileSaver saveFile={this.saveFile} />
+            <Button onClick={this.print}>Print</Button>
         </div>
         
         const editingTop = <RenderIf render={!this.isPrinting}>
-            <header id="app-header">
+            <header id="app-header" className="no-print">
                 <TopNavBar {...this.toolbarProps} />
                 {topEditingBar}
             </header>
@@ -643,7 +654,8 @@ class Resume extends React.Component<{}, ResumeState> {
                 return <StaticSidebarLayout
                     topNav={editingTop}
                     main={resume}
-                    sideBar={<CssEditor path={[]} root={this.css} />}
+                    isPrinting={this.isPrinting}
+                    sideBar={<CssEditor path={[]} isPrinting={this.isPrinting} root={this.css} />}
             />
         }
     }

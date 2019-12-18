@@ -3,6 +3,7 @@ import React from "react";
 
 export interface CssEditorProps {
     /** Used for traversing the tree */
+    isPrinting?: boolean;
     path: Array<string>;
     root: CssNode;
 }
@@ -36,8 +37,12 @@ export default class CssEditor extends React.Component<CssEditorProps> {
         const root = this.props.root;
         const Heading = this.heading;
 
+        if (this.props.isPrinting) {
+            return <></>
+        }
+
         return (
-            <div>
+            <div className="no-print">
                 <Heading>
                     {this.props.root.name}
                     <span>({this.props.root.selector})</span>

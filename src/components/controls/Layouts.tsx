@@ -7,6 +7,7 @@ interface DefaultLayoutProps {
 }
 
 interface SidebarLayoutProps extends DefaultLayoutProps {
+    isPrinting?: boolean;
     sideBar: JSX.Element;
 }
 
@@ -18,6 +19,10 @@ export function DefaultLayout(props: DefaultLayoutProps) {
 }
 
 export function StaticSidebarLayout(props: SidebarLayoutProps) {
+    if (props.isPrinting) {
+        return <>{ props.main }</>
+    }
+
     return <React.Fragment>
         {props.topNav}
         <div className="pure-g">

@@ -11,7 +11,6 @@ export type UpdateChild = ((id: IdType, key: string, data: any) => void);
 
 export interface NodeActions {
     addChild?: AddChild;
-    deleteChild: ModifyChild;
     toggleEdit: ModifyChild;
 }
 
@@ -205,7 +204,6 @@ export default class ResumeNodeBase<P
                     isSelectBlocked: this.props.isSelectBlocked,
                     hoverOver: this.props.hoverOver,
                     hoverOut: this.props.hoverOut,
-                    deleteChild: this.props.deleteChild,
                     toggleEdit: this.props.toggleEdit,
                     updateData: this.props.updateData,
                     updateSelected: this.props.updateSelected,

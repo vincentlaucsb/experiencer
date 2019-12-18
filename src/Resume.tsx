@@ -283,9 +283,6 @@ class Resume extends React.Component<{}, ResumeState> {
             addChild: this.addNestedChild.bind(this),
 
             // TODO: Do we still need some of these????
-            moveUp: this.moveSelectedUp.bind(this),
-            moveDown: this.moveSelectedDown.bind(this),
-            deleteChild: this.deleteSelected.bind(this),
             toggleEdit: this.editSelected.bind(this),
             updateData: this.updateNestedChild,
             updateCustomOptions: this.updateCustomOptions.bind(this),

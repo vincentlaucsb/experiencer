@@ -1,5 +1,4 @@
 ﻿import * as React from "react";
-import * as Helpers from "./Helpers";
 import ResumeNodeBase, { ResumeNodeProps, Action } from "./ResumeNodeBase";
 import ResumeTextField from "./controls/TextField";
 import ResumeWrapper from "./ResumeWrapper";

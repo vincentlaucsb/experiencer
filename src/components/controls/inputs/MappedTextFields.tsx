@@ -41,6 +41,7 @@ function ValueField(props: ValueFieldProps) {
     const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             setEditing(false);
+            props.updateText(value);
         }
     }
 
@@ -118,12 +119,13 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
     }
 
     addNewKey(key: string) {
-        /** If an empty key is entered, assume this is because the user wants to stop editing */
+        /** If an empty key is entered, assume this is because the user wants to stop editing
         if (key.length == 0) {
             this.setEditing(false);
             return;
-        }
+        } */
 
+        console.log("Adding new key", key);
         this.updateText(key, '');
         this.setState({
             isAddingKey: false,

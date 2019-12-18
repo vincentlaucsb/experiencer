@@ -61,7 +61,7 @@ dlCss.add(new CssNode('Definitions', {
     'padding-left': '0.5rem'
 }, 'dd'));
 
-let sectionCss = defaultCss.add(new CssNode('Sections', {
+let sectionCss = defaultCss.add(new CssNode('Section', {
     'margin-bottom': '16px'
 }, 'section'));
 
@@ -75,36 +75,39 @@ sectionCss.add(new CssNode(
     }, '.entry-content'
 ));
 
-let sectionTitle = defaultCss.add(new CssNode('Section Titles', {
+sectionCss.add(new CssNode('Section Titles', {
     'font-family': 'Verdana, sans-serif',
     'font-weight': 'bold',
     'font-size': '15pt',
     'text-transform': 'uppercase'
 }, 'h2'));
 
-let entryCss = sectionCss.add(new CssNode('Entries',
+let entryCss = defaultCss.add(new CssNode('Entries',
     {
         'margin-bottom': '15px'
     }, '.entry'));
 
-let entryTitleCss = sectionCss.add(new CssNode('Entry Titles',
+let entryTitleCss = entryCss.add(new CssNode('Entry Titles',
     {
         'margin-bottom': '4px'
     }, '.entry-title'));
 
 let entryTitleHeadingCss = entryTitleCss.add(new CssNode('Entry Title Headings', {
     'font-size': '13pt',
-    'font-weight': 'bold'
-}, 'h3'));
+}, 'h3.title'));
 
-entryTitleHeadingCss.add(new CssNode('Title', {
+entryTitleHeadingCss.add(new CssNode('First Title Field', {
+    'font-weight': 'bold'
+}, '.field-0'));
+
+entryTitleHeadingCss.add(new CssNode('Other Title Fields', {
+    'font-weight': 'normal'
+}, ':not(.field-0)'));
+
+entryTitleHeadingCss.add(new CssNode('First Title Field (After)', {
     'content': "','",
     'padding-right': '0.33em'
-}, '.title-text::after'))
-
-entryTitleHeadingCss.add(new CssNode('Entry Title Headings ...', {
-   'font-weight': 'normal'
-}, '.extra-field'));
+}, '.field-0::after'))
 
 entryTitleCss.add(new CssNode('Entry Subtitles', {
     'font-family': 'Verdana, sans-serif',

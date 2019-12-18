@@ -87,48 +87,38 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         this.subtitle = this.subtitle.slice(0, this.subtitle.length - 1);
    }
 
-    // TODO: Refactor this
-    getExtras(key: string, updater: (idx: number, event: any) => void) {
-        const extraData = this.props[key];
-        if (extraData) {
-            return extraData.map((text, index) =>
-                <ResumeTextField
-                    displayClassName="extra-field"
+    getFields(key: 'title' | 'subtitle') {
+        const updater = (key: 'title' | 'subtitle', index: number, text: string) => {
+            this.updateExtras(key, index, text);
+        }
+
+        const fields = this.props[key];
+        if (fields) {
+            return fields.map((text, index, arr) => {
+                const isLast = index == arr.length - 1;
+                const className = (isLast ? `field-${index} field-last` : `field-${index}`);
+
+                return <ResumeTextField
+                    displayClassName={className}
                     key={index}
-                    onChange={updater.bind(this, index)}
+                    onChange={(data: string) => updater(key, index, data)}
                     value={text || ""}
                     label="Field"
                     defaultText="Enter a value"
                     {...this.textFieldProps}
                 />
-            );
+            });
         }
 
         return <></>
     }
 
-    getTitleExtras() {
-        return this.getExtras('title', this.updateTitleExtras);
-    }
-
-    getSubtitleExtras() {
-        return this.getExtras('subtitle', this.updateSubtitleExtras);
-    }
-
-    updateExtras(key: string, idx: number, text: string) {
+    updateExtras(key: 'title' | 'subtitle', idx: number, text: string) {
         let replTitle = this.props[key] || [];
 
         // Replace contents
         replTitle[idx] = text;
         this.updateData(key, replTitle);
-    }
-
-    updateTitleExtras(idx: number, text: string) {
-        this.updateExtras('title', idx, text);
-    }
-
-    updateSubtitleExtras(idx: number, text: string) {
-        this.updateExtras('subtitle', idx, text);
     }
     
     render() {
@@ -141,8 +131,8 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         >
             <div className={this.className} {...this.selectTriggerProps}>
             <div className="entry-title">
-                <h3 className="flex-row flex-spread">{this.getTitleExtras()}</h3>
-                <p className="flex-row flex-spread subtitle">{this.getSubtitleExtras()}</p>
+                <h3 className="title">{this.getFields('title')}</h3>
+                <p className="subtitle">{this.getFields('subtitle')}</p>
             </div>
 
             {this.renderChildren()}

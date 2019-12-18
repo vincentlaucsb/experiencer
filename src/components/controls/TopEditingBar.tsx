@@ -94,13 +94,13 @@ function ClipboardMenu(props: EditingBarProps) {
  * Subcomponent of TopEditingBar which returns the custom editing options for a node
  * @param props
  */
-export function CustomOptions(props: CustomToolbarOptions) {
+export function CustomOptions(props: { options: CustomToolbarOptions }) {
     const DropdownItem = (props: any) => <PureMenuItem onClick={props.onClick}>
         <PureMenuLink>{props.children}</PureMenuLink>
     </PureMenuItem>
 
     return <>
-        {props.map((item) => {
+        {props.options.map((item) => {
             if (item.action) {
                 return <Button onClick={item.action}>{item.text}</Button>
             }
@@ -123,7 +123,7 @@ export default function TopEditingBar(props: EditingBarProps) {
     </PureMenuItem>
 
     const id = props.id;
-    const additionalOptions = props.customOptions ? <CustomOptions {...props.customOptions} /> : <></>
+    const additionalOptions = props.customOptions ? <CustomOptions options={props.customOptions} /> : <></>
 
     // If we are selecting a child of a container type,
     // give the option of adding another child to the parent

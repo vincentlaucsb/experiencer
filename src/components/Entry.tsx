@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import ResumeNodeBase, { ResumeNodeProps, Action } from "./ResumeNodeBase";
+import ResumeNodeBase, { ResumeNodeProps, Action, CustomToolbarOptions } from "./ResumeNodeBase";
 import ResumeTextField from "./controls/TextField";
 import ResumeWrapper from "./ResumeWrapper";
 
@@ -26,7 +26,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         return classes.join(' ');
     }
 
-    get customMenuOptions() {
+    get customToolbarOptions() : CustomToolbarOptions {
         return [
             {
                 text: 'Title Options',
@@ -139,7 +139,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         />
 
         return <ResumeWrapper
-            customToolbar={this.customMenuOptions}
+            customToolbar={this.customToolbarOptions}
             updateToolbar={this.props.updateCustomOptions}
             id={this.props.id} isSelected={this.isSelected}
             toggleEdit={this.toggleEdit}

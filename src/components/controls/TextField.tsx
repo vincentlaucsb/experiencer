@@ -65,7 +65,6 @@ export default function ResumeTextField(props: ResumeTextFieldProps) {
     }
 
     let displayValue = props.value;
-    console.log(displayValue);
     if (props.value && props.value.length > 0) {
         displayValue = props.displayProcessor ? props.displayProcessor(props.value) : props.value;
     }

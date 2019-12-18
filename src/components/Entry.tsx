@@ -2,13 +2,16 @@
 import ResumeNodeBase, { ResumeNodeProps, Action, CustomToolbarOptions } from "./ResumeNodeBase";
 import ResumeTextField from "./controls/TextField";
 import ResumeWrapper from "./ResumeWrapper";
+import { pushArray } from "./Helpers";
+import { BasicResumeNode, ResumeNode } from "./utility/NodeTree";
 
-export interface EntryProps extends ResumeNodeProps {
-    title?: string;
-    titleExtras?: string[];
-    subtitle?: string;
-    subtitleExtras?: string[];
+interface EntryBase {
+    title?: string[];
+    subtitle?: string[];
 }
+
+export interface BasicEntryProps extends BasicResumeNode, EntryBase { };
+interface EntryProps extends ResumeNodeProps, EntryBase { };
 
 export default class Entry extends ResumeNodeBase<EntryProps> {
     constructor(props) {
@@ -52,30 +55,39 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         ];
     }
 
+    get title() {
+        return this.props.title || [];
+    }
+
+    set title(data: Array<string>) {
+        this.updateData('title', data);
+    }
+
+    get subtitle() {
+        return this.props.subtitle || [];
+    }
+
+    set subtitle(data: Array<string>) {
+        this.updateData('subtitle', data);
+    }
+
     addTitleField() {
-        let replTitle = this.props.titleExtras || [];
-        replTitle.push("");
-        this.updateData('titleExtras', replTitle);
+        this.title = pushArray(this.title, "");
     }
 
     addSubtitleField() {
-        let replTitle = this.props.subtitleExtras || [];
-        replTitle.push("");
-        this.updateData('subtitleExtras', replTitle);
+        this.subtitle = pushArray(this.subtitle, "");
     }
 
     removeTitleField() {
-        let replTitle = this.props.titleExtras || [];
-        replTitle = replTitle.slice(0, replTitle.length - 1);
-        this.updateData('titleExtras', replTitle);
+        this.title = this.title.slice(0, this.title.length - 1);
     }
 
    removeSubtitleField() {
-        let replTitle = this.props.subtitleExtras || [];
-        replTitle = replTitle.slice(0, replTitle.length - 1);
-        this.updateData('subtitleExtras', replTitle);
+        this.subtitle = this.subtitle.slice(0, this.subtitle.length - 1);
    }
 
+    // TODO: Refactor this
     getExtras(key: string, updater: (idx: number, event: any) => void) {
         const extraData = this.props[key];
         if (extraData) {
@@ -85,7 +97,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
                     key={index}
                     onChange={updater.bind(this, index)}
                     value={text || ""}
-                    label="Extra Field"
+                    label="Field"
                     defaultText="Enter a value"
                     {...this.textFieldProps}
                 />
@@ -96,11 +108,11 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
     }
 
     getTitleExtras() {
-        return this.getExtras('titleExtras', this.updateTitleExtras);
+        return this.getExtras('title', this.updateTitleExtras);
     }
 
     getSubtitleExtras() {
-        return this.getExtras('subtitleExtras', this.updateSubtitleExtras);
+        return this.getExtras('subtitle', this.updateSubtitleExtras);
     }
 
     updateExtras(key: string, idx: number, text: string) {
@@ -112,32 +124,14 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
     }
 
     updateTitleExtras(idx: number, text: string) {
-        this.updateExtras('titleExtras', idx, text);
+        this.updateExtras('title', idx, text);
     }
 
     updateSubtitleExtras(idx: number, text: string) {
-        this.updateExtras('subtitleExtras', idx, text);
+        this.updateExtras('subtitle', idx, text);
     }
     
     render() {
-        const title = <ResumeTextField 
-            displayClassName="title-text"
-            onChange={this.updateData.bind(this, "title")}
-            value={this.props.title}
-            label="Title"
-            defaultText="Enter a title"
-            {...this.textFieldProps}
-        />
-
-        const subtitle = <ResumeTextField
-            displayClassName="subtitle-text"
-            onChange={this.updateData.bind(this, "subtitle")}
-            value={this.props.subtitle}
-            label="Subitle"
-            defaultText="Enter a subtitle"
-            {...this.textFieldProps}
-        />
-
         return <ResumeWrapper
             customToolbar={this.customToolbarOptions}
             updateToolbar={this.props.updateCustomOptions}
@@ -147,8 +141,8 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         >
             <div className={this.className} {...this.selectTriggerProps}>
             <div className="entry-title">
-                <h3 className="flex-row flex-spread">{title} {this.getTitleExtras()}</h3>
-                <p className="flex-row flex-spread subtitle">{subtitle} {this.getSubtitleExtras()}</p>
+                <h3 className="flex-row flex-spread">{this.getTitleExtras()}</h3>
+                <p className="flex-row flex-spread subtitle">{this.getSubtitleExtras()}</p>
             </div>
 
             {this.renderChildren()}

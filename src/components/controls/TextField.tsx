@@ -64,8 +64,15 @@ export default function ResumeTextField(props: ResumeTextFieldProps) {
         </>
     }
 
-    const displayValue = props.displayProcessor ? props.displayProcessor(props.value) : props.value;
+    let displayValue = props.value;
+    console.log(displayValue);
+    if (props.value && props.value.length > 0) {
+        displayValue = props.displayProcessor ? props.displayProcessor(props.value) : props.value;
+    }
+    else {
+        displayValue = "Enter a value";
+    }
     
     return <span className={props.displayClassName} onClick={props.onClick}
-    >{displayValue || props.defaultText || "Enter a value"}</span>
+    >{displayValue}</span>
 }

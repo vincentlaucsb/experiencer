@@ -1,7 +1,7 @@
 ﻿import * as React from "react";
 
 import Section, { SectionProps } from "./Section";
-import Entry, { EntryProps } from "./Entry";
+import Entry, { BasicEntryProps } from "./Entry";
 import { DescriptionList, DescriptionListItem } from "./List";
 import Paragraph from "./Paragraph";
 import Header from "./Header";
@@ -51,7 +51,7 @@ export default function ResumeComponent(props: ResumeComponentProps) {
         case Section.name:
             return <Section {...newProps as SectionProps} />;
         case Entry.name:
-            return <Entry {...newProps as EntryProps} />;
+            return <Entry {...newProps} />;
         case Paragraph.name:
             return <Paragraph {...newProps} />;
         default:
@@ -136,8 +136,10 @@ export class ComponentTypes {
                 return {
                     text: 'Entry',
                     node: {
-                        type: Entry.name
-                    }
+                        type: Entry.name,
+                        title: [''],
+                        subtitle: ['']
+                    } as BasicEntryProps
                 }
             case Paragraph.name:
                 return {

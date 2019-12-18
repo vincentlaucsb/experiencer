@@ -1,8 +1,9 @@
-﻿import Section, { SectionHeaderPosition } from "./Section";
+﻿import Section, { SectionHeaderPosition, BasicSectionProps } from "./Section";
 import { assignIds } from "./Helpers";
 import Header from "./Header";
-import Entry from "./Entry";
+import Entry, { BasicEntryProps } from "./Entry";
 import Paragraph from "./Paragraph";
+import { BasicResumeNode } from "./utility/NodeTree";
 
 export default class ResumeTemplateProvider {
     static defaultCss = `#resume * {
@@ -40,7 +41,7 @@ section.header-left h2 {
                     value: 'To conquer the world.'
                 }
             ]
-        };
+        } as BasicSectionProps;
     }
 
     static get experience() {
@@ -50,30 +51,26 @@ section.header-left h2 {
             children: [
                 {
                     type: Entry.name,
-                    title: 'Another Company',
-                    titleExtras: ['2019 -- Present'],
-                    subtitle: 'Senior Software Engineer',
-                    subtitleExtras: ['Sometown, USA'],
+                    title: ['Another Company', '2019 -- Present'],
+                    subtitle: ['Senior Software Engineer', 'Sometown, USA'],
                     children: [
                         this.makeList([
                             'Increased productivity by conducting telepathic SCRUM meetings'
                         ])
                     ]
-                },
+                } as BasicEntryProps,
                 {
                     type: Entry.name,
-                    title: 'Some Company',
-                    titleExtras: ['2014 -- 2016'],
-                    subtitle: 'Software Engineer',
-                    subtitleExtras: ['Big City, USA'],
+                    title: [ 'Some Company', '2014 -- 2016'],
+                    subtitle: ['Software Engineer', 'Big City, USA'],
                     children: [
                         this.makeList([
                             'Did things with code while looking at a computer monitor'
                         ])
                     ]
-                }
+                } as BasicEntryProps
             ]
-        }
+        } as BasicSectionProps
     };
 
     static get techSkills() {
@@ -83,7 +80,7 @@ section.header-left h2 {
             children: [
                 this.makeList([ 'C++', 'Web Development', 'Agile/SCRUM' ])
             ]
-        }
+        } as BasicSectionProps
     };
 
     static get education() {
@@ -93,19 +90,18 @@ section.header-left h2 {
             children: [
                 {
                     type: Entry.name,
-                    title: 'Some College',
-                    titleExtras: ['2010 -- 2014'],
-                    subtitle: 'BS in Some Major'
-                }
+                    title: ['Some College', '2010 -- 2014'],
+                    subtitle: ['BS in Some Major']
+                } as BasicEntryProps
             ]
-        };
+        } as BasicSectionProps;
     }
 
     /**
      * Construct a bulleted list
      * @param items A list of items
      */
-    static makeList(items: Array<string>) {
+    static makeList(items: Array<string>): BasicResumeNode {
         let value = "";
         items.forEach((i) => {
             value += `<li>${i}</li>`

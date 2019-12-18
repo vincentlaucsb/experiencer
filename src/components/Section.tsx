@@ -1,13 +1,17 @@
 ﻿import * as React from "react";
 import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import ResumeTextField from "./controls/TextField";
+import { BasicResumeNode } from "./utility/NodeTree";
 
 export type SectionHeaderPosition = "left" | "top";
 
-export interface SectionProps extends ResumeNodeProps {
+interface SectionBase {
     title: string;
     headerPosition?: SectionHeaderPosition;
 }
+
+export interface BasicSectionProps extends BasicResumeNode, SectionBase { }
+export interface SectionProps extends ResumeNodeProps, SectionBase { }
 
 /** Represents a section in a resume */
 export default class Section extends ResumeNodeBase<SectionProps> {

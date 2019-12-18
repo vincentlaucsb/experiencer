@@ -67,6 +67,11 @@ export function arraysEqual<T>(left: Array<T>, right: Array<T>) {
     return true;
 }
 
+export function pushArray<T>(arr: Array<T>, data: T) {
+    arr.push(data);
+    return arr;
+}
+
 /**
  * Assign unique IDs to a node and its children, or an array of nodes by reference
  * @param nodeOrArray An object describing a node or an array of nodes

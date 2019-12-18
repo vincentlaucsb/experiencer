@@ -30,6 +30,7 @@ import FileLoader from './components/controls/FileLoader';
 import FileSaver from './components/controls/FileSaver';
 import { SelectedNodeActions } from './components/controls/SelectedNodeActions';
 import CssEditor from './components/utility/CssEditor';
+import MappedTextFields from './components/controls/inputs/MappedTextFields';
 
 let defaultCss = new CssNode('Basics', {
     'font-family': 'Georgia, serif',
@@ -592,8 +593,11 @@ class Resume extends React.Component<{}, ResumeState> {
             <Button onClick={this.addColumn}>Add Multi-Column Row</Button>
         </Toolbar> : <></>
 
+        const test = <MappedTextFields />
+
         const resume = <div id="resume" className={this.resumeClassName}>
             <ResumeHotKeys {...this.resumeHotKeysProps} />
+            {test}
             {this.state.children.map(this.childMapper)}
 
             {resumeToolbar}

@@ -279,7 +279,6 @@ class Resume extends React.Component<{}, ResumeState> {
         const props = {
             ...elem,
             mode: this.state.mode,
-            addChild: this.addNestedChild.bind(this),
             toggleEdit: this.editSelected.bind(this),
             updateData: this.updateNestedChild,
             updateCustomOptions: this.updateCustomOptions.bind(this),

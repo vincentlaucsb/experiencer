@@ -13,7 +13,6 @@ export type AddChild = ((id: IdType, node: ResumeNode) => void);
  *  from the top down
  * */
 export interface ResumePassProps extends ResumeNode {
-    addChild?: AddChild;
     mode: EditorMode;
     hoverOver: (id: IdType) => void;
     hoverOut: (id: IdType) => void;
@@ -46,7 +45,6 @@ export default class ResumeNodeBase<P
     constructor(props: P) {
         super(props);
         
-        this.addChild = this.addChild.bind(this);
         this.updateData = this.updateData.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
         this.toggleHidden = this.toggleHidden.bind(this);
@@ -162,12 +160,6 @@ export default class ResumeNodeBase<P
     toggleEdit() {
         this.props.toggleEdit(this.props.id);
     }
-
-    addChild(node: ResumeNode) {
-        if (this.props.addChild as AddChild) {
-            (this.props.addChild as AddChild)(this.props.id, node);
-        }
-    }
     
     updateData(key: string, data: string | boolean | object | Array<any>) {
         this.props.updateData(this.props.id, key, data);
@@ -181,7 +173,6 @@ export default class ResumeNodeBase<P
                 const props = {
                     ...elem,
                     mode: this.props.mode,
-                    addChild: this.props.addChild,
                     isHovering: this.props.isHovering,
                     isSelected: this.props.isSelected,
                     isSelectBlocked: this.props.isSelectBlocked,

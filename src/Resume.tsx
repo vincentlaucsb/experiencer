@@ -487,6 +487,10 @@ class Resume extends React.Component<{}, ResumeState> {
             mode: 'normal'
         });
 
+        // Load built-in CSS
+        this.css = CssNode.load(savedData.builtinCss);
+        this.style2.innerHTML = this.css.stylesheet();
+
         // Actually load custom CSS
         this.renderStyle();
     }
@@ -495,6 +499,7 @@ class Resume extends React.Component<{}, ResumeState> {
     saveFile(filename: string) {
         const data: ResumeSaveData = {
             children: this.state.children,
+            builtinCss: this.css.dump(),
             css: this.state.css
         };
 

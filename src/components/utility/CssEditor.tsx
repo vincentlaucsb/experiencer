@@ -79,6 +79,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
                         return <CssEditor key={index} path={path} root={css}
                             updateParentData={
                                 (css: CssNode) => {
+                                    // TODO: Is the following operation safe?
                                     this.css.children[index] = css;
                                     this.props.updateParentData(this.css);
                                     this.setState({

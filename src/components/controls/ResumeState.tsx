@@ -3,13 +3,17 @@ import { SectionHeaderPosition } from "../Section";
 import { IdType } from "../utility/HoverTracker";
 import { CustomToolbarOptions } from "../ResumeNodeBase";
 import { BasicResumeNode, ResumeNode } from "../utility/NodeTree";
+import { CssNodeDump } from "../utility/CssTree";
 
 export interface ResumeSaveData {
+    builtinCss: CssNodeDump;
     children: Array<ResumeNode>;
     css: string;
 }
 
-export default interface ResumeState extends ResumeSaveData {
+export default interface ResumeState {
+    children: Array<ResumeNode>;
+    css: string;
     mode: EditorMode;
     sectionTitlePosition: SectionHeaderPosition;
 

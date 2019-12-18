@@ -19,7 +19,6 @@ export type EditorMode = 'normal'
 
 interface ResumeComponentProps extends ResumePassProps {
     index: number;       // The n-th index of this node relative to its parent
-    numChildren: number; // How many total siblings this node has plus itself
     parentId?: IdType;   // The id of the parent node
 }
 
@@ -34,9 +33,7 @@ export default function ResumeComponent(props: ResumeComponentProps) {
         ...props,
 
         // Generate unique IDs for component
-        id: parentId ? [...parentId, index] : [index],
-        isFirst: (index === 0),
-        isLast: (index === props.numChildren - 1)
+        id: parentId ? [...parentId, index] : [index]
     } as ResumeNodeProps;
     
     switch (props.type) {
@@ -45,10 +42,8 @@ export default function ResumeComponent(props: ResumeComponentProps) {
         case DescriptionListItem.name:
             return <DescriptionListItem {...newProps} />;
         case Column.name:
-        case 'FlexibleColumn':
             return <Column {...newProps} />;
         case Row.name:
-        case 'FlexibleRow':
             return <Row {...newProps} />;
         case Header.name:
             return <Header {...newProps} />

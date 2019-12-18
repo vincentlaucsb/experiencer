@@ -288,8 +288,7 @@ class Resume extends React.Component<{}, ResumeState> {
             updateCustomOptions: this.updateCustomOptions.bind(this),
             ...this.hoverProps,
 
-            index: idx,
-            numChildren: arr.length
+            index: idx
         };
 
         return <ResumeComponent key={uniqueId} {...props} />

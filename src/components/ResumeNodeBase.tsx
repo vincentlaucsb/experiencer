@@ -38,8 +38,6 @@ export interface ResumePassProps extends BasicResumeNode, NodeActions {
 }
 
 export interface ResumeNodeProps extends BasicNodeProps, ResumePassProps {
-    isFirst: boolean;
-    isLast: boolean;
     isHidden?: boolean;
     isEditing?: boolean
 }

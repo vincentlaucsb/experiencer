@@ -163,6 +163,7 @@ class Resume extends React.Component<{}, ResumeState> {
         this.deleteSelected = this.deleteSelected.bind(this);
         this.moveSelectedUp = this.moveSelectedUp.bind(this);
         this.moveSelectedDown = this.moveSelectedDown.bind(this);
+        this.updateSelected = this.updateSelected.bind(this);
 
         /** Cut & Paste */
         this.copyClipboard = this.copyClipboard.bind(this);
@@ -273,6 +274,8 @@ class Resume extends React.Component<{}, ResumeState> {
             uuid: uniqueId,
             mode: this.state.mode,
             addChild: this.addNestedChild.bind(this),
+
+            // TODO: Do we still need some of these????
             moveUp: this.moveSelectedUp.bind(this),
             moveDown: this.moveSelectedDown.bind(this),
             deleteChild: this.deleteSelected.bind(this),
@@ -395,9 +398,17 @@ class Resume extends React.Component<{}, ResumeState> {
     }
     }
 
+    // TODO: Do we still need this???
     updateNestedChild(id: IdType, key: string, data: any) {
         this.nodes.updateChild(id, key, data);
         this.setState({ children: this.nodes.children });
+    }
+
+    updateSelected(key: string, data: any) {
+        const id = this.state.selectedNode as IdType;
+        if (id) {
+            this.nodes.updateChild(id, key, data);
+        } this.setState({ children: this.nodes.children });
     }
 
     editSelected() {
@@ -536,6 +547,7 @@ class Resume extends React.Component<{}, ResumeState> {
             ...this.selectedNodeActions,
             customOptions: this.state.selectedNodeCustomOptions,
             id: this.state.selectedNode,
+            cssId: this.selectedNode? (this.selectedNode['cssId'] || '') : '',
 
             // TODO: Fix this type cast
             type: this.selectedNode ? this.selectedNode['type'] : '',
@@ -543,7 +555,8 @@ class Resume extends React.Component<{}, ResumeState> {
             toggleEdit: this.editSelected,
             moveUpEnabled: this.moveSelectedUpEnabled,
             moveDownEnabled: this.moveSelectedDownEnabled,
-            unselect: this.unselect
+            unselect: this.unselect,
+            updateSelected: this.updateSelected
         }
     }
 

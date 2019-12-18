@@ -7,6 +7,7 @@ import ResumeHotKeys from "./ResumeHotkeys";
 import { SelectedNodeActions } from "./SelectedNodeActions";
 import { ComponentTypes, NodeInformation } from "../ResumeComponent";
 import { DescriptionListItem, DescriptionList } from "../List";
+import CssIdAdder from "./CssIdAdder";
 
 type AddOptions = Array<NodeInformation>;
 
@@ -70,11 +71,13 @@ export function AddMenu(props: AddMenuProps) {
 
 export interface EditingBarProps extends SelectedNodeActions {
     id: IdType;
+    cssId: string;
     type: string;
     addChild: AddChild;
     toggleEdit: ModifyChild;
     moveUpEnabled: boolean;
     moveDownEnabled: boolean;
+    updateSelected: (key: string, data: any) => void;
 
     customOptions?: CustomToolbarOptions;
 }
@@ -161,6 +164,7 @@ export default function TopEditingBar(props: EditingBarProps) {
                 <Item onClick={() => props.moveDown()}
                     disabled={!props.moveDownEnabled}
                 >Move Down</Item>
+                <CssIdAdder cssId={props.cssId} updateData={props.updateSelected} />
                 {additionalOptions}
             </PureMenu>
         </div>

@@ -86,7 +86,7 @@ export default class Paragraph extends ResumeNodeBase<ParagraphProps> {
             onChange={((this.props.updateData as (id: IdType, key: string, data: any) => void).bind(this, this.props.id, "value") as (data: any) => void)}
         /> : <span className="resume-paragraph" dangerouslySetInnerHTML={{ __html: textValue }} />;
 
-        return <div className={this.className} {...this.selectTriggerProps}>
+        return <div className={this.className} id={this.props.cssId} {...this.selectTriggerProps}>
             {value}
         </div>;
     }

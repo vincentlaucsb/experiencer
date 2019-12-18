@@ -45,6 +45,7 @@ export interface ResumeNodeProps extends BasicNodeProps, ResumePassProps {
 
     // TODO: Might wanna rename this property
     children?: Array<object>;
+    cssId?: string;
     isHidden?: boolean;
     isEditing?: boolean
     value?: string;

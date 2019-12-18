@@ -8,27 +8,47 @@ export interface CssNodeDump {
 
 export default class CssNode {
     /** A mapping of keys to CSS properties */
-    children: Array<CssNode>;
-    name: string;
-    selector: string;
-    properties: Map<string, string>;
+    private _children: Array<CssNode>;
+    private _name: string;
+    private _selector: string;
+    private _properties: Map<string, string>;
 
     constructor(name: string, properties: object, selector?: string) {
-        this.name = name;
-        this.children = new Array<CssNode>();
-        this.properties = new Map<string, string>();
+        this._name = name;
+        this._children = new Array<CssNode>();
+        this._properties = new Map<string, string>();
 
         for (let k in properties) {
-            this.properties.set(k, properties[k]);
+            this._properties.set(k, properties[k]);
         }
 
-        this.selector = selector || "";
+        this._selector = selector || "";
+    }
+
+    get name() {
+        return this._name;
+    }
+
+    get selector() {
+        return this._selector;
+    }
+
+    get children() {
+        return this._children;
+    }
+
+    get properties() {
+        return this._properties;
+    }
+
+    set properties(data: Map<string, string>) {
+        this._properties = data;
     }
 
     static load(data: CssNodeDump): CssNode {
         let node = new CssNode(data.name, {}, data.selector);
         node.properties = new Map<string, string>(data.properties);
-        node.children = data.children.map((elem) => CssNode.load(elem));
+        node._children = data.children.map((elem) => CssNode.load(elem));
         return node;
     }
 

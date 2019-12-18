@@ -274,7 +274,7 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param idx  Index of the object
      * @param arr  Array of component data
      */
-    childMapper(elem: BasicResumeNode, idx: number, arr: object[]) {
+    childMapper(elem: BasicResumeNode, idx: number, arr: BasicResumeNode[]) {
         const uniqueId = elem['uuid'];
         const props = {
             ...elem,

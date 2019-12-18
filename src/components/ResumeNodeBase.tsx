@@ -23,7 +23,7 @@ export interface BasicNodeProps extends NodeActions {
 /** Represents resume prop properties and methods passed
  *  from the top down
  * */
-export interface ResumePassProps extends NodeActions {
+export interface ResumePassProps extends BasicResumeNode, NodeActions {
     uuid: string;
     mode: EditorMode;
 
@@ -40,13 +40,8 @@ export interface ResumePassProps extends NodeActions {
 export interface ResumeNodeProps extends BasicNodeProps, ResumePassProps {
     isFirst: boolean;
     isLast: boolean;
-
-    // TODO: Might wanna rename this property
-    children?: Array<object>;
-    cssId?: string;
     isHidden?: boolean;
     isEditing?: boolean
-    value?: string;
 }
 
 export interface ToolbarOption {
@@ -191,9 +186,9 @@ export default class ResumeNodeBase<P
     }
 
     renderChildren() {
-        const children = this.props.children as Array<object>;
+        const children = this.props.children as Array<BasicResumeNode>;
         if (children) {
-            return children.map((elem: object, idx: number, arr: object[]) => {
+            return children.map((elem: BasicResumeNode, idx: number, arr: BasicResumeNode[]) => {
                 const uniqueId = elem['uuid'];
                 const props = {
                     ...elem,

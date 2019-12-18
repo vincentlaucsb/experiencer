@@ -1,6 +1,5 @@
 ﻿import { IdType } from "./HoverTracker";
 import { assignIds, deleteAt, moveUp, moveDown, deepCopy } from "../Helpers";
-import { BasicNodeProps } from "../ResumeNodeBase";
 
 /** The properties a node can be expected to have
  *  in a JSON representation
@@ -9,6 +8,7 @@ import { BasicNodeProps } from "../ResumeNodeBase";
  * */
 export interface BasicResumeNode {
     children?: Array<BasicResumeNode>;
+    cssId?: string;
     value?: string;
 
     // TODO: Change to 'Row' | 'Column' | etc. ?

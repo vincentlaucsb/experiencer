@@ -39,7 +39,7 @@ export default function ResumeComponent(props: ResumeComponentProps) {
         isLast: (index === props.numChildren - 1)
     } as ResumeNodeProps;
     
-    switch (props['type']) {
+    switch (props.type) {
         case DescriptionList.name:
             return <DescriptionList {...newProps} />;
         case DescriptionListItem.name:

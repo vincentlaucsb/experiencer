@@ -141,6 +141,7 @@ class Resume extends React.Component<{}, ResumeState> {
         this.hovering = new HoverTracker();
         this.nodes = new ResumeNodeTree();
         this.state = {
+            builtinCss: this.css,
             children: [],
             css: "",
             mode: "landing",
@@ -601,7 +602,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
         return <CssEditor path={[]}
             isPrinting={this.isPrinting}
-            root={this.css}
+            root={this.state.builtinCss}
             updateParentData={(css: CssNode) => {
                 this.css = css;
                 this.style2.innerHTML = this.css.stylesheet();

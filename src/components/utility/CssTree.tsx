@@ -1,4 +1,12 @@
-﻿export default class CssNode {
+﻿/** Return a JSON serializable format of a CssNode and its descendents */
+export interface CssNodeDump {
+    children: Array<CssNodeDump>;
+    name: string;
+    selector: string;
+    properties: Array<[string, string]>;
+}
+
+export default class CssNode {
     /** A mapping of keys to CSS properties */
     children: Array<CssNode>;
     name: string;
@@ -15,6 +23,22 @@
         }
 
         this.selector = selector || "";
+    }
+
+    static load(data: CssNodeDump): CssNode {
+        let node = new CssNode(data.name, {}, data.selector);
+        node.properties = new Map<string, string>(data.properties);
+        node.children = data.children.map((elem) => CssNode.load(elem));
+        return node;
+    }
+
+    dump() : CssNodeDump {
+        return {
+            children: this.children.map((elem) => elem.dump()),
+            name: this.name,
+            selector: this.name,
+            properties: Array.from(this.properties.entries())
+        }
     }
 
     /** Return a CSS stylesheet */

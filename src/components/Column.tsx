@@ -13,12 +13,20 @@ export default class Column extends ResumeNodeBase {
     }
 
     get style(): React.CSSProperties {
-        return {
+        let properties: React.CSSProperties = {
             display: 'flex',
             flexDirection: 'column',
-            minWidth: "100px",
-            minHeight: "100px"
+        };
+
+        if (!(this.props.children && this.props.children.length > 0)) {
+            properties = {
+                ...properties,
+                minWidth: "100px",
+                minHeight: "100px"
+            };
         }
+
+        return properties;
     }
 
     /** Returns a "handle" which can be used to select the column itself and not the columns it contains */

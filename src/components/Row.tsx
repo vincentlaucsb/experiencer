@@ -1,6 +1,8 @@
 ﻿import * as React from "react";
 import ResumeNodeBase, { ToolbarOption, ResumeNodeProps } from "./ResumeNodeBase";
 import ResumeWrapper from "./ResumeWrapper";
+import { ResumeNode } from "./utility/NodeTree";
+import Column from "./Column";
 
 interface RowProps extends ResumeNodeProps {
     justifyContent?: string;
@@ -12,15 +14,44 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
         return classNames.join(' ');
     }
 
+    /** Returns true if ALL columns are empty */
+    get hasEmptyColumns(): boolean {
+        const children = this.props.children as Array<ResumeNode>;
+        if (children) {
+            for (let node of children) {
+                if (node.type === Column.name) {
+                    if (node.children && node.children.length > 0) {
+                        return false;
+                    }
+                }
+                else {
+                    // Also return false if we have some child which is not a column
+                    // Note: Happens for <Header />
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     /** Return the style for the main div */
     get style() : React.CSSProperties {
-        return {
+        let properties = {
             ...ResumeNodeBase.flexRowStyle,
             width: "100%",
-            minWidth: "100px",
-            minHeight: "100px",
             justifyContent: this.props.justifyContent || 'space-between'
         }
+
+        if (this.hasEmptyColumns) {
+            properties = {
+                ...properties,
+                minWidth: "100px",
+                minHeight: "100px"
+            }
+        }
+
+        return properties;
     }
     
     get customToolbarOptions() {
@@ -31,28 +62,28 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
                     {
                         text: 'Space between',
                         action: () => this.justifyContent('space-between')
-                    } as ToolbarOption,
+                    },
                     {
                         text: 'Stack at beginning',
                         action: () => this.justifyContent('flex-start')
-                    } as ToolbarOption,
+                    },
                     {
                         text: 'Stack at end',
                         action: () => this.justifyContent('flex-end')
-                    } as ToolbarOption,
+                    },
                     {
                         text: 'Stack center',
                         action: () => this.justifyContent('center')
-                    } as ToolbarOption,
+                    },
                     {
                         text: 'Space around',
                         action: () => this.justifyContent('space-around')
-                    } as ToolbarOption,
+                    },
                     {
                         text: 'Space evenly',
                         action: () => this.justifyContent('space-evenly')
-                    } as ToolbarOption
-                ]
+                    }
+                ] as Array<ToolbarOption>
             }
         ];
     }

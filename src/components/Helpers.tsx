@@ -92,16 +92,16 @@ export function assignIds(nodeOrArray: BasicResumeNode | Array<BasicResumeNode>)
  * Assign unique IDs to an array of nodes by reference
  * @param children An array of nodes
  */
-function assignIdsToNodeArray(children: Array<object>) {
+function assignIdsToNodeArray(children: Array<BasicResumeNode>) {
     // Assign unique IDs to all children
     let workQueue = [ children ];
     while(workQueue.length) {
-        let nextItem = workQueue.pop() as Array<object>;
+        let nextItem = workQueue.pop() as Array<BasicResumeNode>;
         nextItem.forEach((elem) => {
             elem['uuid'] = uuid();
 
-            if (elem['children']) {
-                workQueue.push(elem['children']);
+            if (elem.children) {
+                workQueue.push(elem.children);
             }
         });
     }

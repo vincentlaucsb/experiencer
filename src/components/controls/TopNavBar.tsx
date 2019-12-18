@@ -40,11 +40,6 @@ function getButtonProps(onClick?: any) {
     return props;
 }
 
-interface ButtonProps {
-    children?: any;
-    onClick?: any;
-}
-
 /** The top nav bar for the resume editor */
 export default function TopNavBar(props: TopNavBarProps) {
     const isEditingStyle = props.mode === 'editingStyle';

@@ -3,41 +3,31 @@ import { EditorMode } from "./ResumeComponent";
 import { process } from "./Helpers";
 import { IdType } from "./utility/HoverTracker";
 import ResumeComponent from "./ResumeComponent";
-import { ResumeNode, BasicResumeNode } from "./utility/NodeTree";
+import { ResumeNode } from "./utility/NodeTree";
 
 export type Action = (() => void);
 export type ModifyChild = (id: IdType) => void;
 export type AddChild = ((id: IdType, node: ResumeNode) => void);
-export type UpdateChild = ((id: IdType, key: string, data: any) => void);
-
-export interface NodeActions {
-    addChild?: AddChild;
-    toggleEdit: ModifyChild;
-}
-
-export interface BasicNodeProps extends NodeActions {
-    id: IdType;   // Hierarchical ID based on the node's position in the resume; subject to change
-    uuid: string; // Unique ID that never changes
-}
 
 /** Represents resume prop properties and methods passed
  *  from the top down
  * */
-export interface ResumePassProps extends ResumeNode, NodeActions {
-    uuid: string;
+export interface ResumePassProps extends ResumeNode {
+    addChild?: AddChild;
     mode: EditorMode;
-
     hoverOver: (id: IdType) => void;
     hoverOut: (id: IdType) => void;
     isHovering: (id: IdType) => boolean;
     isSelected: (id: string) => boolean;
     isSelectBlocked: (id: IdType) => boolean;
+    toggleEdit: ModifyChild;
     updateData: (id: IdType, key: string, data: any) => void;
     updateSelected: (id?: IdType) => void;
     updateCustomOptions: (options: CustomToolbarOptions) => void;
 }
 
-export interface ResumeNodeProps extends BasicNodeProps, ResumePassProps {
+export interface ResumeNodeProps extends ResumePassProps {
+    id: IdType;   // Hierarchical ID based on the node's position in the resume; subject to change
     isHidden?: boolean;
     isEditing?: boolean
 }
@@ -187,10 +177,9 @@ export default class ResumeNodeBase<P
         const children = this.props.children as Array<ResumeNode>;
         if (children) {
             return children.map((elem: ResumeNode, idx: number, arr: ResumeNode[]) => {
-                const uniqueId = elem['uuid'];
+                const uniqueId = elem.uuid;
                 const props = {
                     ...elem,
-                    uuid: uniqueId,
                     mode: this.props.mode,
                     addChild: this.props.addChild,
                     isHovering: this.props.isHovering,

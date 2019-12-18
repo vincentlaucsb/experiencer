@@ -275,14 +275,11 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param arr  Array of component data
      */
     childMapper(elem: ResumeNode, idx: number) {
-        const uniqueId = elem['uuid'];
+        const uniqueId = elem.uuid;
         const props = {
             ...elem,
-            uuid: uniqueId,
             mode: this.state.mode,
             addChild: this.addNestedChild.bind(this),
-
-            // TODO: Do we still need some of these????
             toggleEdit: this.editSelected.bind(this),
             updateData: this.updateNestedChild,
             updateCustomOptions: this.updateCustomOptions.bind(this),

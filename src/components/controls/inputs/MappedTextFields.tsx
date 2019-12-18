@@ -65,13 +65,20 @@ function ValueField(props: ValueFieldProps) {
     );
 }
 
-export default class MappedTextFields extends React.Component<{}, MappedTextFieldsState> {
+export interface MappedTextFieldsProps {
+    value: Map<string, string>;
+    updateValue: (value: Map<string, string>) => void;
+}
+
+export default class MappedTextFields extends React.Component<MappedTextFieldsProps, MappedTextFieldsState> {
     // Temporary holding buffer that gets modified by reference
     // for efficiency
-    data = new Map<string, string>();
+    data: Map<string, string>;
 
     constructor(props) {
         super(props);
+
+        this.data = props.value;
 
         this.state = {
             isAddingKey: false,
@@ -80,7 +87,7 @@ export default class MappedTextFields extends React.Component<{}, MappedTextFiel
             newKey: "",
 
             // Actual map that gets rendered
-            displayMap: new Map<string, string>(),
+            displayMap: new Map<string, string>(props.value),
         };
     }
 
@@ -105,6 +112,9 @@ export default class MappedTextFields extends React.Component<{}, MappedTextFiel
         let isAddingKey = this.state.isAddingKey;
         if (isEditing === false) {
             isAddingKey = false;
+
+            // Update parent
+            this.props.updateValue(this.data);
         }
 
         this.setState({

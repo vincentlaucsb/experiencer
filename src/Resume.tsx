@@ -593,11 +593,8 @@ class Resume extends React.Component<{}, ResumeState> {
             <Button onClick={this.addColumn}>Add Multi-Column Row</Button>
         </Toolbar> : <></>
 
-        const test = <MappedTextFields />
-
         const resume = <div id="resume" className={this.resumeClassName}>
             <ResumeHotKeys {...this.resumeHotKeysProps} />
-            {test}
             {this.state.children.map(this.childMapper)}
 
             {resumeToolbar}
@@ -659,7 +656,15 @@ class Resume extends React.Component<{}, ResumeState> {
                     topNav={editingTop}
                     main={resume}
                     isPrinting={this.isPrinting}
-                    sideBar={<CssEditor path={[]} isPrinting={this.isPrinting} root={this.css} />}
+                    sideBar={<CssEditor path={[]}
+                        isPrinting={this.isPrinting}
+                        root={this.css}
+                        updateParentData={(css: CssNode) => {
+                            this.css = css;
+                            this.style2.innerHTML = this.css.stylesheet();
+                            // this.setState({ css: this.css });
+                        }}
+                    />}
             />
         }
     }

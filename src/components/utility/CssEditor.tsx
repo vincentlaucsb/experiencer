@@ -1,14 +1,34 @@
 ﻿import CssNode from "./CssTree";
 import React from "react";
+import MappedTextFields from "../controls/inputs/MappedTextFields";
 
 export interface CssEditorProps {
     /** Used for traversing the tree */
     isPrinting?: boolean;
     path: Array<string>;
     root: CssNode;
+
+    updateParentData: (css: CssNode) => void;
 }
 
-export default class CssEditor extends React.Component<CssEditorProps> {
+interface CssEditorState {
+    css: CssNode;
+}
+
+export default class CssEditor extends React.Component<CssEditorProps, CssEditorState> {
+    // Temporary instance copy
+    css: CssNode;
+
+    constructor(props) {
+        super(props);
+
+        this.css = props.css;
+        this.state = {
+            css: props.root
+        };
+    }
+
+
     get heading() {
         switch (this.props.path.length) {
             case 0:
@@ -26,13 +46,16 @@ export default class CssEditor extends React.Component<CssEditorProps> {
         }
     }
 
+    updateCssProperties(data: Map<string, string>) {
+        this.css.properties = data;
+        this.props.updateParentData(this.css);
+
+        this.setState({ css: this.css });
+    }
+
     render() {
         const sections = new Array<JSX.Element>();
         const cssProperties = this.props.root.properties;
-
-        cssProperties.forEach((value, key) => {
-            sections.push(<li>{key}: {value}</li>);
-        })
 
         const root = this.props.root;
         const Heading = this.heading;
@@ -48,14 +71,22 @@ export default class CssEditor extends React.Component<CssEditorProps> {
                     <span>({this.props.root.selector})</span>
                 </Heading>
 
-                <ul>
-                    {sections.map((value) => <>{value}</>)}
-                </ul>
+                <MappedTextFields value={cssProperties} updateValue={(data) => this.updateCssProperties(data)} />
 
                 {root.children.map(
-                    (css) => {
+                    (css, index) => {
                         const path = [...this.props.path, css.name];
-                        return <CssEditor path={path} root={css} />
+                        return <CssEditor key={index} path={path} root={css}
+                            updateParentData={
+                                (css: CssNode) => {
+                                    this.css.children[index] = css;
+                                    this.setState({
+                                        css: this.css
+                                    });
+                                }
+                            }
+
+                        />
                     }
                 )}
             </div>

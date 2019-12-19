@@ -8,7 +8,7 @@ import './scss/index.scss';
 import ResumeComponent, { EditorMode, ComponentTypes } from './components/ResumeComponent';
 import { assignIds, deepCopy, arraysEqual } from './components/Helpers';
 import { Action, CustomToolbarOptions } from './components/ResumeNodeBase';
-import ResumeTemplateProvider from './components/ResumeTemplateProvider';
+import ResumeTemplateProvider from './components/templates/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
 import Landing from './components/help/Landing';
 import TopNavBar from './components/controls/TopNavBar';
@@ -23,7 +23,7 @@ import ResumeNodeTree, { ResumeNode, BasicResumeNode } from './components/utilit
 import CssNode from './components/utility/CssTree';
 import PureMenu, { PureMenuLink, PureMenuItem } from './components/controls/PureMenu';
 import { Button } from './components/controls/Buttons';
-import Octicon, { DesktopDownload, Home } from "@primer/octicons-react";
+import Octicon, { Home } from "@primer/octicons-react";
 import { RenderIf } from './components/controls/HelperComponents';
 import FileLoader from './components/controls/FileLoader';
 import FileSaver from './components/controls/FileSaver';
@@ -31,93 +31,7 @@ import { SelectedNodeActions } from './components/controls/SelectedNodeActions';
 import CssEditor from './components/utility/CssEditor';
 import Row from './components/Row';
 import Section from './components/Section';
-
-let defaultCss = new CssNode('Resume CSS', {
-    'padding': '0.5in',
-    'font-family': 'Georgia, serif',
-    'font-size': '10pt'
-}, '#resume');
-
-defaultCss.add(new CssNode('Links', {
-    'color': '#000000'
-}, 'a, a:hover'));
-
-let headerCss = defaultCss.add(new CssNode('Header', {
-    'margin-bottom': '16px'
-}, 'header'));
-
-let listCss = defaultCss.add(new CssNode('Lists', {
-    'padding-left': '1.5em' /** Reduced padding */
-}, 'ul'));
-
-listCss.add(new CssNode('List Item', {
-    'list-style-type': 'square' /** Default: circle */
-}, 'li'));
-
-let dlCss = defaultCss.add(new CssNode('Description Lists', {
-}, 'dl'));
-
-dlCss.add(new CssNode('Definitions', {
-    'padding-left': '0.5rem'
-}, 'dd'));
-
-let sectionCss = defaultCss.add(new CssNode('Section', {
-    'margin-bottom': '16px'
-}, 'section'));
-
-sectionCss.add(new CssNode(
-    'Section Contents', {
-        'margin-top': '8px',
-        'margin-left': '8px',
-        'padding-left': '16px',
-        'padding-right': '8px',
-        'border-left': '3px dotted #dddddd',
-    }, '.entry-content'
-));
-
-sectionCss.add(new CssNode('Section Titles', {
-    'font-family': 'Verdana, sans-serif',
-    'font-weight': 'bold',
-    'font-size': '15pt',
-    'text-transform': 'uppercase'
-}, 'h2'));
-
-let entryCss = defaultCss.add(new CssNode('Entries',
-    {
-        'margin-bottom': '15px'
-    }, '.entry'));
-
-let entryTitleCss = entryCss.add(new CssNode('Entry Titles',
-    {
-        'margin-bottom': '4px'
-    }, '.entry-title'));
-
-let entryTitleHeadingCss = entryTitleCss.add(new CssNode('Entry Title Headings', {
-    'font-size': '13pt',
-}, 'h3.title'));
-
-entryTitleHeadingCss.add(new CssNode('First Title Field', {
-    'font-weight': 'bold'
-}, '.field-0'));
-
-entryTitleHeadingCss.add(new CssNode('Other Title Fields', {
-    'font-weight': 'normal'
-}, ':not(.field-0)'));
-
-entryTitleHeadingCss.add(new CssNode('First Title Field (After)', {
-    'content': "','",
-    'padding-right': '0.33em'
-}, '.field-0::after'))
-
-let subtitleCss = entryTitleCss.add(new CssNode('Entry Subtitles', {
-    'font-family': 'Verdana, sans-serif',
-}, '.subtitle'));
-
-subtitleCss.add(new CssNode('Other Subtitle Fields', {
-    'margin-left': '1em'
-}, '.field:not(.field-0)'));
-
-// console.log(defaultCss.stylesheet());
+import getDefaultCss from './components/templates/CssTemplates';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering: HoverTracker;
@@ -140,7 +54,7 @@ class Resume extends React.Component<{}, ResumeState> {
         this.style.innerHTML = "";
         head.appendChild(this.style);
 
-        this.css = defaultCss;
+        this.css = getDefaultCss();
         this.style2 = document.createElement("style");
         this.style2.innerHTML = this.css.stylesheet();
         head.appendChild(this.style2);

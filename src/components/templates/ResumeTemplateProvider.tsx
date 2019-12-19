@@ -1,9 +1,9 @@
-﻿import Section, { SectionHeaderPosition, BasicSectionProps } from "./Section";
-import { assignIds } from "./Helpers";
-import Header from "./Header";
-import Entry, { BasicEntryProps } from "./Entry";
-import Paragraph from "./Paragraph";
-import { BasicResumeNode } from "./utility/NodeTree";
+﻿import Section, { SectionHeaderPosition, BasicSectionProps } from "../Section";
+import { assignIds } from "../Helpers";
+import Header from "../Header";
+import Entry, { BasicEntryProps } from "../Entry";
+import Paragraph from "../Paragraph";
+import { BasicResumeNode } from "../utility/NodeTree";
 
 export default class ResumeTemplateProvider {
     static defaultCss = `#resume * {

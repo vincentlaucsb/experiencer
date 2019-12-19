@@ -18,3 +18,7 @@ section.css-category {
     // font-family: monospace;
     margin-bottom: 1em;
 }
+
+#resume .resume-highlighted {
+    background: darken($light-shade, 0.25);
+}

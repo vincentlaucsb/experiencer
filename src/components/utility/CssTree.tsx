@@ -62,8 +62,7 @@ export default class CssNode {
     }
 
     /** Return a CSS stylesheet */
-    stylesheet(selector?: string) {
-        let newSelector = selector ? `${selector} ${this.selector}` : this.selector;
+    stylesheet() {
         let cssProperties = "";
         if (this.properties.size > 0) {
             for (let [property, entry] of this.properties.entries()) {
@@ -71,13 +70,13 @@ export default class CssNode {
             }
         }
 
-        const thisCss = this.properties.size > 0 ? `${newSelector} {
+        const thisCss = this.properties.size > 0 ? `${this.selector} {
     ${cssProperties}
 }` : ``;
 
         let childStylesheets = "";
         for (let cssTree of this.children.values()) {
-            childStylesheets += cssTree.stylesheet(newSelector);
+            childStylesheets += cssTree.stylesheet();
         }
 
         return `${thisCss}
@@ -90,6 +89,7 @@ ${childStylesheets}`
      * @param css
      */
     add(css: CssNode): CssNode {
+        css._selector = `${this.selector} ${css._selector}`
         this.children.push(css);
         return this.children[this.children.length - 1];
     }

@@ -29,11 +29,10 @@ import FileLoader from './components/controls/FileLoader';
 import FileSaver from './components/controls/FileSaver';
 import { SelectedNodeActions } from './components/controls/SelectedNodeActions';
 import CssEditor from './components/utility/CssEditor';
-import MappedTextFields from './components/controls/inputs/MappedTextFields';
 import Row from './components/Row';
 import Section from './components/Section';
 
-let defaultCss = new CssNode('Basics', {
+let defaultCss = new CssNode('Resume CSS', {
     'padding': '0.5in',
     'font-family': 'Georgia, serif',
     'font-size': '10pt'
@@ -609,7 +608,6 @@ class Resume extends React.Component<{}, ResumeState> {
             return <></>
         }
                 
-        console.log(this.state.builtinCss);
         return <CssEditor path={[]}
             isPrinting={this.isPrinting}
             root={this.state.builtinCss}

@@ -1,6 +1,7 @@
 ﻿import CssNode from "./CssTree";
 import React from "react";
 import MappedTextFields from "../controls/inputs/MappedTextFields";
+import Collapse from "../controls/Collapse";
 
 export interface CssEditorProps {
     /** Used for traversing the tree */
@@ -33,17 +34,15 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     get heading() {
         switch (this.props.path.length) {
             case 0:
-                return (props: any) => <h2>{props.children}</h2>
+                return (props: any) => <h2 {...props} />
             case 1:
-                return (props: any) => <h3>{props.children}</h3>
+                return (props: any) => <h3 {...props} />
             case 2:
-                return (props: any) => <h4>{props.children}</h4>
+                return (props: any) => <h4 {...props} />
             case 3:
-                return (props: any) => <h4>{props.children}</h4>
-            case 4:
-                return (props: any) => <h5>{props.children}</h5>
+                return (props: any) => <h5 {...props} />
             default:
-                return (props: any) => <h6>{props.children}</h6>
+                return (props: any) => <h6 {...props} />
         }
     }
 
@@ -51,6 +50,21 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         this.css.properties = data;
         this.props.updateParentData(this.css);
         this.setState({ css: this.css });
+    }
+
+    /** Highlight all DOM nodes matching the current selector */
+    toggleHighlight(highlight = true) {
+        const hits = document.querySelectorAll(this.props.root.selector);
+
+        if (highlight) {
+            hits.forEach((node: Element) => {
+                node.classList.add('resume-highlighted');
+            });
+        } else {
+            hits.forEach((node: Element) => {
+                node.classList.remove('resume-highlighted');
+            })
+        }
     }
 
     render() {
@@ -61,35 +75,37 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
             return <></>
         }
 
+        const trigger = <Heading onMouseOver={() => this.toggleHighlight()} onMouseOut={() => this.toggleHighlight(false)}>
+            {this.props.root.name} <span>({this.props.root.selector})</span>
+        </Heading>
+
+        const isOpen = (this.props.path.length != 1);
+
         return (
             <section className="css-category no-print">
-                <Heading>
-                    {this.props.root.name}
-                    <span>({this.props.root.selector})</span>
-                </Heading>
+                <Collapse trigger={trigger} isOpen={isOpen}>
+                    <MappedTextFields value={cssProperties} updateValue={(data) => {
+                        this.updateCssProperties(data);
+                    }} />
 
-                <MappedTextFields value={cssProperties} updateValue={(data) => {
-                    this.updateCssProperties(data);
-                }} />
-
-                {this.state.css.children.map(
-                    (css, index) => {
-                        const path = [...this.props.path, css.name];
-                        return <CssEditor key={index} path={path} root={css}
-                            updateParentData={
-                                (css: CssNode) => {
-                                    // TODO: Is the following operation safe?
-                                    this.css.children[index] = css;
-                                    this.props.updateParentData(this.css);
-                                    this.setState({
-                                        css: this.css
-                                    });
+                    {this.state.css.children.map(
+                        (css, index) => {
+                            const path = [...this.props.path, css.name];
+                            return <CssEditor key={index} path={path} root={css}
+                                updateParentData={
+                                    (css: CssNode) => {
+                                        // TODO: Is the following operation safe?
+                                        this.css.children[index] = css;
+                                        this.props.updateParentData(this.css);
+                                        this.setState({
+                                            css: this.css
+                                        });
+                                    }
                                 }
-                            }
 
-                        />
-                    }
-                )}
+                            />
+                        })}
+                </Collapse>
             </section>
         );
     }

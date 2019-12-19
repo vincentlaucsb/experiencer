@@ -321,7 +321,7 @@ class Resume extends React.Component<{}, ResumeState> {
         this.setState({ children: this.nodes.children });
     }
 
-    updateSelected(key: string, data: any) {
+    updateSelected(key: string, data: string | string[]) {
         const id = this.state.selectedNode as IdType;
         if (id) {
             this.nodes.updateChild(id, key, data);
@@ -468,6 +468,9 @@ class Resume extends React.Component<{}, ResumeState> {
     get editingBarProps() {
         return {
             ...this.selectedNodeActions,
+            node: this.selectedNode,
+            updateNode: this.updateSelected,
+
             customOptions: this.state.selectedNodeCustomOptions,
             id: this.state.selectedNode,
             cssId: this.selectedNode? (this.selectedNode['cssId'] || '') : '',

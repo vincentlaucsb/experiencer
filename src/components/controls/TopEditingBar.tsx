@@ -9,6 +9,8 @@ import { ComponentTypes, NodeInformation } from "../ResumeComponent";
 import { DescriptionListItem, DescriptionList } from "../List";
 import CssIdAdder from "./CssIdAdder";
 import { assignIds } from "../Helpers";
+import { ResumeNode } from "../utility/NodeTree";
+import ToolbarOptions from "./ToolbarOptions";
 
 type AddOptions = Array<NodeInformation>;
 
@@ -49,6 +51,9 @@ function AddOption(props: AddOptionProps) {
 
 export interface EditingBarProps extends SelectedNodeActions {
     id: IdType;
+    node: ResumeNode,
+    updateNode: (key: string, value: string | string[]) => void;
+
     cssId: string;
     type: string;
     addChild: AddChild;
@@ -56,8 +61,6 @@ export interface EditingBarProps extends SelectedNodeActions {
     moveUpEnabled: boolean;
     moveDownEnabled: boolean;
     updateSelected: (key: string, data: any) => void;
-
-    customOptions?: CustomToolbarOptions;
 }
 
 function ClipboardMenu(props: EditingBarProps) {
@@ -123,8 +126,8 @@ export default function TopEditingBar(props: EditingBarProps) {
     </PureMenuItem>
 
     const id = props.id;
-    const additionalOptions = props.customOptions ? <CustomOptions options={props.customOptions} /> : <></>
-
+    const customOptions = ToolbarOptions(props.type, props.node, props.updateNode);
+    
     // If we are selecting a child of a container type,
     // give the option of adding another child to the parent
     const childTypes = ComponentTypes.childTypes(props.type);
@@ -151,7 +154,7 @@ export default function TopEditingBar(props: EditingBarProps) {
                     disabled={!props.moveDownEnabled}
                 >Move Down</Item>
                 <CssIdAdder cssId={props.cssId} updateData={props.updateSelected} />
-                {additionalOptions}
+                <CustomOptions options={customOptions} />
             </PureMenu>
         </div>
         <div>

@@ -11,7 +11,7 @@ interface EntryBase {
 }
 
 export interface BasicEntryProps extends BasicResumeNode, EntryBase { };
-interface EntryProps extends ResumeNodeProps, EntryBase { };
+export interface EntryProps extends ResumeNodeProps, EntryBase { };
 
 export default class Entry extends ResumeNodeBase<EntryProps> {
     constructor(props) {

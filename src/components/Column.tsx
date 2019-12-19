@@ -1,7 +1,11 @@
-﻿import ResumeNodeBase from "./ResumeNodeBase";
+﻿import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import React from "react";
 
-export default class Column extends ResumeNodeBase {
+interface ColumnProps extends ResumeNodeProps {
+    evenColumns?: boolean;
+}
+
+export default class Column extends ResumeNodeBase<ColumnProps> {
     /** Get the index of this column */
     get position(): number {
         return this.props.id[this.props.id.length - 1];
@@ -23,6 +27,10 @@ export default class Column extends ResumeNodeBase {
             display: 'flex',
             flexDirection: 'column',
         };
+
+        if (this.props.evenColumns) {
+            properties.flexBasis = '100%';
+        }
 
         if (!(this.props.children && this.props.children.length > 0)) {
             properties = {

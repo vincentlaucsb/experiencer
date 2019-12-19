@@ -5,6 +5,7 @@ import { ResumeNode } from "./utility/NodeTree";
 import Column from "./Column";
 
 interface RowProps extends ResumeNodeProps {
+    evenColumns?: boolean;
     justifyContent?: string;
 }
 
@@ -53,9 +54,30 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
 
         return properties;
     }
+
+    get additionalProps() {
+        if (this.props.evenColumns) {
+            return {
+                evenColumns: this.props.evenColumns
+            }
+        }
+
+        return {};
+    }
     
     get customToolbarOptions() {
+        let columnDistribution = {
+            text: 'Distribute Columns Evenly',
+            action: () => this.updateData('evenColumns', !(this.props.evenColumns || false))
+        };
+
+        if (this.props.evenColumns) {
+            console.log("Distribute columns automatically");
+            columnDistribution.text = 'Distribute Columns Automatically';
+        }
+
         return [
+            columnDistribution,
             {
                 text: 'Justify Content',
                 actions: [
@@ -113,7 +135,7 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
             id={this.props.id} isSelected={this.isSelected}
             toggleEdit={this.toggleEdit}
             isEditing={this.props.isEditing}
-        ><div className={this.className} style={this.style} {...this.selectTriggerProps}>
+        ><div className={this.className} id={this.props.cssId} style={this.style} {...this.selectTriggerProps}>
             {this.renderGrabHandle()}
             {this.renderChildren()}
             </div>

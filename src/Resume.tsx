@@ -34,6 +34,7 @@ import Row from './components/Row';
 import Section from './components/Section';
 
 let defaultCss = new CssNode('Basics', {
+    'padding': '0.5in',
     'font-family': 'Georgia, serif',
     'font-size': '10pt'
 }, '#resume');
@@ -488,16 +489,17 @@ class Resume extends React.Component<{}, ResumeState> {
     loadData(data: object) {
         let savedData = data as ResumeSaveData;
         this.nodes.children = assignIds(savedData.children);
-
-        this.setState({
-            children: this.nodes.children,
-            css: savedData.css as string,
-            mode: 'normal'
-        });
-
+        
         // Load built-in CSS
         this.css = CssNode.load(savedData.builtinCss);
         this.style2.innerHTML = this.css.stylesheet();
+        this.setState({
+            builtinCss: this.css,
+            children: this.nodes.children,
+            css: savedData.css as string,
+            mode: 'normal'
+        })
+        console.log(this.state.builtinCss);
 
         // Actually load custom CSS
         this.renderStyle();
@@ -606,12 +608,16 @@ class Resume extends React.Component<{}, ResumeState> {
         if (this.selectedNode) {
             return <></>
         }
-
+                
+        console.log(this.state.builtinCss);
         return <CssEditor path={[]}
             isPrinting={this.isPrinting}
             root={this.state.builtinCss}
             updateParentData={(css: CssNode) => {
                 this.css = css;
+                this.setState({
+                    builtinCss: this.css
+                })
                 this.style2.innerHTML = this.css.stylesheet();
             }}
         />

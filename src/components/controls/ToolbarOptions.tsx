@@ -2,11 +2,13 @@
 import { ResumeNode } from "../utility/NodeTree";
 import { IdType } from "../utility/HoverTracker";
 import { ResumeNodeProps } from "../ResumeNodeBase";
+import Column, { BasicColumnProps } from "../Column";
+import Row, { BasicRowProps } from "../Row";
 
 export default function ToolbarOptions(
     type: string,
     node: ResumeNode,
-    updateNode: (key: string, value: string | string[]) => void) {
+    updateNode: (key: string, value: boolean | string | string[]) => void) {
 
     const addTitleField = (node: BasicEntryProps) => {
         let arr = node.title || [];
@@ -59,6 +61,53 @@ export default function ToolbarOptions(
                         {
                             text: 'Remove subtitle field (from right)',
                             action: () => updateNode('subtitle', removeSubtitleField(node))
+                        }
+                    ]
+                }
+            ];
+
+        case Row.name:
+            const rowNode = node as BasicRowProps;
+            let columnDistribution = {
+                text: 'Distribute Columns Evenly',
+                action: () => updateNode('evenColumns', !rowNode.evenColumns || false)
+            };
+
+            if (rowNode.evenColumns) {
+                console.log("Distribute columns automatically");
+                columnDistribution.text = 'Distribute Columns Automatically';
+            }
+
+            const justifyContent = (option: string) => updateNode('justifyContent', option);
+
+            return [
+                columnDistribution,
+                {
+                    text: 'Justify Content',
+                    actions: [
+                        {
+                            text: 'Space between',
+                            action: () => justifyContent('space-between')
+                        },
+                        {
+                            text: 'Stack at beginning',
+                            action: () => justifyContent('flex-start')
+                        },
+                        {
+                            text: 'Stack at end',
+                            action: () => justifyContent('flex-end')
+                        },
+                        {
+                            text: 'Stack center',
+                            action: () => justifyContent('center')
+                        },
+                        {
+                            text: 'Space around',
+                            action: () => justifyContent('space-around')
+                        },
+                        {
+                            text: 'Space evenly',
+                            action: () => justifyContent('space-evenly')
                         }
                     ]
                 }

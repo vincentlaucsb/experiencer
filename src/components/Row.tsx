@@ -1,13 +1,16 @@
 ﻿import * as React from "react";
 import ResumeNodeBase, { ToolbarOption, ResumeNodeProps } from "./ResumeNodeBase";
 import ResumeWrapper from "./ResumeWrapper";
-import { ResumeNode } from "./utility/NodeTree";
+import { ResumeNode, BasicResumeNode } from "./utility/NodeTree";
 import Column from "./Column";
 
-interface RowProps extends ResumeNodeProps {
+interface RowBase {
     evenColumns?: boolean;
     justifyContent?: string;
 }
+
+export interface BasicRowProps extends BasicResumeNode, RowBase { }
+interface RowProps extends ResumeNodeProps, RowBase {}
 
 export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> {
     get className(): string {
@@ -65,51 +68,6 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
         return {};
     }
     
-    get customToolbarOptions() {
-        let columnDistribution = {
-            text: 'Distribute Columns Evenly',
-            action: () => this.updateData('evenColumns', !(this.props.evenColumns || false))
-        };
-
-        if (this.props.evenColumns) {
-            console.log("Distribute columns automatically");
-            columnDistribution.text = 'Distribute Columns Automatically';
-        }
-
-        return [
-            columnDistribution,
-            {
-                text: 'Justify Content',
-                actions: [
-                    {
-                        text: 'Space between',
-                        action: () => this.justifyContent('space-between')
-                    },
-                    {
-                        text: 'Stack at beginning',
-                        action: () => this.justifyContent('flex-start')
-                    },
-                    {
-                        text: 'Stack at end',
-                        action: () => this.justifyContent('flex-end')
-                    },
-                    {
-                        text: 'Stack center',
-                        action: () => this.justifyContent('center')
-                    },
-                    {
-                        text: 'Space around',
-                        action: () => this.justifyContent('space-around')
-                    },
-                    {
-                        text: 'Space evenly',
-                        action: () => this.justifyContent('space-evenly')
-                    }
-                ] as Array<ToolbarOption>
-            }
-        ];
-    }
-
     justifyContent(text: string) {
         this.updateData('justifyContent', text);
     }

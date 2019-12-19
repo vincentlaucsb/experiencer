@@ -52,7 +52,7 @@ function AddOption(props: AddOptionProps) {
 export interface EditingBarProps extends SelectedNodeActions {
     id: IdType;
     node: ResumeNode,
-    updateNode: (key: string, value: string | string[]) => void;
+    updateNode: (key: string, value: string | string[] | boolean) => void;
 
     cssId: string;
     type: string;
@@ -110,7 +110,7 @@ export function CustomOptions(props: { options: CustomToolbarOptions }) {
             else if (item.actions) {
                 return <PureDropdown content={<Button>{item.text}</Button>}>
                     {item.actions.map((item) =>
-                        <DropdownItem onClick={item.action}>{item.text}</DropdownItem>
+                        <DropdownItem key={item.text} onClick={item.action}>{item.text}</DropdownItem>
                     )}
                 </PureDropdown>
             }

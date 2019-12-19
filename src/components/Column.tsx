@@ -1,9 +1,13 @@
 ﻿import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import React from "react";
+import { BasicResumeNode } from "./utility/NodeTree";
 
-interface ColumnProps extends ResumeNodeProps {
+interface ColumnBase {
     evenColumns?: boolean;
 }
+
+export interface BasicColumnProps extends BasicResumeNode, ColumnBase { }
+interface ColumnProps extends ResumeNodeProps, ColumnBase { }
 
 export default class Column extends ResumeNodeBase<ColumnProps> {
     /** Get the index of this column */

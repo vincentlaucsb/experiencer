@@ -14,6 +14,8 @@ interface ValueFieldProps {
     isEditing: boolean;
     updateText: (value: string) => void;
     shouldFocus: boolean;
+
+    delete?: () => void;
     toggleParentEdit: () => void;
 }
 
@@ -58,10 +60,13 @@ function ValueField(props: ValueFieldProps) {
     }, [props.isEditing, isEditing]);
 
     if (isEditing) {
-        return <input autoFocus={props.shouldFocus} onChange={(event) => updateValue(event.target.value)}
-            onKeyDown={onKeyDown}
-            value={value}
-        />
+        return <>
+            <input autoFocus={props.shouldFocus} onChange={(event) => updateValue(event.target.value)}
+                onKeyDown={onKeyDown}
+                value={value}
+            />
+            <button onClick={props.delete}>Delete</button>
+        </>
     }
 
     return (
@@ -185,7 +190,12 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                         toggleParentEdit={() => this.setState({ isEditing: true })}
                         updateText={this.updateText.bind(this, key)}
                         value={value}
-                        shouldFocus={shouldFocus} />
+                        shouldFocus={shouldFocus}
+                        delete={() => {
+                            this.data.delete(key);
+                            this.setState({ displayMap: this.data });
+                        }}
+                    />
                     </td>
                 </tr>})}
 

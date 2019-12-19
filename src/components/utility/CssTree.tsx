@@ -56,7 +56,7 @@ export default class CssNode {
         return {
             children: this.children.map((elem) => elem.dump()),
             name: this.name,
-            selector: this.name,
+            selector: this.selector,
             properties: Array.from(this.properties.entries())
         }
     }

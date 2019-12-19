@@ -1,14 +1,21 @@
 ﻿import Entry, { EntryProps, BasicEntryProps } from "../Entry";
 import { ResumeNode } from "../utility/NodeTree";
-import { IdType } from "../utility/HoverTracker";
-import { ResumeNodeProps } from "../ResumeNodeBase";
-import Column, { BasicColumnProps } from "../Column";
 import Row, { BasicRowProps } from "../Row";
+import Section, { BasicSectionProps } from "../Section";
+import { CustomToolbarOptions } from "../ResumeNodeBase";
 
-export default function ToolbarOptions(
+/**
+ * Retrieves custom toolbar options for a node
+ * @param type
+ * @param node
+ * @param updateNode
+ */
+export default function toolbarOptions(
     type: string,
     node: ResumeNode,
-    updateNode: (key: string, value: boolean | string | string[]) => void) {
+    updateNode: (key: string, value: boolean | string | string[]) => void):
+    CustomToolbarOptions
+{
 
     const addTitleField = (node: BasicEntryProps) => {
         let arr = node.title || [];
@@ -112,6 +119,18 @@ export default function ToolbarOptions(
                     ]
                 }
             ];
+
+        case Section.name:
+            const sectionProps = node as BasicSectionProps;
+            const flipHeader = sectionProps.headerPosition === 'top' ? {
+                text: 'Header on Left',
+                action: () => updateNode('headerPosition', 'left')
+            } : {
+                    text: 'Header on Top',
+                    action: () => updateNode('headerPosition', 'top')
+                };
+
+            return [flipHeader];
 
         default:
             return [];

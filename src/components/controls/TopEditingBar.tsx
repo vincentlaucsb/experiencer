@@ -10,7 +10,7 @@ import { DescriptionListItem, DescriptionList } from "../List";
 import CssIdAdder from "./CssIdAdder";
 import { assignIds } from "../Helpers";
 import { ResumeNode } from "../utility/NodeTree";
-import ToolbarOptions from "./ToolbarOptions";
+import toolbarOptions from "./ToolbarOptions";
 
 type AddOptions = Array<NodeInformation>;
 
@@ -126,7 +126,7 @@ export default function TopEditingBar(props: EditingBarProps) {
     </PureMenuItem>
 
     const id = props.id;
-    const customOptions = ToolbarOptions(props.type, props.node, props.updateNode);
+    const customOptions = toolbarOptions(props.type, props.node, props.updateNode);
     
     // If we are selecting a child of a container type,
     // give the option of adding another child to the parent

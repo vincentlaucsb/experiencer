@@ -6,7 +6,7 @@ import { BasicResumeNode } from "./utility/NodeTree";
 export type SectionHeaderPosition = "left" | "top";
 
 interface SectionBase {
-    title: string;
+    title?: string;
     headerPosition?: SectionHeaderPosition;
 }
 
@@ -37,18 +37,6 @@ export default class Section extends ResumeNodeBase<SectionProps> {
 
         return {};
     }
-
-    get customMenuOptions() {
-        const flipHeader = this.props.headerPosition === 'top' ? {
-            text: 'Header on Left',
-            action: this.rotateLeft
-        } : {
-                text: 'Header on Top',
-                action: this.rotateRight
-            };
-
-        return [ flipHeader ];
-    }
     
     rotateLeft() {
         this.updateData('headerPosition', 'left');
@@ -61,7 +49,7 @@ export default class Section extends ResumeNodeBase<SectionProps> {
     render() {
         const title = <ResumeTextField
             onChange={this.updateData.bind(this, "title")}
-            value={this.props.title}
+            value={this.props.title || ''}
             label="Title"
             defaultText="Enter a title"
             {...this.textFieldProps}

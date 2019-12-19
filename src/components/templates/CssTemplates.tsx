@@ -77,7 +77,7 @@ function getEntryCss(): CssNode {
     let entryTitleCss = entryCss.add(new CssNode('Title Block',
         {
             'margin-bottom': '4px'
-        }, '.entry-title'));
+        }, 'hgroup'));
 
     let entryTitleHeadingCss = entryTitleCss.add(
         new CssNode('Title', {
@@ -99,7 +99,7 @@ function getEntryCss(): CssNode {
 
     let subtitleCss = entryTitleCss.add(new CssNode('Subtitle', {
         'font-family': 'Verdana, sans-serif',
-    }, '.subtitle'));
+    }, 'h4.subtitle'));
 
     subtitleCss.add(new CssNode('Other Subtitle Fields', {
         'margin-left': '1em'

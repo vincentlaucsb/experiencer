@@ -110,12 +110,12 @@ function randyMarshCss() {
                                     }
                                 ],
                                 "name": "Subtitle",
-                                "selector": ".subtitle",
+                                "selector": "h4.subtitle",
                                 "properties": [["font-family", "Open Sans, sans-serif"]]
                             }
                         ],
                         "name": "Title Block",
-                        "selector": ".entry-title",
+                        "selector": "hgroup",
                         "properties": [["margin-bottom", "4px"]]
                     }
                 ],

@@ -100,10 +100,10 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
     render() {
         return (
             <div className={this.className} {...this.selectTriggerProps}>
-                <div className="entry-title">
+                <hgroup>
                     <h3 className="title">{this.getFields('title')}</h3>
-                    <p className="subtitle">{this.getFields('subtitle')}</p>
-                </div>
+                    <h4 className="subtitle">{this.getFields('subtitle')}</h4>
+                </hgroup>
 
                 {this.renderChildren()}
             </div>

@@ -1,6 +1,5 @@
 ﻿import * as React from "react";
 import ResumeNodeBase, { ToolbarOption, ResumeNodeProps } from "./ResumeNodeBase";
-import ResumeWrapper from "./ResumeWrapper";
 import { ResumeNode, BasicResumeNode } from "./utility/NodeTree";
 import Column from "./Column";
 
@@ -86,17 +85,11 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
     }
     
     render() {
-        // TODO: Only have minHeight if this row's columns have no children
-        return <ResumeWrapper
-            customToolbar={this.customToolbarOptions}
-            updateToolbar={this.props.updateCustomOptions}
-            id={this.props.id} isSelected={this.isSelected}
-            toggleEdit={this.toggleEdit}
-            isEditing={this.props.isEditing}
-        ><div className={this.className} id={this.props.cssId} style={this.style} {...this.selectTriggerProps}>
-            {this.renderGrabHandle()}
-            {this.renderChildren()}
+        return (
+            <div className={this.className} id={this.props.cssId} style={this.style} {...this.selectTriggerProps}>
+                {this.renderGrabHandle()}
+                {this.renderChildren()}
             </div>
-        </ResumeWrapper>
+        );
     }
 }

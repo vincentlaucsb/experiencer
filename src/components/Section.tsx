@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
 import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
-import ResumeTextField from "./controls/TextField";
+import ResumeTextField from "./controls/inputs/TextField";
 import { BasicResumeNode } from "./utility/NodeTree";
 
 export type SectionHeaderPosition = "left" | "top";

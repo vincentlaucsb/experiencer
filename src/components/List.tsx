@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
 import 'react-contexify/dist/ReactContexify.min.css';
-import ResumeTextField from "./controls/TextField";
+import ResumeTextField from "./controls/inputs/TextField";
 import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 
 interface DescriptionItemProps extends ResumeNodeProps {

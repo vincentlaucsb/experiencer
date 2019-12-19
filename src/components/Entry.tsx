@@ -1,7 +1,6 @@
 ﻿import * as React from "react";
 import ResumeNodeBase, { ResumeNodeProps, Action, CustomToolbarOptions } from "./ResumeNodeBase";
-import ResumeTextField from "./controls/TextField";
-import ResumeWrapper from "./ResumeWrapper";
+import ResumeTextField from "./controls/inputs/TextField";
 import { pushArray } from "./Helpers";
 import { BasicResumeNode, ResumeNode } from "./utility/NodeTree";
 
@@ -99,21 +98,15 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
     }
     
     render() {
-        return <ResumeWrapper
-            customToolbar={this.customToolbarOptions}
-            updateToolbar={this.props.updateCustomOptions}
-            id={this.props.id} isSelected={this.isSelected}
-            toggleEdit={this.toggleEdit}
-            isEditing={this.props.isEditing}
-        >
+        return (
             <div className={this.className} {...this.selectTriggerProps}>
-            <div className="entry-title">
-                <h3 className="title">{this.getFields('title')}</h3>
-                <p className="subtitle">{this.getFields('subtitle')}</p>
-            </div>
+                <div className="entry-title">
+                    <h3 className="title">{this.getFields('title')}</h3>
+                    <p className="subtitle">{this.getFields('subtitle')}</p>
+                </div>
 
-            {this.renderChildren()}
+                {this.renderChildren()}
             </div>
-        </ResumeWrapper>
+        );
     }
 }

@@ -180,6 +180,12 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     setSelectedNode(id?: IdType) {
+        // If the previously selected node was editing, bring it
+        // out of an editing state
+        if (this.selectedNode) {
+            this.updateSelected('isEditing', false);
+        }
+
         this.setState({
             selectedNode: id,
             selectedNodeCustomOptions: undefined
@@ -321,7 +327,7 @@ class Resume extends React.Component<{}, ResumeState> {
         this.setState({ children: this.nodes.children });
     }
 
-    updateSelected(key: string, data: string | string[]) {
+    updateSelected(key: string, data: string | string[] | boolean) {
         const id = this.state.selectedNode as IdType;
         if (id) {
             this.nodes.updateChild(id, key, data);

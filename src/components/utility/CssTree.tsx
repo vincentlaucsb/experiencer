@@ -1,4 +1,6 @@
-﻿/** Return a JSON serializable format of a CssNode and its descendents */
+﻿import { isNullOrUndefined } from "util";
+
+/** Return a JSON serializable format of a CssNode and its descendents */
 export interface CssNodeDump {
     children: Array<CssNodeDump>;
     name: string;
@@ -12,6 +14,7 @@ export default class CssNode {
     private _name: string;
     private _selector: string;
     private _properties: Map<string, string>;
+    private parent?: CssNode;
 
     constructor(name: string, properties: object, selector?: string) {
         this._name = name;
@@ -31,6 +34,17 @@ export default class CssNode {
 
     get selector() {
         return this._selector;
+    }
+
+    get fullSelector() {
+        let selector = this._selector;
+        let parent = this.parent;
+        while (!isNullOrUndefined(parent)) {
+            selector = `${parent.selector} ${selector}`;
+            parent = parent.parent;
+        }
+
+        return selector;
     }
 
     get children() {
@@ -62,7 +76,12 @@ export default class CssNode {
     }
 
     /** Return a CSS stylesheet */
-    stylesheet() {
+    stylesheet(parentSelector?: string) {
+        let selector = this.selector;
+        if (parentSelector) {
+            selector = `${parentSelector} ${this.selector}`
+        }
+
         let cssProperties = "";
         if (this.properties.size > 0) {
             for (let [property, entry] of this.properties.entries()) {
@@ -70,13 +89,13 @@ export default class CssNode {
             }
         }
 
-        const thisCss = this.properties.size > 0 ? `${this.selector} {
+        const thisCss = this.properties.size > 0 ? `${selector} {
     ${cssProperties}
 }` : ``;
 
         let childStylesheets = "";
         for (let cssTree of this.children.values()) {
-            childStylesheets += cssTree.stylesheet();
+            childStylesheets += cssTree.stylesheet(selector);
         }
 
         return `${thisCss}
@@ -89,7 +108,7 @@ ${childStylesheets}`
      * @param css
      */
     add(css: CssNode): CssNode {
-        css._selector = `${this.selector} ${css._selector}`
+        css.parent = this;
         this.children.push(css);
         return this.children[this.children.length - 1];
     }

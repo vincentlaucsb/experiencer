@@ -27,6 +27,8 @@ export interface ResumePassProps extends ResumeNode {
 
 export interface ResumeNodeProps extends ResumePassProps {
     id: IdType;   // Hierarchical ID based on the node's position in the resume; subject to change
+    isLast: boolean;
+
     isHidden?: boolean;
     isEditing?: boolean
 }
@@ -184,7 +186,7 @@ export default class ResumeNodeBase<P
                     updateCustomOptions: this.props.updateCustomOptions,
 
                     index: idx,
-                    numChildren: arr.length,
+                    numSiblings: arr.length,
 
                     // Crucial for generating IDs so hover/select works properly
                     parentId: this.props.id

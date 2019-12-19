@@ -3,7 +3,7 @@
 import Section, { SectionProps } from "./Section";
 import Entry, { BasicEntryProps } from "./Entry";
 import { DescriptionList, DescriptionListItem } from "./List";
-import Paragraph from "./Paragraph";
+import RichText from "./Paragraph";
 import Header from "./Header";
 import { ResumeNodeProps, ResumePassProps } from "./ResumeNodeBase";
 import { IdType } from "./utility/HoverTracker";
@@ -20,6 +20,7 @@ export type EditorMode = 'normal'
 
 interface ResumeComponentProps extends ResumePassProps {
     index: number;       // The n-th index of this node relative to its parent
+    numSiblings: number; // Number of siblings this node has
     parentId?: IdType;   // The id of the parent node
 }
 
@@ -34,7 +35,8 @@ export default function ResumeComponent(props: ResumeComponentProps) {
         ...props,
 
         // Generate unique IDs for component
-        id: parentId ? [...parentId, index] : [index]
+        id: parentId ? [...parentId, index] : [index],
+        isLast: index == props.numSiblings - 1
     } as ResumeNodeProps;
     
     switch (props.type) {
@@ -52,8 +54,8 @@ export default function ResumeComponent(props: ResumeComponentProps) {
             return <Section {...newProps as SectionProps} />;
         case Entry.name:
             return <Entry {...newProps} />;
-        case Paragraph.name:
-            return <Paragraph {...newProps} />;
+        case RichText.name:
+            return <RichText {...newProps} />;
         default:
             return <React.Fragment></React.Fragment>
     }
@@ -81,13 +83,13 @@ export class ComponentTypes {
                 return [
                     AliasTypes.BulletedList,
                     DescriptionList.name,
-                    Paragraph.name
+                    RichText.name
                 ];
             default:
                 return [
                     Section.name,
                     Entry.name,
-                    Paragraph.name,
+                    RichText.name,
                     AliasTypes.BulletedList,
                     DescriptionList.name
                 ];
@@ -104,7 +106,7 @@ export class ComponentTypes {
                 return {
                     text: 'Bulleted List',
                     node: {
-                        type: Paragraph.name,
+                        type: RichText.name,
                         value: '<ul><li></li></ul>'
                     }
                 }
@@ -141,11 +143,11 @@ export class ComponentTypes {
                         subtitle: ['']
                     } as BasicEntryProps
                 }
-            case Paragraph.name:
+            case RichText.name:
                 return {
                     text: 'Rich Text',
                     node: {
-                        type: Paragraph.name
+                        type: RichText.name
                     }
                 }
             case Row.name:

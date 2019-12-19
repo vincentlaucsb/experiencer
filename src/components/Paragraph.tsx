@@ -5,7 +5,7 @@ import * as Helpers from "./Helpers";
 import ResumeNodeBase from "./ResumeNodeBase";
 import { IdType } from "./utility/HoverTracker";
 
-export default class Paragraph extends ResumeNodeBase {
+export default class RichText extends ResumeNodeBase {
     static quillModules = {
         toolbar: [
             ['bold', 'italic', 'underline', 'strike'],
@@ -15,6 +15,14 @@ export default class Paragraph extends ResumeNodeBase {
             ['clean']
         ],
     };
+
+    static get displayName() {
+        return 'Rich Text';
+    }
+
+    get className() {
+        return super.className + ' rich-text';
+    }
     
     get selectTriggerProps() {
         const baseProps = super.selectTriggerProps;
@@ -34,7 +42,7 @@ export default class Paragraph extends ResumeNodeBase {
         const textValue = Helpers.process(this.props.value) as string || "Empty text";
 
         let value = this.isEditing ? <ReactQuill
-            modules={Paragraph.quillModules}
+            modules={RichText.quillModules}
             value={this.props.value || ""}
             onChange={((this.props.updateData as (id: IdType, key: string, data: any) => void).bind(this, this.props.id, "value") as (data: any) => void)}
         /> : <span className="resume-paragraph" dangerouslySetInnerHTML={{ __html: textValue }} />;

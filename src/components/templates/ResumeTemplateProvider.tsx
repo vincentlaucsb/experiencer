@@ -2,7 +2,7 @@
 import { assignIds } from "../Helpers";
 import Header from "../Header";
 import Entry, { BasicEntryProps } from "../Entry";
-import Paragraph from "../Paragraph";
+import RichText from "../Paragraph";
 import { BasicResumeNode } from "../utility/NodeTree";
 
 export default class ResumeTemplateProvider {
@@ -108,7 +108,7 @@ section.header-left h2 {
         });
 
         return {
-            type: Paragraph.name,
+            type: RichText.name,
             value: `<ul>${value}</ul>`
         };
     }

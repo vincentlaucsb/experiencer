@@ -76,7 +76,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         }
 
         const trigger = <Heading onMouseOver={() => this.toggleHighlight()} onMouseOut={() => this.toggleHighlight(false)}>
-            {this.props.root.name} <span>({this.props.root.selector})</span>
+            {this.props.root.name} <span>({this.props.root.fullSelector})</span>
         </Heading>
 
         const isOpen = (this.props.path.length != 1);

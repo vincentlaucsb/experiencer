@@ -10,7 +10,7 @@ interface RowProps extends ResumeNodeProps {
 
 export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> {
     get className(): string {
-        let classNames = ['resume-row', super.className];
+        let classNames = ['row', super.className];
         return classNames.join(' ');
     }
 

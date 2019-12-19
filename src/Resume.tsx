@@ -197,7 +197,7 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param idx  Index of the object
      * @param arr  Array of component data
      */
-    childMapper(elem: ResumeNode, idx: number) {
+    childMapper(elem: ResumeNode, idx: number, arr: ResumeNode[]) {
         const uniqueId = elem.uuid;
         const props = {
             ...elem,
@@ -207,7 +207,8 @@ class Resume extends React.Component<{}, ResumeState> {
             updateCustomOptions: this.updateCustomOptions.bind(this),
             ...this.hoverProps,
 
-            index: idx
+            index: idx,
+            numSiblings: arr.length
         };
 
         return <ResumeComponent key={uniqueId} {...props} />

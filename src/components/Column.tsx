@@ -8,8 +8,14 @@ export default class Column extends ResumeNodeBase {
     }
 
     get className(): string {
-        let positionClsName = 'column-' + this.position;
-        return [positionClsName, 'resume-column', super.className].join(' ');
+        let classNames = ['column', super.className];
+        classNames.push('column-' + this.position);
+
+        if (this.props.isLast) {
+            classNames.push('column-last');
+        }
+
+        return classNames.join(' ');
     }
 
     get style(): React.CSSProperties {

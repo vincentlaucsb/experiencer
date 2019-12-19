@@ -1,6 +1,47 @@
 ﻿import CssNode from "../utility/CssTree";
 import Entry from "../Entry";
 import Section from "../Section";
+import RichText from "../Paragraph";
+
+function getRowCss(): CssNode {
+    let rowCss = new CssNode('Row', {
+
+    }, '.row');
+
+    let columnCss = rowCss.add(new CssNode('Column', {
+
+    }, '.column'));
+
+    columnCss.add(new CssNode('First Column', {
+
+    }, '.column-0'));
+
+    columnCss.add(new CssNode('All Columns Except First', {
+        'margin-left': '1em'
+    }, '.column:not(.column-0)'));
+
+    columnCss.add(new CssNode('Last Column', {
+
+    }, '.column.column-last'));
+
+    return rowCss;
+}
+
+function getRichTextCss(): CssNode {
+    let richTextCss = new CssNode(RichText.displayName, {
+
+    }, '.rich-text');
+
+    let listCss = richTextCss.add(new CssNode('Lists', {
+        'padding-left': '1.5em' /** Reduced padding */
+    }, 'ul'));
+
+    listCss.add(new CssNode('List Item', {
+        'list-style-type': 'square' /** Default: circle */
+    }, 'li'));
+
+    return richTextCss;
+}
 
 function getSectionCss(): CssNode {
     let sectionCss = new CssNode(Section.name, {
@@ -83,14 +124,6 @@ export default function getDefaultCss() : CssNode {
         'margin-bottom': '16px'
     }, 'header'));
 
-    let listCss = defaultCss.add(new CssNode('Lists', {
-        'padding-left': '1.5em' /** Reduced padding */
-    }, 'ul'));
-
-    listCss.add(new CssNode('List Item', {
-        'list-style-type': 'square' /** Default: circle */
-    }, 'li'));
-
     let dlCss = defaultCss.add(new CssNode('Description Lists', {
     }, 'dl'));
 
@@ -100,5 +133,7 @@ export default function getDefaultCss() : CssNode {
 
     defaultCss.add(getSectionCss());
     defaultCss.add(getEntryCss());
+    defaultCss.add(getRichTextCss());
+    defaultCss.add(getRowCss());
     return defaultCss;
 }

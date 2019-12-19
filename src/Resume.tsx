@@ -186,10 +186,7 @@ class Resume extends React.Component<{}, ResumeState> {
             this.updateSelected('isEditing', false);
         }
 
-        this.setState({
-            selectedNode: id,
-            selectedNodeCustomOptions: undefined
-        });
+        this.setState({ selectedNode: id });
     }
 
     // Push style changes to browser
@@ -210,7 +207,6 @@ class Resume extends React.Component<{}, ResumeState> {
             mode: this.state.mode,
             toggleEdit: this.editSelected.bind(this),
             updateData: this.updateNestedChild,
-            updateCustomOptions: this.updateCustomOptions.bind(this),
             ...this.hoverProps,
 
             index: idx,
@@ -369,10 +365,6 @@ class Resume extends React.Component<{}, ResumeState> {
             this.setSelectedNode(newId);
         }
     }
-
-    updateCustomOptions(options: CustomToolbarOptions) {
-        this.setState({ selectedNodeCustomOptions: options });
-    }
     //#endregion
 
     //#region Clipboard
@@ -474,15 +466,9 @@ class Resume extends React.Component<{}, ResumeState> {
     get editingBarProps() {
         return {
             ...this.selectedNodeActions,
+            id: this.state.selectedNode,
             node: this.selectedNode,
             updateNode: this.updateSelected,
-
-            customOptions: this.state.selectedNodeCustomOptions,
-            id: this.state.selectedNode,
-            cssId: this.selectedNode? (this.selectedNode['cssId'] || '') : '',
-
-            // TODO: Fix this type cast
-            type: this.selectedNode ? this.selectedNode['type'] : '',
             addChild: this.addNestedChild,
             toggleEdit: this.editSelected,
             moveUpEnabled: this.moveSelectedUpEnabled,

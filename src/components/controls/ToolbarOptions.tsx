@@ -11,7 +11,6 @@ import { CustomToolbarOptions } from "../ResumeNodeBase";
  * @param updateNode
  */
 export default function toolbarOptions(
-    type: string,
     node: ResumeNode,
     updateNode: (key: string, value: boolean | string | string[]) => void):
     CustomToolbarOptions
@@ -45,7 +44,7 @@ export default function toolbarOptions(
         return [];
     };
 
-    switch (type) {
+    switch (node.type) {
         case Entry.name:
             return [
                 {

@@ -54,8 +54,6 @@ export interface EditingBarProps extends SelectedNodeActions {
     node: ResumeNode,
     updateNode: (key: string, value: string | string[] | boolean) => void;
 
-    cssId: string;
-    type: string;
     addChild: AddChild;
     toggleEdit: ModifyChild;
     moveUpEnabled: boolean;
@@ -126,14 +124,15 @@ export default function TopEditingBar(props: EditingBarProps) {
     </PureMenuItem>
 
     const id = props.id;
-    const customOptions = toolbarOptions(props.type, props.node, props.updateNode);
+    const type = props.node.type;
+    const customOptions = toolbarOptions(props.node, props.updateNode);
     
     // If we are selecting a child of a container type,
     // give the option of adding another child to the parent
-    const childTypes = ComponentTypes.childTypes(props.type);
+    const childTypes = ComponentTypes.childTypes(type);
     let parentAddOption = <></>
 
-    if (props.type === DescriptionListItem.name) {
+    if (type === DescriptionListItem.name) {
         const parentId = id.slice(0, id.length - 1);
         parentAddOption = <AddOption id={parentId} addChild={
             props.addChild as AddChild
@@ -153,7 +152,7 @@ export default function TopEditingBar(props: EditingBarProps) {
                 <Item onClick={() => props.moveDown()}
                     disabled={!props.moveDownEnabled}
                 >Move Down</Item>
-                <CssIdAdder cssId={props.cssId} updateData={props.updateSelected} />
+                <CssIdAdder cssId={props.node.cssId} updateData={props.updateSelected} />
                 <CustomOptions options={customOptions} />
             </PureMenu>
         </div>

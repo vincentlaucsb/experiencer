@@ -23,5 +23,4 @@ export default interface ResumeState {
 
     hoverNode?: IdType;
     selectedNode?: IdType;
-    selectedNodeCustomOptions?: CustomToolbarOptions;
 }

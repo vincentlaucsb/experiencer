@@ -22,7 +22,6 @@ export interface ResumePassProps extends ResumeNode {
     toggleEdit: ModifyChild;
     updateData: (id: IdType, key: string, data: any) => void;
     updateSelected: (id?: IdType) => void;
-    updateCustomOptions: (options: CustomToolbarOptions) => void;
 }
 
 export interface ResumeNodeProps extends ResumePassProps {
@@ -188,7 +187,6 @@ export default class ResumeNodeBase<P
                     toggleEdit: this.props.toggleEdit,
                     updateData: this.props.updateData,
                     updateSelected: this.props.updateSelected,
-                    updateCustomOptions: this.props.updateCustomOptions,
 
                     index: idx,
                     numSiblings: arr.length,

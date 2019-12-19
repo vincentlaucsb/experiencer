@@ -3,12 +3,12 @@ import Popover from 'react-tiny-popover';
 import { Button } from "./Buttons";
 
 interface CssIdAdderProps {
-    cssId: string;
+    cssId?: string;
     updateData: (key: string, data: any) => void;
 }
 
 export default function CssIdAdder(props: CssIdAdderProps) {
-    let [cssId, setCssId] = React.useState(props.cssId);
+    let [cssId, setCssId] = React.useState(props.cssId || "");
     let [isOpen, setOpen] = React.useState(false);
 
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,7 +17,7 @@ export default function CssIdAdder(props: CssIdAdderProps) {
 
     // TODO: Is this necessary?
     React.useEffect(() => {
-        setCssId(props.cssId);
+        setCssId(props.cssId || "");
     }, [props.cssId]);
 
     const expanded = (

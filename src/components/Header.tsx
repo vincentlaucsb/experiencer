@@ -2,11 +2,7 @@
 import { ResumeNodeProps } from "./ResumeNodeBase";
 import Row from "./Row";
 
-export interface HeaderProps extends ResumeNodeProps {
-    orientation?: 'row' | 'column';
-}
-
-export default class Header extends Row<HeaderProps> {
+export default class Header extends Row {
     get className(): string {
         let classNames = new Set(super.className.split(' '));
         classNames.delete('row');

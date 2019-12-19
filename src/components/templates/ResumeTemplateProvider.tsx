@@ -7,6 +7,152 @@ import { BasicResumeNode } from "../utility/NodeTree";
 import Column from "../Column";
 import Row from "../Row";
 
+function randyMarsh(): BasicResumeNode {
+    return {
+        "type": "Row",
+            "children": [
+                {
+                    "type": "Column",
+                    "children": [
+                        {
+                            "type": "Header",
+                            "value": "Randy Marsh",
+                            "children": [],
+                        },
+                        {
+                            "type": "Section",
+                            "title": "Experience",
+                            "children": [
+                                {
+                                    "type": "Entry",
+                                    "title": ["Tegridy Farms", "2019 -- Present"],
+                                    "subtitle": ["Founder/CEO", "Somewhere in the boonies"],
+                                    "children": [
+                                        {
+                                            "type": "RichText",
+                                            "value": "<ul><li>Pioneered farm-to-door delivery of fresh agricultural produce</li><li>Negotiated a multi-million dollar contract with the Chinese government</li></ul>"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "Entry",
+                                    "title": ["United States Geological Survey", "2010 -- 2019"],
+                                    "subtitle": ["Geologist"],
+                                } as BasicEntryProps,
+                                {
+                                    "type": "Entry",
+                                    "title": ["Lorde", "2014"],
+                                    "subtitle": ["Pop Star"],
+                                    "children": [
+                                        {
+                                            "type": "RichText",
+                                            "value": "<ul><li>Released the Billboard #1 hit <em>Push (Feeling Good on A Wednesday)</em></li></ul>",
+                                        }
+                                    ]
+                                }
+                            ],
+                        } as BasicSectionProps,
+                        {
+                            "type": "Section",
+                            "title": "Education",
+                            "children": [
+                                {
+                                    "type": "Entry",
+                                    "title": ["Some College", "1992"],
+                                    "subtitle": ["Doctorate in Geology"]
+                                } as BasicEntryProps
+                            ]
+                        } as BasicSectionProps,
+                        {
+                            "type": "Section",
+                            "title": "Awards and Recognition",
+                            "children": [
+                                {
+                                    "type": "Row",
+                                    "children": [
+                                        {
+                                            "type": "Column",
+                                            "children": [
+                                                {
+                                                    "type": "Entry",
+                                                    "title": ["Nobel Prize"],
+                                                    "subtitle": ["Break Wind Theory"],
+                                                    "children": [
+                                                        {
+                                                            "type": "RichText",
+                                                            "value": "<p>Awarded the Nobel Prize for my work on the Break Wind theory of spontaneous combustion</p>"
+                                                        }
+                                                    ]
+                                                } as BasicEntryProps
+                                            ]
+                                        },
+                                        {
+                                            "type": "Column",
+                                            "children": [
+                                                {
+                                                    "type": "Entry",
+                                                    "title": ["Emmy Award"],
+                                                    "subtitle": ["Outstanding Animated Program"],
+                                                    "children": [
+                                                        {
+                                                            "type": "RichText",
+                                                            "value": "<p>Gifted an Emmy Award after passing a stool weighing well over 100 courics</p>"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "cssId": "awards"
+                                }
+                            ]
+                        } as BasicSectionProps
+                    ]
+                },
+                {
+                    "type": "Column",
+                    "children": [
+                        {
+                            "type": "Section",
+                            "title": "Contact",
+                            "children": [
+                                {
+                                    "type": "RichText",
+                                    "value": "<p>South Park, CO</p><p>@GettinRandy55</p>"
+                                }
+                            ]
+                        } as BasicSectionProps,
+                        {
+                            "type": "Section",
+                            "title": "Skills",
+                            "children": [
+                                {
+                                    "type": "RichText",
+                                    "value": "<ul><li>Advertising</li><li>Agriculture</li><li>Criminal Defense</li><li>Demolition/Explosives</li><li>Geology</li><li>International Commerce</li><li>Magic</li><li>Music Production</li><li>Parade Planning</li><li>Political Activism</li></ul>",
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Section",
+                            "title": "References",
+                            "children": [
+                                {
+                                    "type": "RichText",
+                                    "value": "<p><strong>Towelie</strong></p><p>Agricultural Inspector</p><p><br></p>"
+                                }
+                            ]
+                        } as BasicSectionProps,
+                        {
+                            "type": "RichText",
+                            "value": "<p>Typeset entirely with HTML, CSS, and good old-fashioned<strong> TEGRIDY</strong></p>",
+                            "cssId": "tegridy"
+                        }
+                    ]
+                }
+            ]
+    }
+}
+
 export default class ResumeTemplateProvider {
     static defaultCss = `#resume * {
     /* Set all margins to zero, and then re-set them later */
@@ -194,6 +340,15 @@ section.header-left h2 {
                     }
                 ]),
                 css: ResumeTemplateProvider.defaultCss,
+            };
+
+            return data;
+        },
+
+        "Randy Marsh": () => {
+            let data = {
+                children: [randyMarsh()],
+                css: "#resume * {\n    /* Set all margins to zero, and then re-set them later */\n    margin: 0;\n}\n\n#resume #awards {\n    flex-grow: 0;\n    height: auto;\n}\n\n#resume #awards .column {\n    width: auto;\n    flex-grow: 1;\n    flex-shrink: 1;\n    padding: 0\n}\n\n#resume #awards .column-last {\n    background: none;\n}\n\n#resume .column-last, #resume .column-last h2 {\n    color: #43353f;\n}\n\n#resume #tegridy {\n    margin-top: auto;\n    text-align: right;\n}\n\n/** Sections with Header on Left **/\nsection.header-left h2 {\n    width: 20%;\n    flex-shrink: 0;\n    flex-grow: 0;\n    \n}"
             };
 
             return data;

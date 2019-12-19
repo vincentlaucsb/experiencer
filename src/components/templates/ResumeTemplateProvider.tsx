@@ -4,6 +4,8 @@ import Header from "../Header";
 import Entry, { BasicEntryProps } from "../Entry";
 import RichText from "../Paragraph";
 import { BasicResumeNode } from "../utility/NodeTree";
+import Column from "../Column";
+import Row from "../Row";
 
 export default class ResumeTemplateProvider {
     static defaultCss = `#resume * {
@@ -24,7 +26,7 @@ section.header-left h2 {
             value: 'Your Name Here',
             children: [
                 {
-                    type: 'Paragraph',
+                    type: RichText.name,
                     value: '<p>Email: spamMePlz@spicymail.com</p><p>Phone: 123-456-7890</p>'
                 }
             ]
@@ -37,7 +39,7 @@ section.header-left h2 {
             title: 'Objective',
             children: [
                 {
-                    type: 'Paragraph',
+                    type: RichText.name,
                     value: 'To conquer the world.'
                 }
             ]
@@ -173,17 +175,17 @@ section.header-left h2 {
                     header,
                     ResumeTemplateProvider.objective,
                     {
-                        type: 'Row',
+                        type: Row.name,
                         children: [
                             {
-                                type: 'Column',
+                                type: Column.name,
                                 children: [
                                     ResumeTemplateProvider.education,
                                     ResumeTemplateProvider.techSkills
                                 ]
                             },
                             {
-                                type: 'Column',
+                                type: Column.name,
                                 children: [
                                     ResumeTemplateProvider.experience
                                 ]

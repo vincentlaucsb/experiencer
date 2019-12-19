@@ -118,6 +118,10 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
             )
         }
 
+        if (this.data.size == 0) {
+            return <button onClick={() => this.setEditing(true)}>Add an item</button>
+        }
+
         return <></>
     }
 

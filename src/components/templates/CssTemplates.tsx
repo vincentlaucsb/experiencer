@@ -8,21 +8,21 @@ function getRowCss(): CssNode {
 
     }, '.row');
 
-    let columnCss = rowCss.add(new CssNode('Column', {
+    let columnCss = rowCss.add(new CssNode('All Columns', {
 
     }, '.column'));
 
-    columnCss.add(new CssNode('First Column', {
+    rowCss.add(new CssNode('First Column', {
 
     }, '.column-0'));
 
-    columnCss.add(new CssNode('All Columns Except First', {
+    rowCss.add(new CssNode('All Columns Except First', {
         'margin-left': '1em'
     }, '.column:not(.column-0)'));
 
-    columnCss.add(new CssNode('Last Column', {
+    rowCss.add(new CssNode('Last Column', {
 
-    }, '.column.column-last'));
+    }, '.column-last'));
 
     return rowCss;
 }

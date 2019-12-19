@@ -1,8 +1,16 @@
 ﻿import * as React from "react";
-import { ResumeNodeProps } from "./ResumeNodeBase";
-import Row from "./Row";
+import Row, { RowProps, BasicRowProps } from "./Row";
+import ReactQuill from "react-quill";
+import RichText from "./Paragraph";
 
-export default class Header extends Row {
+interface HeaderBase {
+    subtitle?: string;
+}
+
+export interface BasicHeaderProps extends BasicRowProps, HeaderBase { };
+export interface HeaderProps extends RowProps, HeaderBase { };
+
+export default class Header extends Row<HeaderProps> {
     get className(): string {
         let classNames = new Set(super.className.split(' '));
         classNames.delete('row');
@@ -10,15 +18,25 @@ export default class Header extends Row {
     }
 
     render() {
-        let value = this.props.isEditing ? <input onChange={(event) => this.updateData("value", event.target.value)}
-            value={this.props.value} type="text" /> : this.props.value || "Enter a title";
+        let value = this.props.isEditing ? <ReactQuill
+            modules={RichText.quillModules}
+            value={this.props.value || ""}
+            onChange={(text) => this.updateData("value", text)}
+        /> : <h1 dangerouslySetInnerHTML={{ __html: this.props.value || "Enter a title" }} />;
+
+        let subtitle = this.props.isEditing ? <ReactQuill
+            modules={RichText.quillModules}
+            value={this.props.subtitle || ""}
+            onChange={(text) => this.updateData("subtitle", text)}
+        /> : <h2 dangerouslySetInnerHTML={{ __html: this.props.subtitle || "" }} />;
 
         return (
             <header className={this.className} style={this.style} {...this.selectTriggerProps}>
                 {this.renderGrabHandle()}
-                <h1>
+                <hgroup>
                     {value}
-                </h1>
+                    {subtitle}
+                </hgroup>
                 {this.renderChildren()}
             </header>
         );

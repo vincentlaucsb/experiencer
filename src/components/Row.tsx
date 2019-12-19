@@ -9,7 +9,7 @@ interface RowBase {
 }
 
 export interface BasicRowProps extends BasicResumeNode, RowBase { }
-interface RowProps extends ResumeNodeProps, RowBase {}
+export interface RowProps extends ResumeNodeProps, RowBase {}
 
 export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> {
     get className(): string {

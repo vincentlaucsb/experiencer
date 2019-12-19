@@ -1,6 +1,6 @@
 ﻿import Section, { SectionHeaderPosition, BasicSectionProps } from "../Section";
 import { assignIds } from "../Helpers";
-import Header from "../Header";
+import Header, { BasicHeaderProps } from "../Header";
 import Entry, { BasicEntryProps } from "../Entry";
 import RichText from "../Paragraph";
 import { BasicResumeNode } from "../utility/NodeTree";
@@ -205,8 +205,9 @@ function randyMarsh(): BasicResumeNode {
                         {
                             "type": Header.name,
                             "value": "Randy Marsh",
+                            "subtitle": "Geologist and Innovator",
                             "children": [],
-                        },
+                        } as BasicHeaderProps,
                         {
                             "type": Section.name,
                             "title": "Experience",

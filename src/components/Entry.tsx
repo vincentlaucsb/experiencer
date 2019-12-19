@@ -96,10 +96,13 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         if (fields) {
             return fields.map((text, index, arr) => {
                 const isLast = index == arr.length - 1;
-                const className = (isLast ? `field-${index} field-last` : `field-${index}`);
+                let classNames = ['field', `field-${index}`];
+                if (isLast) {
+                    classNames.push('field-last');
+                }
 
                 return <ResumeTextField
-                    displayClassName={className}
+                    displayClassName={classNames.join(' ')}
                     key={index}
                     onChange={(data: string) => updater(key, index, data)}
                     value={text || ""}

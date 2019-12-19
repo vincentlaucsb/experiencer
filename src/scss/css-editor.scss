@@ -1,0 +1,20 @@
+@import "variables";
+
+section.css-category * {
+    margin: 0;
+}
+
+section.css-category {
+    h2, h3, h4, h5, h6 {
+        font-family: sans-serif;
+        margin: 0.3em 0;
+    }
+
+    th {
+        text-align: left;
+        padding-right: 0.5em;
+    }
+
+    // font-family: monospace;
+    margin-bottom: 1em;
+}

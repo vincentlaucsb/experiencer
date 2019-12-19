@@ -30,7 +30,6 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         this.updateCssProperties = this.updateCssProperties.bind(this);
     }
 
-
     get heading() {
         switch (this.props.path.length) {
             case 0:
@@ -63,7 +62,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         }
 
         return (
-            <div className="no-print">
+            <section className="css-category no-print">
                 <Heading>
                     {this.props.root.name}
                     <span>({this.props.root.selector})</span>
@@ -91,7 +90,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
                         />
                     }
                 )}
-            </div>
+            </section>
         );
     }
 }

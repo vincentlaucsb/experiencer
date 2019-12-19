@@ -109,11 +109,15 @@ entryTitleHeadingCss.add(new CssNode('First Title Field (After)', {
     'padding-right': '0.33em'
 }, '.field-0::after'))
 
-entryTitleCss.add(new CssNode('Entry Subtitles', {
+let subtitleCss = entryTitleCss.add(new CssNode('Entry Subtitles', {
     'font-family': 'Verdana, sans-serif',
 }, '.subtitle'));
 
-console.log(defaultCss.stylesheet());
+subtitleCss.add(new CssNode('Other Subtitle Fields', {
+    'margin-left': '1em'
+}, '.field:not(.field-0)'));
+
+// console.log(defaultCss.stylesheet());
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering: HoverTracker;

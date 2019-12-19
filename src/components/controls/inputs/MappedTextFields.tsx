@@ -113,9 +113,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
             )
         }
 
-        return (
-            <button onClick={() => this.setState({ isEditing: true })}>Edit</button>
-        );
+        return <></>
     }
 
     addNewKey(key: string) {
@@ -125,7 +123,6 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
             return;
         } */
 
-        console.log("Adding new key", key);
         this.updateText(key, '');
         this.setState({
             isAddingKey: false,
@@ -159,36 +156,41 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
     render() {
         let keyAdder = <></>
         if (this.state.isAddingKey && this.state.isEditing) {
-            keyAdder = <li>
+            keyAdder = <tr>
+                <th scope="row">
                 <ValueField
                     isEditing={this.state.isEditing}
                     toggleParentEdit={() => this.setState({ isEditing: true })}
-                    shouldFocus={true} updateText={this.addNewKey} /> <input disabled />
-            </li>
+                        shouldFocus={true} updateText={this.addNewKey} />
+                </th>
+                <td>
+                    <input disabled />
+                </td>
+            </tr>
         }
 
         return <React.Fragment>
-            <ul>
+            <table>
             {Array.from(this.state.displayMap.entries()).map(([key, value]) => {
                 const shouldFocus = key === this.state.newKey;
 
-                return <li key={key}>
-                    <div onKeyDown={(event) => {
+                return <tr key={key}>
+                    <th onKeyDown={(event) => {
                         // When the user is done editing the value field, allow them
                         // to add another field
                         if (event.key === 'Enter') {
                             this.setState({ isAddingKey: true });
-                    }}}>{key}: <ValueField
+                    }}} scope="row">{key}</th><td><ValueField
                         isEditing={this.state.isEditing}
                         toggleParentEdit={() => this.setState({ isEditing: true })}
                         updateText={this.updateText.bind(this, key)}
                         value={value}
                         shouldFocus={shouldFocus} />
-                    </div>
-                </li>})}
+                    </td>
+                </tr>})}
 
                 {keyAdder}
-            </ul>
+            </table>
 
             <div>
                 {this.editingButton}

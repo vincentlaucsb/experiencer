@@ -111,7 +111,7 @@ function randyMarshCss() {
                                 ],
                                 "name": "Subtitle",
                                 "selector": ".subtitle",
-                                "properties": [["font-family", "Verdana, sans-serif"]]
+                                "properties": [["font-family", "Open Sans, sans-serif"]]
                             }
                         ],
                         "name": "Title Block",

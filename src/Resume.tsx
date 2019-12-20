@@ -16,7 +16,6 @@ import ResumeHotKeys from './components/controls/ResumeHotkeys';
 import ResumeState, { ResumeSaveData } from './components/controls/ResumeState';
 import StyleEditor from './components/controls/StyleEditor';
 import Help from './components/help/Help';
-import { isNullOrUndefined } from 'util';
 import HoverTracker, { IdType } from './components/utility/HoverTracker';
 import TopEditingBar, { EditingBarProps } from './components/controls/TopEditingBar';
 import ResumeNodeTree, { ResumeNode, BasicResumeNode } from './components/utility/NodeTree';
@@ -158,7 +157,7 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param prevProps
      * @param prevState
      */
-    componentDidUpdate(prevProps, prevState: ResumeState) {
+    componentDidUpdate(_prevProps, prevState: ResumeState) {
         if (this.shouldUpdateCss) {
             this.renderStyle();
             this.shouldUpdateCss = false;
@@ -226,18 +225,15 @@ ${this.state.css}`;
         const currentNode = this.selectedNode as ResumeNode;
         if (currentNode) {
             let root = new CssNode(`#${htmlId}`, {}, `#${htmlId}`);
-
             let copyTree = this.css.findNode(
-                ComponentTypes.cssName(currentNode.type)
-            ) as CssNode;
+                ComponentTypes.cssName(currentNode.type)) as CssNode;
 
             if (copyTree) {
                 root = copyTree.copySkeleton(`#${htmlId}`, `#${htmlId}`);
             }
 
-            this.updateSelected('cssId', htmlId);
+            currentNode.cssId = htmlId;
             this.css.add(root);
-
             this.setState({
                 builtinCss: this.css,
                 children: this.nodes.children
@@ -317,10 +313,9 @@ ${this.state.css}`;
     moveSelectedUp() {
         const id = this.state.selectedNode as IdType;
         if (this.moveSelectedUpEnabled) {
-            const newId = this.nodes.moveUp(id);
             this.setState({
                 children: this.nodes.children,
-                selectedNode: newId
+                selectedNode: this.nodes.moveUp(id)
             });
         }
     }
@@ -333,10 +328,9 @@ ${this.state.css}`;
     moveSelectedDown() {
         const id = this.state.selectedNode as IdType;
         if (this.moveSelectedDownEnabled) {
-            const newId = this.nodes.moveDown(id);
             this.setState({
                 children: this.nodes.children,
-                selectedNode: newId
+                selectedNode: this.nodes.moveDown(id)
             });
         }
     }
@@ -346,10 +340,7 @@ ${this.state.css}`;
     /** Copy the currently selected node */
     copyClipboard() {
         if (this.selectedNode) {
-            const data = deepCopy(this.selectedNode);
-            this.setState({
-                clipboard: data
-            });
+            this.setState({ clipboard: deepCopy(this.selectedNode) });
         }
     }
 
@@ -364,10 +355,9 @@ ${this.state.css}`;
     /** Paste whatever is currently in the clipboard */
     pasteClipboard() {
         if (this.selectedNode) {
-            let node = deepCopy(this.state.clipboard);
-
             // UUIDs will be added in the method below
-            this.addNestedChild(this.state.selectedNode as IdType, node);
+            this.addNestedChild(this.state.selectedNode as IdType,
+                deepCopy(this.state.clipboard));
         }
     }
     //#endregion

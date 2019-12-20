@@ -279,13 +279,26 @@ class Resume extends React.Component<{}, ResumeState> {
 
     //#region Creating/Editing Nodes
     addHtmlId(htmlId: string) {
-        this.updateSelected('cssId', htmlId);
-        this.css.add(new CssNode(`#${htmlId}`, {}, `#${htmlId}`));
+        const currentNode = this.selectedNode as ResumeNode;
+        if (currentNode) {
+            let root = new CssNode(`#${htmlId}`, {}, `#${htmlId}`);
 
-        this.setState({
-            builtinCss: this.css,
-            children: this.nodes.children
-        });
+            let copyTree = this.css.findNode(
+                ComponentTypes.cssName(currentNode.type)
+            ) as CssNode;
+
+            if (copyTree) {
+                root.add(CssNode.load(copyTree.dump()));
+            }
+
+            this.updateSelected('cssId', htmlId);
+            this.css.add(root);
+
+            this.setState({
+                builtinCss: this.css,
+                children: this.nodes.children
+            });
+        }
     }
 
     addSection() {

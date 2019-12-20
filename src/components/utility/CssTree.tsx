@@ -137,9 +137,17 @@ ${childStylesheets}`
 
     /** Return a copy of this subtree with the same names and selectors
      *  but with no properties
+     *  @param name     New name for the copy (defaults to current name)
+     *  @param selector Additional selector to append on to current selector
      */
-    copySkeleton(): CssNode {
-        let newTree = new CssNode(this.name, {}, this.selector);
+    copySkeleton(name?: string, selector?: string): CssNode {
+        const newName = name || this.name;
+        let newSelector = this.selector;
+        if (selector) {
+            newSelector = `${this.selector}${selector}`
+        }
+
+        let newTree = new CssNode(newName, {}, newSelector);
         for (let node of this.children) {
             newTree.add(node.copySkeleton());
         }

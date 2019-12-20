@@ -26,13 +26,13 @@ function makeCssTree() {
 
 test('copySkeleton Test', () => {
     const cssNode = makeCssTree();
-    const copied = cssNode.copySkeleton();
+    const copy = cssNode.copySkeleton();
 
-    expect(copied.name).toBe(cssNode.name);
-    expect(copied.selector).toBe(cssNode.selector);
+    expect(copy.name).toBe(cssNode.name);
+    expect(copy.selector).toBe(cssNode.selector);
 
-    const copiedListsCss = copied.findNode(['Lists']) as CssNode;
-    const copiedListItemCss = copied.findNode(['Lists', 'List Item']) as CssNode;
+    const copiedListsCss = copy.findNode(['Lists']) as CssNode;
+    const copiedListItemCss = copy.findNode(['Lists', 'List Item']) as CssNode;
 
     expect(copiedListsCss).toBeDefined();
     expect(copiedListsCss.properties.size).toBe(0);

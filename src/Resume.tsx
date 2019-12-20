@@ -288,7 +288,7 @@ class Resume extends React.Component<{}, ResumeState> {
             ) as CssNode;
 
             if (copyTree) {
-                root.add(CssNode.load(copyTree.dump()));
+                root = copyTree.copySkeleton(`#${htmlId}`, `#${htmlId}`);
             }
 
             this.updateSelected('cssId', htmlId);

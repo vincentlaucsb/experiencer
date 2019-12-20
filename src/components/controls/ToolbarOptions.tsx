@@ -53,7 +53,7 @@ export default function toolbarOptions(
     };
 
     switch (node.type) {
-        case Entry.name:
+        case Entry.type:
             return [
                 {
                     text: 'Title Options',
@@ -80,7 +80,7 @@ export default function toolbarOptions(
                 }
             ];
 
-        case Row.name:
+        case Row.type:
             const rowNode = node as BasicRowProps;
             let columnDistribution = {
                 text: 'Distribute Columns Evenly',
@@ -127,7 +127,7 @@ export default function toolbarOptions(
                 }
             ];
 
-        case Section.name:
+        case Section.type:
             const sectionProps = node as BasicSectionProps;
             const flipHeader = sectionProps.headerPosition === 'top' ? {
                 text: 'Header on Left',

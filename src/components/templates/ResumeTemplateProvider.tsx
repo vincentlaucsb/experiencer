@@ -25,11 +25,11 @@ section.header-left h2 {
 
     static get header() {
         return {
-            type: Header.name,
+            type: Header.type,
             value: 'Your Name Here',
             children: [
                 {
-                    type: RichText.name,
+                    type: RichText.type,
                     value: '<p>Email: spamMePlz@spicymail.com</p><p>Phone: 123-456-7890</p>'
                 }
             ]
@@ -38,11 +38,11 @@ section.header-left h2 {
 
     static get objective() {
         return {
-            type: Section.name,
+            type: Section.type,
             title: 'Objective',
             children: [
                 {
-                    type: RichText.name,
+                    type: RichText.type,
                     value: 'To conquer the world.'
                 }
             ]
@@ -51,11 +51,11 @@ section.header-left h2 {
 
     static get experience() {
         return {
-            type: Section.name,
+            type: Section.type,
             title: 'Experience',
             children: [
                 {
-                    type: Entry.name,
+                    type: Entry.type,
                     title: ['Another Company', '2019 -- Present'],
                     subtitle: ['Senior Software Engineer', 'Sometown, USA'],
                     children: [
@@ -65,7 +65,7 @@ section.header-left h2 {
                     ]
                 } as BasicEntryProps,
                 {
-                    type: Entry.name,
+                    type: Entry.type,
                     title: [ 'Some Company', '2014 -- 2016'],
                     subtitle: ['Software Engineer', 'Big City, USA'],
                     children: [
@@ -80,7 +80,7 @@ section.header-left h2 {
 
     static get techSkills() {
         return {
-            type: Section.name,
+            type: Section.type,
             title: 'Technical Skills',
             children: [
                 this.makeList([ 'C++', 'Web Development', 'Agile/SCRUM' ])
@@ -90,11 +90,11 @@ section.header-left h2 {
 
     static get education() {
         return {
-            type: Section.name,
+            type: Section.type,
             title: 'Education',
             children: [
                 {
-                    type: Entry.name,
+                    type: Entry.type,
                     title: ['Some College', '2010 -- 2014'],
                     subtitle: ['BS in Some Major']
                 } as BasicEntryProps
@@ -113,7 +113,7 @@ section.header-left h2 {
         });
 
         return {
-            type: RichText.name,
+            type: RichText.type,
             value: `<ul>${value}</ul>`
         };
     }
@@ -183,17 +183,17 @@ section.header-left h2 {
                     header,
                     ResumeTemplateProvider.objective,
                     {
-                        type: Row.name,
+                        type: Row.type,
                         children: [
                             {
-                                type: Column.name,
+                                type: Column.type,
                                 children: [
                                     ResumeTemplateProvider.education,
                                     ResumeTemplateProvider.techSkills
                                 ]
                             },
                             {
-                                type: Column.name,
+                                type: Column.type,
                                 children: [
                                     ResumeTemplateProvider.experience
                                 ]

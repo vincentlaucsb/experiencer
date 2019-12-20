@@ -98,46 +98,46 @@ export function randyMarshCss() {
 
 export function randyMarsh(): BasicResumeNode {
     return {
-        "type": Row.name,
+        "type": Row.type,
         "htmlId": "main",
         "children": [
             {
-                "type": Column.name,
+                "type": Column.type,
                 "htmlId": "main-column",
                 "children": [
                     {
-                        "type": Header.name,
+                        "type": Header.type,
                         "value": "Randy Marsh",
                         "subtitle": "Geologist and Innovator",
                         "children": [],
                     } as BasicHeaderProps,
                     {
-                        "type": Section.name,
+                        "type": Section.type,
                         "title": "Experience",
                         "children": [
                             {
-                                "type": Entry.name,
+                                "type": Entry.type,
                                 "title": ["Tegridy Farms", "2019 -- Present"],
                                 "subtitle": ["Founder/CEO", "Somewhere in the boonies"],
                                 "children": [
                                     {
-                                        "type": RichText.name,
+                                        "type": RichText.type,
                                         "value": "<ul><li>Pioneered farm-to-door delivery of fresh agricultural produce</li><li>Negotiated a multi-million dollar contract with the Chinese government</li></ul>"
                                     }
                                 ]
                             },
                             {
-                                "type": Entry.name,
+                                "type": Entry.type,
                                 "title": ["United States Geological Survey", "2010 -- 2019"],
                                 "subtitle": ["Geologist"],
                             } as BasicEntryProps,
                             {
-                                "type": Entry.name,
+                                "type": Entry.type,
                                 "title": ["Lorde", "2014"],
                                 "subtitle": ["Pop Star"],
                                 "children": [
                                     {
-                                        "type": RichText.name,
+                                        "type": RichText.type,
                                         "value": "<ul><li>Released the Billboard #1 hit <em>Push (Feeling Good on A Wednesday)</em></li></ul>",
                                     }
                                 ]
@@ -145,34 +145,34 @@ export function randyMarsh(): BasicResumeNode {
                         ],
                     } as BasicSectionProps,
                     {
-                        "type": Section.name,
+                        "type": Section.type,
                         "title": "Education",
                         "children": [
                             {
-                                "type": Entry.name,
+                                "type": Entry.type,
                                 "title": ["Some College", "1992"],
                                 "subtitle": ["Doctorate in Geology"]
                             } as BasicEntryProps
                         ]
                     } as BasicSectionProps,
                     {
-                        "type": Section.name,
+                        "type": Section.type,
                         "title": "Awards and Recognition",
                         "children": [
                             {
-                                "type": Row.name,
+                                "type": Row.type,
                                 "evenColumns": true,
                                 "children": [
                                     {
-                                        "type": Column.name,
+                                        "type": Column.type,
                                         "children": [
                                             {
-                                                "type": Entry.name,
+                                                "type": Entry.type,
                                                 "title": ["Nobel Prize"],
                                                 "subtitle": ["Break Wind Theory"],
                                                 "children": [
                                                     {
-                                                        "type": RichText.name,
+                                                        "type": RichText.type,
                                                         "value": "<p>Awarded the Nobel Prize for my work on the Break Wind theory of spontaneous combustion</p>"
                                                     }
                                                 ]
@@ -180,15 +180,15 @@ export function randyMarsh(): BasicResumeNode {
                                         ]
                                     },
                                     {
-                                        "type": Column.name,
+                                        "type": Column.type,
                                         "children": [
                                             {
-                                                "type": Entry.name,
+                                                "type": Entry.type,
                                                 "title": ["Emmy Award"],
                                                 "subtitle": ["Outstanding Animated Program"],
                                                 "children": [
                                                     {
-                                                        "type": RichText.name,
+                                                        "type": RichText.type,
                                                         "value": "<p>Gifted an Emmy Award after passing a stool weighing well over 100 courics</p>"
                                                     }
                                                 ]
@@ -203,41 +203,41 @@ export function randyMarsh(): BasicResumeNode {
                 ]
             },
             {
-                "type": Column.name,
+                "type": Column.type,
                 "htmlId": "sidebar",
                 "children": [
                     {
-                        "type": Section.name,
+                        "type": Section.type,
                         "title": "Contact",
                         "children": [
                             {
-                                "type": RichText.name,
+                                "type": RichText.type,
                                 "value": "<p>South Park, CO</p><p>@GettinRandy55</p>"
                             }
                         ]
                     } as BasicSectionProps,
                     {
-                        "type": Section.name,
+                        "type": Section.type,
                         "title": "Skills",
                         "children": [
                             {
-                                "type": RichText.name,
+                                "type": RichText.type,
                                 "value": "<ul><li>Advertising</li><li>Agriculture</li><li>Criminal Defense</li><li>Demolition/Explosives</li><li>Geology</li><li>International Commerce</li><li>Magic</li><li>Music Production</li><li>Parade Planning</li><li>Political Activism</li></ul>",
                             }
                         ]
                     },
                     {
-                        "type": Section.name,
+                        "type": Section.type,
                         "title": "References",
                         "children": [
                             {
-                                "type": RichText.name,
+                                "type": RichText.type,
                                 "value": "<p><strong>Towelie</strong></p><p>Agricultural Inspector</p><p><br></p>"
                             }
                         ]
                     } as BasicSectionProps,
                     {
-                        "type": RichText.name,
+                        "type": RichText.type,
                         "value": "<p>Typeset entirely with HTML, CSS, and good old-fashioned<strong> TEGRIDY</strong></p>",
                         "htmlId": "tegridy"
                     }

@@ -16,9 +16,7 @@ export default class RichText extends ResumeNodeBase {
         ],
     };
 
-    static get displayName() {
-        return 'Rich Text';
-    }
+    static readonly type = 'Rich Text';
 
     get className() {
         return super.className + ' rich-text';

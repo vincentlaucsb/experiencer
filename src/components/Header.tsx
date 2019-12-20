@@ -11,6 +11,8 @@ export interface BasicHeaderProps extends BasicRowProps, HeaderBase { };
 export interface HeaderProps extends RowProps, HeaderBase { };
 
 export default class Header extends Row<HeaderProps> {
+    static readonly type: string = 'Header';
+
     get className(): string {
         let classNames = new Set(super.className.split(' '));
         classNames.delete('row');

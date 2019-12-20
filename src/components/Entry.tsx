@@ -22,6 +22,8 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         this.removeSubtitleField = this.removeSubtitleField.bind(this);
     }    
 
+    static readonly type = 'Entry';
+
     /** Get the class name for the main <div> container */
     get className(): string {
         let classes = ['entry', super.className];

@@ -22,6 +22,8 @@ export default class Section extends ResumeNodeBase<SectionProps> {
         this.rotateRight = this.rotateRight.bind(this);
     }
 
+    static readonly type = 'Section';
+
     get className() {
         let classNames = [ super.className ];
         if (this.props.headerPosition === 'left') {

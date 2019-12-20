@@ -8,6 +8,8 @@ interface DescriptionItemProps extends ResumeNodeProps {
 }
 
 export class DescriptionListItem extends ResumeNodeBase<DescriptionItemProps> {
+    static readonly type = 'DescriptionListItem';
+
     get className() {
         return super.className + " resume-definition";
     }
@@ -36,7 +38,9 @@ export class DescriptionListItem extends ResumeNodeBase<DescriptionItemProps> {
     }
 }
 
-export class DescriptionList extends ResumeNodeBase {
+export default class DescriptionList extends ResumeNodeBase {
+    static readonly type = 'DescriptionList';
+
     /** Returns a "handle" which can be used to select the column itself and not the columns it contains */
     renderGrabHandle() {
         if (this.isHovering && !this.isSelected) {

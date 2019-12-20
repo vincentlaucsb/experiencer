@@ -12,6 +12,8 @@ export interface BasicRowProps extends BasicResumeNode, RowBase { }
 export interface RowProps extends ResumeNodeProps, RowBase {}
 
 export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> {
+    static readonly type: string = 'Row';
+
     get className(): string {
         let classNames = ['row', super.className];
         return classNames.join(' ');
@@ -22,7 +24,7 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
         const children = this.props.children as Array<ResumeNode>;
         if (children) {
             for (let node of children) {
-                if (node.type === Column.name) {
+                if (node.type === Column.type) {
                     if (node.children && node.children.length > 0) {
                         return false;
                     }

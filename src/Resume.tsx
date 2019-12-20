@@ -247,13 +247,13 @@ ${this.state.additionalCss}`;
 
     addSection() {
         this.addChild({
-            type: Section.name,
+            type: Section.type,
             headerPosition: this.state.sectionTitlePosition
         });
     }
 
     addColumn() {
-        this.addChild(ComponentTypes.defaultValue(Row.name).node);
+        this.addChild(ComponentTypes.defaultValue(Row.type).node);
     }
 
     /**

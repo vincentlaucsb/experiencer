@@ -28,7 +28,7 @@ function getRowCss(): CssNode {
 }
 
 function getRichTextCss(): CssNode {
-    let richTextCss = new CssNode(RichText.displayName, {
+    let richTextCss = new CssNode(RichText.type, {
 
     }, '.rich-text');
 
@@ -44,7 +44,7 @@ function getRichTextCss(): CssNode {
 }
 
 function getSectionCss(): CssNode {
-    let sectionCss = new CssNode(Section.name, {
+    let sectionCss = new CssNode(Section.type, {
         'margin-bottom': '16px'
     }, 'section');
 
@@ -69,7 +69,7 @@ function getSectionCss(): CssNode {
 }
 
 function getEntryCss(): CssNode {
-    let entryCss = new CssNode(Entry.name,
+    let entryCss = new CssNode(Entry.type,
         {
             'margin-bottom': '15px'
         }, '.entry');

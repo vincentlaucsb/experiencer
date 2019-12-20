@@ -10,6 +10,8 @@ export interface BasicColumnProps extends BasicResumeNode, ColumnBase { }
 interface ColumnProps extends ResumeNodeProps, ColumnBase { }
 
 export default class Column extends ResumeNodeBase<ColumnProps> {
+    static readonly type = 'Column';
+
     /** Get the index of this column */
     get position(): number {
         return this.props.id[this.props.id.length - 1];

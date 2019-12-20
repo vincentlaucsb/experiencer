@@ -6,7 +6,7 @@ import PureMenu, { PureDropdown, PureMenuItem, PureMenuLink } from "./PureMenu";
 import ResumeHotKeys from "./ResumeHotkeys";
 import { SelectedNodeActions } from "./SelectedNodeActions";
 import { ComponentTypes, NodeInformation } from "../ResumeComponent";
-import { DescriptionListItem, DescriptionList } from "../List";
+import DescriptionList, { DescriptionListItem } from "../List";
 import HtmlIdAdder from "./HtmlIdAdder";
 import { assignIds } from "../Helpers";
 import { ResumeNode } from "../utility/NodeTree";
@@ -144,14 +144,14 @@ export default function TopEditingBar(props: EditingBarProps) {
         editButton = <Item onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Item>
     }
 
-    if (type === DescriptionListItem.name) {
+    if (type === DescriptionListItem.type) {
         const parentId = id.slice(0, id.length - 1);
         parentOptions = <AddOption id={parentId} addChild={
             props.addChild as AddChild
-        } options={ComponentTypes.childTypes(DescriptionList.name)} />
+        } options={ComponentTypes.childTypes(DescriptionList.type)} />
     }
 
-    if (type === Column.name) {
+    if (type === Column.type) {
         moveUpText = "Left";
         moveDownText = "Right";
     }

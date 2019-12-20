@@ -492,7 +492,9 @@ ${this.state.additionalCss}`;
             let specificCssEditor = <></>
             if (this.selectedNode.htmlId && this.state.css.findNode([`#${this.selectedNode.htmlId}`])) {
                 const specificRoot = this.state.css.findNode([`#${this.selectedNode.htmlId}`]) as CssNode;
-                specificCssEditor = <CssEditor isPrinting={this.isPrinting}
+                specificCssEditor = <CssEditor
+                    key={specificRoot.fullSelector}
+                    isPrinting={this.isPrinting}
                     root={specificRoot}
                     updateData={updater}
                 />
@@ -502,6 +504,7 @@ ${this.state.additionalCss}`;
                 return <>
                     {specificCssEditor}
                     <CssEditor isPrinting={this.isPrinting}
+                        key={rootNode.fullSelector}
                         root={rootNode}
                         updateData={updater}
                     />

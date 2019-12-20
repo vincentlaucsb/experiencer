@@ -237,6 +237,7 @@ class Resume extends React.Component<{}, ResumeState> {
         });
 
         this.style.innerHTML = template.css;
+        this.style2.innerHTML = template.builtinCss.stylesheet();
     }
 
     renderTemplateChanger() {
@@ -253,6 +254,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
             // Update loaded CSS
             this.style.innerHTML = template.css;
+            this.style2.innerHTML = template.builtinCss.stylesheet();
         };
 
         const templateNames = Object.keys(ResumeTemplateProvider.templates);
@@ -411,7 +413,6 @@ class Resume extends React.Component<{}, ResumeState> {
             css: savedData.css as string,
             mode: 'normal'
         })
-        console.log(this.state.builtinCss);
 
         // Actually load custom CSS
         this.renderStyle();

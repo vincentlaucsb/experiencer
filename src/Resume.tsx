@@ -546,15 +546,31 @@ class Resume extends React.Component<{}, ResumeState> {
             const rootNode = this.state.builtinCss.findNode(
                 ComponentTypes.cssName(this.selectedNode.type)) as CssNode;
 
-            if (rootNode) {
-                return <CssEditor isPrinting={this.isPrinting}
-                    root={rootNode}
+            let specificCssEditor = <></>
+            if (this.selectedNode.cssId && this.state.builtinCss.findNode([`#${this.selectedNode.cssId}`])) {
+                const specificRoot = this.state.builtinCss.findNode([`#${this.selectedNode.cssId}`]) as CssNode;
+                specificCssEditor = <CssEditor isPrinting={this.isPrinting}
+                    root={specificRoot}
                     updateData={(path, data) => {
                         this.css.setProperties(path, data);
                         this.setState({ builtinCss: this.css })
                         this.style2.innerHTML = this.css.stylesheet();
                     }}
                 />
+            }
+
+            if (rootNode) {
+                return <>
+                    {specificCssEditor}
+                    <CssEditor isPrinting={this.isPrinting}
+                    root={rootNode}
+                    updateData={(path, data) => {
+                        this.css.setProperties(path, data);
+                        this.setState({ builtinCss: this.css })
+                        this.style2.innerHTML = this.css.stylesheet();
+                    }}
+                    />
+                </>
             }
 
             return <></>

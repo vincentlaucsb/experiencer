@@ -5,7 +5,7 @@ interface LandingProps {
 }
 
 export default function Landing(props: LandingProps) {
-    return <div id="help" className={props.className}>
+    return <div id="landing">
         <h2>Getting Started</h2>
         <p>Welcome to Experiencer, a powerful tool that can help you create attractive resumes.</p>
         <p>Click on the <strong>New</strong> button in the top left to get started. Once you start

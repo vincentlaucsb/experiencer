@@ -1,0 +1,36 @@
+﻿@import "variables";
+
+%file-form {
+    background: $light-shade;
+    border: 1px solid $dark-accent;
+    padding: $spacing;
+    color: $dark-shade;
+}
+
+form#file-loader {
+    @extend %file-form;
+}
+
+form#file-saver {
+    @extend %file-form;
+
+    div {
+        margin-bottom: $spacing;
+    }
+}
+
+/** Quill */
+
+#resume {
+    .ql-container {
+        font-family: inherit;
+    }
+
+    .ql-editor {
+        padding: initial;
+
+        li {
+            list-style-type: none;
+        }
+    }
+}

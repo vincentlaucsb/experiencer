@@ -1,74 +1,44 @@
 ﻿import * as React from "react";
-import EditButton, { DeleteButton, UpButton, DownButton } from "./controls/Buttons";
-import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
-import { ButtonGroup, DropdownButton, Dropdown } from "react-bootstrap";
+import Row, { RowProps, BasicRowProps } from "./Row";
+import ReactQuill from "react-quill";
+import RichText from "./RichText";
 
-export interface HeaderProps extends ResumeNodeProps {
-    orientation?: 'row' | 'column';
+interface HeaderBase {
+    subtitle?: string;
 }
 
-export default class Header extends ResumeNodeBase<HeaderProps> {
-    constructor(props: ResumeNodeProps) {
-        super(props);
+export interface BasicHeaderProps extends BasicRowProps, HeaderBase { };
+export interface HeaderProps extends RowProps, HeaderBase { };
 
-        this.orientColumn = this.orientColumn.bind(this);
-        this.orientRow = this.orientRow.bind(this);
-    }
-
+export default class Header extends Row<HeaderProps> {
     get className(): string {
-        let classNames = [super.className];
-
-        if (this.props.orientation === 'row') {
-            classNames.push('flex-row flex-spread');
-        } else {
-            classNames.push('flex-col');
-        }
-
-        return classNames.join(' ');
-    }
-
-    get editToolsClassName(): string {
-        let classNames = ['flex-wrap'];
-        if (this.props.orientation === 'row') {
-            classNames.push('btn-group-vertical');
-        }
-
-        return classNames.join(' ');
-    }
-
-    orientColumn() {
-        this.updateData('orientation', 'column');
-    }
-
-    orientRow() {
-        this.updateData('orientation', 'row');
-    }
-
-    getEditingMenu() {
-        if (this.isSelected) {
-            return <ButtonGroup className={this.editToolsClassName} size="sm">
-                <DropdownButton as={ButtonGroup} title="Distribute Items" id="distribute-options" size="sm">
-                    <Dropdown.Item onClick={this.orientColumn}>Top-to-bottom (column)</Dropdown.Item>
-                    <Dropdown.Item onClick={this.orientRow}>Left-to-right (row)</Dropdown.Item>
-                </DropdownButton>
-                <EditButton {...this.props} extended={true} />
-                <DeleteButton {...this.props} extended={true} />
-                <UpButton {...this.props} extended={true} />
-                <DownButton {...this.props} extended={true} />
-            </ButtonGroup>
-        }
+        let classNames = new Set(super.className.split(' '));
+        classNames.delete('row');
+        return Array.from(classNames).join(' ');
     }
 
     render() {
-        let value = this.props.isEditing ? <input onChange={this.updateDataEvent.bind(this, "value")}
-            value={this.props.value} type="text" /> : this.props.value || "Enter a title";
+        let value = this.props.isEditing ? <ReactQuill
+            modules={RichText.quillModules}
+            value={this.props.value || ""}
+            onChange={(text) => this.updateData("value", text)}
+        /> : <h1 dangerouslySetInnerHTML={{ __html: this.props.value || "Enter a title" }} />;
 
-        return <header className={this.className}>
-            {this.renderEditingMenu()}
-            <h1 {...this.selectTriggerProps}>
-                {value}
-            </h1>
-            {this.renderChildren()}
-        </header>;
+        let subtitle = this.props.isEditing ? <ReactQuill
+            modules={RichText.quillModules}
+            value={this.props.subtitle || ""}
+            onChange={(text) => this.updateData("subtitle", text)}
+        /> : <h2 className="subtitle" dangerouslySetInnerHTML={{ __html: this.props.subtitle || "" }} />;
+
+        return (
+            <header className={this.className} style={this.style} {...this.selectTriggerProps}>
+                {this.renderGrabHandle()}
+                <hgroup>
+                    {value}
+                    {subtitle}
+                </hgroup>
+                {this.renderChildren()}
+            </header>
+        );
     }
 }

@@ -1,15 +1,14 @@
 import * as React from 'react';
 import { saveAs } from 'file-saver';
 
-import './css/index.css';
-import './scss/custom.scss';
+import 'purecss/build/pure-min.css';
 import 'react-quill/dist/quill.snow.css';
+import './scss/index.scss';
 
-import ResumeComponent, { EditorMode } from './components/ResumeComponent';
-import { Button, ButtonToolbar, Nav } from 'react-bootstrap';
-import { deleteAt, moveUp, moveDown, assignIds, deepCopy, arraysEqual } from './components/Helpers';
-import { SelectedNodeProps, AddChild, Action } from './components/ResumeNodeBase';
-import ResumeTemplateProvider from './components/ResumeTemplateProvider';
+import ResumeComponent, { EditorMode, ComponentTypes } from './components/ResumeComponent';
+import { assignIds, deepCopy, arraysEqual } from './components/Helpers';
+import { Action, ResumeNodeProps } from './components/ResumeNodeBase';
+import ResumeTemplateProvider from './components/templates/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
 import Landing from './components/help/Landing';
 import TopNavBar from './components/controls/TopNavBar';
@@ -17,11 +16,26 @@ import ResumeHotKeys from './components/controls/ResumeHotkeys';
 import ResumeState, { ResumeSaveData } from './components/controls/ResumeState';
 import StyleEditor from './components/controls/StyleEditor';
 import Help from './components/help/Help';
-import { isNullOrUndefined } from 'util';
 import HoverTracker, { IdType } from './components/utility/HoverTracker';
+import TopEditingBar, { EditingBarProps } from './components/controls/TopEditingBar';
+import ResumeNodeTree, { ResumeNode, BasicResumeNode } from './components/utility/NodeTree';
+import CssNode from './components/utility/CssTree';
+import PureMenu, { PureMenuLink, PureMenuItem } from './components/controls/PureMenu';
+import { Button } from './components/controls/Buttons';
+import Octicon, { Home } from "@primer/octicons-react";
+import { RenderIf } from './components/controls/HelperComponents';
+import FileLoader from './components/controls/FileLoader';
+import FileSaver from './components/controls/FileSaver';
+import { SelectedNodeActions } from './components/controls/SelectedNodeActions';
+import CssEditor from './components/utility/CssEditor';
+import Row from './components/Row';
+import Section from './components/Section';
 
 class Resume extends React.Component<{}, ResumeState> {
-    hovering: HoverTracker;
+    hovering = new HoverTracker();
+    nodes = new ResumeNodeTree();
+    css = new CssNode("Resume CSS", {}, "#resume");
+    shouldUpdateCss = false;
     style: HTMLStyleElement;
     unselect: Action;
 
@@ -34,25 +48,24 @@ class Resume extends React.Component<{}, ResumeState> {
         this.style.innerHTML = "";
         head.appendChild(this.style);
 
-        this.hovering = new HoverTracker();
         this.state = {
+            css: this.css,
             children: [],
-            css: "",
+            additionalCss: "",
             mode: "landing",
             sectionTitlePosition: "top"
         };
-
         this.renderStyle();
 
+        this.print = this.print.bind(this);
         this.toggleMode = this.toggleMode.bind(this);
 
         /** Resume Nodes */
+        this.addHtmlId = this.addHtmlId.bind(this);
         this.addColumn = this.addColumn.bind(this);
         this.addSection = this.addSection.bind(this);
         this.addNestedChild = this.addNestedChild.bind(this);
-        this.childMapper = this.childMapper.bind(this);
-        this.updateData = this.updateData.bind(this);
-        this.toggleEdit = this.toggleEdit.bind(this);
+        this.updateNestedChild = this.updateNestedChild.bind(this);
 
         /** Templates and Styling **/
         this.changeTemplate = this.changeTemplate.bind(this);
@@ -62,34 +75,31 @@ class Resume extends React.Component<{}, ResumeState> {
         this.loadData = this.loadData.bind(this);
         this.saveFile = this.saveFile.bind(this);
 
+        this.editSelected = this.editSelected.bind(this);
+        this.deleteSelected = this.deleteSelected.bind(this);
+        this.moveSelectedUp = this.moveSelectedUp.bind(this);
+        this.moveSelectedDown = this.moveSelectedDown.bind(this);
+        this.updateSelected = this.updateSelected.bind(this);
+
         /** Cut & Paste */
         this.copyClipboard = this.copyClipboard.bind(this);
+        this.cutClipboard = this.cutClipboard.bind(this);
         this.pasteClipboard = this.pasteClipboard.bind(this);
 
         // Unselect the currently selected node
-        this.unselect = () => { this.setState({ selectedNode: undefined }); };
+        this.unselect = () => {
+            this.setState({ selectedNode: undefined });
+        };
     }
+    
 
     /** Prevent component from being edited from the template changing screen */
     get isEditable(): boolean {
         return !this.isPrinting && !(this.state.mode === 'changingTemplate');
     }
 
-    get isNodeSelected() : boolean {
-        return !isNullOrUndefined(this.state.selectedNode);
-    }
-
     get isPrinting(): boolean {
         return this.state.mode === 'printing';
-    }
-
-    get resumeClassName() {
-        if (this.isPrinting) {
-            return "resume-printing";
-        }
-
-        let classNames = ["ml-auto", "mr-auto", "mt-2"];
-        return classNames.join(' ');
     }
 
     /** Return props related to hover/select functionality */
@@ -121,48 +131,55 @@ class Resume extends React.Component<{}, ResumeState> {
 
             // Returns true if the given node is currently selected
             isSelected: (uuid: string) => {
-                return this.state.selectedNode ? uuid === this.state.selectedNode.uuid : false;
+                return this.selectedNode ? uuid === this.selectedNode['uuid'] : false;
             },
 
             // Update the selected node
-            updateSelected: (data?: SelectedNodeProps) => {
-                this.setState({ selectedNode: data });
+            updateSelected: (id?: IdType) => {
+                this.setState({ selectedNode: id });
             },
 
             unselect: this.unselect
         }
     }
 
-    // Push style changes to browser
-    renderStyle() {
-        this.style.innerHTML = this.state.css;
+    /** Retrieve the selected node **/
+    get selectedNode() {
+        if (this.state.selectedNode) {
+            return this.nodes.getNodeById(this.state.selectedNode);
+        }
+
+        return undefined;
     }
 
     /**
-     * Render the nodes of this resume
-     * @param elem An object with resume component data
-     * @param idx  Index of the object
-     * @param arr  Array of component data
+     * Update stylesheets
+     * @param prevProps
+     * @param prevState
      */
-    childMapper(elem: object, idx: number, arr: object[]) {
-        const uniqueId = elem['uuid'];
-        const props = {
-            ...elem,
-            uuid: uniqueId,
-            mode: this.state.mode,
-            addChild: this.addNestedChild.bind(this, idx),
-            moveUp: this.moveUp.bind(this, idx),
-            moveDown: this.moveDown.bind(this, idx),
-            deleteChild: this.deleteChild.bind(this, idx),
-            toggleEdit: this.toggleEdit.bind(this, idx),
-            updateData: this.updateData.bind(this, idx),
-            ...this.hoverProps,
+    componentDidUpdate(_prevProps, prevState: ResumeState) {
+        if (this.shouldUpdateCss) {
+            this.renderStyle();
+            this.shouldUpdateCss = false;
+        }
 
-            index: idx,
-            numChildren: arr.length
-        };
+        // If the previously selected node was editing, bring it
+        // out of an editing state
+        if (prevState.selectedNode && (prevState.selectedNode !== this.state.selectedNode)) {
+            // Make sure node wasn't deleted before we try to modify it
+            const prevNode = this.nodes.getNodeById(prevState.selectedNode);
+            if (prevNode) {
+                (prevNode as ResumeNodeProps).isEditing = false;
+            }
+        }
+    }
 
-        return <ResumeComponent key={uniqueId} {...props} />
+    // Push style changes to browser
+    renderStyle() {
+        this.style.innerHTML = `
+${this.state.css.stylesheet()}
+
+${this.state.additionalCss}`;
     }
 
     /**
@@ -176,168 +193,201 @@ class Resume extends React.Component<{}, ResumeState> {
 
     //#region Changing Templates
     changeTemplate() {
-        const key = 'Traditional 1';
-        const template = ResumeTemplateProvider.templates[key]();
-
-        this.setState({
-            activeTemplate: key,
-            mode: 'changingTemplate',
-            ...template
-        });
-
-        this.style.innerHTML = template.css;
+        this.loadData(
+            ResumeTemplateProvider.templates['Randy Marsh'](),
+            'changingTemplate'
+        );
     }
 
     renderTemplateChanger() {
         const loadTemplate = (key: string) => {
-            this.setState({
-                activeTemplate: key,
-                ...ResumeTemplateProvider.templates[key]()
-            });
-
-            // Update loaded CSS
-            this.renderStyle();
+            const template = ResumeTemplateProvider.templates[key]();
+            this.setState({ activeTemplate: key, });
+            this.loadData(template, 'changingTemplate');
         };
 
         const templateNames = Object.keys(ResumeTemplateProvider.templates);
         let navItems = templateNames.map((key: string) =>
-            <Nav.Item key={key}>
-                <Nav.Link eventKey={key} onClick={() => loadTemplate(key)}>
-                    {key}
-                </Nav.Link>
-            </Nav.Item>);
+            <PureMenuItem key={key} onClick={() => loadTemplate(key)}>
+                <PureMenuLink>{key}</PureMenuLink>
+            </PureMenuItem>
+        );
 
-        return <div className="ml-2 mr-2 mt-2 mb-2" style={{ maxWidth: "300px", width: "30%" }}>
-            <Nav variant="pills"
-                activeKey={this.state.activeTemplate}
-                className="flex-column mb-2">
-                {navItems}
-            </Nav>
-            <Button onClick={() => this.toggleMode()}>Use this Template</Button>
-        </div>
+        return (
+            <>
+                <PureMenu>
+                    {navItems}
+                </PureMenu>
+                <Button onClick={() => this.toggleMode()}>Use this Template</Button>
+            </>
+        );
     }
     //#endregion
 
     //#region Creating/Editing Nodes
+    addHtmlId(htmlId: string) {
+        const currentNode = this.selectedNode as ResumeNode;
+        if (currentNode) {
+            let root = new CssNode(`#${htmlId}`, {}, `#${htmlId}`);
+            let copyTree = this.css.findNode(
+                ComponentTypes.cssName(currentNode.type)) as CssNode;
+
+            if (copyTree) {
+                root = copyTree.copySkeleton(`#${htmlId}`, `#${htmlId}`);
+            }
+
+            currentNode.htmlId = htmlId;
+            this.css.add(root);
+            this.setState({
+                css: this.css,
+                children: this.nodes.children
+            });
+        }
+    }
+
     addSection() {
         this.addChild({
-            type: 'Section',
+            type: Section.name,
             headerPosition: this.state.sectionTitlePosition
         });
     }
 
     addColumn() {
-        this.addChild({
-            type: 'FlexibleRow',
-            children: [
-                { type: 'FlexibleColumn' },
-                { type: 'FlexibleColumn' }
-            ]
-        });
+        this.addChild(ComponentTypes.defaultValue(Row.name).node);
     }
 
     /**
      * Add an immediate child
      * @param node Node to be added
      */
-    addChild(node: object) {
-        this.setState({
-            children: [...this.state.children, assignIds(node)]
-        });
+    addChild<T extends BasicResumeNode>(node: T) {
+        this.nodes.addChild(assignIds(node));
+        this.setState({ children: this.nodes.children });
     }
 
     /**
-     * Add a child for some child node of this resume
-     * @param idx  Index of the child
-     * @param node Grandchild to be added
+     * Add node as a child to the node identified by id
+     * @param id   Hierarchical id pointing to some node
+     * @param node Node to be added
      */
-    addNestedChild(idx: number, node: object) {
-        const newChildren = [...this.state.children];
-        if (!newChildren[idx]['children']) {
-            newChildren[idx]['children'] = new Array<object>();
+    addNestedChild(id: IdType, node: ResumeNode) {
+        this.nodes.addNestedChild(id, node);
+        this.setState({ children: this.nodes.children });
+    }
+
+    deleteSelected() {
+        const id = this.state.selectedNode as IdType;
+        if (id) {
+            this.nodes.deleteChild(id);
+            this.hovering.hoverOut(id);
+            this.setState({
+                children: this.nodes.children,
+                hoverNode: this.hovering.currentId,
+                selectedNode: undefined
+            });
         }
-
-        newChildren[idx]['children'].push(assignIds(node));
-
-        this.setState({ children: newChildren });
     }
 
-    deleteChild(idx: number) {
-        this.setState({
-            children: deleteAt(this.state.children, idx)
-        });
+    updateNestedChild(id: IdType, key: string, data: any) {
+        this.nodes.updateChild(id, key, data);
+        this.setState({ children: this.nodes.children });
     }
 
-    updateData(idx: number, key: string, data: any) {
-        const newChildren = [...this.state.children];
-        newChildren[idx][key] = data;
-
-        this.setState({ children: newChildren });
+    updateSelected(key: string, data: string | string[] | boolean) {
+        const id = this.state.selectedNode as IdType;
+        if (id) {
+            this.nodes.updateChild(id, key, data);
+            this.setState({ children: this.nodes.children });
+        }
     }
 
-    toggleEdit(idx: number) {
-        const currentValue = this.state.children[idx]['isEditing'];
-        const newChildren = [...this.state.children];
-        newChildren[idx]['isEditing'] = !currentValue;
-
-        this.setState({ children: newChildren });
+    editSelected() {
+        const id = this.state.selectedNode as IdType;
+        if (id) {
+            this.nodes.toggleEdit(id);
+            this.setState({ children: this.nodes.children });
+        }
     }
 
-    // Move the child at idx up one position
-    moveUp(idx: number) {
-        this.setState({
-            children: moveUp(this.state.children, idx)
-        });
+    get moveSelectedUpEnabled() {
+        const id = this.state.selectedNode as IdType;
+        return id && id[id.length - 1] > 0;
     }
 
-    // Move the child at idx down one position
-    moveDown(idx: number) {
-        this.setState({
-            children: moveDown(this.state.children, idx)
-        });
+    moveSelectedUp() {
+        const id = this.state.selectedNode as IdType;
+        if (this.moveSelectedUpEnabled) {
+            this.setState({
+                children: this.nodes.children,
+                selectedNode: this.nodes.moveUp(id)
+            });
+        }
+    }
+
+    get moveSelectedDownEnabled() {
+        const id = this.state.selectedNode as IdType;
+        return id && !this.nodes.isLastSibling(id);
+    }
+
+    moveSelectedDown() {
+        const id = this.state.selectedNode as IdType;
+        if (this.moveSelectedDownEnabled) {
+            this.setState({
+                children: this.nodes.children,
+                selectedNode: this.nodes.moveDown(id)
+            });
+        }
     }
     //#endregion
 
     //#region Clipboard
     /** Copy the currently selected node */
     copyClipboard() {
-        if (this.state.selectedNode) {
-            const data = this.state.selectedNode.getData();
-            this.setState({
-                clipboard: data
-            });
+        if (this.selectedNode) {
+            this.setState({ clipboard: deepCopy(this.selectedNode) });
+        }
+    }
+
+    cutClipboard() {
+        // Implement as Copy + Delete
+        if (this.selectedNode) {
+            this.copyClipboard();
+            this.deleteSelected();
         }
     }
 
     /** Paste whatever is currently in the clipboard */
     pasteClipboard() {
-        if (this.state.selectedNode && this.state.selectedNode.addChild) {
-            let node = deepCopy(this.state.clipboard);
-
+        if (this.selectedNode) {
             // UUIDs will be added in the method below
-            (this.state.selectedNode.addChild as AddChild)(node);
+            this.addNestedChild(this.state.selectedNode as IdType,
+                deepCopy(this.state.clipboard));
         }
     }
     //#endregion
     
     //#region Serialization
-    loadData(data: object) {
+    loadData(data: object, mode: EditorMode = 'normal') {
         let savedData = data as ResumeSaveData;
-        this.setState({
-            children: assignIds(savedData.children) as Array<object>,
-            css: savedData.css as string,
-            mode: 'normal'
-        });
+        this.nodes.children = assignIds(savedData.children);
+        this.css = CssNode.load(savedData.builtinCss);
 
-        // Actually load custom CSS
-        this.renderStyle();
+        this.setState({
+            css: this.css,
+            children: this.nodes.children,
+            additionalCss: savedData.css as string,
+            mode: mode
+        })
+
+        this.shouldUpdateCss = true;
     }
 
     // Save data to an external file
     saveFile(filename: string) {
         const data: ResumeSaveData = {
             children: this.state.children,
-            css: this.state.css
+            builtinCss: this.css.dump(),
+            css: this.state.additionalCss
         };
 
         var blob = new Blob([JSON.stringify(data)],
@@ -351,9 +401,20 @@ class Resume extends React.Component<{}, ResumeState> {
     //#endregion
 
     //#region Helper Component Props
-    get toolbarProps() {
-        const pasteEnabled = this.isNodeSelected && !isNullOrUndefined(this.state.clipboard);
+    get selectedNodeActions() : SelectedNodeActions {
+        return {
+            edit: this.editSelected,
+            delete: this.deleteSelected,
+            moveUp: this.moveSelectedUp,
+            moveDown: this.moveSelectedDown,
 
+            copyClipboard: this.copyClipboard,
+            cutClipboard: this.cutClipboard,
+            pasteClipboard: this.pasteClipboard
+        }
+    }
+
+    get toolbarProps() {
         let props = {
             mode: this.state.mode,
             loadData: this.loadData,
@@ -364,22 +425,28 @@ class Resume extends React.Component<{}, ResumeState> {
             toggleStyleEditor: () => this.toggleMode('editingStyle')
         }
 
-        if (this.isNodeSelected) {
-            props['copyClipboard'] = this.copyClipboard;
-            props['unselect'] = this.unselect;
-        }
-
-        if (pasteEnabled) {
-            props['pasteClipboard'] = this.pasteClipboard;
-        }
-
         return props;
+    }
+
+    get editingBarProps() {
+        return {
+            ...this.selectedNodeActions,
+            id: this.state.selectedNode,
+            node: this.selectedNode,
+            addHtmlId: this.addHtmlId,
+            updateNode: this.updateSelected,
+            addChild: this.addNestedChild,
+            toggleEdit: this.editSelected,
+            moveUpEnabled: this.moveSelectedUpEnabled,
+            moveDownEnabled: this.moveSelectedDownEnabled,
+            unselect: this.unselect,
+            updateSelected: this.updateSelected
+        }
     }
 
     get resumeHotKeysProps() {
         return {
-            copyClipboard: this.copyClipboard,
-            pasteClipboard: this.pasteClipboard,
+            ...this.selectedNodeActions,
             togglePrintMode: () => this.toggleMode('printing'),
             reset: () => {
                 this.unselect();
@@ -390,7 +457,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
     get styleEditorProps() {
         const onStyleChange = (css: string) => {
-            this.setState({ css: css });
+            this.setState({ additionalCss: css });
         }
         const toggleStyleEditor = () => this.toggleMode('editingStyle');
 
@@ -402,25 +469,113 @@ class Resume extends React.Component<{}, ResumeState> {
         }
     }
 
+    print() {
+        requestAnimationFrame(() => {
+            this.setState({ mode: 'printing' });
+            window.print();
+            this.setState({ mode: 'normal' });
+        });
+    }
     //#endregion
 
+    renderCssEditor() {
+        const updater = (path, data) => {
+            this.css.setProperties(path, data);
+            this.setState({ css: this.css });
+            this.shouldUpdateCss = true;
+        };
+
+        if (this.selectedNode) {
+            const rootNode = this.state.css.findNode(
+                ComponentTypes.cssName(this.selectedNode.type)) as CssNode;
+
+            let specificCssEditor = <></>
+            if (this.selectedNode.htmlId && this.state.css.findNode([`#${this.selectedNode.htmlId}`])) {
+                const specificRoot = this.state.css.findNode([`#${this.selectedNode.htmlId}`]) as CssNode;
+                specificCssEditor = <CssEditor
+                    key={specificRoot.fullSelector}
+                    isPrinting={this.isPrinting}
+                    root={specificRoot}
+                    updateData={updater}
+                />
+            }
+
+            if (rootNode) {
+                return <>
+                    {specificCssEditor}
+                    <CssEditor isPrinting={this.isPrinting}
+                        key={rootNode.fullSelector}
+                        root={rootNode}
+                        updateData={updater}
+                    />
+                </>
+            }
+
+            return <></>
+        }
+                
+        return <CssEditor isPrinting={this.isPrinting}
+            root={this.state.css}
+            updateData={updater}
+        />
+    }
+
     render() {
-        const resumeToolbar = this.isEditable ? <ButtonToolbar>
-            <Button className="mr-2" onClick={this.addSection}>Add Section</Button>
-            <Button className="mr-2" onClick={this.addColumn}>Add Multi-Column Row</Button>
-        </ButtonToolbar> : <></>
+        // TODO: Make this moar better
+        const Toolbar = (props: any) => {
+           return <>{props.children}</>
+        };
 
-        const resume = <div id="resume" className={this.resumeClassName}>
-            <ResumeHotKeys {...this.resumeHotKeysProps} {...this.state} />
-            {this.state.children.map(this.childMapper)}
+        const resume = <div id="resume">
+            <ResumeHotKeys {...this.resumeHotKeysProps} />
+            {this.state.children.map((elem, idx, arr) => {
 
-            {resumeToolbar}
+                const uniqueId = elem.uuid;
+                const props = {
+                    ...elem,
+                    mode: this.state.mode,
+                    toggleEdit: this.editSelected.bind(this),
+                    updateData: this.updateNestedChild,
+                    ...this.hoverProps,
+
+                    index: idx,
+                    numSiblings: arr.length
+                };
+
+                return <ResumeComponent key={uniqueId} {...props} />
+            })}
         </div>
-
-        const topNav = <TopNavBar {...this.toolbarProps} />
 
         let main = resume;
         let sidebar: JSX.Element;
+
+        const topEditingBar = this.state.selectedNode ? <TopEditingBar {...this.editingBarProps as EditingBarProps} /> : <div id="toolbar"
+            className="no-print">
+            <div className="toolbar-section">
+                <PureMenu horizontal>
+                    <Button><Octicon icon={Home} />Home</Button>
+                    <Button onClick={this.changeTemplate}>New</Button>
+                    <FileLoader loadData={this.loadData} />
+                    <FileSaver saveFile={this.saveFile} />
+                    <Button onClick={this.print}>Print</Button>
+                </PureMenu>
+                <span className="label">File</span>
+            </div>
+            <div className="toolbar-section">
+                <PureMenu horizontal>
+                    <Button onClick={this.addSection}>Add Section</Button>
+                    <Button onClick={this.addColumn}>Add Rows & Columns</Button>
+                </PureMenu>
+                <span className="label">Resume Components</span>
+            </div>
+        </div>
+        
+        const editingTop = <RenderIf render={!this.isPrinting}>
+            <header id="app-header" className="no-print">
+                <TopNavBar {...this.toolbarProps} />
+                {topEditingBar}
+            </header>
+        </RenderIf>
 
         // Render the final layout based on editor mode
         switch (this.state.mode) {
@@ -434,22 +589,33 @@ class Resume extends React.Component<{}, ResumeState> {
                 }
 
                 return <ResizableSidebarLayout
-                    topNav={topNav}
+                    topNav={editingTop}
                     main={resume}
                     sideBar={sidebar}
                 />
             case 'changingTemplate':
                 return <StaticSidebarLayout
-                    topNav={topNav}
+                    topNav={editingTop}
                     main={resume}
                     sideBar={this.renderTemplateChanger()}
                 />
             case 'landing':
-                main = <Landing className={this.resumeClassName} />
-            default:
+                main = <Landing />
                 return <DefaultLayout
-                    topNav={topNav}
+                    topNav={editingTop}
                     main={main} />
+            default:
+                /**
+                return <DefaultLayout
+                    topNav={editingTop}
+                    main={main} />
+                    */
+                return <StaticSidebarLayout
+                    topNav={editingTop}
+                    main={resume}
+                    isPrinting={this.isPrinting}
+                    sideBar={this.renderCssEditor()}
+            />
         }
     }
 }

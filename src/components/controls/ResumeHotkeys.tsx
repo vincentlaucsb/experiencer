@@ -1,13 +1,9 @@
 ﻿import React from "react";
 import { GlobalHotKeys, KeyMap, ExtendedKeyMapOptions } from "react-hotkeys";
 import { Action } from "../ResumeNodeBase";
-import ResumeState from "./ResumeState";
+import { SelectedNodeActions } from "./SelectedNodeActions";
 
-export interface ResumeHotKeysProps extends ResumeState {
-    /** Editing */
-    copyClipboard: Action;
-    pasteClipboard: Action;
-
+export interface ResumeHotKeysProps extends SelectedNodeActions {
     /** Editor Modes */
     togglePrintMode: Action;
     reset: Action;
@@ -18,7 +14,13 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
         COPY_SELECTED: {
             name: 'Copy Node',
             description: 'Copy the selected node',
-            sequence: "shift+c"
+            sequence: "ctrl+c"
+        } as ExtendedKeyMapOptions,
+
+        CUT_SELECTED: {
+            name: 'Cut Node',
+            description: 'Cut the selected node',
+            sequence: "ctrl+x"
         } as ExtendedKeyMapOptions,
 
         EDIT_SELECTED: {
@@ -30,7 +32,7 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
         PASTE_SELECTED: {
             name: 'Paste Node',
             description: 'Paste the clipboard as a child of the currently selected node',
-            sequence: 'shift+v'
+            sequence: 'ctrl+v'
         } as ExtendedKeyMapOptions,
 
         DELETE_SELECTED: {
@@ -52,23 +54,18 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
         } as ExtendedKeyMapOptions
     };
 
-    /** Delete the currently selected node */
-    deleteSelected() {
-        if (this.props.selectedNode) {
-            this.props.selectedNode.deleteChild();
-        }
-    }
-
     getHandlers() {
         const handlers = {
             COPY_SELECTED: (event) => {
                 this.props.copyClipboard();
             },
 
+            CUT_SELECTED: (event) => {
+                this.props.cutClipboard();
+            },
+
             EDIT_SELECTED: (event) => {
-                if (this.props.selectedNode && this.props.selectedNode.toggleEdit) {
-                    this.props.selectedNode.toggleEdit();
-                }
+                this.props.edit();
             },
 
             PASTE_SELECTED: (event) => {
@@ -80,7 +77,7 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
             },
 
             DELETE_SELECTED: (event) => {
-                this.deleteSelected();
+                this.props.delete();
             },
 
             PRINT_MODE: (event) => {

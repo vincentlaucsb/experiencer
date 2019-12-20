@@ -1,14 +1,20 @@
 ﻿import { EditorMode } from "../ResumeComponent";
 import { SectionHeaderPosition } from "../Section";
-import { SelectedNodeProps } from "../ResumeNodeBase";
 import { IdType } from "../utility/HoverTracker";
+import { ResumeNode } from "../utility/NodeTree";
+import CssNode, { CssNodeDump } from "../utility/CssTree";
 
 export interface ResumeSaveData {
-    children: Array<object>;
+    builtinCss: CssNodeDump;
+    children: Array<ResumeNode>;
     css: string;
+    sectionTitlePosition?: 'top' | 'left';
 }
 
-export default interface ResumeState extends ResumeSaveData {
+export default interface ResumeState {
+    css: CssNode;
+    children: Array<ResumeNode>;
+    additionalCss: string;
     mode: EditorMode;
     sectionTitlePosition: SectionHeaderPosition;
 
@@ -16,5 +22,5 @@ export default interface ResumeState extends ResumeSaveData {
     clipboard?: object;
 
     hoverNode?: IdType;
-    selectedNode?: SelectedNodeProps;
+    selectedNode?: IdType;
 }

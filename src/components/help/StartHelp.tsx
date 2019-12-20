@@ -1,6 +1,5 @@
 ﻿import HelpPage, { HelpPageActions } from "./HelpPage";
 import React from "react";
-import { Button } from "react-bootstrap";
 
 export default function StartHelp(props: HelpPageActions) {
     return <HelpPage title="Getting Started" {...props}>
@@ -10,7 +9,7 @@ export default function StartHelp(props: HelpPageActions) {
             <li>A menu with different template options will pop up on the right. Don't get too hung up on any specific template, as you
             can always change the details of your layout later.
             </li>
-            <li>Click on <Button size="sm">Use this Template</Button> to start editing.</li>
+            <li>Click on <strong>Use this Template</strong> to start editing.</li>
         </ul>
     
         <h3>Editing Your Resume</h3>

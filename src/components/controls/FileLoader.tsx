@@ -1,5 +1,6 @@
 ﻿import * as React from "react";
-import { Form, Nav } from "react-bootstrap";
+import Popover from 'react-tiny-popover';
+import { Button } from "./Buttons";
 
 interface FileLoaderProps {
     loadData: (data: object) => void;
@@ -55,20 +56,28 @@ export default class FileLoader extends React.Component<FileLoaderProps, FileLoa
         if (userFile) {
             this.readFile(userFile);
         }
+
+        // Close popover
+        this.setState({ isOpen: false });
     }
 
     render() {
-        const expanded = this.state.isOpen ? 
-            <Form inline>
-                <div className="custom-file">
-                    <input type="file" className="custom-file-input" onChange={this.onFileSelect} ref={this.fileInput} id="customFile" />
-                    <label className="custom-file-label" form="customFile">Choose file</label>
-                </div>
-            </Form> : <></>
+        const expanded = (
+            <form id="file-loader">
+                <input type="file" onChange={this.onFileSelect} ref={this.fileInput} id="customFile" />
+            </form>
+        );
 
-        return <>
-            <Nav.Link onClick={() => this.setState({ isOpen: !this.state.isOpen })}>Load</Nav.Link>
-            {expanded}
-        </>
+        return (
+            <Popover
+                isOpen={this.state.isOpen}
+                position="bottom"
+                content={expanded}>
+                <Button
+                    onClick={() => this.setState({ isOpen: !this.state.isOpen })}>
+                    Load
+                </Button>
+            </Popover>
+        );
     }
 }

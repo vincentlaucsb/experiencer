@@ -1,53 +1,42 @@
 ﻿import * as React from "react";
-import { Form, Nav, InputGroup, Button } from "react-bootstrap";
+import { Button } from './Buttons';
+import Popover from 'react-tiny-popover';
+
+import Octicon, { DesktopDownload} from "@primer/octicons-react";
 
 interface FileSaverProps {
     saveFile: (filename: string) => void;
 }
 
-interface FileLoaderState {
-    isOpen: boolean;
-    filename: string;
-}
+/** Form used for saving resume data */
+export default function FileSaver(props: FileSaverProps) {
+    let [filename, setFilename] = React.useState('resume.json');
+    let [open, setOpen] = React.useState(false);
 
-// Form used for saving resume data
-export default class FileSaver extends React.Component<FileSaverProps, FileLoaderState> {
-    constructor(props) {
-        super(props);
+    const onChange = (event: any) => { setFilename(event.target.value); }
 
-        this.state = {
-            filename: 'resume.json',
-            isOpen: false
-        };
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        props.saveFile(filename);
 
-        this.onChange = this.onChange.bind(this);
+        // Make popover close when "Save" is clicked
+        setOpen(false);
     }
 
-    onChange(event: any) {
-        const filename = event.target.value;
-        this.setState({ filename: filename });
-    }
+    const form = (
+        <form id="file-saver" className="pure-form pure-form-stacked">
+            <div>
+                <label form="filename">Filename</label>
+                <input onChange={onChange} value={filename} id="filename" />
+            </div>
+            <Button onClick={handleClick} primary>Download</Button>
+        </form>
+    );
 
-    render() {
-        const expanded = this.state.isOpen ? 
-            <Form inline>
-                <InputGroup>
-                    <Form.Control
-                        onChange={this.onChange}
-                        value={this.state.filename}
-                    />
-                    <InputGroup.Append>
-                        <Button onClick={() => this.props.saveFile(this.state.filename)} variant="outline-light">Save</Button>
-                    </InputGroup.Append>
-                </InputGroup>
-            </Form> : <></>
-
-        return <>
-            <Nav.Link
-                onClick={() => this.setState({ isOpen: !this.state.isOpen })}>
-                Save to File
-            </Nav.Link>
-            {expanded}
-        </>
-    }
+    return (
+        <Popover content={form} position="bottom" isOpen={open}>
+            <Button onClick={() => setOpen(!open)}>
+                <Octicon icon={DesktopDownload} />Save
+            </Button>
+        </Popover>
+    );
 }

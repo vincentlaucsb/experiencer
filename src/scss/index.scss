@@ -58,6 +58,10 @@ header#app-header {
                 color: $light-accent;
                 font-size: 0.8em;
             }
+
+            .label:hover {
+                cursor: default;
+            }
         }
 
         div.toolbar-section:last-child {

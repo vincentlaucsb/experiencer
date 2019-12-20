@@ -81,15 +81,13 @@ function ClipboardMenu(props: EditingBarProps) {
     const cutSc = getShortcut('CUT_SELECTED');
 
     return (
-        <PureMenu horizontal>
-            <PureDropdown content={<Button>Clipboard</Button>}>
-                <DropdownItem onClick={props.cutClipboard}>Cut ({cutSc})</DropdownItem>
-                <DropdownItem onClick={props.copyClipboard}>
-                    Copy ({copySc})
-                </DropdownItem>
-                <DropdownItem onClick={props.pasteClipboard}>Paste ({pasteSc})</DropdownItem>
-            </PureDropdown>
-        </PureMenu>
+        <PureDropdown content={<Button>Clipboard</Button>}>
+            <DropdownItem onClick={props.cutClipboard}>Cut ({cutSc})</DropdownItem>
+            <DropdownItem onClick={props.copyClipboard}>
+                Copy ({copySc})
+            </DropdownItem>
+            <DropdownItem onClick={props.pasteClipboard}>Paste ({pasteSc})</DropdownItem>
+        </PureDropdown>
     );
 }
 
@@ -130,15 +128,20 @@ export default function TopEditingBar(props: EditingBarProps) {
     const customOptions = toolbarOptions(props.node, props.updateNode);
     let moveUpText = "Up";
     let moveDownText = "Down";
+    let editButton = <></>
     
     // If we are selecting a child of a container type,
     // give the option of adding another child to the parent
     const childTypes = ComponentTypes.childTypes(type);
-    let parentAddOption = <></>
+    let parentOptions = <></>
+
+    if (ComponentTypes.isEditable(props.node.type)) {
+        editButton = <Item onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Item>
+    }
 
     if (type === DescriptionListItem.name) {
         const parentId = id.slice(0, id.length - 1);
-        parentAddOption = <AddOption id={parentId} addChild={
+        parentOptions = <AddOption id={parentId} addChild={
             props.addChild as AddChild
         } options={ComponentTypes.childTypes(DescriptionList.name)} />
     }
@@ -151,11 +154,13 @@ export default function TopEditingBar(props: EditingBarProps) {
     return <div id="toolbar">
         <div className="toolbar-section">
             <PureMenu horizontal>
-                {parentAddOption}
                 <AddOption id={id} addChild={props.addChild as AddChild} options={childTypes} />
+                {editButton}
                 <Item onClick={props.delete}>Delete</Item>
-                <Item onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Item>
+                <ClipboardMenu {...props} />
+                <CustomOptions options={customOptions} />
             </PureMenu>
+            <span className="label">Current Node ({ props.node.type })</span>
         </div>
         <div className="toolbar-section">
             <PureMenu horizontal>
@@ -171,11 +176,8 @@ export default function TopEditingBar(props: EditingBarProps) {
                     htmlId={props.node.htmlId}
                     addHtmlId={props.addHtmlId}
                 />
-                <CustomOptions options={customOptions} />
             </PureMenu>
         </div>
-        <div className="toolbar-section">
-            <ClipboardMenu {...props} />
-        </div>
+        {parentOptions}
     </div>
 }

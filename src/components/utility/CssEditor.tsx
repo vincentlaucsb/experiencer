@@ -9,18 +9,9 @@ export interface CssEditorProps {
     updateData: (path: string[], data: Map<string, string>) => void;
 }
 
-interface CssEditorState {
-    css: CssNode;
-}
-
-export default class CssEditor extends React.Component<CssEditorProps, CssEditorState> {
+export default class CssEditor extends React.Component<CssEditorProps> {
     constructor(props: CssEditorProps) {
         super(props);
-
-        this.state = {
-            css: props.root
-        };
-
         this.updateCssProperties = this.updateCssProperties.bind(this);
     }
 
@@ -44,7 +35,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     }
 
     updateCssProperties(data: Map<string, string>) {
-        this.props.updateData(this.state.css.fullPath, data);
+        this.props.updateData(this.path, data);
     }
 
     /** Highlight all DOM nodes matching the current selector */
@@ -83,7 +74,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
                         this.updateCssProperties(data);
                     }} />
 
-                    {this.state.css.children.map(
+                    {this.props.root.children.map(
                         (css, index) => {
                             return <CssEditor
                                 key={css.fullSelector}

@@ -7,10 +7,11 @@ import ResumeHotKeys from "./ResumeHotkeys";
 import { SelectedNodeActions } from "./SelectedNodeActions";
 import { ComponentTypes, NodeInformation } from "../ResumeComponent";
 import { DescriptionListItem, DescriptionList } from "../List";
-import CssIdAdder from "./CssIdAdder";
+import HtmlIdAdder from "./HtmlIdAdder";
 import { assignIds } from "../Helpers";
 import { ResumeNode } from "../utility/NodeTree";
 import toolbarOptions, { CustomToolbarOptions } from "./ToolbarOptions";
+import Column from "../Column";
 
 type AddOptions = Array<NodeInformation>;
 
@@ -127,6 +128,8 @@ export default function TopEditingBar(props: EditingBarProps) {
     const id = props.id;
     const type = props.node.type;
     const customOptions = toolbarOptions(props.node, props.updateNode);
+    let moveUpText = "Up";
+    let moveDownText = "Down";
     
     // If we are selecting a child of a container type,
     // give the option of adding another child to the parent
@@ -140,28 +143,38 @@ export default function TopEditingBar(props: EditingBarProps) {
         } options={ComponentTypes.childTypes(DescriptionList.name)} />
     }
 
+    if (type === Column.name) {
+        moveUpText = "Left";
+        moveDownText = "Right";
+    }
+
     return <div id="toolbar">
-        <div>
+        <div className="toolbar-section">
             <PureMenu horizontal>
                 {parentAddOption}
                 <AddOption id={id} addChild={props.addChild as AddChild} options={childTypes} />
                 <Item onClick={props.delete}>Delete</Item>
                 <Item onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Item>
-                <Item onClick={() => props.moveUp()}
-                    disabled={!props.moveUpEnabled}
-                >Move Up</Item>
-                <Item onClick={() => props.moveDown()}
-                    disabled={!props.moveDownEnabled}
-                >Move Down</Item>
-                <CssIdAdder
+            </PureMenu>
+        </div>
+        <div className="toolbar-section">
+            <PureMenu horizontal>
+                <Item onClick={() => props.moveUp()} disabled={!props.moveUpEnabled}>{moveUpText}</Item>
+                <Item onClick={() => props.moveDown()} disabled={!props.moveDownEnabled}>{moveDownText}</Item>
+            </PureMenu>
+            <span className="label">Move</span>
+        </div>
+        <div className="toolbar-section">
+            <PureMenu horizontal>
+                <HtmlIdAdder
                     key={props.node.uuid}
-                    cssId={props.node.cssId}
+                    htmlId={props.node.htmlId}
                     addHtmlId={props.addHtmlId}
                 />
                 <CustomOptions options={customOptions} />
             </PureMenu>
         </div>
-        <div>
+        <div className="toolbar-section">
             <ClipboardMenu {...props} />
         </div>
     </div>

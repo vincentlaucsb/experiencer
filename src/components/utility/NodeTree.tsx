@@ -8,7 +8,7 @@ import { assignIds, deleteAt, moveUp, moveDown, deepCopy } from "../Helpers";
  * */
 export interface BasicResumeNode {
     children?: Array<BasicResumeNode>;
-    cssId?: string;
+    htmlId?: string;
     value?: string;
 
     // TODO: Change to 'Row' | 'Column' | etc. ?

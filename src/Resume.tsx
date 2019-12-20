@@ -236,7 +236,7 @@ ${this.state.additionalCss}`;
                 root = copyTree.copySkeleton(`#${htmlId}`, `#${htmlId}`);
             }
 
-            currentNode.cssId = htmlId;
+            currentNode.htmlId = htmlId;
             this.css.add(root);
             this.setState({
                 css: this.css,
@@ -490,8 +490,8 @@ ${this.state.additionalCss}`;
                 ComponentTypes.cssName(this.selectedNode.type)) as CssNode;
 
             let specificCssEditor = <></>
-            if (this.selectedNode.cssId && this.state.css.findNode([`#${this.selectedNode.cssId}`])) {
-                const specificRoot = this.state.css.findNode([`#${this.selectedNode.cssId}`]) as CssNode;
+            if (this.selectedNode.htmlId && this.state.css.findNode([`#${this.selectedNode.htmlId}`])) {
+                const specificRoot = this.state.css.findNode([`#${this.selectedNode.htmlId}`]) as CssNode;
                 specificCssEditor = <CssEditor isPrinting={this.isPrinting}
                     root={specificRoot}
                     updateData={updater}

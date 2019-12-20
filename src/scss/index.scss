@@ -9,6 +9,11 @@
     flex-direction: row;
 }
 
+%flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
 /* App Stuff */
 body {
     background: $light-shade;
@@ -29,7 +34,6 @@ header#app-header {
 
     background: $header-background;
     color: $light-shade;
-
     /** Keep toolbar at top */
     position: sticky;
     top: 0;
@@ -40,14 +44,48 @@ header#app-header {
         align-content: center;
     }
 
+    div#toolbar {
+        border-top: 1px solid $light-accent;
+        color: $light-shade;
+        padding: $spacing * 0.5;
+
+        div.toolbar-section {
+            @extend %flex-col;
+            border-right: 1px dotted $light-accent;
+            align-items: center;
+
+            .label {
+                color: $light-accent;
+                font-size: 0.8em;
+            }
+        }
+
+        div.toolbar-section:last-child {
+            border-right: none;
+        }
+
+        button.pure-button {
+            background: $header-background;
+            color: $light-shade;
+
+            svg {
+                margin-right: $spacing * 0.25;
+            }
+        }
+
+        button.pure-button:hover {
+            background: $dark-accent;
+        }
+    }
+
     div#brand {
         padding-left: $spacing * 0.5;
 
-       h1 {
-          margin: $spacing;
-          font-size: 20pt;
-          cursor: pointer;
-       }
+        h1 {
+            margin: $spacing;
+            font-size: 20pt;
+            cursor: pointer;
+        }
 
         .pure-menu-horizontal {
             margin-left: $spacing * 2;
@@ -67,29 +105,9 @@ header#app-header {
             background: $dark-accent;
             color: $light-shade;
         }
-
         // GitHub Icon
         svg {
             color: $light-accent;
-        }
-    }
-
-    div#toolbar {
-        border-top: 1px solid $light-accent;
-        color: $light-shade;
-        padding: $spacing * 0.5;
-
-        button.pure-button {
-            background: $header-background;
-            color: $light-shade;
-
-            svg {
-                margin-right: $spacing * 0.25;
-            }
-        }
-
-        button.pure-button:hover {
-            background: $dark-accent;
         }
     }
 }

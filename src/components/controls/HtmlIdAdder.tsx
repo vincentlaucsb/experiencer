@@ -2,24 +2,24 @@
 import Popover from 'react-tiny-popover';
 import { Button } from "./Buttons";
 
-interface CssIdAdderProps {
-    cssId?: string;
+interface htmlIdAdderProps {
+    htmlId?: string;
     addHtmlId: (htmlId: string) => void;
 }
 
-export default function CssIdAdder(props: CssIdAdderProps) {
-    let [cssId, setCssId] = React.useState(props.cssId || "");
+export default function HtmlIdAdder(props: htmlIdAdderProps) {
+    let [htmlId, setHtmlId] = React.useState(props.htmlId || "");
     let [isOpen, setOpen] = React.useState(false);
 
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setCssId(event.target.value);
+        setHtmlId(event.target.value);
     }
 
     const expanded = (
         <form id="css-id-adder">
-            <input type="text" onChange={onChange} value={cssId} />
+            <input type="text" onChange={onChange} value={htmlId} />
             <Button onClick={() => {
-                props.addHtmlId(cssId);
+                props.addHtmlId(htmlId);
                 setOpen(false);
             }}>Save</Button>
         </form>

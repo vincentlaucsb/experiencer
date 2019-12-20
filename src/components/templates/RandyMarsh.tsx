@@ -99,11 +99,11 @@ export function randyMarshCss() {
 export function randyMarsh(): BasicResumeNode {
     return {
         "type": Row.name,
-        "cssId": "main",
+        "htmlId": "main",
         "children": [
             {
                 "type": Column.name,
-                "cssId": "main-column",
+                "htmlId": "main-column",
                 "children": [
                     {
                         "type": Header.name,
@@ -196,7 +196,7 @@ export function randyMarsh(): BasicResumeNode {
                                         ]
                                     }
                                 ],
-                                "cssId": "awards"
+                                "htmlId": "awards"
                             } as BasicRowProps
                         ]
                     } as BasicSectionProps
@@ -204,7 +204,7 @@ export function randyMarsh(): BasicResumeNode {
             },
             {
                 "type": Column.name,
-                "cssId": "sidebar",
+                "htmlId": "sidebar",
                 "children": [
                     {
                         "type": Section.name,
@@ -239,7 +239,7 @@ export function randyMarsh(): BasicResumeNode {
                     {
                         "type": RichText.name,
                         "value": "<p>Typeset entirely with HTML, CSS, and good old-fashioned<strong> TEGRIDY</strong></p>",
-                        "cssId": "tegridy"
+                        "htmlId": "tegridy"
                     }
                 ]
             }

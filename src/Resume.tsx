@@ -7,7 +7,7 @@ import './scss/index.scss';
 
 import ResumeComponent, { EditorMode, ComponentTypes } from './components/ResumeComponent';
 import { assignIds, deepCopy, arraysEqual } from './components/Helpers';
-import ResumeNodeBase, { Action, ResumeNodeProps } from './components/ResumeNodeBase';
+import { Action, ResumeNodeProps } from './components/ResumeNodeBase';
 import ResumeTemplateProvider from './components/templates/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
 import Landing from './components/help/Landing';
@@ -31,7 +31,6 @@ import { SelectedNodeActions } from './components/controls/SelectedNodeActions';
 import CssEditor from './components/utility/CssEditor';
 import Row from './components/Row';
 import Section from './components/Section';
-import getDefaultCss from './components/templates/CssTemplates';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering = new HoverTracker();
@@ -67,7 +66,6 @@ class Resume extends React.Component<{}, ResumeState> {
         this.addColumn = this.addColumn.bind(this);
         this.addSection = this.addSection.bind(this);
         this.addNestedChild = this.addNestedChild.bind(this);
-        this.childMapper = this.childMapper.bind(this);
         this.updateNestedChild = this.updateNestedChild.bind(this);
 
         /** Templates and Styling **/
@@ -91,7 +89,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
         // Unselect the currently selected node
         this.unselect = () => {
-            this.setSelectedNode(undefined);
+            this.setState({ selectedNode: undefined });
         };
     }
     
@@ -101,21 +99,8 @@ class Resume extends React.Component<{}, ResumeState> {
         return !this.isPrinting && !(this.state.mode === 'changingTemplate');
     }
 
-    get isNodeSelected() : boolean {
-        return !isNullOrUndefined(this.state.selectedNode);
-    }
-
     get isPrinting(): boolean {
         return this.state.mode === 'printing';
-    }
-
-    get resumeClassName() {
-        if (this.isPrinting) {
-            return "resume-printing";
-        }
-
-        let classNames = [];
-        return classNames.join(' ');
     }
 
     /** Return props related to hover/select functionality */
@@ -152,7 +137,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
             // Update the selected node
             updateSelected: (id?: IdType) => {
-                this.setSelectedNode(id);
+                this.setState({ selectedNode: id });
             },
 
             unselect: this.unselect
@@ -168,7 +153,6 @@ class Resume extends React.Component<{}, ResumeState> {
         return;
     }
 
-
     /**
      * Update stylesheets
      * @param prevProps
@@ -179,16 +163,12 @@ class Resume extends React.Component<{}, ResumeState> {
             this.renderStyle();
             this.shouldUpdateCss = false;
         }
-    }
 
-    setSelectedNode(id?: IdType) {
         // If the previously selected node was editing, bring it
         // out of an editing state
-        if (this.selectedNode) {
-            (this.selectedNode as ResumeNodeProps).isEditing = false;
+        if (prevState.selectedNode && (prevState.selectedNode !== this.state.selectedNode)) {
+            (this.nodes.getNodeById(prevState.selectedNode) as ResumeNodeProps).isEditing = false;
         }
-
-        this.setState({ selectedNode: id });
     }
 
     // Push style changes to browser
@@ -197,28 +177,6 @@ class Resume extends React.Component<{}, ResumeState> {
 ${this.state.builtinCss.stylesheet()}
 
 ${this.state.css}`;
-    }
-
-    /**
-     * Render the nodes of this resume
-     * @param elem An object with resume component data
-     * @param idx  Index of the object
-     * @param arr  Array of component data
-     */
-    childMapper(elem: ResumeNode, idx: number, arr: ResumeNode[]) {
-        const uniqueId = elem.uuid;
-        const props = {
-            ...elem,
-            mode: this.state.mode,
-            toggleEdit: this.editSelected.bind(this),
-            updateData: this.updateNestedChild,
-            ...this.hoverProps,
-
-            index: idx,
-            numSiblings: arr.length
-        };
-
-        return <ResumeComponent key={uniqueId} {...props} />
     }
 
     /**
@@ -321,16 +279,15 @@ ${this.state.css}`;
         const id = this.state.selectedNode as IdType;
         if (id) {
             this.nodes.deleteChild(id);
-            this.setState({ children: this.nodes.children });
-
-            // Unset selected node data
             this.hovering.hoverOut(id);
-            this.setState({ hoverNode: this.hovering.currentId });
-            this.setSelectedNode(undefined);
-    }
+            this.setState({
+                children: this.nodes.children,
+                hoverNode: this.hovering.currentId,
+                selectedNode: undefined
+            });
+        }
     }
 
-    // TODO: Do we still need this???
     updateNestedChild(id: IdType, key: string, data: any) {
         this.nodes.updateChild(id, key, data);
         this.setState({ children: this.nodes.children });
@@ -361,8 +318,10 @@ ${this.state.css}`;
         const id = this.state.selectedNode as IdType;
         if (this.moveSelectedUpEnabled) {
             const newId = this.nodes.moveUp(id);
-            this.setState({ children: this.nodes.children, });
-            this.setSelectedNode(newId);
+            this.setState({
+                children: this.nodes.children,
+                selectedNode: newId
+            });
         }
     }
 
@@ -375,8 +334,10 @@ ${this.state.css}`;
         const id = this.state.selectedNode as IdType;
         if (this.moveSelectedDownEnabled) {
             const newId = this.nodes.moveDown(id);
-            this.setState({ children: this.nodes.children });
-            this.setSelectedNode(newId);
+            this.setState({
+                children: this.nodes.children,
+                selectedNode: newId
+            });
         }
     }
     //#endregion
@@ -521,7 +482,6 @@ ${this.state.css}`;
             this.setState({ mode: 'normal' });
         });
     }
-
     //#endregion
 
     renderCssEditor() {
@@ -574,9 +534,24 @@ ${this.state.css}`;
             <Button onClick={this.addColumn}>Add Multi-Column Row</Button>
         </Toolbar> : <></>
 
-        const resume = <div id="resume" className={this.resumeClassName}>
+        const resume = <div id="resume">
             <ResumeHotKeys {...this.resumeHotKeysProps} />
-            {this.state.children.map(this.childMapper)}
+            {this.state.children.map((elem, idx, arr) => {
+
+                const uniqueId = elem.uuid;
+                const props = {
+                    ...elem,
+                    mode: this.state.mode,
+                    toggleEdit: this.editSelected.bind(this),
+                    updateData: this.updateNestedChild,
+                    ...this.hoverProps,
+
+                    index: idx,
+                    numSiblings: arr.length
+                };
+
+                return <ResumeComponent key={uniqueId} {...props} />
+            })}
 
             {resumeToolbar}
         </div>
@@ -623,7 +598,7 @@ ${this.state.css}`;
                     sideBar={this.renderTemplateChanger()}
                 />
             case 'landing':
-                main = <Landing className={this.resumeClassName} />
+                main = <Landing />
                 return <DefaultLayout
                     topNav={editingTop}
                     main={main} />

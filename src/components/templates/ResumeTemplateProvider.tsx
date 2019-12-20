@@ -125,6 +125,8 @@ section.header-left h2 {
 
             let data: ResumeSaveData = {
                 builtinCss: getDefaultCss().dump(),
+
+                // TODO: IDs are double assigned
                 children: assignIds([
                     header,
                     ResumeTemplateProvider.objective,

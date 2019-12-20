@@ -260,7 +260,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
         const templateNames = Object.keys(ResumeTemplateProvider.templates);
         let navItems = templateNames.map((key: string) =>
-            <PureMenuItem onClick={() => loadTemplate(key)}>
+            <PureMenuItem key={key} onClick={() => loadTemplate(key)}>
                 <PureMenuLink>{key}</PureMenuLink>
             </PureMenuItem>
         );

@@ -180,6 +180,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
 
         return <React.Fragment>
             <table>
+                <tbody>
             {Array.from(this.state.displayMap.entries()).map(([key, value]) => {
                 const shouldFocus = key === this.state.newKey;
 
@@ -204,6 +205,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                 </tr>})}
 
                 {keyAdder}
+                </tbody>
             </table>
 
             <div>

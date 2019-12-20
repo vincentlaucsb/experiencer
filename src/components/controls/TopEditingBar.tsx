@@ -52,6 +52,7 @@ function AddOption(props: AddOptionProps) {
 export interface EditingBarProps extends SelectedNodeActions {
     id: IdType;
     node: ResumeNode,
+    addHtmlId: (htmlId: string) => void;
     updateNode: (key: string, value: string | string[] | boolean) => void;
 
     addChild: AddChild;
@@ -152,7 +153,7 @@ export default function TopEditingBar(props: EditingBarProps) {
                 <Item onClick={() => props.moveDown()}
                     disabled={!props.moveDownEnabled}
                 >Move Down</Item>
-                <CssIdAdder cssId={props.node.cssId} updateData={props.updateSelected} />
+                <CssIdAdder cssId={props.node.cssId} addHtmlId={props.addHtmlId} />
                 <CustomOptions options={customOptions} />
             </PureMenu>
         </div>

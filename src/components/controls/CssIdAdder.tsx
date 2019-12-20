@@ -4,7 +4,7 @@ import { Button } from "./Buttons";
 
 interface CssIdAdderProps {
     cssId?: string;
-    updateData: (key: string, data: any) => void;
+    addHtmlId: (htmlId: string) => void;
 }
 
 export default function CssIdAdder(props: CssIdAdderProps) {
@@ -24,7 +24,7 @@ export default function CssIdAdder(props: CssIdAdderProps) {
         <form id="css-id-adder">
             <input type="text" onChange={onChange} value={cssId} />
             <Button onClick={() => {
-                props.updateData('cssId', cssId);
+                props.addHtmlId(cssId);
                 setOpen(false);
             }}>Save</Button>
         </form>

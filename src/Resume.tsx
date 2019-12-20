@@ -7,7 +7,7 @@ import './scss/index.scss';
 
 import ResumeComponent, { EditorMode, ComponentTypes } from './components/ResumeComponent';
 import { assignIds, deepCopy, arraysEqual } from './components/Helpers';
-import { Action, CustomToolbarOptions, ResumeNodeProps } from './components/ResumeNodeBase';
+import { Action, ResumeNodeProps } from './components/ResumeNodeBase';
 import ResumeTemplateProvider from './components/templates/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
 import Landing from './components/help/Landing';
@@ -75,6 +75,7 @@ class Resume extends React.Component<{}, ResumeState> {
         this.toggleMode = this.toggleMode.bind(this);
 
         /** Resume Nodes */
+        this.addHtmlId = this.addHtmlId.bind(this);
         this.addColumn = this.addColumn.bind(this);
         this.addSection = this.addSection.bind(this);
         this.addNestedChild = this.addNestedChild.bind(this);
@@ -277,6 +278,16 @@ class Resume extends React.Component<{}, ResumeState> {
     //#endregion
 
     //#region Creating/Editing Nodes
+    addHtmlId(htmlId: string) {
+        this.updateSelected('cssId', htmlId);
+        this.css.add(new CssNode(`#${htmlId}`, {}, `#${htmlId}`));
+
+        this.setState({
+            builtinCss: this.css,
+            children: this.nodes.children
+        });
+    }
+
     addSection() {
         this.addChild({
             type: Section.name,
@@ -471,6 +482,7 @@ class Resume extends React.Component<{}, ResumeState> {
             ...this.selectedNodeActions,
             id: this.state.selectedNode,
             node: this.selectedNode,
+            addHtmlId: this.addHtmlId,
             updateNode: this.updateSelected,
             addChild: this.addNestedChild,
             toggleEdit: this.editSelected,

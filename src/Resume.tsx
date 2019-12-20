@@ -49,9 +49,9 @@ class Resume extends React.Component<{}, ResumeState> {
         head.appendChild(this.style);
 
         this.state = {
-            builtinCss: this.css,
+            css: this.css,
             children: [],
-            css: "",
+            additionalCss: "",
             mode: "landing",
             sectionTitlePosition: "top"
         };
@@ -173,9 +173,9 @@ class Resume extends React.Component<{}, ResumeState> {
     // Push style changes to browser
     renderStyle() {
         this.style.innerHTML = `
-${this.state.builtinCss.stylesheet()}
+${this.state.css.stylesheet()}
 
-${this.state.css}`;
+${this.state.additionalCss}`;
     }
 
     /**
@@ -235,7 +235,7 @@ ${this.state.css}`;
             currentNode.cssId = htmlId;
             this.css.add(root);
             this.setState({
-                builtinCss: this.css,
+                css: this.css,
                 children: this.nodes.children
             });
         }
@@ -369,9 +369,9 @@ ${this.state.css}`;
         this.css = CssNode.load(savedData.builtinCss);
 
         this.setState({
-            builtinCss: this.css,
+            css: this.css,
             children: this.nodes.children,
-            css: savedData.css as string,
+            additionalCss: savedData.css as string,
             mode: mode
         })
 
@@ -383,7 +383,7 @@ ${this.state.css}`;
         const data: ResumeSaveData = {
             children: this.state.children,
             builtinCss: this.css.dump(),
-            css: this.state.css
+            css: this.state.additionalCss
         };
 
         var blob = new Blob([JSON.stringify(data)],
@@ -453,7 +453,7 @@ ${this.state.css}`;
 
     get styleEditorProps() {
         const onStyleChange = (css: string) => {
-            this.setState({ css: css });
+            this.setState({ additionalCss: css });
         }
         const toggleStyleEditor = () => this.toggleMode('editingStyle');
 
@@ -477,17 +477,17 @@ ${this.state.css}`;
     renderCssEditor() {
         const updater = (path, data) => {
             this.css.setProperties(path, data);
-            this.setState({ builtinCss: this.css });
+            this.setState({ css: this.css });
             this.shouldUpdateCss = true;
         };
 
         if (this.selectedNode) {
-            const rootNode = this.state.builtinCss.findNode(
+            const rootNode = this.state.css.findNode(
                 ComponentTypes.cssName(this.selectedNode.type)) as CssNode;
 
             let specificCssEditor = <></>
-            if (this.selectedNode.cssId && this.state.builtinCss.findNode([`#${this.selectedNode.cssId}`])) {
-                const specificRoot = this.state.builtinCss.findNode([`#${this.selectedNode.cssId}`]) as CssNode;
+            if (this.selectedNode.cssId && this.state.css.findNode([`#${this.selectedNode.cssId}`])) {
+                const specificRoot = this.state.css.findNode([`#${this.selectedNode.cssId}`]) as CssNode;
                 specificCssEditor = <CssEditor isPrinting={this.isPrinting}
                     root={specificRoot}
                     updateData={updater}
@@ -508,7 +508,7 @@ ${this.state.css}`;
         }
                 
         return <CssEditor isPrinting={this.isPrinting}
-            root={this.state.builtinCss}
+            root={this.state.css}
             updateData={updater}
         />
     }

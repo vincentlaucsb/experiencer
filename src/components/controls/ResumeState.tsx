@@ -12,9 +12,9 @@ export interface ResumeSaveData {
 }
 
 export default interface ResumeState {
-    builtinCss: CssNode;
+    css: CssNode;
     children: Array<ResumeNode>;
-    css: string;
+    additionalCss: string;
     mode: EditorMode;
     sectionTitlePosition: SectionHeaderPosition;
 

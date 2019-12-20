@@ -251,6 +251,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
             // TODO: Clean up this code
             this.nodes.children = template['children'];
+            this.css = template['builtinCss'];
 
             // Update loaded CSS
             this.style.innerHTML = template.css;
@@ -525,11 +526,9 @@ class Resume extends React.Component<{}, ResumeState> {
                 return <CssEditor path={[]}
                     isPrinting={this.isPrinting}
                     root={rootNode}
-                    updateParentData={(css: CssNode) => {
-                        this.css = css;
-                        this.setState({
-                            builtinCss: this.css
-                        })
+                    updateData={(path, data) => {
+                        this.css.setProperties(path, data);
+                        this.setState({ builtinCss: this.css })
                         this.style2.innerHTML = this.css.stylesheet();
                     }}
                 />
@@ -541,11 +540,12 @@ class Resume extends React.Component<{}, ResumeState> {
         return <CssEditor path={[]}
             isPrinting={this.isPrinting}
             root={this.state.builtinCss}
-            updateParentData={(css: CssNode) => {
-                this.css = css;
+            updateData={(path, data) => {
+                this.css.setProperties(path, data);
                 this.setState({
                     builtinCss: this.css
                 })
+
                 this.style2.innerHTML = this.css.stylesheet();
             }}
         />

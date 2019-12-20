@@ -9,7 +9,7 @@ export interface CssEditorProps {
     path: Array<string>;
     root: CssNode;
 
-    updateParentData: (css: CssNode) => void;
+    updateData: (path: string[], data: Map<string, string>) => void;
 }
 
 interface CssEditorState {
@@ -17,13 +17,9 @@ interface CssEditorState {
 }
 
 export default class CssEditor extends React.Component<CssEditorProps, CssEditorState> {
-    // Temporary instance copy
-    css: CssNode;
-
     constructor(props: CssEditorProps) {
         super(props);
 
-        this.css = props.root;
         this.state = {
             css: props.root
         };
@@ -47,9 +43,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     }
 
     updateCssProperties(data: Map<string, string>) {
-        this.css.properties = data;
-        this.props.updateParentData(this.css);
-        this.setState({ css: this.css });
+        this.props.updateData(this.state.css.fullPath, data);
     }
 
     /** Highlight all DOM nodes matching the current selector */
@@ -91,18 +85,11 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
                     {this.state.css.children.map(
                         (css, index) => {
                             const path = [...this.props.path, css.name];
-                            return <CssEditor key={css.fullSelector} path={path} root={css}
-                                updateParentData={
-                                    (css: CssNode) => {
-                                        // TODO: Is the following operation safe?
-                                        this.css.children[index] = css;
-                                        this.props.updateParentData(this.css);
-                                        this.setState({
-                                            css: this.css
-                                        });
-                                    }
-                                }
-
+                            return <CssEditor
+                                key={css.fullSelector}
+                                path={path}
+                                root={css}
+                                updateData={this.props.updateData}
                             />
                         })}
                 </Collapse>

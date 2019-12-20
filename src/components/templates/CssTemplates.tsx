@@ -128,7 +128,7 @@ export default function getDefaultCss() : CssNode {
         'font-weight': 'normal'
     }, 'h2.subtitle'));
 
-    let dlCss = defaultCss.add(new CssNode('Description Lists', {
+    let dlCss = defaultCss.add(new CssNode('Description List', {
     }, 'dl'));
 
     dlCss.add(new CssNode('Definitions', {

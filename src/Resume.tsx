@@ -519,8 +519,7 @@ class Resume extends React.Component<{}, ResumeState> {
     renderCssEditor() {
         if (this.selectedNode) {
             const rootNode = this.state.builtinCss.findNode(
-                [this.selectedNode.type]
-            ) as CssNode;
+                ComponentTypes.cssName(this.selectedNode.type)) as CssNode;
 
             if (rootNode) {
                 return <CssEditor isPrinting={this.isPrinting}

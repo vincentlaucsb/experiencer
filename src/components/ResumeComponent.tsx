@@ -97,6 +97,24 @@ export class ComponentTypes {
     }
 
     /**
+     * Given a node type return its corresponding path in the 
+     * CSS settings
+     * @param type
+     */
+    static cssName(type: string) : string[] {
+        switch (type) {
+            case DescriptionList.name:
+                return ['Description List'];
+            case DescriptionListItem.name:
+                return ['Description List'];
+            case RichText.name:
+                return ['Rich Text'];
+            default:
+                return [type];
+        }
+    }
+
+    /**
      * Given a type retrieve its JSON representation
      * @param type
      */

@@ -36,6 +36,7 @@ export default class CssNode {
         return this._selector;
     }
 
+    /** Compute the full CSS selector for this subtree */
     get fullSelector() {
         let selector = this._selector;
         let parent = this.parent;
@@ -47,6 +48,7 @@ export default class CssNode {
         return selector;
     }
 
+    /** Get this node's path in the subtree */
     get fullPath() {
         let parent = this.parent;
         let path = [ this.name ];
@@ -131,6 +133,18 @@ ${childStylesheets}`
         css.parent = this;
         this.children.push(css);
         return this.children[this.children.length - 1];
+    }
+
+    /** Return a copy of this subtree with the same names and selectors
+     *  but with no properties
+     */
+    copySkeleton(): CssNode {
+        let newTree = new CssNode(this.name, {}, this.selector);
+        for (let node of this.children) {
+            newTree.add(node.copySkeleton());
+        }
+
+        return newTree;
     }
 
     /**

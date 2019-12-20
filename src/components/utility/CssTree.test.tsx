@@ -24,6 +24,23 @@ function makeCssTree() {
     });
 }
 
+test('copySkeleton Test', () => {
+    const cssNode = makeCssTree();
+    const copied = cssNode.copySkeleton();
+
+    expect(copied.name).toBe(cssNode.name);
+    expect(copied.selector).toBe(cssNode.selector);
+
+    const copiedListsCss = copied.findNode(['Lists']) as CssNode;
+    const copiedListItemCss = copied.findNode(['Lists', 'List Item']) as CssNode;
+
+    expect(copiedListsCss).toBeDefined();
+    expect(copiedListsCss.properties.size).toBe(0);
+
+    expect(copiedListItemCss).toBeDefined();
+    expect(copiedListItemCss.properties.size).toBe(0);
+});
+
 test('findNode Test', () => {
     const cssNode = makeCssTree();
     const listCss = cssNode.findNode(['Lists']) as CssNode;

@@ -7,14 +7,12 @@ import CssNode, { CssNodeDump } from "../utility/CssTree";
 
 export interface ResumeSaveData {
     builtinCss: CssNodeDump;
-    specificCss: CssNodeDump;
     children: Array<ResumeNode>;
     css: string;
 }
 
 export default interface ResumeState {
     builtinCss: CssNode;
-    specificCss: CssNode;
     children: Array<ResumeNode>;
     css: string;
     mode: EditorMode;

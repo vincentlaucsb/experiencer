@@ -252,7 +252,7 @@ class Resume extends React.Component<{}, ResumeState> {
             this.nodes.children = template['children'];
 
             // Update loaded CSS
-            this.renderStyle();
+            this.style.innerHTML = template.css;
         };
 
         const templateNames = Object.keys(ResumeTemplateProvider.templates);

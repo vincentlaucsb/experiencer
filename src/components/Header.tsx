@@ -28,7 +28,7 @@ export default class Header extends Row<HeaderProps> {
             modules={RichText.quillModules}
             value={this.props.subtitle || ""}
             onChange={(text) => this.updateData("subtitle", text)}
-        /> : <h2 dangerouslySetInnerHTML={{ __html: this.props.subtitle || "" }} />;
+        /> : <h2 className="subtitle" dangerouslySetInnerHTML={{ __html: this.props.subtitle || "" }} />;
 
         return (
             <header className={this.className} style={this.style} {...this.selectTriggerProps}>

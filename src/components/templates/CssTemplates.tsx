@@ -124,6 +124,10 @@ export default function getDefaultCss() : CssNode {
         'margin-bottom': '16px'
     }, 'header'));
 
+    headerCss.add(new CssNode('Subtitle', {
+        'font-weight': 'normal'
+    }, 'h2.subtitle'));
+
     let dlCss = defaultCss.add(new CssNode('Description Lists', {
     }, 'dl'));
 

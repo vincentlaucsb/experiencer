@@ -27,12 +27,19 @@ export function randyMarshCss() {
             ["text-transform", "uppercase"],
             ["color", "#43353f"]
         ]);
+
+        headerCss.setProperties(["Subtitle"], [
+            ["font-size", "13pt"],
+            ["text-transform", "initial"]
+        ]);
     }
 
     let sectionCss = randyCss.findNode(['Section']) as CssNode;
     if (sectionCss) {
-        sectionCss.properties = new Map<string, string>(
-            [['margin-botton', '16px']]);
+        sectionCss.setProperties(['Contents'], [
+            ['margin-top', '8px']
+        ]);
+
         sectionCss.setProperties(
             ['Title'],
             [

@@ -37,12 +37,14 @@ class Resume extends React.Component<{}, ResumeState> {
     hovering: HoverTracker;
     nodes: ResumeNodeTree;
     css: CssNode;
+    specificCss: CssNode;
 
     /** Additional CSS */
     style: HTMLStyleElement;
 
     /** Base CSS */
     style2: HTMLStyleElement;
+    style3: HTMLStyleElement;
     unselect: Action;
 
     constructor(props) {
@@ -55,14 +57,21 @@ class Resume extends React.Component<{}, ResumeState> {
         head.appendChild(this.style);
 
         this.css = getDefaultCss();
+        this.specificCss = new CssNode('Individual CSS', {}, '#resume');
+
         this.style2 = document.createElement("style");
         this.style2.innerHTML = this.css.stylesheet();
         head.appendChild(this.style2);
+
+        this.style3 = document.createElement("style");
+        this.style3.innerHTML = this.specificCss.stylesheet();
+        head.appendChild(this.style3);
 
         this.hovering = new HoverTracker();
         this.nodes = new ResumeNodeTree();
         this.state = {
             builtinCss: this.css,
+            specificCss: this.specificCss,
             children: [],
             css: "",
             mode: "landing",
@@ -292,10 +301,10 @@ class Resume extends React.Component<{}, ResumeState> {
             }
 
             this.updateSelected('cssId', htmlId);
-            this.css.add(root);
+            this.specificCss.add(root);
 
             this.setState({
-                builtinCss: this.css,
+                specificCss: this.specificCss,
                 children: this.nodes.children
             });
         }
@@ -433,8 +442,12 @@ class Resume extends React.Component<{}, ResumeState> {
         // Load built-in CSS
         this.css = CssNode.load(savedData.builtinCss);
         this.style2.innerHTML = this.css.stylesheet();
+        this.specificCss = CssNode.load(savedData.specificCss);
+        this.style3.innerHtml = this.specificCss.stylesheet();
+
         this.setState({
             builtinCss: this.css,
+            specificCss: this.specificCss,
             children: this.nodes.children,
             css: savedData.css as string,
             mode: 'normal'
@@ -449,6 +462,7 @@ class Resume extends React.Component<{}, ResumeState> {
         const data: ResumeSaveData = {
             children: this.state.children,
             builtinCss: this.css.dump(),
+            specificCss: this.specificCss.dump(),
             css: this.state.css
         };
 
@@ -541,26 +555,45 @@ class Resume extends React.Component<{}, ResumeState> {
 
     //#endregion
 
+    // TODO: Refactor this mess
     renderCssEditor() {
         if (this.selectedNode) {
             const rootNode = this.state.builtinCss.findNode(
                 ComponentTypes.cssName(this.selectedNode.type)) as CssNode;
 
+            let specificCssEditor = <></>
+            if (this.selectedNode.cssId) {
+                const specificRootNode = this.state.specificCss.findNode([
+                    `#${this.selectedNode.cssId}`]) as CssNode;
+                specificCssEditor = <CssEditor isPrinting={this.isPrinting}
+                    root={specificRootNode}
+                    updateData={(path, data) => {
+                        this.specificCss.setProperties(path, data);
+                        this.setState({ specificCss: this.specificCss })
+                        this.style3.innerHTML = this.specificCss.stylesheet();
+                    }}
+                />
+            }
+
             if (rootNode) {
-                return <CssEditor isPrinting={this.isPrinting}
+                return <>
+                    <CssEditor isPrinting={this.isPrinting}
                     root={rootNode}
                     updateData={(path, data) => {
                         this.css.setProperties(path, data);
                         this.setState({ builtinCss: this.css })
                         this.style2.innerHTML = this.css.stylesheet();
                     }}
-                />
+                    />
+                    {specificCssEditor}
+                </>
             }
 
             return <></>
         }
                 
-        return <CssEditor isPrinting={this.isPrinting}
+        return <>
+            <CssEditor isPrinting={this.isPrinting}
             root={this.state.builtinCss}
             updateData={(path, data) => {
                 this.css.setProperties(path, data);
@@ -570,7 +603,19 @@ class Resume extends React.Component<{}, ResumeState> {
 
                 this.style2.innerHTML = this.css.stylesheet();
             }}
-        />
+            />
+            <CssEditor isPrinting={this.isPrinting}
+                root={this.state.specificCss}
+                updateData={(path, data) => {
+                    this.specificCss.setProperties(path, data);
+                    this.setState({
+                        specificCss: this.specificCss
+                    })
+
+                    this.style3.innerHTML = this.css.stylesheet();
+                }}
+            />
+        </>
     }
 
     render() {

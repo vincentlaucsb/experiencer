@@ -7,7 +7,7 @@ import './scss/index.scss';
 
 import ResumeComponent, { EditorMode, ComponentTypes } from './components/ResumeComponent';
 import { assignIds, deepCopy, arraysEqual } from './components/Helpers';
-import { Action, ResumeNodeProps } from './components/ResumeNodeBase';
+import ResumeNodeBase, { Action, ResumeNodeProps } from './components/ResumeNodeBase';
 import ResumeTemplateProvider from './components/templates/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
 import Landing from './components/help/Landing';
@@ -34,15 +34,11 @@ import Section from './components/Section';
 import getDefaultCss from './components/templates/CssTemplates';
 
 class Resume extends React.Component<{}, ResumeState> {
-    hovering: HoverTracker;
-    nodes: ResumeNodeTree;
-    css: CssNode;
-
-    /** Additional CSS */
+    hovering = new HoverTracker();
+    nodes = new ResumeNodeTree();
+    css = new CssNode("Resume CSS", {}, "#resume");
+    shouldUpdateCss = false;
     style: HTMLStyleElement;
-
-    /** Base CSS */
-    style2: HTMLStyleElement;
     unselect: Action;
 
     constructor(props) {
@@ -54,13 +50,6 @@ class Resume extends React.Component<{}, ResumeState> {
         this.style.innerHTML = "";
         head.appendChild(this.style);
 
-        this.css = getDefaultCss();
-        this.style2 = document.createElement("style");
-        this.style2.innerHTML = this.css.stylesheet();
-        head.appendChild(this.style2);
-
-        this.hovering = new HoverTracker();
-        this.nodes = new ResumeNodeTree();
         this.state = {
             builtinCss: this.css,
             children: [],
@@ -68,7 +57,6 @@ class Resume extends React.Component<{}, ResumeState> {
             mode: "landing",
             sectionTitlePosition: "top"
         };
-
         this.renderStyle();
 
         this.print = this.print.bind(this);
@@ -126,7 +114,7 @@ class Resume extends React.Component<{}, ResumeState> {
             return "resume-printing";
         }
 
-        let classNames = ["ml-auto", "mr-auto", "mt-2"];
+        let classNames = [];
         return classNames.join(' ');
     }
 
@@ -180,6 +168,19 @@ class Resume extends React.Component<{}, ResumeState> {
         return;
     }
 
+
+    /**
+     * Update stylesheets
+     * @param prevProps
+     * @param prevState
+     */
+    componentDidUpdate(prevProps, prevState: ResumeState) {
+        if (this.shouldUpdateCss) {
+            this.renderStyle();
+            this.shouldUpdateCss = false;
+        }
+    }
+
     setSelectedNode(id?: IdType) {
         // If the previously selected node was editing, bring it
         // out of an editing state
@@ -192,7 +193,10 @@ class Resume extends React.Component<{}, ResumeState> {
 
     // Push style changes to browser
     renderStyle() {
-        this.style.innerHTML = this.state.css;
+        this.style.innerHTML = `
+${this.state.builtinCss.stylesheet()}
+
+${this.state.css}`;
     }
 
     /**
@@ -237,8 +241,7 @@ class Resume extends React.Component<{}, ResumeState> {
             ...template
         });
 
-        this.style.innerHTML = template.css;
-        this.style2.innerHTML = template.builtinCss.stylesheet();
+        this.shouldUpdateCss = true;
     }
 
     renderTemplateChanger() {
@@ -253,10 +256,7 @@ class Resume extends React.Component<{}, ResumeState> {
             // TODO: Clean up this code
             this.nodes.children = template['children'];
             this.css = template['builtinCss'];
-
-            // Update loaded CSS
-            this.style.innerHTML = template.css;
-            this.style2.innerHTML = template.builtinCss.stylesheet();
+            this.shouldUpdateCss = true;
         };
 
         const templateNames = Object.keys(ResumeTemplateProvider.templates);
@@ -432,16 +432,12 @@ class Resume extends React.Component<{}, ResumeState> {
         
         // Load built-in CSS
         this.css = CssNode.load(savedData.builtinCss);
-        this.style2.innerHTML = this.css.stylesheet();
         this.setState({
             builtinCss: this.css,
             children: this.nodes.children,
             css: savedData.css as string,
             mode: 'normal'
         })
-
-        // Actually load custom CSS
-        this.renderStyle();
     }
 
     // Save data to an external file
@@ -542,6 +538,12 @@ class Resume extends React.Component<{}, ResumeState> {
     //#endregion
 
     renderCssEditor() {
+        const updater = (path, data) => {
+            this.css.setProperties(path, data);
+            this.setState({ builtinCss: this.css });
+            this.shouldUpdateCss = true;
+        };
+
         if (this.selectedNode) {
             const rootNode = this.state.builtinCss.findNode(
                 ComponentTypes.cssName(this.selectedNode.type)) as CssNode;
@@ -551,11 +553,7 @@ class Resume extends React.Component<{}, ResumeState> {
                 const specificRoot = this.state.builtinCss.findNode([`#${this.selectedNode.cssId}`]) as CssNode;
                 specificCssEditor = <CssEditor isPrinting={this.isPrinting}
                     root={specificRoot}
-                    updateData={(path, data) => {
-                        this.css.setProperties(path, data);
-                        this.setState({ builtinCss: this.css })
-                        this.style2.innerHTML = this.css.stylesheet();
-                    }}
+                    updateData={updater}
                 />
             }
 
@@ -563,12 +561,8 @@ class Resume extends React.Component<{}, ResumeState> {
                 return <>
                     {specificCssEditor}
                     <CssEditor isPrinting={this.isPrinting}
-                    root={rootNode}
-                    updateData={(path, data) => {
-                        this.css.setProperties(path, data);
-                        this.setState({ builtinCss: this.css })
-                        this.style2.innerHTML = this.css.stylesheet();
-                    }}
+                        root={rootNode}
+                        updateData={updater}
                     />
                 </>
             }
@@ -578,14 +572,7 @@ class Resume extends React.Component<{}, ResumeState> {
                 
         return <CssEditor isPrinting={this.isPrinting}
             root={this.state.builtinCss}
-            updateData={(path, data) => {
-                this.css.setProperties(path, data);
-                this.setState({
-                    builtinCss: this.css
-                })
-
-                this.style2.innerHTML = this.css.stylesheet();
-            }}
+            updateData={updater}
         />
     }
 

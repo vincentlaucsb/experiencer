@@ -60,10 +60,15 @@ export default class CssNode {
     }
 
     static load(data: CssNodeDump): CssNode {
-        let node = new CssNode(data.name, {}, data.selector);
-        node.properties = new Map<string, string>(data.properties);
-        node._children = data.children.map((elem) => CssNode.load(elem));
-        return node;
+        let rootNode = new CssNode(data.name, {}, data.selector);
+        rootNode.properties = new Map<string, string>(data.properties);
+
+        // Load children
+        for (let node of data.children) {
+            rootNode.add(CssNode.load(node));
+        }
+
+        return rootNode;
     }
 
     dump() : CssNodeDump {
@@ -111,5 +116,24 @@ ${childStylesheets}`
         css.parent = this;
         this.children.push(css);
         return this.children[this.children.length - 1];
+    }
+
+    /**
+     * Find a CSS node somewhere in this subtree
+     * @param path A list of names ordered from higher up in the tree to lower
+     */
+    findNode(path: string[]) : CssNode | undefined {
+        for (let node of this.children) {
+            if (node.name === path[0]) {
+                if (path.length === 1) {
+                    return node;
+                }
+                else {
+                    return node.findNode(path.slice(1));
+                }
+            }
+        }
+
+        return;
     }
 }

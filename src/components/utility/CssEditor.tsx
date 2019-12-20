@@ -4,11 +4,8 @@ import MappedTextFields from "../controls/inputs/MappedTextFields";
 import Collapse from "../controls/Collapse";
 
 export interface CssEditorProps {
-    /** Used for traversing the tree */
     isPrinting?: boolean;
-    path: Array<string>;
     root: CssNode;
-
     updateData: (path: string[], data: Map<string, string>) => void;
 }
 
@@ -27,8 +24,12 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         this.updateCssProperties = this.updateCssProperties.bind(this);
     }
 
+    get path() {
+        return this.props.root.fullPath;
+    }
+
     get heading() {
-        switch (this.props.path.length) {
+        switch (this.path.length) {
             case 0:
                 return (props: any) => <h2 {...props} />
             case 1:
@@ -73,7 +74,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
             {this.props.root.name} <span>({this.props.root.fullSelector})</span>
         </Heading>
 
-        const isOpen = (this.props.path.length != 1);
+        const isOpen = (this.path.length != 1);
 
         return (
             <section className="css-category no-print">
@@ -84,10 +85,8 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
                     {this.state.css.children.map(
                         (css, index) => {
-                            const path = [...this.props.path, css.name];
                             return <CssEditor
                                 key={css.fullSelector}
-                                path={path}
                                 root={css}
                                 updateData={this.props.updateData}
                             />

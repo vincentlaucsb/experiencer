@@ -523,8 +523,7 @@ class Resume extends React.Component<{}, ResumeState> {
             ) as CssNode;
 
             if (rootNode) {
-                return <CssEditor path={[]}
-                    isPrinting={this.isPrinting}
+                return <CssEditor isPrinting={this.isPrinting}
                     root={rootNode}
                     updateData={(path, data) => {
                         this.css.setProperties(path, data);
@@ -537,8 +536,7 @@ class Resume extends React.Component<{}, ResumeState> {
             return <></>
         }
                 
-        return <CssEditor path={[]}
-            isPrinting={this.isPrinting}
+        return <CssEditor isPrinting={this.isPrinting}
             root={this.state.builtinCss}
             updateData={(path, data) => {
                 this.css.setProperties(path, data);

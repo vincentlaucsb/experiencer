@@ -232,31 +232,17 @@ ${this.state.css}`;
 
     //#region Changing Templates
     changeTemplate() {
-        const key = 'Traditional 1';
-        const template = ResumeTemplateProvider.templates[key]();
-
-        this.setState({
-            activeTemplate: key,
-            mode: 'changingTemplate',
-            ...template
-        });
-
-        this.shouldUpdateCss = true;
+        this.loadData(
+            ResumeTemplateProvider.templates['Randy Marsh'](),
+            'changingTemplate'
+        );
     }
 
     renderTemplateChanger() {
         const loadTemplate = (key: string) => {
             const template = ResumeTemplateProvider.templates[key]();
-
-            this.setState({
-                activeTemplate: key,
-                ...template
-            });
-
-            // TODO: Clean up this code
-            this.nodes.children = template['children'];
-            this.css = template['builtinCss'];
-            this.shouldUpdateCss = true;
+            this.setState({ activeTemplate: key, });
+            this.loadData(template, 'changingTemplate');
         };
 
         const templateNames = Object.keys(ResumeTemplateProvider.templates);
@@ -426,18 +412,19 @@ ${this.state.css}`;
     //#endregion
     
     //#region Serialization
-    loadData(data: object) {
+    loadData(data: object, mode: EditorMode = 'normal') {
         let savedData = data as ResumeSaveData;
         this.nodes.children = assignIds(savedData.children);
-        
-        // Load built-in CSS
         this.css = CssNode.load(savedData.builtinCss);
+
         this.setState({
             builtinCss: this.css,
             children: this.nodes.children,
             css: savedData.css as string,
-            mode: 'normal'
+            mode: mode
         })
+
+        this.shouldUpdateCss = true;
     }
 
     // Save data to an external file

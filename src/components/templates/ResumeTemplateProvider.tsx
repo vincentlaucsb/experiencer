@@ -8,6 +8,7 @@ import Column from "../Column";
 import Row, { BasicRowProps } from "../Row";
 import { randyMarshCss, randyMarsh } from "./RandyMarsh";
 import getDefaultCss from "./CssTemplates";
+import { ResumeSaveData } from "../controls/ResumeState";
 
 export default class ResumeTemplateProvider {
     static defaultCss = `#resume * {
@@ -122,8 +123,8 @@ section.header-left h2 {
             let header = ResumeTemplateProvider.header;
             header.children[0]['disableLineBreaks'] = true;
 
-            let data = {
-                builtinCss: getDefaultCss(),
+            let data: ResumeSaveData = {
+                builtinCss: getDefaultCss().dump(),
                 children: assignIds([
                     header,
                     ResumeTemplateProvider.objective,
@@ -149,8 +150,8 @@ section.header-left h2 {
             let header = ResumeTemplateProvider.header;
             header.children[0]['disableLineBreaks'] = true;
 
-            let data = {
-                builtinCss: getDefaultCss(),
+            let data: ResumeSaveData = {
+                builtinCss: getDefaultCss().dump(),
                 children: assignIds([
                     header,
                     ResumeTemplateProvider.objective,
@@ -174,8 +175,8 @@ section.header-left h2 {
             let header = ResumeTemplateProvider.header;
             header['orientation'] = 'row';
 
-            let data = {
-                builtinCss: getDefaultCss(),
+            let data: ResumeSaveData = {
+                builtinCss: getDefaultCss().dump(),
                 children: assignIds([
                     header,
                     ResumeTemplateProvider.objective,
@@ -205,8 +206,8 @@ section.header-left h2 {
         },
 
         "Randy Marsh": () => {
-            let data = {
-                builtinCss: randyMarshCss(),
+            let data: ResumeSaveData = {
+                builtinCss: randyMarshCss().dump(),
                 children: assignIds([ randyMarsh() ]),
                 css: `${ResumeTemplateProvider.defaultCss}
 

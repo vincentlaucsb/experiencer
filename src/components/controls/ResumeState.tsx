@@ -8,6 +8,7 @@ export interface ResumeSaveData {
     builtinCss: CssNodeDump;
     children: Array<ResumeNode>;
     css: string;
+    sectionTitlePosition?: 'top' | 'left';
 }
 
 export default interface ResumeState {

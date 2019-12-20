@@ -2,7 +2,15 @@
 import { ResumeNode } from "../utility/NodeTree";
 import Row, { BasicRowProps } from "../Row";
 import Section, { BasicSectionProps } from "../Section";
-import { CustomToolbarOptions } from "../ResumeNodeBase";
+import { Action } from "../ResumeNodeBase";
+
+export interface ToolbarOption {
+    text: string;
+    action?: Action;
+    actions?: Array<ToolbarOption>;
+}
+
+export type CustomToolbarOptions = Array<ToolbarOption>;
 
 /**
  * Retrieves custom toolbar options for a node

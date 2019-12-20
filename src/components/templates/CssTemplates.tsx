@@ -1,7 +1,7 @@
 ﻿import CssNode from "../utility/CssTree";
 import Entry from "../Entry";
 import Section from "../Section";
-import RichText from "../Paragraph";
+import RichText from "../RichText";
 
 function getRowCss(): CssNode {
     let rowCss = new CssNode('Row', {

@@ -149,7 +149,7 @@ class Resume extends React.Component<{}, ResumeState> {
             return this.nodes.getNodeById(this.state.selectedNode);
         }
 
-        return;
+        return undefined;
     }
 
     /**

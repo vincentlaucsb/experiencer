@@ -32,14 +32,6 @@ export interface ResumeNodeProps extends ResumePassProps {
     isEditing?: boolean
 }
 
-export interface ToolbarOption {
-    text: string;
-    action?: Action;
-    actions?: Array<ToolbarOption>;
-}
-
-export type CustomToolbarOptions = Array<ToolbarOption>;
-
 // Represents a node that is part of the user's resume
 export default class ResumeNodeBase<P
     extends ResumeNodeProps=ResumeNodeProps> extends React.PureComponent<P> {
@@ -89,10 +81,6 @@ export default class ResumeNodeBase<P
         }
 
         return classes.join(' ');
-    }
-    
-    get customToolbarOptions() : CustomToolbarOptions {
-        return [];
     }
 
     /** Returns true if this node has no children */

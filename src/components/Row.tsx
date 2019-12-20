@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import ResumeNodeBase, { ToolbarOption, ResumeNodeProps } from "./ResumeNodeBase";
+import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import { ResumeNode, BasicResumeNode } from "./utility/NodeTree";
 import Column from "./Column";
 

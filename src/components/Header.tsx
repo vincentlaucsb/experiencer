@@ -1,7 +1,7 @@
 ﻿import * as React from "react";
 import Row, { RowProps, BasicRowProps } from "./Row";
 import ReactQuill from "react-quill";
-import RichText from "./Paragraph";
+import RichText from "./RichText";
 
 interface HeaderBase {
     subtitle?: string;

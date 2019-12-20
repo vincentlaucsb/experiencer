@@ -1,8 +1,8 @@
 ﻿import * as React from "react";
-import ResumeNodeBase, { ResumeNodeProps, Action, CustomToolbarOptions } from "./ResumeNodeBase";
+import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import ResumeTextField from "./controls/inputs/TextField";
 import { pushArray } from "./Helpers";
-import { BasicResumeNode, ResumeNode } from "./utility/NodeTree";
+import { BasicResumeNode } from "./utility/NodeTree";
 
 interface EntryBase {
     title?: string[];
@@ -68,7 +68,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         const fields = this.props[key];
         if (fields) {
             return fields.map((text, index, arr) => {
-                const isLast = index == arr.length - 1;
+                const isLast = index === arr.length - 1;
                 let classNames = ['field', `field-${index}`];
                 if (isLast) {
                     classNames.push('field-last');

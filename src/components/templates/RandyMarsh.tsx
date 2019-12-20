@@ -5,7 +5,7 @@ import Header, { BasicHeaderProps } from "../Header";
 import CssNode from "../utility/CssTree";
 import Section, { BasicSectionProps } from "../Section";
 import Entry, { BasicEntryProps } from "../Entry";
-import RichText from "../Paragraph";
+import RichText from "../RichText";
 import getDefaultCss from "./CssTemplates";
 
 export function randyMarshCss() {

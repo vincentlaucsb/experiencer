@@ -1,11 +1,11 @@
 ﻿import Section, { SectionHeaderPosition, BasicSectionProps } from "../Section";
 import { assignIds } from "../Helpers";
-import Header, { BasicHeaderProps } from "../Header";
+import Header from "../Header";
 import Entry, { BasicEntryProps } from "../Entry";
-import RichText from "../Paragraph";
+import RichText from "../RichText";
 import { BasicResumeNode } from "../utility/NodeTree";
 import Column from "../Column";
-import Row, { BasicRowProps } from "../Row";
+import Row from "../Row";
 import { randyMarshCss, randyMarsh } from "./RandyMarsh";
 import getDefaultCss from "./CssTemplates";
 import { ResumeSaveData } from "../controls/ResumeState";

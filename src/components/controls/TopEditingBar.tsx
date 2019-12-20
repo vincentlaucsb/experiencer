@@ -1,6 +1,6 @@
 ﻿import React from "react";
 import { Button } from "./Buttons";
-import { Action, ModifyChild, AddChild, CustomToolbarOptions } from "../ResumeNodeBase";
+import { Action, ModifyChild, AddChild } from "../ResumeNodeBase";
 import { IdType } from "../utility/HoverTracker";
 import PureMenu, { PureDropdown, PureMenuItem, PureMenuLink } from "./PureMenu";
 import ResumeHotKeys from "./ResumeHotkeys";
@@ -10,7 +10,7 @@ import { DescriptionListItem, DescriptionList } from "../List";
 import CssIdAdder from "./CssIdAdder";
 import { assignIds } from "../Helpers";
 import { ResumeNode } from "../utility/NodeTree";
-import toolbarOptions from "./ToolbarOptions";
+import toolbarOptions, { CustomToolbarOptions } from "./ToolbarOptions";
 
 type AddOptions = Array<NodeInformation>;
 

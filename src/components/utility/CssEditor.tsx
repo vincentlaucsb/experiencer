@@ -65,7 +65,7 @@ export default class CssEditor extends React.Component<CssEditorProps> {
             {this.props.root.name} <span>({this.props.root.fullSelector})</span>
         </Heading>
 
-        const isOpen = (this.path.length != 1);
+        const isOpen = (this.path.length !== 1);
 
         return (
             <section className="css-category no-print">

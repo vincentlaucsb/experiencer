@@ -3,7 +3,7 @@
 import Section, { SectionProps } from "./Section";
 import Entry, { BasicEntryProps } from "./Entry";
 import { DescriptionList, DescriptionListItem } from "./List";
-import RichText from "./Paragraph";
+import RichText from "./RichText";
 import Header from "./Header";
 import { ResumeNodeProps, ResumePassProps } from "./ResumeNodeBase";
 import { IdType } from "./utility/HoverTracker";
@@ -36,7 +36,7 @@ export default function ResumeComponent(props: ResumeComponentProps) {
 
         // Generate unique IDs for component
         id: parentId ? [...parentId, index] : [index],
-        isLast: index == props.numSiblings - 1
+        isLast: index === props.numSiblings - 1
     } as ResumeNodeProps;
     
     switch (props.type) {

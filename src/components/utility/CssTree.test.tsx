@@ -1,7 +1,8 @@
 ﻿import CssNode from "./CssTree";
+import { arraysEqual } from "../Helpers";
 
-test('findNode Test', () => {
-    const cssNode = CssNode.load({
+function makeCssTree() {
+    return CssNode.load({
         "name": "Rich Text",
         "selector": ".rich-text",
         "properties": [],
@@ -21,7 +22,10 @@ test('findNode Test', () => {
             }
         ]
     });
+}
 
+test('findNode Test', () => {
+    const cssNode = makeCssTree();
     const listCss = cssNode.findNode(['Lists']) as CssNode;
     const listItemCss = cssNode.findNode(['Lists', 'List Item']) as CssNode;
 
@@ -30,4 +34,16 @@ test('findNode Test', () => {
 
     expect(listItemCss).toBeDefined();
     expect(listItemCss.fullSelector).toEqual('.rich-text ul li');
+})
+
+test('find Test', () => {
+    const cssNode = makeCssTree();
+    const listCss = cssNode.findNode(['Lists']) as CssNode;
+    const listItemCss = cssNode.findNode(['Lists', 'List Item']) as CssNode;
+
+    expect(listCss).toBeDefined();
+    expect(arraysEqual(listCss.fullPath, ['Lists'])).toBeTruthy();
+
+    expect(listItemCss).toBeDefined();
+    expect(arraysEqual(listItemCss.fullPath, ['Lists', 'List Item'])).toBeTruthy();
 })

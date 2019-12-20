@@ -7,7 +7,7 @@ import './scss/index.scss';
 
 import ResumeComponent, { EditorMode, ComponentTypes } from './components/ResumeComponent';
 import { assignIds, deepCopy, arraysEqual } from './components/Helpers';
-import { Action, CustomToolbarOptions } from './components/ResumeNodeBase';
+import { Action, CustomToolbarOptions, ResumeNodeProps } from './components/ResumeNodeBase';
 import ResumeTemplateProvider from './components/templates/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
 import Landing from './components/help/Landing';
@@ -183,7 +183,7 @@ class Resume extends React.Component<{}, ResumeState> {
         // If the previously selected node was editing, bring it
         // out of an editing state
         if (this.selectedNode) {
-            this.updateSelected('isEditing', false);
+            (this.selectedNode as ResumeNodeProps).isEditing = false;
         }
 
         this.setState({ selectedNode: id });
@@ -329,7 +329,8 @@ class Resume extends React.Component<{}, ResumeState> {
         const id = this.state.selectedNode as IdType;
         if (id) {
             this.nodes.updateChild(id, key, data);
-        } this.setState({ children: this.nodes.children });
+            this.setState({ children: this.nodes.children });
+        }
     }
 
     editSelected() {
@@ -352,7 +353,7 @@ class Resume extends React.Component<{}, ResumeState> {
             this.setState({ children: this.nodes.children, });
             this.setSelectedNode(newId);
         }
-    }   
+    }
 
     get moveSelectedDownEnabled() {
         const id = this.state.selectedNode as IdType;
@@ -516,6 +517,24 @@ class Resume extends React.Component<{}, ResumeState> {
 
     renderCssEditor() {
         if (this.selectedNode) {
+            const rootNode = this.state.builtinCss.findNode(
+                [this.selectedNode.type]
+            ) as CssNode;
+
+            if (rootNode) {
+                return <CssEditor path={[]}
+                    isPrinting={this.isPrinting}
+                    root={rootNode}
+                    updateParentData={(css: CssNode) => {
+                        this.css = css;
+                        this.setState({
+                            builtinCss: this.css
+                        })
+                        this.style2.innerHTML = this.css.stylesheet();
+                    }}
+                />
+            }
+
             return <></>
         }
                 

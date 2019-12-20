@@ -47,6 +47,21 @@ export default class CssNode {
         return selector;
     }
 
+    get fullPath() {
+        let parent = this.parent;
+        let path = [ this.name ];
+
+        while (!isNullOrUndefined(parent)) {
+            path.push(parent.name);
+            parent = parent.parent;
+        }
+
+        // Remove top most name from path
+        path = path.slice(0, path.length - 1);
+
+        return path.reverse();
+    }
+
     get children() {
         return this._children;
     }

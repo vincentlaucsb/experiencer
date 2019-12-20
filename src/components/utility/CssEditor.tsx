@@ -91,7 +91,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
                     {this.state.css.children.map(
                         (css, index) => {
                             const path = [...this.props.path, css.name];
-                            return <CssEditor key={index} path={path} root={css}
+                            return <CssEditor key={css.fullSelector} path={path} root={css}
                                 updateParentData={
                                     (css: CssNode) => {
                                         // TODO: Is the following operation safe?

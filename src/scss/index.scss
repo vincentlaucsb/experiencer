@@ -94,17 +94,6 @@ header#app-header {
     }
 }
 
-#resume:not(.resume-printing) {
-    background: #ffffff;
-    border: 1px solid #dddddd;
-    max-width: 8.5in;
-    min-height: 11in;
-    width: 80%;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: $spacing;
-}
-
 .button-disabled {
     filter: opacity(0.3);
 }
@@ -125,4 +114,28 @@ div.button-tooltip {
 /** Helper Classes */
 .cursor-pointer {
     cursor: pointer;
+}
+
+#resume {
+    background: #ffffff;
+}
+
+@media screen {
+    #resume {
+        border: 1px solid #dddddd;
+        width: 8.5in;
+        max-width: 8.5in;
+        min-height: 11in;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: $spacing;
+    }
+}
+
+@media print {
+    #resume {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
 }

@@ -60,9 +60,6 @@ export default function TopNavBar(props: TopNavBarProps) {
         <div id="brand">
             <h1 onClick={props.toggleLanding}>Experiencer</h1>
             <PureMenu horizontal>
-                <Item>
-                    <Link>File</Link>
-                </Item>
                 <Item onClick={props.toggleStyleEditor}>
                     <Link>Edit Style</Link>
                 </Item>

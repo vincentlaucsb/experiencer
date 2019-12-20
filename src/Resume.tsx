@@ -166,7 +166,11 @@ class Resume extends React.Component<{}, ResumeState> {
         // If the previously selected node was editing, bring it
         // out of an editing state
         if (prevState.selectedNode && (prevState.selectedNode !== this.state.selectedNode)) {
-            (this.nodes.getNodeById(prevState.selectedNode) as ResumeNodeProps).isEditing = false;
+            // Make sure node wasn't deleted before we try to modify it
+            const prevNode = this.nodes.getNodeById(prevState.selectedNode);
+            if (prevNode) {
+                (prevNode as ResumeNodeProps).isEditing = false;
+            }
         }
     }
 
@@ -519,11 +523,6 @@ ${this.state.additionalCss}`;
            return <>{props.children}</>
         };
 
-        const resumeToolbar = this.isEditable ? <Toolbar>
-            <Button onClick={this.addSection}>Add Section</Button>
-            <Button onClick={this.addColumn}>Add Multi-Column Row</Button>
-        </Toolbar> : <></>
-
         const resume = <div id="resume">
             <ResumeHotKeys {...this.resumeHotKeysProps} />
             {this.state.children.map((elem, idx, arr) => {
@@ -542,8 +541,6 @@ ${this.state.additionalCss}`;
 
                 return <ResumeComponent key={uniqueId} {...props} />
             })}
-
-            {resumeToolbar}
         </div>
 
         let main = resume;
@@ -556,6 +553,8 @@ ${this.state.additionalCss}`;
             <FileLoader loadData={this.loadData} />
             <FileSaver saveFile={this.saveFile} />
             <Button onClick={this.print}>Print</Button>
+            <Button onClick={this.addSection}>Add Section</Button>
+            <Button onClick={this.addColumn}>Add Multi-Column Row</Button>
         </div>
         
         const editingTop = <RenderIf render={!this.isPrinting}>

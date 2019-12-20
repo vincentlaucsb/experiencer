@@ -30,6 +30,10 @@ function AddOption(props: AddOptionProps) {
     const nodeInfo = (type: string) => ComponentTypes.defaultValue(type);
 
     if (Array.isArray(options)) {
+        if (options.length == 0) {
+            return <></>
+        }
+
         let optionsDetail: AddOptions = options.map((nodeType: string) => nodeInfo(nodeType));
         return <PureDropdown content={<Button>Insert</Button>}>
             {optionsDetail.map((opt) =>

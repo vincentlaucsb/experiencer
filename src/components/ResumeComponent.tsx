@@ -85,6 +85,15 @@ export class ComponentTypes {
                     DescriptionList.name,
                     RichText.name
                 ];
+            case Header.name:
+                return [
+                    Entry.name,
+                    RichText.name,
+                    AliasTypes.BulletedList,
+                    DescriptionList.name
+                ];
+            case RichText.name:
+                return [];
             default:
                 return [
                     Section.name,

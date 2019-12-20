@@ -125,12 +125,12 @@ ${childStylesheets}`
     findNode(path: string[]) : CssNode | undefined {
         for (let node of this.children) {
             if (node.name === path[0]) {
+                // No more subtrees to traverse
                 if (path.length === 1) {
                     return node;
                 }
-                else {
-                    return node.findNode(path.slice(1));
-                }
+
+                return node.findNode(path.slice(1));
             }
         }
 

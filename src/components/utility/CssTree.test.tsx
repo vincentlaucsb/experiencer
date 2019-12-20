@@ -23,7 +23,11 @@ test('findNode Test', () => {
     });
 
     const listCss = cssNode.findNode(['Lists']) as CssNode;
+    const listItemCss = cssNode.findNode(['Lists', 'List Item']) as CssNode;
 
     expect(listCss).toBeDefined();
     expect(listCss.fullSelector).toEqual('.rich-text ul');
+
+    expect(listItemCss).toBeDefined();
+    expect(listItemCss.fullSelector).toEqual('.rich-text ul li');
 })

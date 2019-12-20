@@ -104,10 +104,10 @@ export function CustomOptions(props: { options: CustomToolbarOptions }) {
     return <>
         {props.options.map((item) => {
             if (item.action) {
-                return <Button onClick={item.action}>{item.text}</Button>
+                return <Button key={item.text} onClick={item.action}>{item.text}</Button>
             }
             else if (item.actions) {
-                return <PureDropdown content={<Button>{item.text}</Button>}>
+                return <PureDropdown key={item.text} content={<Button>{item.text}</Button>}>
                     {item.actions.map((item) =>
                         <DropdownItem key={item.text} onClick={item.action}>{item.text}</DropdownItem>
                     )}
@@ -153,7 +153,11 @@ export default function TopEditingBar(props: EditingBarProps) {
                 <Item onClick={() => props.moveDown()}
                     disabled={!props.moveDownEnabled}
                 >Move Down</Item>
-                <CssIdAdder cssId={props.node.cssId} addHtmlId={props.addHtmlId} />
+                <CssIdAdder
+                    key={props.node.uuid}
+                    cssId={props.node.cssId}
+                    addHtmlId={props.addHtmlId}
+                />
                 <CustomOptions options={customOptions} />
             </PureMenu>
         </div>

@@ -15,11 +15,6 @@ export default function CssIdAdder(props: CssIdAdderProps) {
         setCssId(event.target.value);
     }
 
-    // TODO: Is this necessary?
-    React.useEffect(() => {
-        setCssId(props.cssId || "");
-    }, [props.cssId]);
-
     const expanded = (
         <form id="css-id-adder">
             <input type="text" onChange={onChange} value={cssId} />

@@ -109,6 +109,8 @@ export class ComponentTypes {
                 return ['Description List'];
             case RichText.name:
                 return ['Rich Text'];
+            case Column.name:
+                return [Row.name, Column.name];
             default:
                 return [type];
         }

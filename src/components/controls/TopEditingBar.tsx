@@ -61,6 +61,7 @@ export interface EditingBarProps extends SelectedNodeActions {
     moveUpEnabled: boolean;
     moveDownEnabled: boolean;
     updateSelected: (key: string, data: any) => void;
+    unselect: Action;
 }
 
 function ClipboardMenu(props: EditingBarProps) {
@@ -159,6 +160,7 @@ export default function TopEditingBar(props: EditingBarProps) {
                 <Item onClick={props.delete}>Delete</Item>
                 <ClipboardMenu {...props} />
                 <CustomOptions options={customOptions} />
+                <Button onClick={props.unselect}>Unselect</Button>
             </PureMenu>
             <span className="label">Current Node ({ props.node.type })</span>
         </div>

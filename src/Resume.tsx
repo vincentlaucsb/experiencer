@@ -548,13 +548,23 @@ ${this.state.additionalCss}`;
 
         const topEditingBar = this.state.selectedNode ? <TopEditingBar {...this.editingBarProps as EditingBarProps} /> : <div id="toolbar"
             className="no-print">
-            <Button><Octicon icon={Home} />Home</Button>
-            <Button onClick={this.changeTemplate}>New</Button>
-            <FileLoader loadData={this.loadData} />
-            <FileSaver saveFile={this.saveFile} />
-            <Button onClick={this.print}>Print</Button>
-            <Button onClick={this.addSection}>Add Section</Button>
-            <Button onClick={this.addColumn}>Add Multi-Column Row</Button>
+            <div className="toolbar-section">
+                <PureMenu horizontal>
+                    <Button><Octicon icon={Home} />Home</Button>
+                    <Button onClick={this.changeTemplate}>New</Button>
+                    <FileLoader loadData={this.loadData} />
+                    <FileSaver saveFile={this.saveFile} />
+                    <Button onClick={this.print}>Print</Button>
+                </PureMenu>
+                <span className="label">File</span>
+            </div>
+            <div className="toolbar-section">
+                <PureMenu horizontal>
+                    <Button onClick={this.addSection}>Add Section</Button>
+                    <Button onClick={this.addColumn}>Add Rows & Columns</Button>
+                </PureMenu>
+                <span className="label">Resume Components</span>
+            </div>
         </div>
         
         const editingTop = <RenderIf render={!this.isPrinting}>

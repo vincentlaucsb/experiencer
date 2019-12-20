@@ -1,0 +1,229 @@
+﻿import { BasicResumeNode } from "../utility/NodeTree";
+import Row, { BasicRowProps } from "../Row";
+import Column from "../Column";
+import Header, { BasicHeaderProps } from "../Header";
+import CssNode from "../utility/CssTree";
+import Section, { BasicSectionProps } from "../Section";
+import Entry, { BasicEntryProps } from "../Entry";
+import RichText from "../Paragraph";
+import getDefaultCss from "./CssTemplates";
+
+export function randyMarshCss() {
+    let randyCss = getDefaultCss();
+    randyCss.properties = new Map<string, string>([
+        ["font-family", "Open Sans, sans-serif"],
+        ["font-size", "11pt"],
+        ["padding", "0"],
+        ["display", "flex"],
+        ["flex-direction", "column"],
+        ["height", "100%"]
+    ]);
+
+    let headerCss = randyCss.findNode(["Header"]) as CssNode;
+    if (headerCss) {
+        headerCss.properties = new Map<string, string>([
+            ["height", "100px"],
+            ["font-family", "Merriweather, serif"],
+            ["text-transform", "uppercase"],
+            ["color", "#43353f"]
+        ]);
+    }
+
+    let sectionCss = randyCss.findNode(['Section']) as CssNode;
+    if (sectionCss) {
+        sectionCss.properties = new Map<string, string>(
+            [['margin-botton', '16px']]);
+        sectionCss.setProperties(
+            ['Title'],
+            [
+                ["font-family", "Open Sans, sans-serif"],
+                ["font-weight", "bold"],
+                ["font-size", "20pt"],
+                ["color", "#4eb3b9"]
+            ]
+        );
+    }
+
+    let entryCss = randyCss.findNode(["Entry"]) as CssNode;
+    if (entryCss) {
+        let titleCss = entryCss.findNode(["Title Block", "Title"]) as CssNode;
+        if (titleCss) {
+            titleCss.setProperties(["First Title Field"], [
+                ["font-weight", "bold"],
+                ["font-family", "Merriweather, serif"]
+            ]);
+
+            titleCss.setProperties(["Other Title Fields"], [
+                ["font-weight", "normal"]
+            ]);
+        }
+    }
+
+    let rowCss = randyCss.findNode(["Row"]) as CssNode;
+    if (rowCss) {
+        rowCss.properties = new Map<string, string>([
+            ["height", "100%"],
+            ["flex-grow", "2"]
+        ]);
+        
+        rowCss.setProperties(["All Columns"], [["padding", "0.5in"]]);
+        rowCss.setProperties(
+            ["Last Column"],
+            [
+                ["background", "#fbdcb6"],
+                ["padding-top", "calc(100px + 0.5in)"],
+                ["width", "150px"]
+            ]
+        );
+    }
+
+    return randyCss;
+}
+
+export function randyMarsh(): BasicResumeNode {
+    return {
+        "type": Row.name,
+        "children": [
+            {
+                "type": Column.name,
+                "children": [
+                    {
+                        "type": Header.name,
+                        "value": "Randy Marsh",
+                        "subtitle": "Geologist and Innovator",
+                        "children": [],
+                    } as BasicHeaderProps,
+                    {
+                        "type": Section.name,
+                        "title": "Experience",
+                        "children": [
+                            {
+                                "type": Entry.name,
+                                "title": ["Tegridy Farms", "2019 -- Present"],
+                                "subtitle": ["Founder/CEO", "Somewhere in the boonies"],
+                                "children": [
+                                    {
+                                        "type": RichText.name,
+                                        "value": "<ul><li>Pioneered farm-to-door delivery of fresh agricultural produce</li><li>Negotiated a multi-million dollar contract with the Chinese government</li></ul>"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": Entry.name,
+                                "title": ["United States Geological Survey", "2010 -- 2019"],
+                                "subtitle": ["Geologist"],
+                            } as BasicEntryProps,
+                            {
+                                "type": Entry.name,
+                                "title": ["Lorde", "2014"],
+                                "subtitle": ["Pop Star"],
+                                "children": [
+                                    {
+                                        "type": RichText.name,
+                                        "value": "<ul><li>Released the Billboard #1 hit <em>Push (Feeling Good on A Wednesday)</em></li></ul>",
+                                    }
+                                ]
+                            }
+                        ],
+                    } as BasicSectionProps,
+                    {
+                        "type": Section.name,
+                        "title": "Education",
+                        "children": [
+                            {
+                                "type": Entry.name,
+                                "title": ["Some College", "1992"],
+                                "subtitle": ["Doctorate in Geology"]
+                            } as BasicEntryProps
+                        ]
+                    } as BasicSectionProps,
+                    {
+                        "type": Section.name,
+                        "title": "Awards and Recognition",
+                        "children": [
+                            {
+                                "type": Row.name,
+                                "evenColumns": true,
+                                "children": [
+                                    {
+                                        "type": Column.name,
+                                        "children": [
+                                            {
+                                                "type": Entry.name,
+                                                "title": ["Nobel Prize"],
+                                                "subtitle": ["Break Wind Theory"],
+                                                "children": [
+                                                    {
+                                                        "type": RichText.name,
+                                                        "value": "<p>Awarded the Nobel Prize for my work on the Break Wind theory of spontaneous combustion</p>"
+                                                    }
+                                                ]
+                                            } as BasicEntryProps
+                                        ]
+                                    },
+                                    {
+                                        "type": Column.name,
+                                        "children": [
+                                            {
+                                                "type": Entry.name,
+                                                "title": ["Emmy Award"],
+                                                "subtitle": ["Outstanding Animated Program"],
+                                                "children": [
+                                                    {
+                                                        "type": RichText.name,
+                                                        "value": "<p>Gifted an Emmy Award after passing a stool weighing well over 100 courics</p>"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "cssId": "awards"
+                            } as BasicRowProps
+                        ]
+                    } as BasicSectionProps
+                ]
+            },
+            {
+                "type": Column.name,
+                "children": [
+                    {
+                        "type": Section.name,
+                        "title": "Contact",
+                        "children": [
+                            {
+                                "type": RichText.name,
+                                "value": "<p>South Park, CO</p><p>@GettinRandy55</p>"
+                            }
+                        ]
+                    } as BasicSectionProps,
+                    {
+                        "type": Section.name,
+                        "title": "Skills",
+                        "children": [
+                            {
+                                "type": RichText.name,
+                                "value": "<ul><li>Advertising</li><li>Agriculture</li><li>Criminal Defense</li><li>Demolition/Explosives</li><li>Geology</li><li>International Commerce</li><li>Magic</li><li>Music Production</li><li>Parade Planning</li><li>Political Activism</li></ul>",
+                            }
+                        ]
+                    },
+                    {
+                        "type": Section.name,
+                        "title": "References",
+                        "children": [
+                            {
+                                "type": RichText.name,
+                                "value": "<p><strong>Towelie</strong></p><p>Agricultural Inspector</p><p><br></p>"
+                            }
+                        ]
+                    } as BasicSectionProps,
+                    {
+                        "type": RichText.name,
+                        "value": "<p>Typeset entirely with HTML, CSS, and good old-fashioned<strong> TEGRIDY</strong></p>",
+                        "cssId": "tegridy"
+                    }
+                ]
+            }
+        ]
+    }
+}

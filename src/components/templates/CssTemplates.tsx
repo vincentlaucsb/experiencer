@@ -98,7 +98,7 @@ function getEntryCss(): CssNode {
     }, '.field-0::after'))
 
     let subtitleCss = entryTitleCss.add(new CssNode('Subtitle', {
-        'font-family': 'Verdana, sans-serif',
+        'font-family': 'sans-serif',
     }, 'h4.subtitle'));
 
     subtitleCss.add(new CssNode('Other Subtitle Fields', {
@@ -111,7 +111,7 @@ function getEntryCss(): CssNode {
 /** Return the default CSS template */
 export default function getDefaultCss() : CssNode {
     let defaultCss = new CssNode('Resume CSS', {
-        'font-family': 'Georgia, serif',
+        'font-family': 'Merriweather, serif',
         'font-size': '10pt',
         'padding': '0.5in',
     }, '#resume');

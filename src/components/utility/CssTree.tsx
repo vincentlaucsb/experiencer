@@ -51,7 +51,7 @@ export default class CssNode {
         return this._children;
     }
 
-    get properties() {
+    get properties(): Map<string, string> {
         return this._properties;
     }
 
@@ -135,5 +135,16 @@ ${childStylesheets}`
         }
 
         return;
+    }
+
+    setProperties(path: string[], properties: Array<[string, string]> | Map<string, string>) {
+        const targetNode = this.findNode(path);
+        if (targetNode) {
+            if (Array.isArray(properties)) {
+                properties = new Map<string, string>(properties);
+            }
+
+            targetNode.properties = properties;
+        }
     }
 }

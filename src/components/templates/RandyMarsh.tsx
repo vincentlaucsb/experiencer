@@ -81,10 +81,17 @@ export function randyMarshCss() {
     let sidebarCss = randyCss.add(
         (randyCss.findNode(["Row", "Column"]) as CssNode).copySkeleton('#sidebar', '#sidebar'));
     sidebarCss.properties = new Map<string, string>([
+        ["color", "#43353f"],
         ["padding", "0.5in"],
         ["background", "#fbdcb6"],
         ["padding-top", "calc(100px + 0.5in)"],
         ["width", "150px"]]);
+
+    let tegridyCss = randyCss.add(
+        (randyCss.findNode(["Rich Text"]) as CssNode).copySkeleton('#tegridy', '#tegridy'));
+    tegridyCss.properties = new Map<string, string>([
+        ["margin-top", "auto"],
+        ["text-align", "right"]]);
 
     return randyCss;
 }

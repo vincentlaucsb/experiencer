@@ -208,7 +208,11 @@ section.header-left h2 {
             let data = {
                 builtinCss: randyMarshCss(),
                 children: assignIds([ randyMarsh() ]),
-                css: "#resume * {\n    /* Set all margins to zero, and then re-set them later */\n    margin: 0;\n}\n\n#resume #awards {\n    flex-grow: 0;\n    height: auto;\n}\n\n#resume #awards .column {\n    width: auto;\n    flex-grow: 1;\n    flex-shrink: 1;\n    padding: 0\n}\n\n#resume #awards .column-last {\n    background: none;\n}\n\n#resume .column-last, #resume .column-last h2 {\n    color: #43353f;\n}\n\n#resume #tegridy {\n    margin-top: auto;\n    text-align: right;\n}\n\n/** Sections with Header on Left **/\nsection.header-left h2 {\n    width: 20%;\n    flex-shrink: 0;\n    flex-grow: 0;\n    \n}"
+                css: `${ResumeTemplateProvider.defaultCss}
+
+#resume #sidebar h2 {
+    color: #43353f;
+}`
             };
 
             return data;

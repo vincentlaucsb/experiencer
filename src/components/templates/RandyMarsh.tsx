@@ -66,23 +66,25 @@ export function randyMarshCss() {
         }
     }
 
-    let rowCss = randyCss.findNode(["Row"]) as CssNode;
-    if (rowCss) {
-        rowCss.properties = new Map<string, string>([
-            ["height", "100%"],
-            ["flex-grow", "2"]
-        ]);
-        
-        rowCss.setProperties(["All Columns"], [["padding", "0.5in"]]);
-        rowCss.setProperties(
-            ["Last Column"],
-            [
-                ["background", "#fbdcb6"],
-                ["padding-top", "calc(100px + 0.5in)"],
-                ["width", "150px"]
-            ]
-        );
-    }
+    let mainRowCss = randyCss.add(
+        (randyCss.findNode(["Row"]) as CssNode).copySkeleton('#main', '#main'));
+    mainRowCss.properties = new Map<string, string>([
+        ["height", "100%"],
+        ["flex-grow", "2"]
+    ]);
+
+    let mainColCss = randyCss.add(
+        (randyCss.findNode(["Row", "Column"]) as CssNode).copySkeleton('#main-column', '#main-column'));
+    mainColCss.properties = new Map<string, string>([
+        ["padding", "0.5in"]]);
+
+    let sidebarCss = randyCss.add(
+        (randyCss.findNode(["Row", "Column"]) as CssNode).copySkeleton('#sidebar', '#sidebar'));
+    sidebarCss.properties = new Map<string, string>([
+        ["padding", "0.5in"],
+        ["background", "#fbdcb6"],
+        ["padding-top", "calc(100px + 0.5in)"],
+        ["width", "150px"]]);
 
     return randyCss;
 }
@@ -90,9 +92,11 @@ export function randyMarshCss() {
 export function randyMarsh(): BasicResumeNode {
     return {
         "type": Row.name,
+        "cssId": "main",
         "children": [
             {
                 "type": Column.name,
+                "cssId": "main-column",
                 "children": [
                     {
                         "type": Header.name,
@@ -193,6 +197,7 @@ export function randyMarsh(): BasicResumeNode {
             },
             {
                 "type": Column.name,
+                "cssId": "sidebar",
                 "children": [
                     {
                         "type": Section.name,

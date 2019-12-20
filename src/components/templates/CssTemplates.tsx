@@ -8,7 +8,7 @@ function getRowCss(): CssNode {
 
     }, '.row');
 
-    let columnCss = rowCss.add(new CssNode('All Columns', {
+    let columnCss = rowCss.add(new CssNode('Column', {
 
     }, '.column'));
 

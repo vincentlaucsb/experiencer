@@ -66,7 +66,8 @@ export default class Column extends ResumeNodeBase<ColumnProps> {
             helperText = <span>Column {this.position}: Click to select and add content</span>
         }
 
-        return <div {...this.selectTriggerProps} className={this.className} style={this.style}>
+        return <div {...this.selectTriggerProps} className={this.className} style={this.style}
+            id={this.props.cssId}>
             {this.renderGrabHandle()}
             {this.renderChildren()}
             {helperText}

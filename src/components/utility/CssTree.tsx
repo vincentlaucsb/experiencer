@@ -142,10 +142,7 @@ ${childStylesheets}`
      */
     copySkeleton(name?: string, selector?: string): CssNode {
         const newName = name || this.name;
-        let newSelector = this.selector;
-        if (selector) {
-            newSelector = `${this.selector}${selector}`
-        }
+        let newSelector = selector || this.selector;
 
         let newTree = new CssNode(newName, {}, newSelector);
         for (let node of this.children) {

@@ -143,12 +143,16 @@ div.button-tooltip {
 }
 
 @media screen {
+    #resume-container {
+        width: 8.5in;
+    }
+
     #resume {
         border: 1px solid #dddddd;
-        width: 8.5in;
-        max-width: 8.5in;
         min-height: 11in;
         margin-bottom: $spacing;
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 

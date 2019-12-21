@@ -153,8 +153,11 @@ div.button-tooltip {
 }
 
 @media print {
+    body {
+        background: none;
+    }
+
     #resume {
-        width: 100%;
         height: 100%;
         border: none;
     }

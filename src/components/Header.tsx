@@ -5,7 +5,8 @@ import RichText from "./RichText";
 import ResumeNodeBase from "./ResumeNodeBase";
 
 interface HeaderBase {
-    orientRow?: boolean;
+    distribution?: 'top-to-bottom' | 'left-to-right' | 'bottom-to-top' | 'right-to-left';
+    justifyContent?: string;
     subtitle?: string;
 }
 
@@ -17,15 +18,22 @@ export default class Header extends ResumeNodeBase<HeaderProps> {
 
     get style(): React.CSSProperties {
         let style: React.CSSProperties = {};
-        if (this.props.orientRow) {
-            style = {
-                ...style,
-                ...ResumeNodeBase.flexRowStyle
-            };
-        }
-        else {
-            style.display = 'flex';
-            style.flexDirection = 'column';
+        style.display = 'flex';
+        style.justifyContent = this.props.justifyContent || 'space-between';
+
+        switch (this.props.distribution || 'top-to-bottom') {
+            case 'top-to-bottom':
+                style.flexDirection = 'column';
+                break;
+            case 'bottom-to-top':
+                style.flexDirection = 'column-reverse';
+                break;
+            case 'left-to-right':
+                style.flexDirection = 'row';
+                break;
+            case 'right-to-left':
+                style.flexDirection = 'row-reverse';
+                break;
         }
 
         return style;

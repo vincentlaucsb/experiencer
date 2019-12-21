@@ -11,6 +11,19 @@ import { BasicResumeNode } from "./utility/NodeTree";
 import Row from "./Row";
 import Column from "./Column";
 import Grid from "./Grid";
+import * as octions from "@primer/octicons";
+
+
+function githubLogo() {
+    let svg: string = octions['mark-github'].toSVG();
+    svg = svg.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+
+    const encoded = window.btoa(svg);
+    return `<img
+    src='data:image/svg+xml;base64,${encoded}'
+    alt="GitHub" />`
+
+}
 
 export type EditorMode = 'normal'
     | 'landing'
@@ -110,6 +123,7 @@ export class ComponentTypes {
                 ];
             case Header.type:
                 return [
+                    AliasTypes.Contact,
                     Entry.type,
                     RichText.type,
                     AliasTypes.BulletedList,
@@ -177,6 +191,16 @@ export class ComponentTypes {
                     text: Column.type,
                     node: {
                         type: Column.type
+                    }
+                }
+            case AliasTypes.Contact:
+                return {
+                    text: 'Contact',
+                    node: {
+                        type: RichText.type,
+                        value: `
+GitHub: ${githubLogo()}
+`
                     }
                 }
             case DescriptionList.type:
@@ -255,9 +279,7 @@ export class ComponentTypes {
     }
 }
 
-/** Stores types which are just an alias for another type */
-export class AliasTypes {
-    static get BulletedList() {
-        return 'BulletedList';
-    }
+class AliasTypes {
+    static readonly BulletedList = 'Bulleted List';
+    static readonly Contact = 'Contact';
 }

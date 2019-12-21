@@ -53,6 +53,8 @@ export default function toolbarOptions(
         return [];
     };
 
+    const justifyContent = (option: string) => updateNode('justifyContent', option);
+
     switch (node.type) {
         case Entry.type:
             return [
@@ -83,11 +85,29 @@ export default function toolbarOptions(
 
         case Header.type:
             const headerProps = node as BasicHeaderProps;
+            const distribute = (value: string) => updateNode('distribution', value);
 
             return [
                 {
-                    text: headerProps.orientRow ? 'Distribute Top-to-Bottom' : 'Distribute Left-to-Right',
-                    action: () => updateNode('orientRow', !headerProps.orientRow)
+                    text: `Distribute ${headerProps.distribution}`,
+                    actions: [
+                        {
+                            text: 'Top-to-Bottom',
+                            action: () => distribute('top-to-bottom')
+                        },
+                        {
+                            text: 'Bottom-to-Top',
+                            action: () => distribute('bottom-to-top')
+                        },
+                        {
+                            text: 'Left-to-Right',
+                            action: () => distribute('left-to-right')
+                        },
+                        {
+                            text: 'Right-to-Left',
+                            action: () => distribute('right-to-left')
+                        }
+                    ]
                 },
                 {
                     text: 'Justify Content',
@@ -130,8 +150,6 @@ export default function toolbarOptions(
                 console.log("Distribute columns automatically");
                 columnDistribution.text = 'Distribute Columns Automatically';
             }
-
-            const justifyContent = (option: string) => updateNode('justifyContent', option);
 
             return [
                 columnDistribution,

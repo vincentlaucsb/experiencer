@@ -16,6 +16,12 @@ export default class ResumeTemplateProvider {
     margin: 0;
 }
 
+#resume img {
+    /** Prevent images from overflowing */
+    max-width: 100%;
+    max-height: 100%;
+}
+
 /** Sections with Header on Left **/
 section.header-left h2 {
     width: 20%;

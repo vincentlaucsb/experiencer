@@ -6,15 +6,11 @@ import Collapse from "../controls/Collapse";
 export interface CssEditorProps {
     isPrinting?: boolean;
     root: CssNode;
-    updateData: (path: string[], data: Map<string, string>) => void;
+    updateData: (path: string[], key: string, value: string) => void;
+    deleteData: (path: string[], key: string) => void;
 }
 
 export default class CssEditor extends React.Component<CssEditorProps> {
-    constructor(props: CssEditorProps) {
-        super(props);
-        this.updateCssProperties = this.updateCssProperties.bind(this);
-    }
-
     get path() {
         return this.props.root.fullPath;
     }
@@ -32,10 +28,6 @@ export default class CssEditor extends React.Component<CssEditorProps> {
             default:
                 return (props: any) => <h6 {...props} />
         }
-    }
-
-    updateCssProperties(data: Map<string, string>) {
-        this.props.updateData(this.path, data);
     }
 
     /** Highlight all DOM nodes matching the current selector */
@@ -70,9 +62,9 @@ export default class CssEditor extends React.Component<CssEditorProps> {
         return (
             <section className="css-category no-print">
                 <Collapse trigger={trigger} isOpen={isOpen}>
-                    <MappedTextFields value={cssProperties} updateValue={(data) => {
-                        this.updateCssProperties(data);
-                    }} />
+                    <MappedTextFields value={cssProperties}
+                        updateValue={this.props.updateData.bind(this, this.path)}
+                        deleteValue={this.props.deleteData.bind(this, this.path)} />
 
                     {this.props.root.children.map(
                         (css, index) => {
@@ -80,6 +72,7 @@ export default class CssEditor extends React.Component<CssEditorProps> {
                                 key={css.fullSelector}
                                 root={css}
                                 updateData={this.props.updateData}
+                                deleteData={this.props.deleteData}
                             />
                         })}
                 </Collapse>

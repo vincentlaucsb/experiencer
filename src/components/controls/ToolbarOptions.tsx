@@ -3,6 +3,7 @@ import { ResumeNode } from "../utility/NodeTree";
 import Row, { BasicRowProps } from "../Row";
 import Section, { BasicSectionProps } from "../Section";
 import { Action } from "../ResumeNodeBase";
+import Header from "../Header";
 
 export interface ToolbarOption {
     text: string;
@@ -80,13 +81,14 @@ export default function toolbarOptions(
                 }
             ];
 
+        case Header.type:
         case Row.type:
             const rowNode = node as BasicRowProps;
             let columnDistribution = {
                 text: 'Distribute Columns Evenly',
                 action: () => updateNode('evenColumns', !rowNode.evenColumns || false)
             };
-
+            
             if (rowNode.evenColumns) {
                 console.log("Distribute columns automatically");
                 columnDistribution.text = 'Distribute Columns Automatically';
@@ -96,6 +98,10 @@ export default function toolbarOptions(
 
             return [
                 columnDistribution,
+                {
+                    text: 'Reverse Contents',
+                    action: () => updateNode('reverseDirection', !rowNode.reverseDirection || false)
+                },
                 {
                     text: 'Justify Content',
                     actions: [

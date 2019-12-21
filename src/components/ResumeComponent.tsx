@@ -10,6 +10,7 @@ import { IdType } from "./utility/HoverTracker";
 import { BasicResumeNode } from "./utility/NodeTree";
 import Row from "./Row";
 import Column from "./Column";
+import Grid from "./Grid";
 
 export type EditorMode = 'normal'
     | 'landing'
@@ -44,6 +45,8 @@ export default function ResumeComponent(props: ResumeComponentProps) {
             return <DescriptionList {...newProps} />;
         case DescriptionListItem.type:
             return <DescriptionListItem {...newProps} />;
+        case Grid.type:
+            return <Grid {...newProps} />;
         case Column.type:
             return <Column {...newProps} />;
         case Row.type:
@@ -75,8 +78,27 @@ export class ComponentTypes {
      */
     static childTypes(type: string) : string | Array<string> {
         switch (type) {
+            case Grid.type:
+                return [
+                    Row.type,
+                    Section.type,
+                    Entry.type,
+                    RichText.type,
+                    AliasTypes.BulletedList,
+                    DescriptionList.type
+                ];
             case Row.type:
                 return Column.type;
+            case Column.type:
+                return [
+                    Row.type,
+                    Grid.type,
+                    Section.type,
+                    Entry.type,
+                    RichText.type,
+                    AliasTypes.BulletedList,
+                    DescriptionList.type
+                ]
             case DescriptionList.type:
                 return DescriptionListItem.type;
             case Entry.type:
@@ -94,6 +116,16 @@ export class ComponentTypes {
                 ];
             case RichText.type:
                 return [];
+            case Section.type:
+                return [
+                    Section.type,
+                    Entry.type,
+                    RichText.type,
+                    AliasTypes.BulletedList,
+                    DescriptionList.type,
+                    Grid.type,
+                    Row.type
+                ]
             default:
                 return [
                     Section.type,
@@ -171,6 +203,13 @@ export class ComponentTypes {
                         title: [''],
                         subtitle: ['']
                     } as BasicEntryProps
+                }
+            case Grid.type:
+                return {
+                    text: 'Grid',
+                    node: {
+                        type: Grid.type
+                    }
                 }
             case RichText.type:
                 return {

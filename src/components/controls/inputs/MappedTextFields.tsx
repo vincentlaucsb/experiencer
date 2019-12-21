@@ -5,7 +5,6 @@ import React from "react";
 interface MappedTextFieldsState {
     isAddingKey: boolean;
     isEditing: boolean;
-    displayMap: Map<string, string>;
     newKey: string;
 }
 
@@ -78,32 +77,26 @@ function ValueField(props: ValueFieldProps) {
 
 export interface MappedTextFieldsProps {
     value: Map<string, string>;
-    updateValue: (value: Map<string, string>) => void;
+    updateValue: (key: string, value: string) => void;
+    deleteValue: (key: string) => void;
 }
 
 export default class MappedTextFields extends React.Component<MappedTextFieldsProps, MappedTextFieldsState> {
-    // Temporary holding buffer that gets modified by reference
-    // for efficiency
-    data: Map<string, string>;
-
     constructor(props) {
         super(props);
-
-        this.data = props.value;
-
         this.state = {
             isAddingKey: false,
             isEditing: false,
-
-            newKey: "",
-
-            // Actual map that gets rendered
-            displayMap: new Map<string, string>(props.value),
+            newKey: ""
         };
 
         this.addNewKey = this.addNewKey.bind(this);
         this.updateText = this.updateText.bind(this);
         this.setEditing = this.setEditing.bind(this);
+    }
+
+    get data() {
+        return this.props.value;
     }
 
     get editingButton() {
@@ -140,11 +133,8 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
     }
 
     updateText(key: string, value: string) {
-        this.data.set(key, value);
-        this.setState({ displayMap: this.data });
-
         // Update parent
-        this.props.updateValue(this.data);
+        this.props.updateValue(key, value);
     };
 
     setEditing(isEditing: boolean) {
@@ -153,7 +143,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
             isAddingKey = false;
 
             // Update parent
-            this.props.updateValue(this.data);
+            // this.props.updateValue(this.data);
         }
 
         this.setState({
@@ -181,7 +171,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
         return <React.Fragment>
             <table>
                 <tbody>
-            {Array.from(this.state.displayMap.entries()).map(([key, value]) => {
+            {Array.from(this.data.entries()).map(([key, value]) => {
                 const shouldFocus = key === this.state.newKey;
 
                 return <tr key={key}>
@@ -197,8 +187,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                         value={value}
                         shouldFocus={shouldFocus}
                         delete={() => {
-                            this.data.delete(key);
-                            this.setState({ displayMap: this.data });
+                            this.props.deleteValue(key);
                         }}
                     />
                     </td>

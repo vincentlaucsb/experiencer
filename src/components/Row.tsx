@@ -6,6 +6,7 @@ import Column from "./Column";
 interface RowBase {
     evenColumns?: boolean;
     justifyContent?: string;
+    reverseDirection?: boolean;
 }
 
 export interface BasicRowProps extends BasicResumeNode, RowBase { }
@@ -46,6 +47,10 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
             ...ResumeNodeBase.flexRowStyle,
             width: "100%",
             justifyContent: this.props.justifyContent || 'space-between'
+        }
+
+        if (this.props.reverseDirection) {
+            properties.flexDirection = "row-reverse";
         }
 
         if (this.hasEmptyColumns) {

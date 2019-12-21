@@ -135,6 +135,10 @@ export default function getDefaultCss() : CssNode {
         'padding-left': '0.5rem'
     }, 'dd'));
 
+    let gridCss = defaultCss.add(new CssNode('Grid', {
+
+    }, 'div.grid-container'));
+
     defaultCss.add(getSectionCss());
     defaultCss.add(getEntryCss());
     defaultCss.add(getRichTextCss());

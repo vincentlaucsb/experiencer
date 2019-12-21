@@ -30,6 +30,7 @@ import { SelectedNodeActions } from './components/controls/SelectedNodeActions';
 import CssEditor from './components/utility/CssEditor';
 import Row from './components/Row';
 import Section from './components/Section';
+import Grid from './components/Grid';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering = new HoverTracker();
@@ -479,8 +480,14 @@ ${this.state.additionalCss}`;
     //#endregion
 
     renderCssEditor() {
-        const updater = (path, data) => {
-            this.css.setProperties(path, data);
+        const updater = (path, key, value) => {
+            this.css.setProperty(path, key, value);
+            this.setState({ css: this.css });
+            this.shouldUpdateCss = true;
+        };
+
+        const deleter = (path, key) => {
+            this.css.deleteProperty(path, key);
             this.setState({ css: this.css });
             this.shouldUpdateCss = true;
         };
@@ -497,6 +504,7 @@ ${this.state.additionalCss}`;
                     isPrinting={this.isPrinting}
                     root={specificRoot}
                     updateData={updater}
+                    deleteData={deleter}
                 />
             }
 
@@ -507,6 +515,7 @@ ${this.state.additionalCss}`;
                         key={rootNode.fullSelector}
                         root={rootNode}
                         updateData={updater}
+                        deleteData={deleter}
                     />
                 </>
             }
@@ -517,6 +526,7 @@ ${this.state.additionalCss}`;
         return <CssEditor isPrinting={this.isPrinting}
             root={this.state.css}
             updateData={updater}
+            deleteData={deleter}
         />
     }
 
@@ -565,6 +575,7 @@ ${this.state.additionalCss}`;
                 <PureMenu horizontal>
                     <Button onClick={this.addSection}>Add Section</Button>
                     <Button onClick={this.addColumn}>Add Rows & Columns</Button>
+                    <Button onClick={() => this.addChild(ComponentTypes.defaultValue(Grid.type).node)}>Add Grid</Button>
                 </PureMenu>
                 <span className="label">Resume Components</span>
             </div>

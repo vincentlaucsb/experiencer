@@ -171,6 +171,20 @@ ${childStylesheets}`
         return;
     }
 
+    setProperty(path: string[], key: string, value: string) {
+        const targetNode = this.findNode(path);
+        if (targetNode) {
+            targetNode.properties.set(key, value);
+        }
+    }
+
+    deleteProperty(path: string[], key: string) {
+        const targetNode = this.findNode(path);
+        if (targetNode) {
+            targetNode.properties.delete(key);
+        }
+    }
+
     setProperties(path: string[], properties: Array<[string, string]> | Map<string, string>) {
         const targetNode = this.findNode(path);
         if (targetNode) {

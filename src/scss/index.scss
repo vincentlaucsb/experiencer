@@ -148,8 +148,6 @@ div.button-tooltip {
         width: 8.5in;
         max-width: 8.5in;
         min-height: 11in;
-        margin-left: auto;
-        margin-right: auto;
         margin-bottom: $spacing;
     }
 }
@@ -159,5 +157,23 @@ div.button-tooltip {
         width: 100%;
         height: 100%;
         border: none;
+    }
+}
+
+@media screen {
+    #main-grid {
+        display: block;
+
+        > div {
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+}
+
+@media screen and (min-width: calc(8.5in + 250px)) {
+    #main-grid {
+        display: grid;
+        grid-template-columns: 80% 20%;
     }
 }

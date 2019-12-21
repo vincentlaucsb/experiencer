@@ -10,7 +10,7 @@ export default class RichText extends ResumeNodeBase {
         toolbar: [
             ['bold', 'italic', 'underline', 'strike'],
             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            ['link'],
+            ['link', 'image'],
             [{ 'align': [] }],
             ['clean']
         ],
@@ -38,15 +38,21 @@ export default class RichText extends ResumeNodeBase {
 
     render(): JSX.Element {
         const textValue = Helpers.process(this.props.value) as string || "Empty text";
+        
+        if (this.isEditing) {
+            return (
+                <div className={this.className} id={this.props.htmlId} {...this.selectTriggerProps}>
+                    <ReactQuill
+                        modules={RichText.quillModules}
+                        value={this.props.value || ""}
+                        onChange={((this.props.updateData as (id: IdType, key: string, data: any) => void).bind(this, this.props.id, "value") as (data: any) => void)}
+                    />
+                </div>
+            );
+        }
 
-        let value = this.isEditing ? <ReactQuill
-            modules={RichText.quillModules}
-            value={this.props.value || ""}
-            onChange={((this.props.updateData as (id: IdType, key: string, data: any) => void).bind(this, this.props.id, "value") as (data: any) => void)}
-        /> : <span className="resume-paragraph" dangerouslySetInnerHTML={{ __html: textValue }} />;
-
-        return <div className={this.className} id={this.props.htmlId} {...this.selectTriggerProps}>
-            {value}
-        </div>;
+        return <div className={this.className} id={this.props.htmlId}
+            {...this.selectTriggerProps}
+            dangerouslySetInnerHTML={{ __html: textValue }} />
     }
 }

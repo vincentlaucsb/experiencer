@@ -156,7 +156,11 @@ ${childStylesheets}`
      * Find a CSS node somewhere in this subtree
      * @param path A list of names ordered from higher up in the tree to lower
      */
-    findNode(path: string[]) : CssNode | undefined {
+    findNode(path: string[]): CssNode | undefined {
+        if (path.length == 0) {
+            return this;
+        }
+
         for (let node of this.children) {
             if (node.name === path[0]) {
                 // No more subtrees to traverse

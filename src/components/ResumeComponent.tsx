@@ -81,6 +81,7 @@ export class ComponentTypes {
             case Grid.type:
                 return [
                     Row.type,
+                    Column.type,
                     Section.type,
                     Entry.type,
                     RichText.type,

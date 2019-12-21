@@ -2,21 +2,33 @@
 import Row, { RowProps, BasicRowProps } from "./Row";
 import ReactQuill from "react-quill";
 import RichText from "./RichText";
+import ResumeNodeBase from "./ResumeNodeBase";
 
 interface HeaderBase {
+    orientRow?: boolean;
     subtitle?: string;
 }
 
 export interface BasicHeaderProps extends BasicRowProps, HeaderBase { };
 export interface HeaderProps extends RowProps, HeaderBase { };
 
-export default class Header extends Row<HeaderProps> {
+export default class Header extends ResumeNodeBase<HeaderProps> {
     static readonly type: string = 'Header';
 
-    get className(): string {
-        let classNames = new Set(super.className.split(' '));
-        classNames.delete('row');
-        return Array.from(classNames).join(' ');
+    get style(): React.CSSProperties {
+        let style: React.CSSProperties = {};
+        if (this.props.orientRow) {
+            style = {
+                ...style,
+                ...ResumeNodeBase.flexRowStyle
+            };
+        }
+        else {
+            style.display = 'flex';
+            style.flexDirection = 'column';
+        }
+
+        return style;
     }
 
     render() {
@@ -34,7 +46,6 @@ export default class Header extends Row<HeaderProps> {
 
         return (
             <header className={this.className} style={this.style} {...this.selectTriggerProps}>
-                {this.renderGrabHandle()}
                 <hgroup>
                     {value}
                     {subtitle}

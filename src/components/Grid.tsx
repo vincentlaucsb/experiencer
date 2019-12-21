@@ -21,8 +21,8 @@ export default class Grid extends ResumeNodeBase {
     /** Returns a "handle" which can be used to select the column itself and not the columns it contains */
     renderGrabHandle() {
         if (this.isHovering && !this.isSelected) {
-            return <div className="column-grab-handle-container">
-                <div className="column-grab-handle">
+            return <div className="row-grab-handle-container">
+                <div className="row-grab-handle">
                     Click here to select grid
                 </div>
             </div>

@@ -63,7 +63,7 @@ export default class Section extends ResumeNodeBase<SectionProps> {
         }
 
         return <>
-            <section className={this.className} style={this.style} {...this.selectTriggerProps}>
+            <section className={this.className} id={this.props.htmlId} style={this.style} {...this.selectTriggerProps}>
                 <h2>{title}</h2>
                 <div className="entry-content">
                     {this.renderChildren()}

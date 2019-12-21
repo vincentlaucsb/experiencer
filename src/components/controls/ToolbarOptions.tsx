@@ -3,7 +3,7 @@ import { ResumeNode } from "../utility/NodeTree";
 import Row, { BasicRowProps } from "../Row";
 import Section, { BasicSectionProps } from "../Section";
 import { Action } from "../ResumeNodeBase";
-import Header from "../Header";
+import Header, { BasicHeaderProps } from "../Header";
 
 export interface ToolbarOption {
     text: string;
@@ -82,6 +82,43 @@ export default function toolbarOptions(
             ];
 
         case Header.type:
+            const headerProps = node as BasicHeaderProps;
+
+            return [
+                {
+                    text: headerProps.orientRow ? 'Distribute Top-to-Bottom' : 'Distribute Left-to-Right',
+                    action: () => updateNode('orientRow', !headerProps.orientRow)
+                },
+                {
+                    text: 'Justify Content',
+                    actions: [
+                        {
+                            text: 'Space between',
+                            action: () => justifyContent('space-between')
+                        },
+                        {
+                            text: 'Stack at beginning',
+                            action: () => justifyContent('flex-start')
+                        },
+                        {
+                            text: 'Stack at end',
+                            action: () => justifyContent('flex-end')
+                        },
+                        {
+                            text: 'Stack center',
+                            action: () => justifyContent('center')
+                        },
+                        {
+                            text: 'Space around',
+                            action: () => justifyContent('space-around')
+                        },
+                        {
+                            text: 'Space evenly',
+                            action: () => justifyContent('space-evenly')
+                        }
+                    ]
+                }
+            ]
         case Row.type:
             const rowNode = node as BasicRowProps;
             let columnDistribution = {

@@ -68,9 +68,19 @@ export default class Column extends ResumeNodeBase<ColumnProps> {
             helperText = <span>Column {this.position}: Click to select and add content</span>
         }
 
+        if (this.isHovering && !this.isSelected) {
+            return <div {...this.selectTriggerProps}>
+                {this.renderGrabHandle()}
+                <div className={this.className} style={this.style}
+                    id={this.props.htmlId}>
+                    {this.renderChildren()}
+                    {helperText}
+                </div>
+            </div>
+        }
+
         return <div {...this.selectTriggerProps} className={this.className} style={this.style}
             id={this.props.htmlId}>
-            {this.renderGrabHandle()}
             {this.renderChildren()}
             {helperText}
         </div>

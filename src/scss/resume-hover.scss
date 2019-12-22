@@ -37,7 +37,6 @@ $grab-handle-size: 35px;
 }
 
 .row-grab-handle, .column-grab-handle {
-    display: flex;
     position: absolute;
     font-family: $font-family-base;
     color: $light-shade;
@@ -46,24 +45,32 @@ $grab-handle-size: 35px;
 
 .row-grab-handle-container {
     .row-grab-handle {
-        left: -$grab-handle-size;
-        width: $grab-handle-size;
-        height: 100%;
+        display: grid;
+        grid-template-rows: $grab-handle-size $grab-handle-size;
+        width: 100%;
+        top: -$grab-handle-size * 2;
+        height: $grab-handle-size * 2;
         background: $main;
-        writing-mode: vertical-rl;
-        transform: rotate(-180deg);
-        padding-top: 0.5rem;
+        text-align: center;
+
+        p {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
     }
 }
 
 .column-grab-handle-container {
     .column-grab-handle {
+        display: flex;
+        width: 100%;
         top: -$grab-handle-size;
-        left: -1px;
-        width: calc(100% - 1rem + 3px);
         height: $grab-handle-size;
         background: $dark-accent;
-        padding-left: $spacing;
+        text-align: center;
+        flex-direction: column;
+        justify-content: center;
     }
 }
 

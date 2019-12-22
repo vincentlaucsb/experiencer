@@ -23,7 +23,7 @@ export default class Grid extends ResumeNodeBase {
         if (this.isHovering && !this.isSelected) {
             return <div className="row-grab-handle-container">
                 <div className="row-grab-handle">
-                    Click here to select grid
+                    <p>Click here to select grid</p>
                 </div>
             </div>
         }
@@ -32,9 +32,18 @@ export default class Grid extends ResumeNodeBase {
     }
 
     render() {
+        if (this.isHovering && !this.isSelected) {
+            return <div {...this.selectTriggerProps}>
+                {this.renderGrabHandle()}
+                <div className={this.className} style={this.style} id={this.props.htmlId}>
+                    {this.renderChildren()}
+                </div>
+            </div>
+            
+        }
+
         return <div className={this.className} style={this.style} id={this.props.htmlId} {...this.selectTriggerProps}>
             {this.renderChildren()}
-            {this.renderGrabHandle()}
         </div>
     }
 }

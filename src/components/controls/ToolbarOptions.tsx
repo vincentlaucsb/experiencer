@@ -147,7 +147,6 @@ export default function toolbarOptions(
             };
             
             if (rowNode.evenColumns) {
-                console.log("Distribute columns automatically");
                 columnDistribution.text = 'Distribute Columns Automatically';
             }
 

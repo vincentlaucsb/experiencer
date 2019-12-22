@@ -83,7 +83,7 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
         if (this.isHovering && !this.isSelected) {
             return <div className="row-grab-handle-container">
                 <div className="row-grab-handle">
-                    Click here to select row
+                    <p>Click here to select row</p>
                 </div>
             </div>
         }
@@ -92,9 +92,18 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
     }
     
     render() {
-        return (
-            <div className={this.className} id={this.props.htmlId} style={this.style} {...this.selectTriggerProps}>
+        if (this.isHovering && !this.isSelected) {
+            return <div {...this.selectTriggerProps}>
                 {this.renderGrabHandle()}
+                <div className={this.className} id={this.props.htmlId} style={this.style}>
+                    {this.renderChildren()}
+                </div>
+            </div>
+        }
+        
+        return (
+            <div className={this.className}
+                id={this.props.htmlId} style={this.style} {...this.selectTriggerProps}>
                 {this.renderChildren()}
             </div>
         );

@@ -129,7 +129,11 @@ export default class ResumeNodeBase<P
         }
 
         return {
-            onClick: this.setSelected,
+            onClick: (event: React.MouseEvent<any>) => {
+                this.props.updateSelected(this.props.id);
+                // this.setSelected();
+                event.stopPropagation();
+            },
             onMouseEnter: () => this.props.hoverOver(this.props.id),
             onMouseLeave: () => this.props.hoverOut(this.props.id)
         };

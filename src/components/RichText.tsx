@@ -4,18 +4,9 @@ import ReactQuill from 'react-quill';
 import * as Helpers from "./Helpers";
 import ResumeNodeBase from "./ResumeNodeBase";
 import { IdType } from "./utility/HoverTracker";
+import QuillToolbar from "./controls/QuillToolbar";
 
 export default class RichText extends ResumeNodeBase {
-    ref: React.RefObject<HTMLDivElement>;
-    offset: number;
-
-    constructor(props) {
-        super(props);
-
-        this.ref = React.createRef();
-        this.offset = 0;
-    }
-
     static quillModules = {
         toolbar: [
             ['bold', 'italic', 'underline', 'strike'],
@@ -25,16 +16,6 @@ export default class RichText extends ResumeNodeBase {
             ['clean']
         ],
     };
-
-    componentDidUpdate() {
-        if (this.ref.current) {
-            console.log(this.ref.current.getBoundingClientRect().height);
-            if (this.ref.current.getBoundingClientRect().height !== this.offset) {
-                this.offset = this.ref.current.getBoundingClientRect().height;
-                this.forceUpdate();
-            }
-        }
-    }
 
     static readonly type = 'Rich Text';
 
@@ -61,44 +42,15 @@ export default class RichText extends ResumeNodeBase {
         
         if (this.isEditing) {
             return (
-                <>
-                    <div style={{
-                        position: "relative",
-                        background: "black",
-                        height: 0,
-                        top: -this.offset
-                    }}>
-                        <div id="quill-toolbar" ref={this.ref} style={{ position: "absolute" }} {...this.selectTriggerProps}>
-                            <span className="ql-formats">
-                                <button className="ql-bold" type="button"></button>
-                                <button className="ql-italic" type="button"></button>
-                                <button className="ql-underline" type="button"></button>
-                                <button className="ql-strike" type="button"></button>
-                            </span>
-                            <span className="ql-formats">
-                                <button className="ql-list" type="button" value="ordered"></button>
-                                <button className="ql-list" type="button" value="bullet"></button>
-                            </span>
-                            <span className="ql-formats">
-                                <button className="ql-link" type="button"></button>
-                                <button className="ql-image" type="button"></button>
-                            </span>
-                            <span className="ql-formats">
-                                <span className="ql-align ql-picker ql-icon-picker"></span>
-                                <select className="ql-align" style={{ display: "none" }}></select>
-                            </span>
-                            <span className="ql-formats">
-                                <button className="ql-clean" type="button"></button>
-                            </span>
-                        </div>
-                    </div>
+                <div>
+                    <QuillToolbar selectTriggerProps={this.selectTriggerProps} />
                     <div className={this.className} id={this.props.htmlId} {...this.selectTriggerProps}>
                     <ReactQuill
                         modules={{ toolbar: "#quill-toolbar" }}
                         value={this.props.value || ""}
                         onChange={this.props.updateData.bind(this, this.props.id, "value")} />
                     </div>
-                </>
+                </div>
             );
         }
 

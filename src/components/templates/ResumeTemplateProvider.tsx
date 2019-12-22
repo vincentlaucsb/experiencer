@@ -9,6 +9,8 @@ import Row from "../Row";
 import { randyMarshCss, randyMarsh } from "./RandyMarsh";
 import getDefaultCss from "./CssTemplates";
 import { ResumeSaveData } from "../controls/ResumeState";
+import { assuredNodes, assuredCss } from "./Assured";
+import CssNode from "../utility/CssTree";
 
 export default class ResumeTemplateProvider {
     static defaultCss = `#resume * {
@@ -28,192 +30,20 @@ section.header-left h2 {
     flex-shrink: 0;
     flex-grow: 0;
 }`;
-
-    static get header() {
-        return {
-            type: Header.type,
-            value: 'Your Name Here',
-            children: [
-                {
-                    type: RichText.type,
-                    value: '<p>Email: spamMePlz@spicymail.com</p><p>Phone: 123-456-7890</p>'
-                }
-            ]
-        };
-    }
-
-    static get objective() {
-        return {
-            type: Section.type,
-            title: 'Objective',
-            children: [
-                {
-                    type: RichText.type,
-                    value: 'To conquer the world.'
-                }
-            ]
-        } as BasicSectionProps;
-    }
-
-    static get experience() {
-        return {
-            type: Section.type,
-            title: 'Experience',
-            children: [
-                {
-                    type: Entry.type,
-                    title: ['Another Company', '2019 -- Present'],
-                    subtitle: ['Senior Software Engineer', 'Sometown, USA'],
-                    children: [
-                        this.makeList([
-                            'Increased productivity by conducting telepathic SCRUM meetings'
-                        ])
-                    ]
-                } as BasicEntryProps,
-                {
-                    type: Entry.type,
-                    title: [ 'Some Company', '2014 -- 2016'],
-                    subtitle: ['Software Engineer', 'Big City, USA'],
-                    children: [
-                        this.makeList([
-                            'Did things with code while looking at a computer monitor'
-                        ])
-                    ]
-                } as BasicEntryProps
-            ]
-        } as BasicSectionProps
-    };
-
-    static get techSkills() {
-        return {
-            type: Section.type,
-            title: 'Technical Skills',
-            children: [
-                this.makeList([ 'C++', 'Web Development', 'Agile/SCRUM' ])
-            ]
-        } as BasicSectionProps
-    };
-
-    static get education() {
-        return {
-            type: Section.type,
-            title: 'Education',
-            children: [
-                {
-                    type: Entry.type,
-                    title: ['Some College', '2010 -- 2014'],
-                    subtitle: ['BS in Some Major']
-                } as BasicEntryProps
-            ]
-        } as BasicSectionProps;
-    }
-
-    /**
-     * Construct a bulleted list
-     * @param items A list of items
-     */
-    static makeList(items: Array<string>): BasicResumeNode {
-        let value = "";
-        items.forEach((i) => {
-            value += `<li>${i}</li>`
-        });
-
-        return {
-            type: RichText.type,
-            value: `<ul>${value}</ul>`
-        };
-    }
+   
 
     static templates = {
-        "Traditional 1": () => {
-            let header = ResumeTemplateProvider.header;
-            header.children[0]['disableLineBreaks'] = true;
-
+        "Assured": () => {
             let data: ResumeSaveData = {
-                builtinCss: getDefaultCss().dump(),
-
-                // TODO: IDs are double assigned
-                children: assignIds([
-                    header,
-                    ResumeTemplateProvider.objective,
-                    ResumeTemplateProvider.experience,
-                    ResumeTemplateProvider.techSkills,
-                    ResumeTemplateProvider.education
-                ]),
-                css: ResumeTemplateProvider.defaultCss,
-                sectionTitlePosition: "top" as SectionHeaderPosition
-            };
-
-            for (let k in data.children) {
-                const node = data.children[k];
-                if (node['type'] === 'Section') {
-                    node['headerPosition'] = 'top';
-                }
-            }
-
-            return data;
-        },
-
-        "Traditional 2": () => {
-            let header = ResumeTemplateProvider.header;
-            header.children[0]['disableLineBreaks'] = true;
-
-            let data: ResumeSaveData = {
-                builtinCss: getDefaultCss().dump(),
-                children: assignIds([
-                    header,
-                    ResumeTemplateProvider.objective,
-                    ResumeTemplateProvider.experience,
-                    ResumeTemplateProvider.techSkills,
-                    ResumeTemplateProvider.education
-                ]),
-                css: ResumeTemplateProvider.defaultCss,
-                sectionTitlePosition: "left" as SectionHeaderPosition
-            };
-
-            data.children.forEach((node) => {
-                if (node['type'] === 'Section') {
-                    node['headerPosition'] = 'left';
-            }});
-            
-            return data;
-        },
-
-        "Multi-Column 1": () => {
-            let header = ResumeTemplateProvider.header;
-            header['orientation'] = 'row';
-
-            let data: ResumeSaveData = {
-                builtinCss: getDefaultCss().dump(),
-                children: assignIds([
-                    header,
-                    ResumeTemplateProvider.objective,
-                    {
-                        type: Row.type,
-                        children: [
-                            {
-                                type: Column.type,
-                                children: [
-                                    ResumeTemplateProvider.education,
-                                    ResumeTemplateProvider.techSkills
-                                ]
-                            },
-                            {
-                                type: Column.type,
-                                children: [
-                                    ResumeTemplateProvider.experience
-                                ]
-                            }
-                        ]
-                    }
-                ]),
-                css: ResumeTemplateProvider.defaultCss,
+                builtinCss: assuredCss(),
+                children: assignIds(assuredNodes()),
+                css: `#resume * {\n    /* Set all margins to zero, and then re-set them later */\n    margin: 0;\n}\n\n#resume img {\n    /** Prevent images from overflowing */\n    max-width: 100%;\n    max-height: 100%;\n}\n\n#resume .entry hgroup h4.subtitle .field-1:not(.field-last):before {\n    content: \"|\";\n    padding: 0 0.5em;\n}\n\n#resume .entry hgroup h4.subtitle .field-last {\n    margin-left: auto;\n    text-align: right;\n}\n\n/** Sections with Header on Left **/\nsection.header-left h2 {\n    width: 20%;\n    flex-shrink: 0;\n    flex-grow: 0;\n}\n\n#resume header hgroup {\n    font-family: Merriweather, serif;\n}\n\n#resume header .rich-text {\n    margin-left: 2em;\n    text-align: right;\n    font-size: 10pt;\n}\n\n#resume header .rich-text:first-of-type {\n    margin-left: auto;\n}\n\n#resume header img {\n    height: 24px;\n    vertical-align: middle;\n}\n\n#resume #sidebar h4.subtitle .field {\n    white-space: nowrap;\n}\n\n#resume #sidebar section {\n    margin-bottom: 16px;\n}\n\n#resume h3.title .field-0 {\n    margin-right: auto;\n}`
             };
 
             return data;
         },
 
-        "Randy Marsh": () => {
+        "Integrity": () => {
             let data: ResumeSaveData = {
                 builtinCss: randyMarshCss().dump(),
                 children: assignIds([ randyMarsh() ]),

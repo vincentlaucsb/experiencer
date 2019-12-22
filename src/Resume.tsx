@@ -195,7 +195,7 @@ ${this.state.additionalCss}`;
     //#region Changing Templates
     changeTemplate() {
         this.loadData(
-            ResumeTemplateProvider.templates['Randy Marsh'](),
+            ResumeTemplateProvider.templates['Integrity'](),
             'changingTemplate'
         );
     }

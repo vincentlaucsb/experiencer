@@ -160,7 +160,8 @@ export class ComponentTypes {
                     Entry.type,
                     RichText.type,
                     AliasTypes.BulletedList,
-                    DescriptionList.type
+                    DescriptionList.type,
+                    Grid.type
                 ];
             case RichText.type:
                 return [];

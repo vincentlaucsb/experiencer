@@ -6,6 +6,16 @@ import ResumeNodeBase from "./ResumeNodeBase";
 import { IdType } from "./utility/HoverTracker";
 
 export default class RichText extends ResumeNodeBase {
+    ref: React.RefObject<HTMLDivElement>;
+    offset: number;
+
+    constructor(props) {
+        super(props);
+
+        this.ref = React.createRef();
+        this.offset = 0;
+    }
+
     static quillModules = {
         toolbar: [
             ['bold', 'italic', 'underline', 'strike'],
@@ -15,6 +25,16 @@ export default class RichText extends ResumeNodeBase {
             ['clean']
         ],
     };
+
+    componentDidUpdate() {
+        if (this.ref.current) {
+            console.log(this.ref.current.getBoundingClientRect().height);
+            if (this.ref.current.getBoundingClientRect().height !== this.offset) {
+                this.offset = this.ref.current.getBoundingClientRect().height;
+                this.forceUpdate();
+            }
+        }
+    }
 
     static readonly type = 'Rich Text';
 
@@ -46,9 +66,9 @@ export default class RichText extends ResumeNodeBase {
                         position: "relative",
                         background: "black",
                         height: 0,
-                        top: "-40px"
+                        top: -this.offset
                     }}>
-                        <div id="quill-toolbar" style={{ position: "absolute" }} {...this.selectTriggerProps}>
+                        <div id="quill-toolbar" ref={this.ref} style={{ position: "absolute" }} {...this.selectTriggerProps}>
                             <span className="ql-formats">
                                 <button className="ql-bold" type="button"></button>
                                 <button className="ql-italic" type="button"></button>
@@ -76,8 +96,7 @@ export default class RichText extends ResumeNodeBase {
                     <ReactQuill
                         modules={{ toolbar: "#quill-toolbar" }}
                         value={this.props.value || ""}
-                        onChange={this.props.updateData.bind(this, this.props.id, "value")}
-                    />
+                        onChange={this.props.updateData.bind(this, this.props.id, "value")} />
                     </div>
                 </>
             );

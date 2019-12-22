@@ -11,11 +11,6 @@ export interface ResumeSaveData {
     sectionTitlePosition?: 'top' | 'left';
 }
 
-export interface GrabHandleProps {
-    x: number;
-    y: number;
-}
-
 export default interface ResumeState {
     css: CssNode;
     children: Array<ResumeNode>;
@@ -28,6 +23,4 @@ export default interface ResumeState {
 
     hoverNode?: IdType;
     selectedNode?: IdType;
-
-    grabHandles: Map<string, ClientRect | DOMRect>;
 }

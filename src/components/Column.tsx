@@ -11,13 +11,6 @@ interface ColumnProps extends ResumeNodeProps, ColumnBase { }
 
 export default class Column extends ResumeNodeBase<ColumnProps> {
     static readonly type = 'Column';
-    ref: React.RefObject<HTMLDivElement>;
-
-    constructor(props) {
-        super(props);
-
-        this.ref = React.createRef<HTMLDivElement>();
-    }
 
     /** Get the index of this column */
     get position(): number {
@@ -56,43 +49,12 @@ export default class Column extends ResumeNodeBase<ColumnProps> {
         return properties;
     }
 
-    get selectTriggerProps() {
-        let props = super.selectTriggerProps;
-        props.onMouseEnter = () => {
-            if (super.selectTriggerProps.onMouseEnter) {
-                super.selectTriggerProps.onMouseEnter();
-            }
-
-            if (this.ref.current) {
-                this.props.drawGrabHandle(this.props.id, this.ref.current.getBoundingClientRect());
-            }
-        };
-
-        props.onMouseLeave = () => {
-            if (super.selectTriggerProps.onMouseLeave) {
-                super.selectTriggerProps.onMouseLeave();
-            }
-
-            if (this.ref.current) {
-                this.props.deleteGrabHandle(this.props.id);
-            }
-        }
-
-        props.onMouseOver = (event) => {
-            if (this.ref.current) {
-                this.props.drawGrabHandle(this.props.id, this.ref.current.getBoundingClientRect());
-            }
-        }
-
-        return props;
-    }
-
     /** Returns a "handle" which can be used to select the column itself and not the columns it contains */
     renderGrabHandle() {
         if (this.isHovering && !this.isSelected) {
             return <div className="column-grab-handle-container">
                 <div className="column-grab-handle">
-                    <p>Click here to select column</p>
+                    Click here to select column
                 </div>
             </div>
         }
@@ -106,8 +68,9 @@ export default class Column extends ResumeNodeBase<ColumnProps> {
             helperText = <span>Column {this.position}: Click to select and add content</span>
         }
 
-        return <div {...this.selectTriggerProps} ref={this.ref} className={this.className} style={this.style}
+        return <div {...this.selectTriggerProps} className={this.className} style={this.style}
             id={this.props.htmlId}>
+            {this.renderGrabHandle()}
             {this.renderChildren()}
             {helperText}
         </div>

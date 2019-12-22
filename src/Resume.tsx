@@ -13,7 +13,7 @@ import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './co
 import Landing from './components/help/Landing';
 import TopNavBar from './components/controls/TopNavBar';
 import ResumeHotKeys from './components/controls/ResumeHotkeys';
-import ResumeState, { ResumeSaveData, GrabHandleProps } from './components/controls/ResumeState';
+import ResumeState, { ResumeSaveData } from './components/controls/ResumeState';
 import StyleEditor from './components/controls/StyleEditor';
 import Help from './components/help/Help';
 import HoverTracker, { IdType } from './components/utility/HoverTracker';
@@ -31,8 +31,6 @@ import CssEditor from './components/utility/CssEditor';
 import Row from './components/Row';
 import Section from './components/Section';
 import Grid from './components/Grid';
-import Column from './components/Column';
-import { number } from 'prop-types';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering = new HoverTracker();
@@ -56,8 +54,7 @@ class Resume extends React.Component<{}, ResumeState> {
             children: [],
             additionalCss: "",
             mode: "landing",
-            sectionTitlePosition: "top",
-            grabHandles: new Map<string, ClientRect | DOMRect>()
+            sectionTitlePosition: "top"
         };
         this.renderStyle();
 
@@ -532,23 +529,6 @@ ${this.state.additionalCss}`;
             deleteData={deleter}
         />
     }
-    
-    drawGrabHandle(id: IdType, rect: ClientRect | DOMRect) {
-        let grabHandles = this.state.grabHandles;
-        grabHandles.set(id.join(' '), rect);
-
-        this.setState({
-            grabHandles: grabHandles
-        });
-    }
-
-    deleteGrabHandle(id: IdType) {
-        let grabHandles = this.state.grabHandles;
-        grabHandles.delete(id.join(' '));
-        this.setState({
-            grabHandles: grabHandles
-        })
-    }
 
     render() {
         // TODO: Make this moar better
@@ -557,27 +537,6 @@ ${this.state.additionalCss}`;
         };
 
         const resume = <div id="resume">
-            {Array.from(this.state.grabHandles).map((value) => {
-                return <div
-                    className="column-grab-handle"
-                    style={{
-                    position: "fixed",
-
-                    left: value[1].left,
-                    top: value[1].top - 30,
-                    width: value[1].width,
-                    height: 30
-                }}
-                    onClick={() => {
-                        let newId: number[] = new Array<number>();
-                        value[0].split(' ').forEach((value) => newId.push(parseInt(value)));
-
-                        this.setState({ selectedNode: newId });
-                    }}
-                >
-                    <p>Click to select item</p>
-                </div>
-            })}
             <ResumeHotKeys {...this.resumeHotKeysProps} />
             {this.state.children.map((elem, idx, arr) => {
 
@@ -588,8 +547,6 @@ ${this.state.additionalCss}`;
                     toggleEdit: this.editSelected.bind(this),
                     updateData: this.updateNestedChild,
                     ...this.hoverProps,
-                    drawGrabHandle: this.drawGrabHandle.bind(this),
-                    deleteGrabHandle: this.deleteGrabHandle.bind(this),
 
                     index: idx,
                     numSiblings: arr.length

@@ -42,7 +42,6 @@ $grab-handle-size: 35px;
     font-family: $font-family-base;
     color: $light-shade;
     cursor: pointer;
-    flex-direction: column;
 }
 
 .row-grab-handle-container {
@@ -57,13 +56,15 @@ $grab-handle-size: 35px;
     }
 }
 
-.column-grab-handle {
-    // top: -$grab-handle-size;
-    width: 100%;
-    height: $grab-handle-size;
-    background: $dark-accent;
-    justify-content: center;
-    text-align: center;
+.column-grab-handle-container {
+    .column-grab-handle {
+        top: -$grab-handle-size;
+        left: -1px;
+        width: calc(100% - 1rem + 3px);
+        height: $grab-handle-size;
+        background: $dark-accent;
+        padding-left: $spacing;
+    }
 }
 
 /** Disable background if are hovering over a node's children */

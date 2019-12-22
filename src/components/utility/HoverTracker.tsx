@@ -22,10 +22,6 @@ export default class HoverTracker {
         return this._currentId;
     }
 
-    get hovering() {
-        return this._hovering;
-    }
-
     hoverOver(id: IdType) {
         const newDepth = id.length;
 

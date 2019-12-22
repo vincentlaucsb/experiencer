@@ -13,6 +13,9 @@ export type AddChild = ((id: IdType, node: ResumeNode) => void);
  *  from the top down
  * */
 export interface ResumePassProps extends ResumeNode {
+    drawGrabHandle: (id: IdType, rect: ClientRect | DOMRect) => void;
+    deleteGrabHandle: (id: IdType) => void;
+
     mode: EditorMode;
     hoverOver: (id: IdType) => void;
     hoverOut: (id: IdType) => void;
@@ -131,7 +134,8 @@ export default class ResumeNodeBase<P
         return {
             onClick: this.setSelected,
             onMouseEnter: () => this.props.hoverOver(this.props.id),
-            onMouseLeave: () => this.props.hoverOut(this.props.id)
+            onMouseLeave: () => this.props.hoverOut(this.props.id),
+            onMouseOver: (event: any) => { }
         };
     }
 
@@ -175,6 +179,8 @@ export default class ResumeNodeBase<P
                     toggleEdit: this.props.toggleEdit,
                     updateData: this.props.updateData,
                     updateSelected: this.props.updateSelected,
+                    drawGrabHandle: this.props.drawGrabHandle,
+                    deleteGrabHandle: this.props.deleteGrabHandle,
 
                     index: idx,
                     numSiblings: arr.length,

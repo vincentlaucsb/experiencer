@@ -41,13 +41,45 @@ export default class RichText extends ResumeNodeBase {
         
         if (this.isEditing) {
             return (
-                <div className={this.className} id={this.props.htmlId} {...this.selectTriggerProps}>
+                <>
+                    <div style={{
+                        position: "relative",
+                        background: "black",
+                        height: 0,
+                        top: "-40px"
+                    }}>
+                        <div id="quill-toolbar" style={{ position: "absolute" }} {...this.selectTriggerProps}>
+                            <span className="ql-formats">
+                                <button className="ql-bold" type="button"></button>
+                                <button className="ql-italic" type="button"></button>
+                                <button className="ql-underline" type="button"></button>
+                                <button className="ql-strike" type="button"></button>
+                            </span>
+                            <span className="ql-formats">
+                                <button className="ql-list" type="button" value="ordered"></button>
+                                <button className="ql-list" type="button" value="bullet"></button>
+                            </span>
+                            <span className="ql-formats">
+                                <button className="ql-link" type="button"></button>
+                                <button className="ql-image" type="button"></button>
+                            </span>
+                            <span className="ql-formats">
+                                <span className="ql-align ql-picker ql-icon-picker"></span>
+                                <select className="ql-align" style={{ display: "none" }}></select>
+                            </span>
+                            <span className="ql-formats">
+                                <button className="ql-clean" type="button"></button>
+                            </span>
+                        </div>
+                    </div>
+                    <div className={this.className} id={this.props.htmlId} {...this.selectTriggerProps}>
                     <ReactQuill
-                        modules={RichText.quillModules}
+                        modules={{ toolbar: "#quill-toolbar" }}
                         value={this.props.value || ""}
-                        onChange={((this.props.updateData as (id: IdType, key: string, data: any) => void).bind(this, this.props.id, "value") as (data: any) => void)}
+                        onChange={this.props.updateData.bind(this, this.props.id, "value")}
                     />
-                </div>
+                    </div>
+                </>
             );
         }
 

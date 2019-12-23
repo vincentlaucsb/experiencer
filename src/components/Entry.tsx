@@ -81,7 +81,6 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
                     key={index}
                     onChange={(data: string) => updater(key, index, data)}
                     value={text || ""}
-                    label="Field"
                     defaultText="Enter a value"
                     {...this.textFieldProps}
                 />

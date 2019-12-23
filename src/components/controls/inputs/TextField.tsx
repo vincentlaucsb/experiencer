@@ -53,13 +53,18 @@ export default function ResumeTextField(props: ResumeTextFieldProps) {
         }
     }, [props.isEditing]);
 
+    let label = <></>
+    if (props.label) {
+        label = <label>{props.label || "Value"}</label>
+    }
+
     if (props.isEditing) {
         return <>
-            <label>{props.label || "Value"}</label>
+            {label}
             <input
-            onChange={onChange}
-            onKeyDown={onKeyDown}
-            value={value}
+                onChange={onChange}
+                onKeyDown={onKeyDown}
+                value={value}
             />
         </>
     }

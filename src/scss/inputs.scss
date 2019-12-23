@@ -1,0 +1,12 @@
+﻿@import "variables";
+
+#resume {
+    input {
+        border: 0;
+        border-bottom: 1px solid $light-shade;
+    }
+
+    input:hover {
+        border-bottom-color: $dark-shade;
+    }
+}

@@ -38,6 +38,8 @@ export default function ResumeTextField(props: ResumeTextFieldProps) {
                 props.onClick();
             }
         }
+
+        // event.stopPropagation();
     };
 
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {

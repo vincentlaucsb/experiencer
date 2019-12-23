@@ -7,16 +7,28 @@ section.css-category * {
 section.css-category {
     font-size: 11pt;
 
-    h2, h3, h4, h5, h6 {
+    h2 {
         margin: 0.3em 0;
         cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+
+        span.button-group {
+            font-size: initial;
+
+            button {
+                font-size: 9pt;
+                margin-left: $spacing/4;
+            }
+
+            text-align: right;
+        }
     }
 
     th {
         text-align: left;
         padding-right: 0.5em;
     }
-
     // font-family: monospace;
     margin: $spacing 0;
 }

@@ -3,10 +3,13 @@ import React from "react";
 import MappedTextFields from "../controls/inputs/MappedTextFields";
 import Collapse from "../controls/Collapse";
 import { Button } from "../controls/Buttons";
+import CssSelectorAdder from "./CssSelectorAdder";
 
 export interface CssEditorProps {
     isPrinting?: boolean;
     root: CssNode;
+
+    // TODO: Rename to add selector
     addProperty: (path: string[], name: string, selector: string) => void;
     updateData: (path: string[], key: string, value: string) => void;
     deleteData: (path: string[], key: string) => void;
@@ -94,11 +97,17 @@ export default class CssEditor extends React.Component<CssEditorProps> {
                 this.props.addProperty(this.props.root.fullPath, '::before', '::before');
                 event.stopPropagation();
             }}>::before</Button>
+            <CssSelectorAdder
+                addSelector={(name, selector) => this.props.addProperty(this.props.root.fullPath, name, selector)}
+                selector={this.props.root.fullSelector}
+            />
         </>
 
         const trigger = <h2 onMouseOver={() => this.toggleHighlight()} onMouseOut={() => this.toggleHighlight(false)}>
             {this.props.root.name}
-            {beforeAfter}
+            <span className="button-group">
+                {beforeAfter}
+            </span>
         </h2>
 
         const isOpen = (this.path.length !== 1);

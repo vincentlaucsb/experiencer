@@ -45,6 +45,7 @@ $grab-handle-size: 35px;
     font-family: $font-family-base;
     color: $light-shade;
     cursor: pointer;
+    z-index: 1;
 }
 
 .row-grab-handle-container {

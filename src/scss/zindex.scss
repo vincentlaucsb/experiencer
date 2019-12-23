@@ -1,0 +1,14 @@
+﻿/** Overlap control */
+#resume, #resume * {
+    z-index: 0;
+}
+
+header#app-header, header#app-header * {
+    $header-z: 1000;
+    z-index: $header-z;
+
+    /** Don't want dropdowns getting obscured by labels */
+    span.label {
+        z-index: $header-z - 1;
+    }
+}

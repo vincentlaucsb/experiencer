@@ -536,7 +536,8 @@ ${this.state.additionalCss}`;
            return <>{props.children}</>
         };
 
-        const resume = <div id="resume">
+        const resume = <div id="resume-container">
+            <div id="resume">
             <ResumeHotKeys {...this.resumeHotKeysProps} />
             {this.state.children.map((elem, idx, arr) => {
 
@@ -554,6 +555,7 @@ ${this.state.additionalCss}`;
 
                 return <ResumeComponent key={uniqueId} {...props} />
             })}
+            </div>
         </div>
 
         let main = resume;
@@ -621,7 +623,7 @@ ${this.state.additionalCss}`;
                     topNav={editingTop}
                     main={main} />
                     */
-                return <StaticSidebarLayout
+                return <ResizableSidebarLayout
                     topNav={editingTop}
                     main={resume}
                     isPrinting={this.isPrinting}

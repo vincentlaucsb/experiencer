@@ -5,6 +5,7 @@
 @import "css-editor";
 @import "quill";
 @import "inputs";
+@import "zindex";
 
 %flex-row {
     display: flex;
@@ -21,6 +22,12 @@ body {
     background: $light-shade;
     color: $dark-shade;
     margin: 0;
+}
+
+#resume-container {
+    width: 8.5in;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* Resizer */

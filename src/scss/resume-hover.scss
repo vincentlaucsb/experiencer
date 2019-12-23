@@ -9,6 +9,10 @@
     cursor: pointer;
 }
 
+img.icon.resume-hovering, img.icon.resume-selected {
+    border: 1px dashed $main;
+}
+
 .resume-selected, .resume-hovering.resume-selected {
     border: 2px solid $main;
     cursor: auto;

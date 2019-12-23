@@ -11,11 +11,16 @@ export default class Grid extends ResumeNodeBase {
     }
 
     get style() : React.CSSProperties {
-        return {
+        let style: React.CSSProperties = {
             display: "grid",
-            minWidth: "100px",
-            minHeight: "100px"
         };
+
+        if (this.isEmpty) {
+            style.minWidth = '100px';
+            style.minHeight = '100px';
+        }
+
+        return style;
     }
 
     /** Returns a "handle" which can be used to select the column itself and not the columns it contains */
@@ -39,7 +44,6 @@ export default class Grid extends ResumeNodeBase {
                     {this.renderChildren()}
                 </div>
             </div>
-            
         }
 
         return <div className={this.className} style={this.style} id={this.props.htmlId} {...this.selectTriggerProps}>

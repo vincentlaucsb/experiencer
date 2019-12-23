@@ -4,6 +4,7 @@ import Row, { BasicRowProps } from "../Row";
 import Section, { BasicSectionProps } from "../Section";
 import { Action } from "../ResumeNodeBase";
 import Header, { BasicHeaderProps } from "../Header";
+import Icon, { BasicIconProps } from "../Icon";
 
 export interface ToolbarOption {
     text: string;
@@ -139,6 +140,16 @@ export default function toolbarOptions(
                     ]
                 }
             ]
+
+        case Icon.type:
+            const iconNode = node as BasicIconProps;
+            return [
+                {
+                    text: 'GitHub',
+                    action: () => updateNode('icon', 'github')
+                }
+            ];
+
         case Row.type:
             const rowNode = node as BasicRowProps;
             let columnDistribution = {

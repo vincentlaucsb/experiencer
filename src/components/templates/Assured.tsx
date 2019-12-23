@@ -3,6 +3,7 @@ import { BasicHeaderProps } from "../Header";
 import { BasicEntryProps } from "../Entry";
 import { BasicSectionProps } from "../Section";
 import { makeList } from "./TemplateHelper";
+import { BasicIconProps } from "../Icon";
 
 export function assuredCss() {
     let contactLeft = {
@@ -11,14 +12,30 @@ export function assuredCss() {
         "selector": "#contact-left",
         "properties": [
             ["grid-template-columns", "1fr 30px"],
+            ["grid-column-gap", "4px"],
             ["width", "auto"],
-            ["height", "auto"]
+            ["height", "auto"],
+            ["margin", "0 auto"]
+        ]
+    };
+
+    let contactRight = {
+        "children": [],
+        "name": "#contact-right",
+        "selector": "#contact-right",
+        "properties": [
+            ["grid-template-columns", "1fr 30px"],
+            ["grid-column-gap", "4px"],
+            ["width", "auto"],
+            ["height", "auto"],
+            ["margin", "0 auto"]
         ]
     };
 
     return {
         "children": [
             contactLeft,
+            contactRight,
             {
                 "children": [],
                 "name": "Links",
@@ -253,19 +270,63 @@ export function assuredCss() {
 export function assuredNodes(): Array<BasicResumeNode> {
     let contactLeft = {
         "type": "Grid",
+        "htmlId": "contact-left",
         "children": [
             {
                 type: "Rich Text",
                 value: "(123) 456-7890"
             },
             {
+                type: "Icon",
+                icon: "phone"
+            } as BasicIconProps,
+            {
                 type: "Rich Text",
                 value: "mynameis@mail.com"
             },
             {
+                type: "Icon",
+                icon: "email"
+            } as BasicIconProps,
+            {
                 type: "Rich Text",
                 value: "Sometown, USA"
-            }
+            },
+            {
+                type: "Icon",
+                icon: "map-pin"
+            } as BasicIconProps
+        ]
+    }
+
+    let contactRight = {
+        "type": "Grid",
+        "htmlId": "contact-right",
+        "children": [
+            {
+                type: "Rich Text",
+                value: "(123) 456-7890"
+            },
+            {
+                type: "Icon",
+                icon: "phone"
+            } as BasicIconProps,
+            {
+                type: "Rich Text",
+                value: "mynameis@mail.com"
+            },
+            {
+                type: "Icon",
+                icon: "email"
+            } as BasicIconProps,
+            {
+                type: "Rich Text",
+                value: "Sometown, USA"
+            },
+            {
+                type: "Icon",
+                icon: "map-pin"
+            } as BasicIconProps
         ]
     }
 
@@ -273,7 +334,8 @@ export function assuredNodes(): Array<BasicResumeNode> {
         "type": "Header",
         "value": "<p>Solid <strong>Programmer</strong></p>",
         "children": [
-            contactLeft
+            contactLeft,
+            contactRight
         ],
         "subtitle": "<p>Software Engineer</p>",
         "justifyContent": "flex-end",

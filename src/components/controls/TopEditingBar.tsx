@@ -58,7 +58,7 @@ export interface EditingBarProps extends SelectedNodeActions {
     id: IdType;
     node: ResumeNode,
     addHtmlId: (htmlId: string) => void;
-    updateNode: (key: string, value: string | string[] | boolean) => void;
+    updateNode: (key: string, value: string | string[] | boolean | number | number[]) => void;
 
     addChild: AddChild;
     toggleEdit: ModifyChild;

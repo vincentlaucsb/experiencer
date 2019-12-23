@@ -7,6 +7,9 @@ import { BasicResumeNode } from "./utility/NodeTree";
 interface EntryBase {
     title?: string[];
     subtitle?: string[];
+
+    /** Position of subtitle line breaks */
+    subtitleBreaks?: number[];
 }
 
 export interface BasicEntryProps extends BasicResumeNode, EntryBase { };
@@ -76,7 +79,13 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
                     classNames.push('field-last');
                 }
 
-                return <ResumeTextField
+                /** Conditionally add line break */
+                let lineBreak = <></>
+                if (this.props.subtitleBreaks && this.props.subtitleBreaks.indexOf(index) >= 0) {
+                    lineBreak = <hr />
+                }
+
+                return <><ResumeTextField
                     displayClassName={classNames.join(' ')}
                     key={index}
                     onChange={(data: string) => updater(key, index, data)}
@@ -84,6 +93,8 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
                     defaultText="Enter a value"
                     {...this.textFieldProps}
                 />
+                    {lineBreak}
+                    </>
             });
         }
 

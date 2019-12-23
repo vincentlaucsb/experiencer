@@ -22,9 +22,18 @@ export type CustomToolbarOptions = Array<ToolbarOption>;
  */
 export default function toolbarOptions(
     node: ResumeNode,
-    updateNode: (key: string, value: boolean | string | string[]) => void):
+    updateNode: (key: string, value: boolean | string | string[] | number | number[]) => void):
     CustomToolbarOptions
 {
+    const addLineBreak = (node: BasicEntryProps) => {
+        if (node.subtitle) {
+            let arr = node.subtitleBreaks || [];
+            arr.push(node.subtitle.length - 1);
+            return arr;
+        }
+
+        return [];
+    }
 
     const addTitleField = (node: BasicEntryProps) => {
         let arr = node.title || [];
@@ -71,6 +80,11 @@ export default function toolbarOptions(
                             text: 'Add another subtitle field',
                             action: () =>
                                 updateNode('subtitle', addSubtitleField(node))
+                        },
+                        {
+                            text: 'Add line break',
+                            action: () =>
+                                updateNode('subtitleBreaks', addLineBreak(node))
                         },
                         {
                             text: 'Remove title field (from right)',

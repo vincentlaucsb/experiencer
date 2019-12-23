@@ -382,8 +382,9 @@ export function assuredNodes(): Array<BasicResumeNode> {
                 "type": "Entry",
                 "title": ["Some College"],
                 "subtitle": ["BA Mathematics", "2018", "3.99 GPA"],
+                "subtitleBreaks": [1],
                 "children": []
-            }
+            } as BasicEntryProps
         ]
     };
 

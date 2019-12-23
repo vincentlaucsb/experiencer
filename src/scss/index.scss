@@ -20,6 +20,7 @@
 /* App Stuff */
 body {
     background: $light-shade;
+    font-family: Open Sans, sans-serif;
     color: $dark-shade;
     margin: 0;
 }
@@ -33,8 +34,8 @@ body {
 /* Resizer */
 .Resizer.vertical {
     width: 2px;
-    border-left: 2px solid #000000;
-    padding: 0 0.5rem;
+    border-left: 2px solid $dark-shade;
+    margin: 0.5rem;
     cursor: col-resize;
 }
 

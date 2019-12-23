@@ -79,6 +79,7 @@ export interface MappedTextFieldsProps {
     value: Map<string, string>;
     updateValue: (key: string, value: string) => void;
     deleteValue: (key: string) => void;
+    container: (props: any) => JSX.Element;
 }
 
 export default class MappedTextFields extends React.Component<MappedTextFieldsProps, MappedTextFieldsState> {
@@ -168,10 +169,11 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
             </tr>
         }
 
+        const Container = this.props.container;
+
         return <React.Fragment>
-            <table>
-                <tbody>
-            {Array.from(this.data.entries()).map(([key, value]) => {
+            <Container>
+              {Array.from(this.data.entries()).map(([key, value]) => {
                 const shouldFocus = key === this.state.newKey;
 
                 return <tr key={key}>
@@ -194,8 +196,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                 </tr>})}
 
                 {keyAdder}
-                </tbody>
-            </table>
+            </Container>
 
             <div>
                 {this.editingButton}

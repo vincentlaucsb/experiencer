@@ -11,6 +11,12 @@ export interface CssEditorProps {
 }
 
 export default class CssEditor extends React.Component<CssEditorProps> {
+    constructor(props) {
+        super(props);
+
+        this.mapContainer = this.mapContainer.bind(this);
+    }
+
     get path() {
         return this.props.root.fullPath;
     }
@@ -30,6 +36,18 @@ export default class CssEditor extends React.Component<CssEditorProps> {
         }
     }
 
+    /**
+     * Contains the rows of a CSS ruleset
+     * @param props
+     */
+    mapContainer(props: any) {
+        return <table>
+            <tbody>
+                {props.children}
+            </tbody>
+        </table>
+    }
+
     /** Highlight all DOM nodes matching the current selector */
     toggleHighlight(highlight = true) {
         const hits = document.querySelectorAll(this.props.root.selector);
@@ -45,36 +63,54 @@ export default class CssEditor extends React.Component<CssEditorProps> {
         }
     }
 
-    render() {
+    /** Render the set of CSS properties */
+    renderProperties() {
         const cssProperties = this.props.root.properties;
-        const Heading = this.heading;
+        const selector = this.props.root.fullSelector;
 
+
+        return (
+            <div className="css-ruleset">
+                <strong>{selector} {"{"}</strong>
+                <MappedTextFields value={cssProperties}
+                container={this.mapContainer}
+                updateValue={this.props.updateData.bind(this, this.path)}
+                deleteValue={this.props.deleteData.bind(this, this.path)} />
+                {"}"}
+            </div>
+        );
+    }
+
+    renderChildren() {
+        return this.props.root.children.map(
+            (css, index) => {
+                return <CssEditor
+                    key={css.fullSelector}
+                    root={css}
+                    updateData={this.props.updateData}
+                    deleteData={this.props.deleteData}
+                />
+            });
+    }
+
+    render() {
         if (this.props.isPrinting) {
             return <></>
         }
 
-        const trigger = <Heading onMouseOver={() => this.toggleHighlight()} onMouseOut={() => this.toggleHighlight(false)}>
-            {this.props.root.name} <span>({this.props.root.fullSelector})</span>
-        </Heading>
+        const trigger = <h2 onMouseOver={() => this.toggleHighlight()} onMouseOut={() => this.toggleHighlight(false)}>
+            {this.props.root.name}
+        </h2>
 
         const isOpen = (this.path.length !== 1);
 
         return (
-            <section className="css-category no-print">
+            <section className={`css-category no-print css-category-${this.path.length}`}>
                 <Collapse trigger={trigger} isOpen={isOpen}>
-                    <MappedTextFields value={cssProperties}
-                        updateValue={this.props.updateData.bind(this, this.path)}
-                        deleteValue={this.props.deleteData.bind(this, this.path)} />
-
-                    {this.props.root.children.map(
-                        (css, index) => {
-                            return <CssEditor
-                                key={css.fullSelector}
-                                root={css}
-                                updateData={this.props.updateData}
-                                deleteData={this.props.deleteData}
-                            />
-                        })}
+                    <div className="css-category-content">
+                        {this.renderProperties()}
+                        {this.renderChildren()}
+                    </div>
                 </Collapse>
             </section>
         );

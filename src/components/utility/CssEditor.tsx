@@ -86,12 +86,14 @@ export default class CssEditor extends React.Component<CssEditorProps> {
         }
 
         let beforeAfter = <>
-            <Button onClick={() =>
-                this.props.addProperty(this.props.root.fullPath, '::after', '::after')
-            }>::after</Button>
-            <Button onClick={() =>
-                    this.props.addProperty(this.props.root.fullPath, '::before', '::before')
-            }>::before</Button>
+            <Button onClick={(event) => {
+                this.props.addProperty(this.props.root.fullPath, '::after', '::after');
+                event.stopPropagation();
+            }}>::after</Button>
+            <Button onClick={(event) => {
+                this.props.addProperty(this.props.root.fullPath, '::before', '::before');
+                event.stopPropagation();
+            }}>::before</Button>
         </>
 
         const trigger = <h2 onMouseOver={() => this.toggleHighlight()} onMouseOut={() => this.toggleHighlight(false)}>

@@ -103,6 +103,9 @@ function getEntryCss(): CssNode {
         'font-weight': 'bold'
     }, 'span.field-0'));
 
+    subtitleCss.add(new CssNode('Middle Fields', {
+    }, 'span.field-middle'));
+
     subtitleCss.add(new CssNode('Last Field', {
     }, 'span.field-last'));
 
@@ -110,11 +113,11 @@ function getEntryCss(): CssNode {
 }
 
 function getHeaderCss() {
-    let headerCss = new CssNode('Header', {
+    const headerCss = new CssNode('Header', {
         'margin-bottom': '16px'
     }, 'header');
 
-    let titleGroup = headerCss.add(new CssNode(
+    const titleGroup = headerCss.add(new CssNode(
         'Title Group', {}, '> hgroup'));
 
     titleGroup.add(new CssNode('Title', {
@@ -122,7 +125,7 @@ function getHeaderCss() {
         'font-weight': 'normal'
     }, '> h1'));
 
-    titleGroup.add(new CssNode('Subtitle', {
+    const subtitleGroup = titleGroup.add(new CssNode('Subtitle', {
         'font-weight': 'normal'
     }, '> h2'));
 

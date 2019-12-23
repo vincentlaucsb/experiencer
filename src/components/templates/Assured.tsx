@@ -66,7 +66,14 @@ export function assuredCss() {
         '#main'
     ));
 
-    defaultCss.setProperties(["Entry", "Title Block", "Subtitle", "Last Field"], [
+    const subtitleFields = defaultCss.findNode(["Entry", "Title Block", "Subtitle"]) as CssNode;
+    let middleFields = subtitleFields.findNode(["Middle Fields"]) as CssNode;
+    middleFields.add(new CssNode(":before", {
+        content: '"|"',
+        padding: "0.5em"
+    }, ":before"));
+
+    subtitleFields.setProperties(["Last Field"], [
         ["margin-left", "auto"],
         ["text-align", "right"]
     ]);

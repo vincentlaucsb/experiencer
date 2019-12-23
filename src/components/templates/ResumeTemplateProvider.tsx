@@ -29,10 +29,6 @@ export default class ResumeTemplateProvider {
                 builtinCss: assuredCss().dump(),
                 children: assignIds(assuredNodes()),
                 css: `${ResumeTemplateProvider.defaultCss}
-#resume .entry hgroup h4.subtitle .field-1:not(.field-last):before {
-    content: \"|\";
-    padding: 0 0.5em;
-}
 
 #resume header .rich-text {
     text-align: right;

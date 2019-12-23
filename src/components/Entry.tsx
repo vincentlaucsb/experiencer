@@ -75,8 +75,11 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
             return fields.map((text, index, arr) => {
                 const isLast = index === arr.length - 1;
                 let classNames = ['field', `field-${index}`];
-                if (isLast) {
+                if (isLast && index != 0) {
                     classNames.push('field-last');
+                }
+                else if (index > 0) {
+                    classNames.push('field-middle');
                 }
 
                 /** Conditionally add line break */

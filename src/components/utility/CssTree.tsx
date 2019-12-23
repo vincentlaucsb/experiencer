@@ -43,6 +43,11 @@ export default class CssNode {
         let parent = this.parent;
         while (!isNullOrUndefined(parent)) {
             selector = `${parent.selector} ${selector}`;
+
+            // No space for pseudo-classes or elements
+            if (selector.charAt(0) === ':') {
+                selector = `${parent.selector}${selector}`
+            }
             parent = parent.parent;
         }
 

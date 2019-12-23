@@ -1,7 +1,6 @@
 ﻿import React from "react";
 
 export interface QuillToolbarProps {
-    selectTriggerProps: any;
 }
 
 export default function QuillToolbar(props: QuillToolbarProps) {
@@ -23,7 +22,7 @@ export default function QuillToolbar(props: QuillToolbarProps) {
         height: 0,
         top: -offset
     }}>
-        <div id="quill-toolbar" ref={ref} style={{ position: "absolute" }} {...props.selectTriggerProps}>
+        <div id="quill-toolbar" ref={ref} style={{ position: "absolute" }}>
             <span className="ql-formats">
                 <button className="ql-bold" type="button"></button>
                 <button className="ql-italic" type="button"></button>

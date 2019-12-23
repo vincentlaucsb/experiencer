@@ -22,7 +22,6 @@ section.header-left h2 {
     flex-grow: 0;
 }`;
    
-
     static templates = {
         "Assured": () => {
             let data: ResumeSaveData = {

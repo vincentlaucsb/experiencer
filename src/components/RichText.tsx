@@ -5,6 +5,7 @@ import * as Helpers from "./Helpers";
 import ResumeNodeBase from "./ResumeNodeBase";
 import { IdType } from "./utility/HoverTracker";
 import QuillToolbar from "./controls/QuillToolbar";
+import QuillEditor from "./controls/QuillEditor";
 
 export default class RichText extends ResumeNodeBase {
     static quillModules = {
@@ -42,15 +43,13 @@ export default class RichText extends ResumeNodeBase {
         
         if (this.isEditing) {
             return (
-                <div>
-                    <QuillToolbar selectTriggerProps={this.selectTriggerProps} />
-                    <div className={this.className} id={this.props.htmlId} {...this.selectTriggerProps}>
-                    <ReactQuill
-                        modules={{ toolbar: "#quill-toolbar" }}
-                        value={this.props.value || ""}
-                        onChange={this.props.updateData.bind(this, this.props.id, "value")} />
-                    </div>
-                </div>
+                <QuillEditor
+                    value={this.props.value}
+                    className={this.className}
+                    htmlId={this.props.htmlId}
+                    selectTriggerProps={this.selectTriggerProps}
+                    onChange={() => this.props.updateData.bind(this, this.props.id, "value")}
+                />
             );
         }
 

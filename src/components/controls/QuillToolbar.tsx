@@ -1,6 +1,7 @@
 ﻿import React from "react";
 
 export interface QuillToolbarProps {
+    id: string;
     show: boolean;
 }
 
@@ -28,7 +29,7 @@ export default function QuillToolbar(props: QuillToolbarProps) {
     });
 
     return <div style={containerStyle}>
-        <div id="quill-toolbar" ref={ref} style={{ position: "absolute" }}>
+        <div id={props.id} ref={ref} style={{ position: "absolute" }} className="quill-toolbar">
             <span className="ql-formats">
                 <button className="ql-bold" type="button"></button>
                 <button className="ql-italic" type="button"></button>

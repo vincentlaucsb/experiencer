@@ -3,6 +3,7 @@ import React from "react";
 import ReactQuill from "react-quill";
 
 export interface QuillEditorProps {
+    id: string;
     className?: string;
     htmlId?: string;
     selectTriggerProps: any;
@@ -11,7 +12,7 @@ export interface QuillEditorProps {
 }
 
 export default function QuillEditor(props: QuillEditorProps) {
-    let [showToolbar, setToolbar] = React.useState(true);
+    let [showToolbar, setToolbar] = React.useState(false);
 
     const selectTriggerProps = { ...props.selectTriggerProps };
     selectTriggerProps.onMouseEnter = () => {
@@ -23,14 +24,16 @@ export default function QuillEditor(props: QuillEditorProps) {
         setToolbar(false);
     }
 
+    const toolbarId = `quill-toolbar-${props.id}`
+
     return (
         <div
             className={props.className} id={props.htmlId}
             {...selectTriggerProps}>
-            <QuillToolbar show={showToolbar} />
+            <QuillToolbar id={toolbarId} show={showToolbar} />
             <div>
                 <ReactQuill
-                    modules={{ toolbar: "#quill-toolbar" }}
+                    modules={{ toolbar: `#${toolbarId}` }}
                     value={props.value || ""}
                     onChange={props.onChange}
                 />

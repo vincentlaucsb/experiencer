@@ -64,3 +64,55 @@ test('find Test', () => {
     expect(listItemCss).toBeDefined();
     expect(arraysEqual(listItemCss.fullPath, ['Lists', 'List Item'])).toBeTruthy();
 })
+
+test('Stylesheet Test', () => {
+    const cssNode = new CssNode('Text Field', {
+            "font-family": "Tahoma, sans-serif"
+        }, 'span');
+    expect(cssNode.stylesheet()).toBe(`span {
+\tfont-family: Tahoma, sans-serif;
+}`);
+})
+
+test('Stylesheet Test w/ Children', () => {
+    const cssNode = new CssNode('Text Field', {
+        "font-family": "Tahoma, sans-serif"
+    }, 'span');
+    cssNode.add(new CssNode('Bold', {
+        "font-size": "120%"
+    }, 'strong'));
+
+    expect(cssNode.stylesheet()).toBe(`span {
+\tfont-family: Tahoma, sans-serif;
+}
+
+span strong {
+\tfont-size: 120%;
+}`);
+})
+
+test('Stylesheet Test w/ Children and Pseduoelements', () => {
+    const cssNode = new CssNode('Text Field', {
+        "font-family": "Tahoma, sans-serif"
+    }, 'span');
+
+    cssNode.add(new CssNode(':after', {
+        "content": '","'
+    }, ':after'));
+
+    cssNode.add(new CssNode('Bold', {
+        "font-size": "120%"
+    }, 'strong'));
+
+    expect(cssNode.stylesheet()).toBe(`span {
+\tfont-family: Tahoma, sans-serif;
+}
+
+span:after {
+\tcontent: ",";
+}
+
+span strong {
+\tfont-size: 120%;
+}`);
+})

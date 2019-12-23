@@ -11,6 +11,7 @@ export interface CssNodeDump {
 export default class CssNode {
     /** A mapping of keys to CSS properties */
     private _children: Array<CssNode>;
+
     private _name: string;
     private _selector: string;
     private _properties: Map<string, string>;
@@ -102,27 +103,34 @@ export default class CssNode {
         let selector = this.selector;
         if (parentSelector) {
             selector = `${parentSelector} ${this.selector}`
-        }
 
-        let cssProperties = "";
-        if (this.properties.size > 0) {
-            for (let [property, entry] of this.properties.entries()) {
-                cssProperties += `${property}: ${entry};\n`;
+            // Don't add space for pseudo-elements and pseudo-classes
+            if (this.selector.charAt(0) === ':') {
+                selector = `${parentSelector}${this.selector}`
             }
         }
 
-        const thisCss = this.properties.size > 0 ? `${selector} {
-    ${cssProperties}
-}` : ``;
-
-        let childStylesheets = "";
-        for (let cssTree of this.children.values()) {
-            childStylesheets += cssTree.stylesheet(selector);
+        let cssProperties = new Array<string>();
+        if (this.properties.size > 0) {
+            for (let [property, entry] of this.properties.entries()) {
+                cssProperties.push(`\t${property}: ${entry};`);
+            }
         }
 
-        return `${thisCss}
-    
-${childStylesheets}`
+        const thisCss = this.properties.size > 0 ? `${selector} {\n${cssProperties.join('\n')}\n}` : ``;
+
+        let childStylesheets = new Array<string>();
+        for (let cssTree of this.children.values()) {
+            childStylesheets.push(cssTree.stylesheet(selector));
+        }
+
+        let finalStylesheet = thisCss;
+        if (childStylesheets.length > 0) {
+            finalStylesheet += "\n\n";
+            finalStylesheet += childStylesheets.join('\n\n');
+        }
+
+        return finalStylesheet;
     }
 
     /**

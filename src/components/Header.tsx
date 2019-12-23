@@ -47,7 +47,7 @@ export default class Header extends ResumeNodeBase<HeaderProps> {
         if (this.isEditing) {
             value = <QuillEditor
                 id={`${this.props.uuid}-title`}
-                value={this.props.value}
+                value={this.props.value || ""}
                 onChange={(text) => this.updateData("value", text)}
                 selectTriggerProps={{
                     onMouseEnter: () => {},
@@ -57,6 +57,7 @@ export default class Header extends ResumeNodeBase<HeaderProps> {
 
             subtitle = <QuillEditor
                 id={`${this.props.uuid}-subtitle`}
+                value={this.props.subtitle || ""}
                 onChange={(text) => this.updateData("subtitle", text)}
                 selectTriggerProps={{
                     onMouseEnter: () => { },

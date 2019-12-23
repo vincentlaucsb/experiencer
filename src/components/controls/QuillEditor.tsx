@@ -4,10 +4,11 @@ import ReactQuill from "react-quill";
 
 export interface QuillEditorProps {
     id: string;
+    value: string;
+
     className?: string;
     htmlId?: string;
     selectTriggerProps: any;
-    value?: string;
     onChange: (value: string) => void;
 }
 
@@ -31,10 +32,10 @@ export default function QuillEditor(props: QuillEditorProps) {
             className={props.className} id={props.htmlId}
             {...selectTriggerProps}>
             <QuillToolbar id={toolbarId} show={showToolbar} />
-            <div>
+            <div className="resume-ql">
                 <ReactQuill
                     modules={{ toolbar: `#${toolbarId}` }}
-                    value={props.value || ""}
+                    value={props.value}
                     onChange={props.onChange}
                 />
             </div>

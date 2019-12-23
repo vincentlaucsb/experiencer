@@ -45,7 +45,7 @@ export default class RichText extends ResumeNodeBase {
             return (
                 <QuillEditor
                     id={this.props.uuid}
-                    value={this.props.value}
+                    value={this.props.value || ""}
                     className={this.className}
                     htmlId={this.props.htmlId}
                     selectTriggerProps={this.selectTriggerProps}

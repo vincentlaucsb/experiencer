@@ -82,7 +82,10 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
                 /** Conditionally add line break */
                 let lineBreak = <></>
                 if (this.props.subtitleBreaks && this.props.subtitleBreaks.indexOf(index) >= 0) {
-                    lineBreak = <hr />
+                    lineBreak = <hr style={{
+                        flexBasis: "100%",
+                        border: 0
+                    }}/>
                 }
 
                 return <><ResumeTextField

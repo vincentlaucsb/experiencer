@@ -4,266 +4,72 @@ import { BasicEntryProps } from "../Entry";
 import { BasicSectionProps } from "../Section";
 import { makeList } from "./TemplateHelper";
 import { BasicIconProps } from "../Icon";
+import getDefaultCss from "./CssTemplates";
+import CssNode from "../utility/CssTree";
 
 export function assuredCss() {
-    let contactLeft = {
-        "children": [],
-        "name": "#contact-left",
-        "selector": "#contact-left",
-        "properties": [
-            ["grid-template-columns", "1fr 30px"],
-            ["grid-column-gap", "4px"],
-            ["width", "auto"],
-            ["height", "auto"],
-            ["margin-left", "auto"]
-        ]
-    };
+    let defaultCss = getDefaultCss();
+    defaultCss.properties = new Map<string, string>([
+        ["font-family", "Open Sans, sans-serif"],
+        ["font-size", "11pt"]
+    ]);
 
-    let contactRight = {
-        "children": [],
-        "name": "#contact-right",
-        "selector": "#contact-right",
-        "properties": [
-            ["grid-template-columns", "1fr 30px"],
-            ["grid-column-gap", "4px"],
-            ["width", "auto"],
-            ["height", "auto"]
-        ]
-    };
+    defaultCss.setProperties(["Header"], [
+        ["margin-bottom", "16px"],
+        ["background", "#eeeeee"],
+        ["padding", "0.5in"],
+        ["padding-bottom", "16px"],
+        ["font-family", "Open Sans, sans-serif"]
+    ]);
 
-    return {
-        "children": [
-            contactLeft,
-            contactRight,
-            {
-                "children": [],
-                "name": "Links",
-                "selector": "a, a:hover",
-                "properties": [["color", "#000000"]]
-            },
-            {
-                "children": [
-                    {
-                        "children": [],
-                        "name": "Subtitle",
-                        "selector": "h2.subtitle",
-                        "properties": [["font-weight", "normal"]]
-                    }
-                ],
-                "name": "Header",
-                "selector": "header",
-                "properties": [
-                    ["margin-bottom", "16px"],
-                    ["background", "#eeeeee"],
-                    ["padding", "0.5in"],
-                    ["padding-bottom", "16px"],
-                    ["font-family", "Open Sans, sans-serif"]
-                ]
-            },
-            {
-                "children": [
-                    {
-                        "children": [],
-                        "name": "Definitions",
-                        "selector": "dd",
-                        "properties": [["padding-left", "0.5rem"]]
-                    }
-                ],
-                "name": "Description List",
-                "selector": "dl",
-                "properties": []
-            },
-            {
-                "children": [],
-                "name": "Grid",
-                "selector": "div.grid-container",
-                "properties": []
-            },
-            {
-                "children": [
-                    {
-                        "children": [],
-                        "name": "Title",
-                        "selector": "h2",
-                        "properties": [
-                            ["font-family", "Merriweather, serif"],
-                            ["font-weight", "bold"],
-                            ["font-size", "18pt"],
-                            ["color", "#315eaa"]
-                        ]
-                    },
-                    {
-                        "children": [],
-                        "name": "Contents",
-                        "selector": ".entry-content",
-                        "properties": []
-                    }
-                ],
-                "name": "Section",
-                "selector": "section",
-                "properties": []
-            },
-            {
-                "children": [
-                    {
-                        "children": [
-                            {
-                                "children": [
-                                    {
-                                        "children": [],
-                                        "name": "First Title Field",
-                                        "selector": ".field-0",
-                                        "properties": [["font-weight", "bold"]]
-                                    },
-                                    {
-                                        "children": [],
-                                        "name": "Other Title Fields",
-                                        "selector": ":not(.field-0)",
-                                        "properties": [["font-weight", "normal"]]
-                                    },
-                                    {
-                                        "children": [],
-                                        "name": "First Title Field (After)",
-                                        "selector": ".field-0::after",
-                                        "properties": []
-                                    }
-                                ],
-                                "name": "Title",
-                                "selector": "h3.title",
-                                "properties": [
-                                    ["font-size", "13pt"],
-                                    ["font-family", "Merriweather, serif"],
-                                    ["display", "flex"]
-                                ]
-                            },
-                            {
-                                "children": [
-                                    {
-                                        "children": [],
-                                        "name": "Other Subtitle Fields",
-                                        "selector": ".field:not(.field-0)",
-                                        "properties": []
-                                    }
-                                ],
-                                "name": "Subtitle",
-                                "selector": "h4.subtitle",
-                                "properties": [
-                                    ["font-family", "Open Sans, sans-serif"],
-                                    ["display", "flex"],
-                                    ["justify-content", "flex-start"]
-                                ]
-                            }
-                        ],
-                        "name": "Title Block",
-                        "selector": "hgroup",
-                        "properties": [["margin-bottom", "4px"]]
-                    }
-                ],
-                "name": "Entry",
-                "selector": ".entry",
-                "properties": [["margin-bottom", "16px"]]
-            },
-            {
-                "children": [
-                    {
-                        "children": [
-                            {
-                                "children": [],
-                                "name": "List Item",
-                                "selector": "li",
-                                "properties": [["list-style-type", "square"]]
-                            }
-                        ],
-                        "name": "Lists",
-                        "selector": "ul",
-                        "properties": [["padding-left", "1.5em"]]
-                    }
-                ],
-                "name": "Rich Text",
-                "selector": ".rich-text",
-                "properties": []
-            },
-            {
-                "children": [
-                    {
-                        "children": [],
-                        "name": "Column",
-                        "selector": ".column",
-                        "properties": []
-                    },
-                    {
-                        "children": [],
-                        "name": "First Column",
-                        "selector": ".column-0",
-                        "properties": []
-                    },
-                    {
-                        "children": [],
-                        "name": "All Columns Except First",
-                        "selector": ".column:not(.column-0)",
-                        "properties": [["margin-left", "1em"]]
-                    },
-                    {
-                        "children": [],
-                        "name": "Last Column",
-                        "selector": ".column-last",
-                        "properties": []
-                    }
-                ],
-                "name": "Row",
-                "selector": ".row",
-                "properties": []
-            },
-            {
-                "children": [
-                    {
-                        "children": [],
-                        "name": "Column",
-                        "selector": ".column",
-                        "properties": []
-                    },
-                    {
-                        "children": [],
-                        "name": "First Column",
-                        "selector": ".column-0",
-                        "properties": []
-                    },
-                    {
-                        "children": [],
-                        "name": "All Columns Except First",
-                        "selector": ".column:not(.column-0)",
-                        "properties": []
-                    },
-                    {
-                        "children": [],
-                        "name": "Last Column",
-                        "selector": ".column-last",
-                        "properties": []
-                    }
-                ],
-                "name": "#main",
-                "selector": "#main",
-                "properties": [
-                    ["grid-template-columns", "1fr 200px"],
-                    ["grid-column-gap", "24px"],
-                    ["margin-left", "0.5in"],
-                    ["margin-right", "0.5in"]
-                ]
-            },
-            {
-                "children": [],
-                "name": "#sidebar",
-                "selector": "#sidebar",
-                "properties": []
-            }
-        ],
-            "name": "Resume CSS",
-                "selector": "#resume",
-                    "properties": [
-                        ["font-family", "Open Sans, sans-serif"],
-                        ["font-size", "11pt"]
-                    ]
-    }
+    let contactLeft = new CssNode(
+        "#contact-left",
+        {
+            "grid-template-columns": "1fr 30px",
+            "grid-column-gap": "4px",
+            "width": "auto",
+            "height": "auto",
+            "margin-left": "auto"
+        },
+        "#contact-left");
+
+    let contactRight = new CssNode(
+        '#contact-right',
+        {
+            "grid-template-columns": "1fr 30px",
+            "grid-column-gap": "4px",
+            "width": "auto",
+            "height": "auto"
+        },
+        '#contact-right');
+
+    defaultCss.add(contactLeft);
+    defaultCss.add(contactRight);
+    defaultCss.setProperties(["Section", "Title"], [
+        ["font-family", "Merriweather, serif"],
+        ["font-weight", "bold"],
+        ["font-size", "18pt"],
+        ["color", "#315eaa"]
+    ]);
+
+    defaultCss.setProperties(["Section", "Content"],
+        new Map<string, string>()
+    );
+
+    // defaultCss.setProperties(["Entry"], []);
+
+    defaultCss.add(new CssNode(
+        '#main',
+        {
+            'padding-left': '0.5in',
+            'padding-right': '0.5in',
+            'grid-template-columns': '1fr 180px',
+            'grid-column-gap': '16px'
+        },
+        '#main'
+    ));
+
+    return defaultCss;
 }
 
 export function assuredNodes(): Array<BasicResumeNode> {

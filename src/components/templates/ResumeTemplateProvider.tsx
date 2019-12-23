@@ -16,16 +16,17 @@ export default class ResumeTemplateProvider {
 }
 
 /** Sections with Header on Left **/
-section.header-left h2 {
+#resume section.header-left h2 {
     width: 20%;
     flex-shrink: 0;
     flex-grow: 0;
-}`;
+}
+`;
    
     static templates = {
         "Assured": () => {
             let data: ResumeSaveData = {
-                builtinCss: assuredCss(),
+                builtinCss: assuredCss().dump(),
                 children: assignIds(assuredNodes()),
                 css: `${ResumeTemplateProvider.defaultCss}
 #resume .entry hgroup h4.subtitle .field-1:not(.field-last):before {

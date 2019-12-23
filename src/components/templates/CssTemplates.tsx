@@ -56,7 +56,7 @@ function getSectionCss(): CssNode {
     }, 'h2'));
 
     sectionCss.add(new CssNode(
-        'Contents', {
+        'Content', {
             'margin-top': '8px',
             'margin-left': '8px',
             'padding-left': '16px',
@@ -92,18 +92,11 @@ function getEntryCss(): CssNode {
         'font-weight': 'normal'
     }, ':not(.field-0)'));
 
-    entryTitleHeadingCss.add(new CssNode('First Title Field (After)', {
-        'content': "','",
-        'padding-right': '0.33em'
-    }, '.field-0::after'))
-
     let subtitleCss = entryTitleCss.add(new CssNode('Subtitle', {
         'font-family': 'sans-serif',
+        'display': 'flex',
+        'flex-wrap': 'wrap'
     }, 'h4.subtitle'));
-
-    subtitleCss.add(new CssNode('Other Subtitle Fields', {
-        'margin-left': '1em'
-    }, '.field:not(.field-0)'));
 
     return entryCss;
 }

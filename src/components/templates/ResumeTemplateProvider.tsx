@@ -1,16 +1,7 @@
-﻿import Section, { SectionHeaderPosition, BasicSectionProps } from "../Section";
-import { assignIds } from "../Helpers";
-import Header from "../Header";
-import Entry, { BasicEntryProps } from "../Entry";
-import RichText from "../RichText";
-import { BasicResumeNode } from "../utility/NodeTree";
-import Column from "../Column";
-import Row from "../Row";
+﻿import { assignIds } from "../Helpers";
 import { randyMarshCss, randyMarsh } from "./RandyMarsh";
-import getDefaultCss from "./CssTemplates";
 import { ResumeSaveData } from "../controls/ResumeState";
 import { assuredNodes, assuredCss } from "./Assured";
-import CssNode from "../utility/CssTree";
 
 export default class ResumeTemplateProvider {
     static defaultCss = `#resume * {
@@ -38,12 +29,6 @@ section.header-left h2 {
                 builtinCss: assuredCss(),
                 children: assignIds(assuredNodes()),
                 css: `${ResumeTemplateProvider.defaultCss}
-#resume img {
-    /** Prevent images from overflowing */
-    max-width: 100%;
-    max-height: 100%;
-}
-
 #resume .entry hgroup h4.subtitle .field-1:not(.field-last):before {
     content: \"|\";
     padding: 0 0.5em;
@@ -54,28 +39,16 @@ section.header-left h2 {
     text-align: right;
 }
 
-/** Sections with Header on Left **/
-section.header-left h2 {
-    width: 20%;
-    flex-shrink: 0;
-    flex-grow: 0;
-}
-
 #resume header hgroup {
     font-family: Merriweather, serif;
 }
 
 #resume header .rich-text {
-    margin-left: 2em;
     text-align: right;
     font-size: 10pt;
 }
 
-#resume header .rich-text:first-of-type {
-    margin-left: auto;
-}
-
-#resume header img.icon {
+#resume header .icon {
     height: 24px;
     vertical-align: middle;
 }

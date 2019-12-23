@@ -11,10 +11,10 @@ import { BasicResumeNode } from "./utility/NodeTree";
 interface IconBase {
     icon?: 'email'
     | 'github'
+    | 'globe'
     | 'linkedin'
     | 'map-pin'
-    | 'phone'
-    | 'website';
+    | 'phone';
 };
 
 export interface BasicIconProps extends IconBase, BasicResumeNode {}
@@ -32,6 +32,9 @@ export default class Icon extends ResumeNodeBase<IconProps> {
                 break;
             case 'github':
                 return <Octicon className="icon" icon={MarkGithub} />
+            case 'globe':
+                src = Globe;
+                break;
             case 'linkedin':
                 src = LinkedIn;
                 break;
@@ -41,8 +44,6 @@ export default class Icon extends ResumeNodeBase<IconProps> {
             case 'phone':
                 src = Phone;
                 break;
-            case 'website':
-                src = Globe;
             default:
                 src = '';
                 break;

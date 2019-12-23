@@ -15,7 +15,7 @@ export function assuredCss() {
             ["grid-column-gap", "4px"],
             ["width", "auto"],
             ["height", "auto"],
-            ["margin", "0 auto"]
+            ["margin-left", "auto"]
         ]
     };
 
@@ -27,8 +27,7 @@ export function assuredCss() {
             ["grid-template-columns", "1fr 30px"],
             ["grid-column-gap", "4px"],
             ["width", "auto"],
-            ["height", "auto"],
-            ["margin", "0 auto"]
+            ["height", "auto"]
         ]
     };
 
@@ -305,27 +304,27 @@ export function assuredNodes(): Array<BasicResumeNode> {
         "children": [
             {
                 type: "Rich Text",
-                value: "(123) 456-7890"
+                value: "My GitHub"
             },
             {
                 type: "Icon",
-                icon: "phone"
+                icon: "github"
             } as BasicIconProps,
             {
                 type: "Rich Text",
-                value: "mynameis@mail.com"
+                value: "mylinkedin"
             },
             {
                 type: "Icon",
-                icon: "email"
+                icon: "linkedin"
             } as BasicIconProps,
             {
                 type: "Rich Text",
-                value: "Sometown, USA"
+                value: "mywebsite.com"
             },
             {
                 type: "Icon",
-                icon: "map-pin"
+                icon: "globe"
             } as BasicIconProps
         ]
     }

@@ -1,11 +1,22 @@
 ﻿import React from "react";
 
 export interface QuillToolbarProps {
+    show: boolean;
 }
 
 export default function QuillToolbar(props: QuillToolbarProps) {
     let [offset, setOffset] = React.useState(0);
     let ref = React.createRef<HTMLDivElement>();
+    let containerStyle: React.CSSProperties = {
+        position: "relative",
+        background: "black",
+        height: 0,
+        top: -offset
+    };
+
+    if (!props.show) {
+        containerStyle.display = "none";
+    }
 
     React.useEffect(() => {
         if (ref.current) {
@@ -16,12 +27,7 @@ export default function QuillToolbar(props: QuillToolbarProps) {
         }
     });
 
-    return <div style={{
-        position: "relative",
-        background: "black",
-        height: 0,
-        top: -offset
-    }}>
+    return <div style={containerStyle}>
         <div id="quill-toolbar" ref={ref} style={{ position: "absolute" }}>
             <span className="ql-formats">
                 <button className="ql-bold" type="button"></button>

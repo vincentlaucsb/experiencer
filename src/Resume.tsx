@@ -480,6 +480,12 @@ ${this.state.additionalCss}`;
     //#endregion
 
     renderCssEditor() {
+        const adder = (path, name, selector) => {
+            (this.css.findNode(path) as CssNode).add(new CssNode(name, {}, selector));
+            this.setState({ css: this.css });
+            this.shouldUpdateCss = true;
+        }
+
         const updater = (path, key, value) => {
             this.css.setProperty(path, key, value);
             this.setState({ css: this.css });
@@ -503,6 +509,7 @@ ${this.state.additionalCss}`;
                     key={specificRoot.fullSelector}
                     isPrinting={this.isPrinting}
                     root={specificRoot}
+                    addProperty={adder}
                     updateData={updater}
                     deleteData={deleter}
                 />
@@ -514,6 +521,7 @@ ${this.state.additionalCss}`;
                     <CssEditor isPrinting={this.isPrinting}
                         key={rootNode.fullSelector}
                         root={rootNode}
+                        addProperty={adder}
                         updateData={updater}
                         deleteData={deleter}
                     />
@@ -525,6 +533,7 @@ ${this.state.additionalCss}`;
                 
         return <CssEditor isPrinting={this.isPrinting}
             root={this.state.css}
+            addProperty={adder}
             updateData={updater}
             deleteData={deleter}
         />

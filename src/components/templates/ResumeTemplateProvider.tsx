@@ -34,15 +34,6 @@ export default class ResumeTemplateProvider {
     padding: 0 0.5em;
 }
 
-#resume .entry hgroup h4.subtitle .field-last {
-    margin-left: auto;
-    text-align: right;
-}
-
-#resume header hgroup {
-    font-family: Merriweather, serif;
-}
-
 #resume header .rich-text {
     text-align: right;
     font-size: 10pt;
@@ -52,18 +43,7 @@ export default class ResumeTemplateProvider {
     height: 24px;
     vertical-align: middle;
 }
-
-#resume #sidebar h4.subtitle .field {
-    white-space: nowrap;
-}
-
-#resume #sidebar section {
-    margin-bottom: 16px;
-}
-
-#resume h3.title .field-0 {
-    margin-right: auto;
-}`
+`
             };
 
             return data;

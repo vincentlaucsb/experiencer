@@ -1,7 +1,5 @@
 ﻿import * as React from "react";
-import Row, { RowProps, BasicRowProps } from "./Row";
-import ReactQuill from "react-quill";
-import RichText from "./RichText";
+import { RowProps, BasicRowProps } from "./Row";
 import ResumeNodeBase from "./ResumeNodeBase";
 import QuillEditor from "./controls/QuillEditor";
 

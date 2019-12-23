@@ -15,11 +15,10 @@ export function assuredCss() {
     ]);
 
     defaultCss.setProperties(["Header"], [
-        ["margin-bottom", "16px"],
         ["background", "#eeeeee"],
+        ["margin-bottom", "16px"],
         ["padding", "0.5in"],
         ["padding-bottom", "16px"],
-        ["font-family", "Open Sans, sans-serif"]
     ]);
 
     let contactLeft = new CssNode(
@@ -55,9 +54,7 @@ export function assuredCss() {
     defaultCss.setProperties(["Section", "Content"],
         new Map<string, string>()
     );
-
-    // defaultCss.setProperties(["Entry"], []);
-
+    
     defaultCss.add(new CssNode(
         '#main',
         {
@@ -68,6 +65,11 @@ export function assuredCss() {
         },
         '#main'
     ));
+
+    defaultCss.setProperties(["Entry", "Title Block", "Subtitle", "Last Field"], [
+        ["margin-left", "auto"],
+        ["text-align", "right"]
+    ]);
 
     return defaultCss;
 }

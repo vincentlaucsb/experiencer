@@ -20,22 +20,7 @@ export default class CssEditor extends React.Component<CssEditorProps> {
     get path() {
         return this.props.root.fullPath;
     }
-
-    get heading() {
-        switch (this.path.length) {
-            case 0:
-                return (props: any) => <h2 {...props} />
-            case 1:
-                return (props: any) => <h3 {...props} />
-            case 2:
-                return (props: any) => <h4 {...props} />
-            case 3:
-                return (props: any) => <h5 {...props} />
-            default:
-                return (props: any) => <h6 {...props} />
-        }
-    }
-
+    
     /**
      * Contains the rows of a CSS ruleset
      * @param props
@@ -50,7 +35,7 @@ export default class CssEditor extends React.Component<CssEditorProps> {
 
     /** Highlight all DOM nodes matching the current selector */
     toggleHighlight(highlight = true) {
-        const hits = document.querySelectorAll(this.props.root.selector);
+        const hits = document.querySelectorAll(this.props.root.fullSelector);
 
         if (highlight) {
             hits.forEach((node: Element) => {
@@ -68,10 +53,9 @@ export default class CssEditor extends React.Component<CssEditorProps> {
         const cssProperties = this.props.root.properties;
         const selector = this.props.root.fullSelector;
 
-
         return (
             <div className="css-ruleset">
-                <strong>{selector} {"{"}</strong>
+                {selector} {"{"}
                 <MappedTextFields value={cssProperties}
                 container={this.mapContainer}
                 updateValue={this.props.updateData.bind(this, this.path)}

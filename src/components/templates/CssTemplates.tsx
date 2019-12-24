@@ -133,12 +133,16 @@ function getHeaderCss() {
 }
 
 /** Return the default CSS template */
-export default function getDefaultCss() : CssNode {
+export default function getDefaultCss(): CssNode {
     let defaultCss = new CssNode('Resume CSS', {
         'font-family': 'Merriweather, serif',
         'font-size': '10pt',
         'padding': '0.5in',
     }, '#resume');
+
+    defaultCss.root = new CssNode(':root', {
+        '--serif': 'Merriweather, serif'
+    }, ':root');
 
     defaultCss.add(new CssNode('Links', {
         'color': '#000000'

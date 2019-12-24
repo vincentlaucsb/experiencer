@@ -16,6 +16,7 @@ export default class CssNode {
     private _selector: string;
     private _properties: Map<string, string>;
     private parent?: CssNode;
+    public root?: CssNode;
 
     constructor(name: string, properties: object, selector?: string) {
         this._name = name;
@@ -39,8 +40,8 @@ export default class CssNode {
 
     /** Compute the full CSS selector for this subtree */
     get fullSelector() {
-        let selector = this._selector;
         let parent = this.parent;
+        let selector = this._selector;
         while (!isNullOrUndefined(parent)) {
             selector = `${parent.selector} ${selector}`;
 
@@ -132,6 +133,11 @@ export default class CssNode {
         let finalStylesheet = thisCss;
         if (childStylesheets.length > 0) {
             finalStylesheet += "\n\n";
+
+            if (this.root) {
+                finalStylesheet += this.root.stylesheet();
+            }
+
             finalStylesheet += childStylesheets.join('\n\n');
         }
 

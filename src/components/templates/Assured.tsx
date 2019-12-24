@@ -78,6 +78,7 @@ export function assuredCss() {
         ["text-align", "right"]
     ]);
 
+    console.log(defaultCss);
     return defaultCss;
 }
 

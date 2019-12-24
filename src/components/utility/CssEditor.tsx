@@ -59,10 +59,8 @@ export default class CssEditor extends React.Component<CssEditorProps> {
         const selector = this.props.root.fullSelector;
         let root = <></>
 
-        console.log(this.props.root);
         let cssRoot = this.props.root.root as CssNode;
         if (cssRoot) {
-            console.log(cssRoot);
             root = (
                 <div className="css-ruleset">
                     {":root{"}

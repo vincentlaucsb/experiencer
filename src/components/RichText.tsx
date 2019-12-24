@@ -49,7 +49,7 @@ export default class RichText extends ResumeNodeBase {
                     className={this.className}
                     htmlId={this.props.htmlId}
                     selectTriggerProps={this.selectTriggerProps}
-                    onChange={() => this.props.updateData.bind(this, this.props.id, "value")}
+                    onChange={(value) => this.props.updateData(this.props.id, "value", value)}
                 />
             );
         }

@@ -7,7 +7,7 @@ import './scss/index.scss';
 
 import ResumeComponent, { EditorMode, ComponentTypes } from './components/ResumeComponent';
 import { assignIds, deepCopy, arraysEqual } from './components/Helpers';
-import { Action, ResumeNodeProps } from './components/ResumeNodeBase';
+import { Action, ResumeNodeProps, ResumePassProps } from './components/ResumeNodeBase';
 import ResumeTemplateProvider from './components/templates/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
 import Landing from './components/help/Landing';
@@ -480,6 +480,41 @@ ${this.state.additionalCss}`;
     //#endregion
 
     renderCssEditor() {
+        /**
+         * TEMPORARY
+         * TODO: Move elsewhere
+         */
+        const treeMapper = (root: ResumeNode, id: IdType) => {
+            if (root.children) {
+                return <ul>
+                    {root.children.map((node, idx) => {
+                        const newId = [...id, idx];
+                        return <li onClick={(event) => {
+                            this.setState({
+                                selectedNode: newId
+                            });
+                            event.stopPropagation();
+                        }}>{node.type} {treeMapper(node, newId)}</li>
+                    })}
+                </ul>
+            }
+
+            return <></>
+        };
+
+        let treeView = <div>
+            <ul>
+                {this.state.children.map((value, idx) => {
+                    const id = [idx];
+                    return <li onClick={() => this.setState({
+                        selectedNode: id
+                    })}>{value.type} {treeMapper(value, id)}</li>;
+            })}
+            </ul>
+        </div>
+        // END OF TEMPORARY
+
+
         const adder = (path, name, selector) => {
             (this.css.findNode(path) as CssNode).add(new CssNode(name, {}, selector));
             this.setState({ css: this.css });
@@ -531,12 +566,15 @@ ${this.state.additionalCss}`;
             return <></>
         }
                 
-        return <CssEditor isPrinting={this.isPrinting}
+        return <>
+            {treeView}
+            <CssEditor isPrinting={this.isPrinting}
             root={this.state.css}
             addProperty={adder}
             updateData={updater}
             deleteData={deleter}
-        />
+            />
+        </>
     }
 
     render() {

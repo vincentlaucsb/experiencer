@@ -33,6 +33,7 @@ import Section, { BasicSectionProps } from './components/Section';
 import Grid from './components/Grid';
 import Entry, { BasicEntryProps } from './components/Entry';
 import RichText from './components/RichText';
+import NodeTreeVisualizer from './components/utility/NodeTreeVisualizer';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering = new HoverTracker();
@@ -482,68 +483,6 @@ ${this.state.additionalCss}`;
     //#endregion
 
     renderCssEditor() {
-        /**
-         * TEMPORARY
-         * TODO: Move elsewhere
-         */
-        const represent = (node: ResumeNode) => {
-            switch (node.type) {
-                case Entry.type:
-                    const entryNode = node as BasicEntryProps;
-                    if (entryNode.title) {
-                        return <span className="tree-item-entry">
-                            {entryNode.title[0]}
-                        </span>
-                    }
-
-                    return node.type;
-                case RichText.type:
-                    if (node.value) {
-                        return <span className="tree-item-rich-text">
-                            {node.value.slice(0, 20)}
-                        </span>
-                    }
-
-                    return node.type;
-                case Section.type:
-                    const sectionNode = node as BasicSectionProps;
-                    return <span className="tree-item-section">{sectionNode.title}</span>
-                default:
-                    return <span className={`tree-item-${node.type}`}>{node.type}</span>;
-            }
-        };
-
-        const treeMapper = (root: ResumeNode, id: IdType) => {
-            if (root.children) {
-                return <ul className="node-tree">
-                    {root.children.map((node, idx) => {
-                        const newId = [...id, idx];
-                        return <li onClick={(event) => {
-                            this.setState({
-                                selectedNode: newId
-                            });
-                            event.stopPropagation();
-                        }}>{represent(node)} {treeMapper(node, newId)}</li>
-                    })}
-                </ul>
-            }
-
-            return <></>
-        };
-
-        let treeView = <div>
-            <ul className="node-tree">
-                {this.state.children.map((value, idx) => {
-                    const id = [idx];
-                    return <li onClick={() => this.setState({
-                        selectedNode: id
-                    })}>{represent(value)} {treeMapper(value, id)}</li>;
-            })}
-            </ul>
-        </div>
-        // END OF TEMPORARY
-
-
         const adder = (path, name, selector) => {
             (this.css.findNode(path) as CssNode).add(new CssNode(name, {}, selector));
             this.setState({ css: this.css });
@@ -596,7 +535,7 @@ ${this.state.additionalCss}`;
         }
                 
         return <>
-            {treeView}
+            <NodeTreeVisualizer childNodes={this.state.children} />
             <CssEditor isPrinting={this.isPrinting}
             root={this.state.css}
             addProperty={adder}

@@ -149,11 +149,7 @@ export default class ResumeNodeBase<P
     updateData(key: string, data: string | boolean | object | Array<any>) {
         this.props.updateData(this.props.id, key, data);
     }
-
-    get additionalProps(): object {
-        return {};
-    }
-
+    
     renderChildren() {
         const children = this.props.children as Array<ResumeNode>;
         if (children) {
@@ -161,7 +157,6 @@ export default class ResumeNodeBase<P
                 const uniqueId = elem.uuid;
                 const props = {
                     ...elem,
-                    ...this.additionalProps,
                     mode: this.props.mode,
                     isHovering: this.props.isHovering,
                     isSelected: this.props.isSelected,

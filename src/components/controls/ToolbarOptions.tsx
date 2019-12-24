@@ -166,17 +166,7 @@ export default function toolbarOptions(
 
         case Row.type:
             const rowNode = node as BasicRowProps;
-            let columnDistribution = {
-                text: 'Distribute Columns Evenly',
-                action: () => updateNode('evenColumns', !rowNode.evenColumns || false)
-            };
-            
-            if (rowNode.evenColumns) {
-                columnDistribution.text = 'Distribute Columns Automatically';
-            }
-
             return [
-                columnDistribution,
                 {
                     text: 'Reverse Contents',
                     action: () => updateNode('reverseDirection', !rowNode.reverseDirection || false)

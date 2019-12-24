@@ -77,14 +77,17 @@ export function randyMarshCss() {
         );
     }
 
-    sectionCss.add(new CssNode('Grid', {
+    const sectionGrid = sectionCss.add(new CssNode('Grid', {
         'grid-template-columns': 'var(--year-column-width) 1fr'
-    }, 'div.grid-container'))
+    }, 'div.grid-container'));
+
+    sectionGrid.add(new CssNode('Entry', {
+        'border-left': '1px solid var(--text-color)',
+        'padding-left': 'var(--large-spacing)',
+    }, 'div.entry'));
 
     let entryCss = randyCss.findNode(["Entry"]) as CssNode;
     entryCss.properties = new Map<string, string>([
-        ['border-left', '1px solid var(--text-color)'],
-        ['padding-left', 'var(--large-spacing)'],
         ['padding-bottom', 'var(--large-spacing)']
     ]);
 
@@ -279,45 +282,29 @@ export function randyMarsh(): BasicResumeNode {
                 "title": "Awards and Recognition",
                 "children": [
                     {
-                        "type": Row.type,
-                        "evenColumns": true,
+                        "type": Entry.type,
+                        "title": ["Nobel Prize"],
+                        "subtitle": ["Break Wind Theory"],
                         "children": [
                             {
-                                "type": Column.type,
-                                "children": [
-                                    {
-                                        "type": Entry.type,
-                                        "title": ["Nobel Prize"],
-                                        "subtitle": ["Break Wind Theory"],
-                                        "children": [
-                                            {
-                                                "type": RichText.type,
-                                                "value": "<p>Awarded the Nobel Prize for my work on the Break Wind theory of spontaneous combustion</p>"
-                                            }
-                                        ]
-                                    } as BasicEntryProps
-                                ]
-                            },
-                            {
-                                "type": Column.type,
-                                "children": [
-                                    {
-                                        "type": Entry.type,
-                                        "title": ["Emmy Award"],
-                                        "subtitle": ["Outstanding Animated Program"],
-                                        "children": [
-                                            {
-                                                "type": RichText.type,
-                                                "value": "<p>Gifted an Emmy Award after passing a stool weighing well over 100 courics</p>"
-                                            }
-                                        ]
-                                    }
-                                ]
+                                "type": RichText.type,
+                                "value": "<p>Awarded the Nobel Prize for my work on the Break Wind theory of spontaneous combustion</p>"
                             }
-                        ],
-                        "htmlId": "awards"
-                    } as BasicRowProps
-                ]
+                        ]
+                    } as BasicEntryProps,
+                    {
+                        "type": Entry.type,
+                        "title": ["Emmy Award"],
+                        "subtitle": ["Outstanding Animated Program"],
+                        "children": [
+                            {
+                                "type": RichText.type,
+                                "value": "<p>Gifted an Emmy Award after passing a stool weighing well over 100 courics</p>"
+                            }
+                        ]
+                    }
+                ],
+                "htmlId": "awards"
             } as BasicSectionProps
         ]
     };

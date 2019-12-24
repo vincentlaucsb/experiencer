@@ -4,7 +4,6 @@ import { ResumeNode, BasicResumeNode } from "./utility/NodeTree";
 import Column from "./Column";
 
 interface RowBase {
-    evenColumns?: boolean;
     justifyContent?: string;
     reverseDirection?: boolean;
 }
@@ -62,16 +61,6 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
         }
 
         return properties;
-    }
-
-    get additionalProps() {
-        if (this.props.evenColumns) {
-            return {
-                evenColumns: this.props.evenColumns
-            }
-        }
-
-        return {};
     }
     
     justifyContent(text: string) {

@@ -130,6 +130,10 @@ export function randyMarshCss() {
         ["background", "var(--secondary-color)"]
     ]);
 
+    sidebarCss.add(new CssNode('Heading', {
+        'color': 'var(--text-color)'
+    }, 'h2'));
+
     let tegridyCss = randyCss.add(
         (randyCss.findNode(["Rich Text"]) as CssNode).copySkeleton('#tegridy', '#tegridy'));
     tegridyCss.properties = new Map<string, string>([

@@ -149,7 +149,16 @@ export default function getDefaultCss(): CssNode {
         '--large-spacing': '16px'
     }, ':root');
 
-    defaultCss.add(new CssNode('Links', {
+    defaultCss.add(new CssNode('All Resume Descendents', {
+        'margin': '0'
+    }, '*'));
+
+    defaultCss.add(new CssNode('Image', {
+        'max-width': '100%',
+        'max-height': '100%'
+    }, 'img'));
+
+    defaultCss.add(new CssNode('Link', {
         'color': '#000000'
     }, 'a, a:hover'));
 

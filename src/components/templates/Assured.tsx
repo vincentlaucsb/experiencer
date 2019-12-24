@@ -18,12 +18,25 @@ export function assuredCss() {
         ["font-size", "11pt"]
     ]);
 
-    defaultCss.setProperties(["Header"], [
-        ["background", "#eeeeee"],
-        ["margin-bottom", "var(--large-spacing)"],
-        ["padding", "var(--edge-margin)"],
-        ["padding-bottom", "var(--large-spacing)"],
-    ]);
+    const header = defaultCss.findNode(["Header"]);
+    if (header) {
+        header.properties = new Map<string, string>([
+            ["background", "#eeeeee"],
+            ["margin-bottom", "var(--large-spacing)"],
+            ["padding", "var(--edge-margin)"],
+            ["padding-bottom", "var(--large-spacing)"],
+        ]);
+
+        header.add(new CssNode('Rich Text', {
+            'text-align': 'right',
+            'font-size': '10pt'
+        }, '.rich-text'));
+
+        header.add(new CssNode('Icon', {
+            'height': '24px',
+            'vertical-align': 'middle'
+        }, 'svg.icon, img.icon'));
+    }
 
     let contactLeft = new CssNode(
         "#contact-left",
@@ -87,7 +100,6 @@ export function assuredCss() {
         ["text-align", "right"]
     ]);
 
-    console.log(defaultCss);
     return defaultCss;
 }
 

@@ -56,15 +56,8 @@ export default class ResumeNodeBase<P
         let classes = new Array<string>();
 
         if (!this.isPrinting) {
-            if (this.isHovering) {
+            if (this.isHovering && !this.isSelectBlocked) {
                 classes.push('resume-hovering');
-
-                if (this.isSelectBlocked) {
-                    classes.push('resume-hovering-over-children');
-                }
-                else {
-                    classes.push('resume-hovering-over-self');
-                }
             }
 
             if (this.isSelected) {

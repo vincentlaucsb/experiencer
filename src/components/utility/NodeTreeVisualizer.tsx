@@ -7,6 +7,7 @@ import { IdType } from "./HoverTracker";
 
 export interface NodeTreeVisualizerProps {
     childNodes: Array<ResumeNode>;
+    selectNode: (id: IdType) => void;
 }
 
 export default class NodeTreeVisualizer extends React.PureComponent<NodeTreeVisualizerProps> {
@@ -51,9 +52,7 @@ export default class NodeTreeVisualizer extends React.PureComponent<NodeTreeVisu
                 {root.children.map((node, idx) => {
                     const newId = [...id, idx];
                     return <li key={idx} onClick={(event) => {
-                        this.setState({
-                            selectedNode: newId
-                        });
+                        this.props.selectNode(newId);
                         event.stopPropagation();
                     }}>{this.represent(node)} {this.treeMapper(node, newId)}</li>
                 })}
@@ -69,9 +68,10 @@ export default class NodeTreeVisualizer extends React.PureComponent<NodeTreeVisu
                 <ul className="node-tree">
                     {this.props.childNodes.map((value, idx) => {
                         const id = [idx];
-                        return <li key={idx} onClick={() => this.setState({
-                            selectedNode: id
-                        })}>{this.represent(value)} {this.treeMapper(value, id)}</li>;
+                        return <li key={idx} onClick={(event) => {
+                            this.props.selectNode(id);
+                            event.stopPropagation();
+                        }}>{this.represent(value)} {this.treeMapper(value, id)}</li>;
                     })}
                 </ul>
             </div>

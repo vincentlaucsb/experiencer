@@ -13,9 +13,11 @@ img.icon.resume-hovering, img.icon.resume-selected {
     border: 1px dashed $main;
 }
 
-.resume-selected, .resume-hovering.resume-selected {
-    border: 2px solid $main;
-    cursor: auto;
+#resume {
+    div.resume-selected, .resume-selected {
+        border: 2px solid $main;
+        cursor: auto;
+    }
 }
 
 .resume-hidden {
@@ -29,68 +31,6 @@ img.icon.resume-hovering, img.icon.resume-selected {
 
 .resume-editing {
     background: unset;
-}
-
-$grab-handle-size: 35px;
-
-.row-grab-handle-container, .column-grab-handle-container {
-    position: relative;
-    flex-basis: 0;
-    flex-grow: 0;
-    flex-shrink: 0;
-}
-
-.row-grab-handle, .column-grab-handle {
-    position: absolute;
-    font-family: $font-family-base;
-    color: $light-shade;
-    cursor: pointer;
-    z-index: 1;
-}
-
-.row-grab-handle-container {
-    .row-grab-handle {
-        display: grid;
-        grid-template-rows: $grab-handle-size $grab-handle-size;
-        width: 100%;
-        top: -$grab-handle-size * 2;
-        height: $grab-handle-size * 2;
-        background: $main;
-        text-align: center;
-
-        p {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-    }
-}
-
-.column-grab-handle-container {
-    .column-grab-handle {
-        display: flex;
-        width: 100%;
-        top: -$grab-handle-size;
-        height: $grab-handle-size;
-        background: $dark-accent;
-        text-align: center;
-        flex-direction: column;
-        justify-content: center;
-    }
-}
-
-/** Disable background if are hovering over a node's children */
-.resume-hovering-over-children {
-    background: none;
-    border: none;
-}
-
-.resume-row.resume-hovering-over-children {
-    border: 1px solid $dark-accent;
-}
-
-.resume-column.resume-hovering-over-children {
-    border: 1px solid $dark-accent;
 }
 
 #resume {

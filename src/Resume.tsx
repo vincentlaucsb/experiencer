@@ -34,6 +34,7 @@ import Grid from './components/Grid';
 import Entry, { BasicEntryProps } from './components/Entry';
 import RichText from './components/RichText';
 import NodeTreeVisualizer from './components/utility/NodeTreeVisualizer';
+import Tabs from './components/controls/Tabs';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering = new HoverTracker();
@@ -72,8 +73,10 @@ class Resume extends React.Component<{}, ResumeState> {
         this.updateNestedChild = this.updateNestedChild.bind(this);
 
         /** Templates and Styling **/
+        this.renderSidebar = this.renderSidebar.bind(this);
         this.changeTemplate = this.changeTemplate.bind(this);
         this.renderStyle = this.renderStyle.bind(this);
+        this.renderCssEditor = this.renderCssEditor.bind(this);
 
         /** Load & Save */
         this.loadData = this.loadData.bind(this);
@@ -482,6 +485,17 @@ ${this.state.additionalCss}`;
     }
     //#endregion
 
+    renderSidebar() {
+        let CssEditor = this.renderCssEditor;
+
+        return <Tabs>
+            <NodeTreeVisualizer key="Tree" childNodes={this.state.children}
+                selectNode={(id) => this.setState({ selectedNode: id })}
+            />
+            <CssEditor key="CSS" />
+        </Tabs>
+    }
+
     renderCssEditor() {
         const adder = (path, name, selector) => {
             (this.css.findNode(path) as CssNode).add(new CssNode(name, {}, selector));
@@ -534,15 +548,12 @@ ${this.state.additionalCss}`;
             return <></>
         }
                 
-        return <>
-            <NodeTreeVisualizer childNodes={this.state.children} />
-            <CssEditor isPrinting={this.isPrinting}
+        return <CssEditor isPrinting={this.isPrinting}
             root={this.state.css}
             addProperty={adder}
             updateData={updater}
             deleteData={deleter}
             />
-        </>
     }
 
     render() {
@@ -642,7 +653,7 @@ ${this.state.additionalCss}`;
                     topNav={editingTop}
                     main={resume}
                     isPrinting={this.isPrinting}
-                    sideBar={this.renderCssEditor()}
+                    sideBar={this.renderSidebar()}
             />
         }
     }

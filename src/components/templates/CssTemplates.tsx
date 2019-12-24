@@ -33,7 +33,7 @@ function getRichTextCss(): CssNode {
     }, '.rich-text');
 
     let listCss = richTextCss.add(new CssNode('Lists', {
-        'padding-left': '1.5em' /** Reduced padding */
+        'padding-left': 'var(--large-spacing)'
     }, 'ul'));
 
     listCss.add(new CssNode('List Item', {
@@ -45,11 +45,11 @@ function getRichTextCss(): CssNode {
 
 function getSectionCss(): CssNode {
     let sectionCss = new CssNode(Section.type, {
-        'margin-bottom': '16px'
+        'margin-bottom': 'var(--large-spacing)'
     }, 'section');
 
     sectionCss.add(new CssNode('Title', {
-        'font-family': 'Verdana, sans-serif',
+        'font-family': 'var(--sans-serif)',
         'font-weight': 'bold',
         'font-size': '15pt',
         'text-transform': 'uppercase'
@@ -71,17 +71,17 @@ function getSectionCss(): CssNode {
 function getEntryCss(): CssNode {
     let entryCss = new CssNode(Entry.type,
         {
-            'margin-bottom': '15px'
+            'margin-bottom': 'var(--large-spacing)'
         }, 'div.entry');
 
     let entryTitleCss = entryCss.add(new CssNode('Title Block',
         {
-            'margin-bottom': '4px'
+            'margin-bottom': 'var(--small-spacing)'
         }, '> hgroup'));
 
     let entryTitleHeadingCss = entryTitleCss.add(
         new CssNode('Title', {
-            'font-family': 'Merriweather, serif',
+            'font-family': 'var(--serif)',
             'font-size': '13pt',
         }, '> h3'));
 
@@ -114,14 +114,14 @@ function getEntryCss(): CssNode {
 
 function getHeaderCss() {
     const headerCss = new CssNode('Header', {
-        'margin-bottom': '16px'
+        'margin-bottom': 'var(--large-spacing)'
     }, 'header');
 
     const titleGroup = headerCss.add(new CssNode(
         'Title Group', {}, '> hgroup'));
 
     titleGroup.add(new CssNode('Title', {
-        'font-family': 'Merriweather, serif',
+        'font-family': 'var(--serif)',
         'font-weight': 'normal'
     }, '> h1'));
 
@@ -137,12 +137,16 @@ export default function getDefaultCss(): CssNode {
     let defaultCss = new CssNode('Resume CSS', {
         'font-family': 'Merriweather, serif',
         'font-size': '10pt',
-        'padding': '0.5in',
+        'padding': 'var(--edge-margin)',
     }, '#resume');
 
     defaultCss.root = new CssNode(':root', {
         '--serif': 'Merriweather, serif',
-        '--sans-serif': 'Open Sans, sans-serif'
+        '--sans-serif': 'Open Sans, sans-serif',
+        '--edge-margin': '0.5in',
+        '--small-spacing': '4px',
+        '--spacing': '8px',
+        '--large-spacing': '16px'
     }, ':root');
 
     defaultCss.add(new CssNode('Links', {

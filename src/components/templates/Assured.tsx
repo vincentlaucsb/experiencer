@@ -12,10 +12,6 @@ export function assuredCss() {
     let rootCss = defaultCss.root as CssNode;
     if (rootCss) {
         rootCss.properties.set('--accent', '#315eaa');
-        rootCss.properties.set('--edge-margin', '0.5in');
-        rootCss.properties.set('--small-spacing', '4px');
-        rootCss.properties.set('--spacing', '8px');
-        rootCss.properties.set('--large-spacing', '16px');
     }
 
     defaultCss.properties = new Map<string, string>([
@@ -70,7 +66,7 @@ export function assuredCss() {
             'padding-left': 'var(--edge-margin)',
             'padding-right': 'var(--edge-margin)',
             'grid-template-columns': '1fr 180px',
-            'grid-column-gap': 'var(--spacing)'
+            'grid-column-gap': 'var(--large-spacing)'
         },
         '#main'
     ));

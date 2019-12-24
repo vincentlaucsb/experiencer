@@ -9,8 +9,7 @@ export interface CssEditorProps {
     isPrinting?: boolean;
     root: CssNode;
 
-    // TODO: Rename to add selector
-    addProperty: (path: string[], name: string, selector: string) => void;
+    addSelector: (path: string[], name: string, selector: string) => void;
     updateData: (path: string[], key: string, value: string) => void;
     deleteData: (path: string[], key: string) => void;
 }
@@ -98,7 +97,7 @@ export default class CssEditor extends React.Component<CssEditorProps> {
                 return <CssEditor
                     key={css.fullSelector}
                     root={css}
-                    addProperty={this.props.addProperty}
+                    addSelector={this.props.addSelector}
                     updateData={this.props.updateData}
                     deleteData={this.props.deleteData}
                 />
@@ -112,15 +111,15 @@ export default class CssEditor extends React.Component<CssEditorProps> {
 
         let beforeAfter = <>
             <Button onClick={(event) => {
-                this.props.addProperty(this.props.root.fullPath, '::after', '::after');
+                this.props.addSelector(this.props.root.fullPath, '::after', '::after');
                 event.stopPropagation();
             }}>::after</Button>
             <Button onClick={(event) => {
-                this.props.addProperty(this.props.root.fullPath, '::before', '::before');
+                this.props.addSelector(this.props.root.fullPath, '::before', '::before');
                 event.stopPropagation();
             }}>::before</Button>
             <CssSelectorAdder
-                addSelector={(name, selector) => this.props.addProperty(this.props.root.fullPath, name, selector)}
+                addSelector={(name, selector) => this.props.addSelector(this.props.root.fullPath, name, selector)}
                 selector={this.props.root.fullSelector}
             />
         </>

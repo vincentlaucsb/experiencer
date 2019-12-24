@@ -7,7 +7,8 @@ import React from "react";
 import { Button } from "./Buttons";
 import { Action } from "../ResumeNodeBase";
 
-interface StyleEditorProps extends ResumeState {
+interface StyleEditorProps {
+    additionalCss: string;
     onStyleChange: (css: string) => void;
     renderStyle: Action;
 }

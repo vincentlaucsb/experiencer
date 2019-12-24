@@ -459,18 +459,6 @@ ${this.state.additionalCss}`;
         }
     }
 
-    get styleEditorProps() {
-        const onStyleChange = (css: string) => {
-            this.setState({ additionalCss: css });
-        }
-
-        return {
-            onStyleChange: onStyleChange,
-            renderStyle: this.renderStyle,
-            ...this.state
-        }
-    }
-
     print() {
         requestAnimationFrame(() => {
             this.setState({ mode: 'printing' });
@@ -482,13 +470,20 @@ ${this.state.additionalCss}`;
 
     renderSidebar() {
         let CssEditor = this.renderCssEditor;
+        const styleEditorProps = {
+            additionalCss: this.state.additionalCss,
+            onStyleChange: (css: string) => {
+                this.setState({ additionalCss: css });
+            },
+            renderStyle: this.renderStyle,
+        }
 
         return <Tabs>
             <NodeTreeVisualizer key="Tree" childNodes={this.state.children}
                 selectNode={(id) => this.setState({ selectedNode: id })}
             />
             <CssEditor key="CSS" />
-            <StyleEditor key="Raw CSS" {...this.styleEditorProps} />
+            <StyleEditor key="Raw CSS" {...styleEditorProps} />
         </Tabs>
     }
 
@@ -511,6 +506,13 @@ ${this.state.additionalCss}`;
             this.shouldUpdateCss = true;
         };
 
+        const editorProps = {
+            isPrinting: this.isPrinting,
+            addSelector: adder,
+            updateData: updater,
+            deleteData: deleter
+        }
+
         if (this.selectedNode) {
             const rootNode = this.state.css.findNode(
                 ComponentTypes.cssName(this.selectedNode.type)) as CssNode;
@@ -518,38 +520,21 @@ ${this.state.additionalCss}`;
             let specificCssEditor = <></>
             if (this.selectedNode.htmlId && this.state.css.findNode([`#${this.selectedNode.htmlId}`])) {
                 const specificRoot = this.state.css.findNode([`#${this.selectedNode.htmlId}`]) as CssNode;
-                specificCssEditor = <CssEditor
-                    key={specificRoot.fullSelector}
-                    isPrinting={this.isPrinting}
-                    root={specificRoot}
-                    addProperty={adder}
-                    updateData={updater}
-                    deleteData={deleter}
-                />
+                specificCssEditor = <CssEditor key={specificRoot.fullSelector} root={specificRoot}
+                    {...editorProps} />
             }
 
             if (rootNode) {
                 return <>
                     {specificCssEditor}
-                    <CssEditor isPrinting={this.isPrinting}
-                        key={rootNode.fullSelector}
-                        root={rootNode}
-                        addProperty={adder}
-                        updateData={updater}
-                        deleteData={deleter}
-                    />
+                    <CssEditor {...editorProps} key={rootNode.fullSelector} root={rootNode} />
                 </>
             }
 
             return <></>
         }
                 
-        return <CssEditor isPrinting={this.isPrinting}
-            root={this.state.css}
-            addProperty={adder}
-            updateData={updater}
-            deleteData={deleter}
-            />
+        return <CssEditor root={this.state.css} {...editorProps} />
     }
 
     render() {
@@ -581,7 +566,6 @@ ${this.state.additionalCss}`;
         </div>
 
         let main = resume;
-        let sidebar: JSX.Element;
 
         const topEditingBar = this.state.selectedNode ? <TopEditingBar {...this.editingBarProps as EditingBarProps} /> : <div id="toolbar"
             className="no-print">
@@ -615,12 +599,10 @@ ${this.state.additionalCss}`;
         // Render the final layout based on editor mode
         switch (this.state.mode) {
             case 'help':
-                sidebar = <Help close={() => this.toggleMode()} />
-
                 return <ResizableSidebarLayout
                     topNav={editingTop}
                     main={resume}
-                    sideBar={sidebar}
+                    sideBar={<Help close={() => this.toggleMode()} />}
                 />
             case 'changingTemplate':
                 return <StaticSidebarLayout
@@ -634,11 +616,6 @@ ${this.state.additionalCss}`;
                     topNav={editingTop}
                     main={main} />
             default:
-                /**
-                return <DefaultLayout
-                    topNav={editingTop}
-                    main={main} />
-                    */
                 return <ResizableSidebarLayout
                     topNav={editingTop}
                     main={resume}

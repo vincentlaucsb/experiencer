@@ -18,6 +18,10 @@ export default class NodeTreeVisualizer extends React.PureComponent<NodeTreeVisu
         this.represent = this.represent.bind(this);
     }
 
+    /**
+     * Represent a resume node on the tree
+     * @param node
+     */
     represent(node: ResumeNode) {
         switch (node.type) {
             case Entry.type:
@@ -25,14 +29,6 @@ export default class NodeTreeVisualizer extends React.PureComponent<NodeTreeVisu
                 if (entryNode.title) {
                     return <span className="tree-item-entry">
                         {entryNode.title[0]}
-                    </span>
-                }
-
-                return node.type;
-            case RichText.type:
-                if (node.value) {
-                    return <span className="tree-item-rich-text">
-                        {node.value.slice(0, 20)}
                     </span>
                 }
 
@@ -45,12 +41,19 @@ export default class NodeTreeVisualizer extends React.PureComponent<NodeTreeVisu
         }
     };
 
-    treeMapper(root: ResumeNode, id: IdType) {
-        console.log("Mapping");
-        if (root.children) {
+    treeMapper(root: Array<ResumeNode> | ResumeNode, id?: IdType) {
+        let childNodes: Array<ResumeNode> | undefined = undefined;
+        if (Array.isArray(root)) {
+            childNodes = root;
+        }
+        else if (root.children) {
+            childNodes = root.children;
+        }
+
+        if (childNodes) {
             return <ul className="node-tree">
-                {root.children.map((node, idx) => {
-                    const newId = [...id, idx];
+                {childNodes.map((node, idx) => {
+                    const newId = id ? [...id, idx] : [idx];
                     return <li key={idx} onClick={(event) => {
                         this.props.selectNode(newId);
                         event.stopPropagation();
@@ -65,15 +68,7 @@ export default class NodeTreeVisualizer extends React.PureComponent<NodeTreeVisu
     render() {
         return (
             <div>
-                <ul className="node-tree">
-                    {this.props.childNodes.map((value, idx) => {
-                        const id = [idx];
-                        return <li key={idx} onClick={(event) => {
-                            this.props.selectNode(id);
-                            event.stopPropagation();
-                        }}>{this.represent(value)} {this.treeMapper(value, id)}</li>;
-                    })}
-                </ul>
+                {this.treeMapper(this.props.childNodes)}
             </div>
         );
     }

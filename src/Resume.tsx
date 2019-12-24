@@ -507,7 +507,6 @@ ${this.state.additionalCss}`;
         };
 
         const editorProps = {
-            isPrinting: this.isPrinting,
             addSelector: adder,
             updateData: updater,
             deleteData: deleter
@@ -615,6 +614,8 @@ ${this.state.additionalCss}`;
                 return <DefaultLayout
                     topNav={editingTop}
                     main={main} />
+            case 'printing':
+                return main;
             default:
                 return <ResizableSidebarLayout
                     topNav={editingTop}

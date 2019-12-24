@@ -7,9 +7,7 @@ import CssSelectorAdder from "./CssSelectorAdder";
 
 export interface CssEditorProps {
     autoCollapse?: boolean;
-    isPrinting?: boolean;
     root: CssNode;
-
     addSelector: (path: string[], name: string, selector: string) => void;
     updateData: (path: string[], key: string, value: string) => void;
     deleteData: (path: string[], key: string) => void;
@@ -94,22 +92,18 @@ export default class CssEditor extends React.Component<CssEditorProps> {
 
     renderChildren() {
         return this.props.root.children.map((css) => {
-                return <CssEditor
-                    key={css.fullSelector}
-                    root={css}
-                    autoCollapse={this.props.autoCollapse}
-                    addSelector={this.props.addSelector}
-                    updateData={this.props.updateData}
-                    deleteData={this.props.deleteData}
-                />
-            });
+            return <CssEditor
+                key={css.fullSelector}
+                root={css}
+                autoCollapse={this.props.autoCollapse}
+                addSelector={this.props.addSelector}
+                updateData={this.props.updateData}
+                deleteData={this.props.deleteData}
+            />
+        });
     }
 
     render() {
-        if (this.props.isPrinting) {
-            return <></>
-        }
-
         let beforeAfter = <>
             <Button onClick={(event) => {
                 this.props.addSelector(this.props.root.fullPath, '::after', '::after');

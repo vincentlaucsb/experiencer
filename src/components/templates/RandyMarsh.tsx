@@ -1,9 +1,8 @@
 ﻿import { BasicResumeNode } from "../utility/NodeTree";
-import Row, { BasicRowProps } from "../Row";
 import Column from "../Column";
 import Header, { BasicHeaderProps } from "../Header";
 import CssNode from "../utility/CssTree";
-import Section, { BasicSectionProps } from "../Section";
+import Section from "../Section";
 import Entry, { BasicEntryProps } from "../Entry";
 import RichText from "../RichText";
 import getDefaultCss from "./CssTemplates";
@@ -199,17 +198,17 @@ export function randyMarsh(): BasicResumeNode {
             },
             {
                 "type": Section.type,
-                "title": "Contact",
+                "value": "Contact",
                 "children": [
                     {
                         "type": RichText.type,
                         "value": "<p>South Park, CO</p><p>@GettinRandy55</p>"
                     }
                 ]
-            } as BasicSectionProps,
+            } as BasicResumeNode,
             {
                 "type": Section.type,
-                "title": "Skills",
+                "value": "Skills",
                 "children": [
                     makeList([
                         'Advertising',
@@ -223,14 +222,14 @@ export function randyMarsh(): BasicResumeNode {
             },
             {
                 "type": Section.type,
-                "title": "References",
+                "value": "References",
                 "children": [
                     {
                         "type": RichText.type,
                         "value": "<p><strong>Towelie</strong></p><p>Agricultural Inspector</p><p><br></p>"
                     }
                 ]
-            } as BasicSectionProps,
+            } as BasicResumeNode,
             {
                 "type": RichText.type,
                 "value": "<p>Typeset entirely with HTML, CSS, and good old-fashioned<strong> TEGRIDY</strong></p>",
@@ -253,13 +252,13 @@ export function randyMarsh(): BasicResumeNode {
             } as BasicHeaderProps,
             {
                 "type": Section.type,
-                "title": "Experience",
+                "value": "Experience",
                 "htmlId": "experience",
                 "children": experience,
-            } as BasicSectionProps,
+            } as BasicResumeNode,
             {
                 "type": Section.type,
-                "title": "Education",
+                "value": "Education",
                 "children": [
                     {
                         type: Grid.type,
@@ -276,10 +275,10 @@ export function randyMarsh(): BasicResumeNode {
                         ]
                     }
                 ]
-            } as BasicSectionProps,
+            } as BasicResumeNode,
             {
                 "type": Section.type,
-                "title": "Awards and Recognition",
+                "value": "Awards and Recognition",
                 "children": [
                     {
                         "type": Entry.type,
@@ -305,7 +304,7 @@ export function randyMarsh(): BasicResumeNode {
                     }
                 ],
                 "htmlId": "awards"
-            } as BasicSectionProps
+            } as BasicResumeNode
         ]
     };
 

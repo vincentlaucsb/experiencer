@@ -1,7 +1,7 @@
 ﻿import { ResumeNode } from "./NodeTree";
 import Entry, { BasicEntryProps } from "../Entry";
 import React from "react";
-import Section, { BasicSectionProps } from "../Section";
+import Section from "../Section";
 import { IdType } from "./HoverTracker";
 import { arraysEqual } from "../Helpers";
 
@@ -35,8 +35,7 @@ export default class NodeTreeVisualizer extends React.PureComponent<NodeTreeVisu
 
                 return node.type;
             case Section.type:
-                const sectionNode = node as BasicSectionProps;
-                return <span className="tree-item-section">{sectionNode.title}</span>
+                return <span className="tree-item-section">{node.value}</span>
             default:
                 return <span className={`tree-item-${node.type}`}>{node.type}</span>;
         }

@@ -1,7 +1,6 @@
 ﻿import { BasicResumeNode } from "../utility/NodeTree";
 import { BasicHeaderProps } from "../Header";
 import { BasicEntryProps } from "../Entry";
-import { BasicSectionProps } from "../Section";
 import { makeList } from "./TemplateHelper";
 import { BasicIconProps } from "../Icon";
 import getDefaultCss from "./CssTemplates";
@@ -169,7 +168,7 @@ export function assuredNodes(): Array<BasicResumeNode> {
 
     let experience = {
         "type": "Section",
-        "title": "Experience",
+        "value": "Experience",
         "children": [
             {
                 "type": "Entry",
@@ -182,7 +181,7 @@ export function assuredNodes(): Array<BasicResumeNode> {
                 ]
             } as BasicEntryProps
         ]
-    } as BasicSectionProps;
+    } as BasicResumeNode;
 
     let projects = {
         "type": "Section",
@@ -197,12 +196,12 @@ export function assuredNodes(): Array<BasicResumeNode> {
                 ]
             }
         ],
-        "title": "Projects"
+        "value": "Projects"
     };
 
     let education = {
         "type": "Section",
-        "title": "Education",
+        "value": "Education",
         "children": [
             {
                 "type": "Entry",
@@ -233,7 +232,7 @@ export function assuredNodes(): Array<BasicResumeNode> {
                         education,
                         {
                             "type": "Section",
-                            "title": "Languages",
+                            "value": "Languages",
                             "children": [makeList([
                                 "COBOL",
                                 "Pascal"

@@ -55,8 +55,7 @@ class Resume extends React.Component<{}, ResumeState> {
             css: this.css,
             children: [],
             additionalCss: "",
-            mode: "landing",
-            sectionTitlePosition: "top"
+            mode: "landing"
         };
         this.renderStyle();
 
@@ -251,10 +250,7 @@ ${this.state.additionalCss}`;
     }
 
     addSection() {
-        this.addChild({
-            type: Section.type,
-            headerPosition: this.state.sectionTitlePosition
-        });
+        this.addChild({ type: Section.type });
     }
 
     addColumn() {

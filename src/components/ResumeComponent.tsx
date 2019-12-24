@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
 
-import Section, { SectionProps } from "./Section";
+import Section from "./Section";
 import Entry, { BasicEntryProps } from "./Entry";
 import DescriptionList, { DescriptionListItem } from "./List";
 import RichText from "./RichText";
@@ -54,7 +54,7 @@ export default function ResumeComponent(props: ResumeComponentProps) {
         case Header.type:
             return <Header {...newProps} />
         case Section.type:
-            return <Section {...newProps as SectionProps} />;
+            return <Section {...newProps} />;
         case Entry.type:
             return <Entry {...newProps} />;
         case RichText.type:

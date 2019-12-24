@@ -1,7 +1,7 @@
 ﻿import Entry, { EntryProps, BasicEntryProps } from "../Entry";
 import { ResumeNode } from "../utility/NodeTree";
 import Row, { BasicRowProps } from "../Row";
-import Section, { BasicSectionProps } from "../Section";
+import Section from "../Section";
 import { Action } from "../ResumeNodeBase";
 import Header, { BasicHeaderProps } from "../Header";
 import Icon, { BasicIconProps } from "../Icon";
@@ -201,18 +201,6 @@ export default function toolbarOptions(
                     ]
                 }
             ];
-
-        case Section.type:
-            const sectionProps = node as BasicSectionProps;
-            const flipHeader = sectionProps.headerPosition === 'top' ? {
-                text: 'Header on Left',
-                action: () => updateNode('headerPosition', 'left')
-            } : {
-                    text: 'Header on Top',
-                    action: () => updateNode('headerPosition', 'top')
-                };
-
-            return [flipHeader];
 
         default:
             return [];

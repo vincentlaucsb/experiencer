@@ -2,12 +2,13 @@
 import Entry, { BasicEntryProps } from "../Entry";
 import React from "react";
 import Section, { BasicSectionProps } from "../Section";
-import RichText from "../RichText";
 import { IdType } from "./HoverTracker";
+import { arraysEqual } from "../Helpers";
 
 export interface NodeTreeVisualizerProps {
     childNodes: Array<ResumeNode>;
     selectNode: (id: IdType) => void;
+    selectedNode?: IdType;
 }
 
 export default class NodeTreeVisualizer extends React.PureComponent<NodeTreeVisualizerProps> {
@@ -53,8 +54,13 @@ export default class NodeTreeVisualizer extends React.PureComponent<NodeTreeVisu
         if (childNodes) {
             return <ul className="node-tree">
                 {childNodes.map((node, idx) => {
+                    let className = "";
                     const newId = id ? [...id, idx] : [idx];
-                    return <li key={idx} onClick={(event) => {
+                    if (this.props.selectedNode && arraysEqual(this.props.selectedNode, newId)) {
+                        className = "tree-item-selected";
+                    }
+
+                    return <li className={className} key={idx} onClick={(event) => {
                         this.props.selectNode(newId);
                         event.stopPropagation();
                     }}>{this.represent(node)} {this.treeMapper(node, newId)}</li>

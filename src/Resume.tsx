@@ -481,6 +481,7 @@ ${this.state.additionalCss}`;
         return <Tabs>
             <NodeTreeVisualizer key="Tree" childNodes={this.state.children}
                 selectNode={(id) => this.setState({ selectedNode: id })}
+                selectedNode={this.state.selectedNode}
             />
             <CssEditor key="CSS" />
             <StyleEditor key="Raw CSS" {...styleEditorProps} />

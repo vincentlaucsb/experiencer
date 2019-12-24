@@ -11,6 +11,10 @@
         cursor: pointer;
         padding: $spacing/8 0;
     }
+
+    li.tree-item-selected > span {
+        background: $light-accent;
+    }
 }
 
 %icon {

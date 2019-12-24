@@ -534,7 +534,7 @@ ${this.state.additionalCss}`;
             return <></>
         }
                 
-        return <CssEditor root={this.state.css} {...editorProps} />
+        return <CssEditor root={this.state.css} autoCollapse={true} {...editorProps} />
     }
 
     render() {

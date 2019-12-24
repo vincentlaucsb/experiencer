@@ -6,6 +6,7 @@ import { Button } from "../controls/Buttons";
 import CssSelectorAdder from "./CssSelectorAdder";
 
 export interface CssEditorProps {
+    autoCollapse?: boolean;
     isPrinting?: boolean;
     root: CssNode;
 
@@ -92,11 +93,11 @@ export default class CssEditor extends React.Component<CssEditorProps> {
     }
 
     renderChildren() {
-        return this.props.root.children.map(
-            (css, index) => {
+        return this.props.root.children.map((css) => {
                 return <CssEditor
                     key={css.fullSelector}
                     root={css}
+                    autoCollapse={this.props.autoCollapse}
                     addSelector={this.props.addSelector}
                     updateData={this.props.updateData}
                     deleteData={this.props.deleteData}
@@ -131,7 +132,7 @@ export default class CssEditor extends React.Component<CssEditorProps> {
             </span>
         </h2>
 
-        const isOpen = (this.path.length !== 1);
+        const isOpen = (this.path.length !== 1) || !this.props.autoCollapse;
 
         return (
             <section className={`css-category no-print css-category-${this.path.length}`}>

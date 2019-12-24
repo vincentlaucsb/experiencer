@@ -1,0 +1,20 @@
+﻿ul.node-tree {
+    padding-left: $spacing;
+
+    ul {
+        margin-left: $spacing;
+        border-left: 1px solid $main;
+    }
+
+    li {
+        list-style-type: none;
+        cursor: pointer;
+        padding: $spacing/8 0;
+    }
+}
+
+%icon {
+    // text-align: center;
+    width: $spacing;
+    display: inline-block;
+}

@@ -29,8 +29,10 @@ import FileSaver from './components/controls/FileSaver';
 import { SelectedNodeActions } from './components/controls/SelectedNodeActions';
 import CssEditor from './components/utility/CssEditor';
 import Row from './components/Row';
-import Section from './components/Section';
+import Section, { BasicSectionProps } from './components/Section';
 import Grid from './components/Grid';
+import Entry, { BasicEntryProps } from './components/Entry';
+import RichText from './components/RichText';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering = new HoverTracker();
@@ -484,9 +486,36 @@ ${this.state.additionalCss}`;
          * TEMPORARY
          * TODO: Move elsewhere
          */
+        const represent = (node: ResumeNode) => {
+            switch (node.type) {
+                case Entry.type:
+                    const entryNode = node as BasicEntryProps;
+                    if (entryNode.title) {
+                        return <span className="tree-item-entry">
+                            {entryNode.title[0]}
+                        </span>
+                    }
+
+                    return node.type;
+                case RichText.type:
+                    if (node.value) {
+                        return <span className="tree-item-rich-text">
+                            {node.value.slice(0, 20)}
+                        </span>
+                    }
+
+                    return node.type;
+                case Section.type:
+                    const sectionNode = node as BasicSectionProps;
+                    return <span className="tree-item-section">{sectionNode.title}</span>
+                default:
+                    return <span className={`tree-item-${node.type}`}>{node.type}</span>;
+            }
+        };
+
         const treeMapper = (root: ResumeNode, id: IdType) => {
             if (root.children) {
-                return <ul>
+                return <ul className="node-tree">
                     {root.children.map((node, idx) => {
                         const newId = [...id, idx];
                         return <li onClick={(event) => {
@@ -494,7 +523,7 @@ ${this.state.additionalCss}`;
                                 selectedNode: newId
                             });
                             event.stopPropagation();
-                        }}>{node.type} {treeMapper(node, newId)}</li>
+                        }}>{represent(node)} {treeMapper(node, newId)}</li>
                     })}
                 </ul>
             }
@@ -503,12 +532,12 @@ ${this.state.additionalCss}`;
         };
 
         let treeView = <div>
-            <ul>
+            <ul className="node-tree">
                 {this.state.children.map((value, idx) => {
                     const id = [idx];
                     return <li onClick={() => this.setState({
                         selectedNode: id
-                    })}>{value.type} {treeMapper(value, id)}</li>;
+                    })}>{represent(value)} {treeMapper(value, id)}</li>;
             })}
             </ul>
         </div>

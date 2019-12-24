@@ -91,16 +91,7 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
         return <></>
     }
     
-    render() {
-        if (this.isHovering && !this.isSelected) {
-            return <div {...this.selectTriggerProps}>
-                {this.renderGrabHandle()}
-                <div className={this.className} id={this.props.htmlId} style={this.style}>
-                    {this.renderChildren()}
-                </div>
-            </div>
-        }
-        
+    render() { 
         return (
             <div className={this.className}
                 id={this.props.htmlId} style={this.style} {...this.selectTriggerProps}>

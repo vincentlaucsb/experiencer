@@ -2,7 +2,6 @@
 import "ace-builds/src-noconflict/mode-css";
 import "ace-builds/src-noconflict/theme-github";
 
-import ResumeState from "./ResumeState";
 import React from "react";
 import { Button } from "./Buttons";
 import { Action } from "../ResumeNodeBase";

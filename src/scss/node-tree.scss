@@ -1,4 +1,6 @@
-﻿ul.node-tree {
+﻿@import "variables";
+
+ul.node-tree {
     padding-left: $spacing;
 
     ul {
@@ -12,8 +14,12 @@
         padding: $spacing/8 0;
     }
 
-    li.tree-item-selected > span {
-        background: $light-accent;
+    li.tree-item-selected {
+        background: transparentize($light-accent, 0.5);
+
+        > span {
+            font-weight: bold;
+        }
     }
 }
 

@@ -19,7 +19,6 @@ interface TopNavBarProps {
     changeTemplate: Action;
     toggleLanding: Action;
     toggleHelp: Action;
-    toggleStyleEditor: Action;
 }
 
 /** Conditionally render buttons
@@ -42,14 +41,7 @@ function getButtonProps(onClick?: any) {
 
 /** The top nav bar for the resume editor */
 export default function TopNavBar(props: TopNavBarProps) {
-    const isEditingStyle = props.mode === 'editingStyle';
-
-    const editStyleProps = {
-        onClick: props.toggleStyleEditor,
-        // variant: isEditingStyle ? "light" : "outline-light" as ButtonProps["variant"]
-    };
-
-    const helpOk = ['normal', 'help', 'editingStyle'].indexOf(props.mode) >= 0; 
+    const helpOk = ['normal', 'help'].indexOf(props.mode) >= 0; 
     const helpButton = helpOk ? <Button onClick={props.toggleHelp}>
         Help</Button> : <></>
 
@@ -60,9 +52,6 @@ export default function TopNavBar(props: TopNavBarProps) {
         <div id="brand">
             <h1 onClick={props.toggleLanding}>Experiencer</h1>
             <PureMenu horizontal>
-                <Item onClick={props.toggleStyleEditor}>
-                    <Link>Edit Style</Link>
-                </Item>
                 <Item onClick={props.toggleHelp}>
                     <Link>Help</Link>
                 </Item>

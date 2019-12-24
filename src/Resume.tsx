@@ -7,7 +7,7 @@ import './scss/index.scss';
 
 import ResumeComponent, { EditorMode, ComponentTypes } from './components/ResumeComponent';
 import { assignIds, deepCopy, arraysEqual } from './components/Helpers';
-import { Action, ResumeNodeProps, ResumePassProps } from './components/ResumeNodeBase';
+import { Action, ResumeNodeProps } from './components/ResumeNodeBase';
 import ResumeTemplateProvider from './components/templates/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
 import Landing from './components/help/Landing';
@@ -29,10 +29,8 @@ import FileSaver from './components/controls/FileSaver';
 import { SelectedNodeActions } from './components/controls/SelectedNodeActions';
 import CssEditor from './components/utility/CssEditor';
 import Row from './components/Row';
-import Section, { BasicSectionProps } from './components/Section';
+import Section from './components/Section';
 import Grid from './components/Grid';
-import Entry, { BasicEntryProps } from './components/Entry';
-import RichText from './components/RichText';
 import NodeTreeVisualizer from './components/utility/NodeTreeVisualizer';
 import Tabs from './components/controls/Tabs';
 
@@ -428,8 +426,7 @@ ${this.state.additionalCss}`;
             saveFile: this.saveFile,
             changeTemplate: this.changeTemplate,
             toggleHelp: () => this.toggleMode('help'),
-            toggleLanding: () => this.setState({ mode: 'landing' }),
-            toggleStyleEditor: () => this.toggleMode('editingStyle')
+            toggleLanding: () => this.setState({ mode: 'landing' })
         }
 
         return props;
@@ -466,12 +463,10 @@ ${this.state.additionalCss}`;
         const onStyleChange = (css: string) => {
             this.setState({ additionalCss: css });
         }
-        const toggleStyleEditor = () => this.toggleMode('editingStyle');
 
         return {
             onStyleChange: onStyleChange,
             renderStyle: this.renderStyle,
-            toggleStyleEditor: toggleStyleEditor,
             ...this.state
         }
     }
@@ -493,6 +488,7 @@ ${this.state.additionalCss}`;
                 selectNode={(id) => this.setState({ selectedNode: id })}
             />
             <CssEditor key="CSS" />
+            <StyleEditor key="Raw CSS" {...this.styleEditorProps} />
         </Tabs>
     }
 
@@ -618,14 +614,8 @@ ${this.state.additionalCss}`;
 
         // Render the final layout based on editor mode
         switch (this.state.mode) {
-            case 'editingStyle':
             case 'help':
-                if (this.state.mode === 'editingStyle') {
-                    sidebar = <StyleEditor {...this.styleEditorProps} />
-                }
-                else {
-                    sidebar = <Help close={() => this.toggleMode()} />
-                }
+                sidebar = <Help close={() => this.toggleMode()} />
 
                 return <ResizableSidebarLayout
                     topNav={editingTop}

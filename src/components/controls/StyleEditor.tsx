@@ -10,7 +10,6 @@ import { Action } from "../ResumeNodeBase";
 interface StyleEditorProps extends ResumeState {
     onStyleChange: (css: string) => void;
     renderStyle: Action;
-    toggleStyleEditor: Action;
 }
 
 export default function StyleEditor(props: StyleEditorProps) {
@@ -26,7 +25,6 @@ export default function StyleEditor(props: StyleEditorProps) {
 
         <div>
             <Button onClick={props.renderStyle}>Apply</Button>
-            <Button onClick={props.toggleStyleEditor}>Done</Button>
         </div>
     </>
 }

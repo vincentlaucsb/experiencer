@@ -16,7 +16,6 @@ import Icon from "./Icon";
 export type EditorMode = 'normal'
     | 'landing'
     | 'help'
-    | 'editingStyle'
     | 'changingTemplate'
     | 'printing';
 

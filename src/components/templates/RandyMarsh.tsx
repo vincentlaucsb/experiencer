@@ -12,12 +12,8 @@ import Grid from "../Grid";
 export function randyMarshCss() {
     let randyCss = getDefaultCss();
     randyCss.properties = new Map<string, string>([
-        ["font-family", "Open Sans, sans-serif"],
-        ["font-size", "11pt"],
-        ["padding", "0"],
-        ["display", "flex"],
-        ["flex-direction", "column"],
-        ["height", "100%"]
+        ["font-family", "var(--sans-serif)"],
+        ["font-size", "11pt"]
     ]);
 
     let rootCss = randyCss.root as CssNode;
@@ -83,6 +79,12 @@ export function randyMarshCss() {
                 ["font-weight", "normal"]
             ]);
         }
+
+        let subtitleCss = entryCss.findNode(["Title Block", "Subtitle", "Last Field"]) as CssNode;
+        subtitleCss.add(new CssNode('::before', {
+            "content": '"\\1f33f"',
+            "padding": "var(--spacing)"
+        }, '::before'));
     }
 
     let mainRowCss = randyCss.add(

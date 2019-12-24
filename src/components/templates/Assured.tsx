@@ -9,23 +9,32 @@ import CssNode from "../utility/CssTree";
 
 export function assuredCss() {
     let defaultCss = getDefaultCss();
+    let rootCss = defaultCss.root as CssNode;
+    if (rootCss) {
+        rootCss.properties.set('--accent', '#315eaa');
+        rootCss.properties.set('--edge-margin', '0.5in');
+        rootCss.properties.set('--small-spacing', '4px');
+        rootCss.properties.set('--spacing', '8px');
+        rootCss.properties.set('--large-spacing', '16px');
+    }
+
     defaultCss.properties = new Map<string, string>([
-        ["font-family", "Open Sans, sans-serif"],
+        ["font-family", "var(--sans-serif)"],
         ["font-size", "11pt"]
     ]);
 
     defaultCss.setProperties(["Header"], [
         ["background", "#eeeeee"],
-        ["margin-bottom", "16px"],
-        ["padding", "0.5in"],
-        ["padding-bottom", "16px"],
+        ["margin-bottom", "var(--large-spacing)"],
+        ["padding", "var(--edge-margin)"],
+        ["padding-bottom", "var(--large-spacing)"],
     ]);
 
     let contactLeft = new CssNode(
         "#contact-left",
         {
             "grid-template-columns": "1fr 30px",
-            "grid-column-gap": "4px",
+            "grid-column-gap": "var(--small-spacing)",
             "width": "auto",
             "height": "auto",
             "margin-left": "auto"
@@ -36,7 +45,7 @@ export function assuredCss() {
         '#contact-right',
         {
             "grid-template-columns": "1fr 30px",
-            "grid-column-gap": "4px",
+            "grid-column-gap": "var(--spacing)",
             "width": "auto",
             "height": "auto"
         },
@@ -45,10 +54,10 @@ export function assuredCss() {
     defaultCss.add(contactLeft);
     defaultCss.add(contactRight);
     defaultCss.setProperties(["Section", "Title"], [
-        ["font-family", "Merriweather, serif"],
+        ["font-family", "var(--serif)"],
         ["font-weight", "bold"],
         ["font-size", "18pt"],
-        ["color", "#315eaa"]
+        ["color", "var(--accent)"]
     ]);
 
     defaultCss.setProperties(["Section", "Content"],
@@ -58,13 +67,18 @@ export function assuredCss() {
     defaultCss.add(new CssNode(
         '#main',
         {
-            'padding-left': '0.5in',
-            'padding-right': '0.5in',
+            'padding-left': 'var(--edge-margin)',
+            'padding-right': 'var(--edge-margin)',
             'grid-template-columns': '1fr 180px',
-            'grid-column-gap': '16px'
+            'grid-column-gap': 'var(--spacing)'
         },
         '#main'
     ));
+
+    const sidebar = defaultCss.add(new CssNode('#sidebar', {}, '#sidebar'));
+    sidebar.add(new CssNode('Last Subtitle Field', {
+        'margin-left': '0'
+    }, 'div.entry > hgroup > h4 span.field-last'));
 
     const subtitleFields = defaultCss.findNode(["Entry", "Title Block", "Subtitle"]) as CssNode;
     let middleFields = subtitleFields.findNode(["Middle Fields"]) as CssNode;

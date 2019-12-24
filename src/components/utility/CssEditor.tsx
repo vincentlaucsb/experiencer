@@ -64,7 +64,7 @@ export default class CssEditor extends React.Component<CssEditorProps> {
         if (cssRoot) {
             console.log(cssRoot);
             root = (
-                <>
+                <div className="css-ruleset">
                     {":root{"}
                     <MappedTextFields value={cssRoot.properties}
                         container={this.mapContainer}
@@ -75,21 +75,22 @@ export default class CssEditor extends React.Component<CssEditorProps> {
                             cssRoot.deleteProperty([], key);
                         }} />
                     {"}"}
-                </>
+                </div>
             );
         }
 
         return (
-            <div className="css-ruleset">
-                {selector} {"{"}
-                <MappedTextFields value={cssProperties}
-                container={this.mapContainer}
-                updateValue={this.props.updateData.bind(this, this.path)}
-                deleteValue={this.props.deleteData.bind(this, this.path)} />
-                {"}"}
-
+            <>
+                <div className="css-ruleset">
+                    {selector} {"{"}
+                    <MappedTextFields value={cssProperties}
+                    container={this.mapContainer}
+                    updateValue={this.props.updateData.bind(this, this.path)}
+                    deleteValue={this.props.deleteData.bind(this, this.path)} />
+                    {"}"}
+                </div>
                 {root}
-            </div>
+            </>
         );
     }
 

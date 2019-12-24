@@ -141,7 +141,8 @@ export default function getDefaultCss(): CssNode {
     }, '#resume');
 
     defaultCss.root = new CssNode(':root', {
-        '--serif': 'Merriweather, serif'
+        '--serif': 'Merriweather, serif',
+        '--sans-serif': 'Open Sans, sans-serif'
     }, ':root');
 
     defaultCss.add(new CssNode('Links', {

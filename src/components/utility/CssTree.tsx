@@ -3,6 +3,7 @@
 /** Return a JSON serializable format of a CssNode and its descendents */
 export interface CssNodeDump {
     children: Array<CssNodeDump>;
+    root?: CssNodeDump;
     name: string;
     selector: string;
     properties: Array<[string, string]>;
@@ -92,16 +93,27 @@ export default class CssNode {
             rootNode.add(CssNode.load(node));
         }
 
+        // Load root
+        if (data.root) {
+            rootNode.root = CssNode.load(data.root);
+        }
+
         return rootNode;
     }
 
     dump() : CssNodeDump {
-        return {
+        let data: CssNodeDump = {
             children: this.children.map((elem) => elem.dump()),
             name: this.name,
-            selector: this.selector,
-            properties: Array.from(this.properties.entries())
+            properties: Array.from(this.properties.entries()),
+            selector: this.selector
         }
+
+        if (this.root) {
+            data.root = this.root.dump();
+        }
+
+        return data;
     }
 
     /** Return a CSS stylesheet */
@@ -130,14 +142,13 @@ export default class CssNode {
             childStylesheets.push(cssTree.stylesheet(selector));
         }
 
+        if (this.root) {
+            childStylesheets.push(this.root.stylesheet());
+        }
+
         let finalStylesheet = thisCss;
         if (childStylesheets.length > 0) {
             finalStylesheet += "\n\n";
-
-            if (this.root) {
-                finalStylesheet += this.root.stylesheet();
-            }
-
             finalStylesheet += childStylesheets.join('\n\n');
         }
 

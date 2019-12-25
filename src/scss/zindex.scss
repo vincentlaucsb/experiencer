@@ -3,8 +3,9 @@
     z-index: 0;
 }
 
+$header-z: 1000;
+
 header#app-header, header#app-header * {
-    $header-z: 1000;
     z-index: $header-z;
 
     /** Dropdown menus */
@@ -16,4 +17,8 @@ header#app-header, header#app-header * {
     span.label {
         z-index: $header-z - 1;
     }
+}
+
+div.ReactModalPortal, div.ReactModalPortal * {
+    z-index: $header-z + 2;
 }

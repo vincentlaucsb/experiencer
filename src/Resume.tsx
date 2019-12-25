@@ -653,7 +653,6 @@ class Resume extends React.Component<{}, ResumeState> {
                     <FileLoader loadData={this.loadData} />
                     <Button onClick={this.exportHtml}>Export</Button>
                     <Button onClick={this.saveLocal}>Save</Button>
-                    <FileSaver saveFile={this.saveFile} />
                     <Button onClick={this.print}>Print</Button>
                 </PureMenu>
                 <span className="label">File</span>

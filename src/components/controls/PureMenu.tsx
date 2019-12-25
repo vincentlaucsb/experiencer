@@ -25,6 +25,8 @@ interface PureMenuItemProps {
     children?: any;
     selected?: boolean;
 
+    onClick?: (event: React.MouseEvent) => void;
+
     /** Additional class names for the menu item */
     classNames?: Array<string>;
 }
@@ -39,7 +41,7 @@ export function PureMenuItem<P extends PureMenuItemProps>(props: P) {
         props.classNames.forEach((value) => classes.push(value));
     }
 
-    return <li className={classes.join(' ')} {...props}>
+    return <li className={classes.join(' ')} onClick={props.onClick} {...props}>
         {props.children}
     </li>
 }
@@ -73,15 +75,16 @@ export function PureDropdown(props: PureDropdownProps) {
         classes.push('pure-menu-active');
     }
 
-    const toggler = (event: React.MouseEvent<HTMLLIElement>) => {
+    const toggler = (event: React.MouseEvent) => {
         setActive(!active);
     }
 
+
+    // TODO: Rework onBlur handler
     return (
         <PureMenuItem
             {...props}
             onClick={toggler}
-            onBlur={() => setActive(false)}
             classNames={classes}>
             {props.content}
             <ul className={childClasses.join(' ')}>

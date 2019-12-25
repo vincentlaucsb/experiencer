@@ -11,14 +11,6 @@ form#file-loader {
     @extend %file-form;
 }
 
-form#file-saver {
-    @extend %file-form;
-
-    div {
-        margin-bottom: $spacing;
-    }
-}
-
 /** Quill */
 
 #resume {

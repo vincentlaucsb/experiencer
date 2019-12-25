@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { saveAs } from 'file-saver';
-import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
+import { ContextMenuTrigger } from "react-contextmenu";
 
 import 'purecss/build/pure-min.css';
 import 'react-quill/dist/quill.snow.css';
@@ -8,7 +8,7 @@ import './scss/index.scss';
 
 import ResumeComponent, { EditorMode, ComponentTypes } from './components/ResumeComponent';
 import { assignIds, deepCopy, arraysEqual } from './components/Helpers';
-import { Action, ResumeNodeProps } from './components/ResumeNodeBase';
+import { Action, ResumeNodeProps, NodeProperty } from './components/ResumeNodeBase';
 import ResumeTemplateProvider from './components/templates/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
 import Landing from './components/help/Landing';
@@ -22,15 +22,9 @@ import ResumeNodeTree, { ResumeNode, BasicResumeNode } from './components/utilit
 import CssNode from './components/utility/CssTree';
 import PureMenu, { PureMenuLink, PureMenuItem } from './components/controls/PureMenu';
 import { Button } from './components/controls/Buttons';
-import Octicon, { Home, Saved } from "@primer/octicons-react";
 import { RenderIf } from './components/controls/HelperComponents';
-import FileLoader from './components/controls/FileLoader';
-import FileSaver from './components/controls/FileSaver';
 import { SelectedNodeActions } from './components/controls/SelectedNodeActions';
 import CssEditor from './components/utility/CssEditor';
-import Row from './components/Row';
-import Section from './components/Section';
-import Grid from './components/Grid';
 import NodeTreeVisualizer from './components/utility/NodeTreeVisualizer';
 import Tabs from './components/controls/Tabs';
 import ResumeContextMenu from './components/controls/ResumeContextMenu';
@@ -68,8 +62,6 @@ class Resume extends React.Component<{}, ResumeState> {
 
         /** Resume Nodes */
         this.addHtmlId = this.addHtmlId.bind(this);
-        this.addColumn = this.addColumn.bind(this);
-        this.addSection = this.addSection.bind(this);
         this.addNestedChild = this.addNestedChild.bind(this);
         this.updateNestedChild = this.updateNestedChild.bind(this);
 
@@ -106,6 +98,11 @@ class Resume extends React.Component<{}, ResumeState> {
     /** Prevent component from being edited from the template changing screen */
     get isEditable(): boolean {
         return !this.isPrinting && !(this.state.mode === 'changingTemplate');
+    }
+
+    /** Returns true if we are actively editing a resume */
+    get isEditing(): boolean {
+        return this.isEditable && (this.state.children.length > 0);
     }
 
     get isPrinting(): boolean {
@@ -252,14 +249,6 @@ class Resume extends React.Component<{}, ResumeState> {
         }
     }
 
-    addSection() {
-        this.addChild({ type: Section.type });
-    }
-
-    addColumn() {
-        this.addChild(ComponentTypes.defaultValue(Row.type).node);
-    }
-
     /**
      * Add an immediate child
      * @param node Node to be added
@@ -297,7 +286,7 @@ class Resume extends React.Component<{}, ResumeState> {
         this.setState({ children: this.nodes.children });
     }
 
-    updateSelected(key: string, data: string | string[] | boolean) {
+    updateSelected(key: string, data: NodeProperty) {
         const id = this.state.selectedNode as IdType;
         if (id) {
             this.nodes.updateChild(id, key, data);
@@ -469,24 +458,27 @@ class Resume extends React.Component<{}, ResumeState> {
         }
     }
 
-    get toolbarProps() {
+    get topMenuProps() {
         let props = {
+            changeTemplate: this.changeTemplate,
+            exportHtml: this.exportHtml,
             mode: this.state.mode,
             loadData: this.loadData,
+            print: this.print,
+            saveLocal: this.saveLocal,
             saveFile: this.saveFile,
-            changeTemplate: this.changeTemplate,
             toggleHelp: () => this.toggleMode('help'),
             toggleLanding: () => this.setState({ mode: 'landing' })
         }
-
+                    
         return props;
     }
 
-    get editingBarProps() {
+    get editingBarProps() : EditingBarProps {
         return {
             ...this.selectedNodeActions,
-            id: this.state.selectedNode,
-            node: this.selectedNode,
+            selectedNodeId: this.state.selectedNode,
+            selectedNode: this.selectedNode,
             addHtmlId: this.addHtmlId,
             updateNode: this.updateSelected,
             addChild: this.addNestedChild,
@@ -644,32 +636,10 @@ class Resume extends React.Component<{}, ResumeState> {
 
         let main = resume;
 
-        const topEditingBar = this.state.selectedNode ? <TopEditingBar {...this.editingBarProps as EditingBarProps} /> : <div id="toolbar"
-            className="no-print">
-            <div className="toolbar-section">
-                <PureMenu horizontal>
-                    <Button><Octicon icon={Home} />Home</Button>
-                    <Button onClick={this.changeTemplate}>New</Button>
-                    <FileLoader loadData={this.loadData} />
-                    <Button onClick={this.exportHtml}>Export</Button>
-                    <Button onClick={this.saveLocal}>Save</Button>
-                    <Button onClick={this.print}>Print</Button>
-                </PureMenu>
-                <span className="label">File</span>
-            </div>
-            <div className="toolbar-section">
-                <PureMenu horizontal>
-                    <Button onClick={this.addSection}>Add Section</Button>
-                    <Button onClick={this.addColumn}>Add Rows & Columns</Button>
-                    <Button onClick={() => this.addChild(ComponentTypes.defaultValue(Grid.type).node)}>Add Grid</Button>
-                </PureMenu>
-                <span className="label">Resume Components</span>
-            </div>
-        </div>
-        
+        const topEditingBar = this.isEditing ? <TopEditingBar {...this.editingBarProps} /> : <></>
         const editingTop = <RenderIf render={!this.isPrinting}>
             <header id="app-header" className="no-print">
-                <TopNavBar {...this.toolbarProps} />
+                <TopNavBar {...this.topMenuProps} />
                 {topEditingBar}
             </header>
         </RenderIf>

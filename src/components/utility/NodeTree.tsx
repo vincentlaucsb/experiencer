@@ -26,6 +26,7 @@ export default class ResumeNodeTree implements ResumeNode {
     children = new Array<ResumeNode>();
     type = 'Resume';
     uuid = '';
+    htmlId = '';
 
     constructor(children = new Array<ResumeNode>()) {
         this.children = children;
@@ -54,6 +55,10 @@ export default class ResumeNodeTree implements ResumeNode {
     /** Given an array of nodes and a hierarchical ID, return a reference to the 
      *  node pointed to by id */
     getNodeById(id: IdType) {
+        if (id.length == 0) {
+            return this;
+        }
+
         return this.traverse(id)[0];
     }
 

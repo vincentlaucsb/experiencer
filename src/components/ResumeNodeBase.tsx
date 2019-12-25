@@ -8,6 +8,7 @@ import { ResumeNode } from "./utility/NodeTree";
 export type Action = (() => void);
 export type ModifyChild = (id: IdType) => void;
 export type AddChild = ((id: IdType, node: ResumeNode) => void);
+export type NodeProperty = string | string[] | boolean | number | number[];
 
 /** Represents resume prop properties and methods passed
  *  from the top down
@@ -20,7 +21,7 @@ export interface ResumePassProps extends ResumeNode {
     isSelected: (id: string) => boolean;
     isSelectBlocked: (id: IdType) => boolean;
     toggleEdit: ModifyChild;
-    updateData: (id: IdType, key: string, data: any) => void;
+    updateData: (id: IdType, key: string, data: NodeProperty) => void;
     updateSelected: (id?: IdType) => void;
 }
 
@@ -146,7 +147,7 @@ export default class ResumeNodeBase<P
         this.props.toggleEdit(this.props.id);
     }
     
-    updateData(key: string, data: string | boolean | object | Array<any>) {
+    updateData(key: string, data: NodeProperty) {
         this.props.updateData(this.props.id, key, data);
     }
     

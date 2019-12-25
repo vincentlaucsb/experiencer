@@ -12,6 +12,9 @@ import { assignIds } from "../Helpers";
 import { ResumeNode } from "../utility/NodeTree";
 import toolbarOptions, { CustomToolbarOptions } from "./ToolbarOptions";
 import Column from "../Column";
+import Grid from "../Grid";
+import Row from "../Row";
+import Section from "../Section";
 
 type AddOptions = Array<NodeInformation>;
 
@@ -55,9 +58,8 @@ function AddOption(props: AddOptionProps) {
 }
 
 export interface EditingBarProps extends SelectedNodeActions {
-    id: IdType;
-
-    node?: ResumeNode,
+    selectedNodeId?: IdType;
+    selectedNode?: ResumeNode,
     addHtmlId: (htmlId: string) => void;
     updateNode: (key: string, value: string | string[] | boolean | number | number[]) => void;
 
@@ -129,11 +131,10 @@ export default function TopEditingBar(props: EditingBarProps) {
         <Button disabled={props.disabled}>{props.children}</Button>
     </PureMenuItem>
 
-    const id = props.id;
-
-    if (props.node) {
-        const type = props.node.type;
-        const customOptions = toolbarOptions(props.node, props.updateNode);
+    const id = props.selectedNodeId;
+    if (id && props.selectedNode) {
+        const type = props.selectedNode.type;
+        const customOptions = toolbarOptions(props.selectedNode, props.updateNode);
         let moveUpText = "Up";
         let moveDownText = "Down";
         let editButton = <></>
@@ -143,7 +144,7 @@ export default function TopEditingBar(props: EditingBarProps) {
         const childTypes = ComponentTypes.childTypes(type);
         let parentOptions = <></>
 
-        if (ComponentTypes.isEditable(props.node.type)) {
+        if (ComponentTypes.isEditable(props.selectedNode.type)) {
             editButton = <Item onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Item>
         }
 
@@ -169,7 +170,7 @@ export default function TopEditingBar(props: EditingBarProps) {
                     <CustomOptions options={customOptions} />
                     <Button onClick={props.unselect}>Unselect</Button>
                 </PureMenu>
-                <span className="label">Current Node ({props.node.type})</span>
+                <span className="label">Current Node ({props.selectedNode.type})</span>
             </div>
             <div className="toolbar-section">
                 <PureMenu horizontal>
@@ -181,8 +182,8 @@ export default function TopEditingBar(props: EditingBarProps) {
             <div className="toolbar-section">
                 <PureMenu horizontal>
                     <HtmlIdAdder
-                        key={props.node.uuid}
-                        htmlId={props.node.htmlId}
+                        key={props.selectedNode.uuid}
+                        htmlId={props.selectedNode.htmlId}
                         addHtmlId={props.addHtmlId}
                     />
                 </PureMenu>
@@ -190,6 +191,17 @@ export default function TopEditingBar(props: EditingBarProps) {
             {parentOptions}
         </div>
     }
-
-    return <></>
+    
+    return (
+        <div id="toolbar">
+            <div className="toolbar-section">
+                <PureMenu horizontal>
+                    <Button onClick={() => props.addChild([], assignIds({ type: Section.type }))}>Add Section</Button>
+                    <Button onClick={() => props.addChild([], assignIds(ComponentTypes.defaultValue(Row.type).node))}>Add Row & Columns</Button>
+                    <Button onClick={() => props.addChild([], assignIds(ComponentTypes.defaultValue(Grid.type).node))}>Add Grid</Button>
+                </PureMenu>
+                <span className="label">Resume Components</span>
+            </div>
+        </div>
+    );
 }

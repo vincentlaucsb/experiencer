@@ -7,6 +7,11 @@ header#app-header, header#app-header * {
     $header-z: 1000;
     z-index: $header-z;
 
+    /** Dropdown menus */
+    #top-menu, #top-menu * {
+        z-index: $header-z + 1;
+    }
+
     /** Don't want dropdowns getting obscured by labels */
     span.label {
         z-index: $header-z - 1;

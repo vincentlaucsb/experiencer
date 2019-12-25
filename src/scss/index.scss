@@ -51,6 +51,10 @@ header#app-header {
     top: 0;
     margin-bottom: $spacing;
 
+    .pure-menu-active, .pure-menu-active:focus {
+        background: $dark-accent;
+    }
+
     div#brand, div#toolbar {
         @extend %flex-row;
         align-content: center;

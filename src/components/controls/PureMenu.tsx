@@ -2,6 +2,7 @@
 
 interface PureMenuProps {
     children?: any;
+    id?: string;
     horizontal?: boolean;
 }
 
@@ -12,7 +13,7 @@ export default function PureMenu(props: PureMenuProps) {
     }
 
     return (
-        <div className={classes.join(' ')}>
+        <div id={props.id} className={classes.join(' ')}>
             <ul className="pure-menu-list">
                 {props.children}
             </ul>
@@ -80,8 +81,8 @@ export function PureDropdown(props: PureDropdownProps) {
         <PureMenuItem
             {...props}
             onClick={toggler}
-            classNames={classes}
-        >
+            onBlur={() => setActive(false)}
+            classNames={classes}>
             {props.content}
             <ul className={childClasses.join(' ')}>
                 {props.children}

@@ -5,7 +5,7 @@ import FileSaver from "./FileSaver";
 import { EditorMode } from "../ResumeComponent";
 import { isUndefined } from "util";
 import { Button } from "./Buttons";
-import PureMenu, { PureMenuItem, PureMenuLink } from "./PureMenu";
+import PureMenu, { PureMenuItem, PureMenuLink, PureDropdown } from "./PureMenu";
 import Octicon, { DesktopDownload, Home, MarkGithub } from "@primer/octicons-react";
 
 interface TopNavBarProps {
@@ -51,7 +51,17 @@ export default function TopNavBar(props: TopNavBarProps) {
     return (
         <div id="brand">
             <h1 onClick={props.toggleLanding}>Experiencer</h1>
-            <PureMenu horizontal>
+            <PureMenu id="top-menu" horizontal>
+                <Item>
+                    <PureDropdown content={<Item><Link>File</Link></Item>}>
+                        <Link>New</Link>
+                        <Link>Load</Link>
+                        <Link>Save</Link>
+                        <Link>Save As</Link>
+                        <Link>Export to HTML/CSS</Link>
+                        <Link>Print</Link>
+                    </PureDropdown>
+                </Item>
                 <Item onClick={props.toggleHelp}>
                     <Link>Help</Link>
                 </Item>

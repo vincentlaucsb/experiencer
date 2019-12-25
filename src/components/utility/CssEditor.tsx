@@ -4,19 +4,29 @@ import MappedTextFields from "../controls/inputs/MappedTextFields";
 import Collapse from "../controls/Collapse";
 import { Button } from "../controls/Buttons";
 import CssSelectorAdder from "./CssSelectorAdder";
+import ResumeTextField from "../controls/inputs/TextField";
 
 export interface CssEditorProps {
     autoCollapse?: boolean;
     root: CssNode;
     addSelector: (path: string[], name: string, selector: string) => void;
     updateData: (path: string[], key: string, value: string) => void;
+    updateDescription: (path: string[], data: string) => void;
     deleteKey: (path: string[], key: string) => void;
     deleteNode: (path: string[]) => void;
 }
 
-export default class CssEditor extends React.Component<CssEditorProps> {
+export interface CssEditorState {
+    editingDescription: boolean;
+}
+
+export default class CssEditor extends React.Component<CssEditorProps, CssEditorState> {
     constructor(props) {
         super(props);
+
+        this.state = {
+            editingDescription: false
+        };
 
         this.mapContainer = this.mapContainer.bind(this);
     }
@@ -254,10 +264,24 @@ export default class CssEditor extends React.Component<CssEditorProps> {
                 autoCollapse={this.props.autoCollapse}
                 addSelector={this.props.addSelector}
                 updateData={this.props.updateData}
+                updateDescription={this.props.updateDescription}
                 deleteKey={this.props.deleteKey}
                 deleteNode={this.props.deleteNode}
             />
         });
+    }
+
+    renderDescription() {
+        // TODO: Clean up
+        return <ResumeTextField
+            value={this.props.root.description || ""}
+            onChange={(text) => {
+                this.props.updateDescription(this.props.root.fullPath, text);
+            }}
+            isEditing={this.state.editingDescription}
+            onClick={() => this.setState({ editingDescription: !this.state.editingDescription })}
+            onEnterDown={() => this.setState({ editingDescription: !this.state.editingDescription })}
+        />
     }
 
     render() {
@@ -310,6 +334,7 @@ export default class CssEditor extends React.Component<CssEditorProps> {
         return (
             <section className={`css-category no-print css-category-${this.path.length}`}>
                 <Collapse trigger={trigger} isOpen={isOpen}>
+                    {this.renderDescription()}
                     <div className="css-category-content">
                         {this.renderProperties()}
                         {this.renderChildren()}

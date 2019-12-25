@@ -488,6 +488,16 @@ class Resume extends React.Component<{}, ResumeState> {
             this.shouldUpdateCss = true;
         };
 
+        const updateDescription = (path, value) => {
+            const target = this.css.findNode(path);
+            if (target) {
+                target.description = value;
+            }
+
+            this.setState({ css: this.css });
+            this.shouldUpdateCss = true;
+        }
+
         const deleter = (path, key) => {
             this.css.deleteProperty(path, key);
             this.setState({ css: this.css });
@@ -503,6 +513,7 @@ class Resume extends React.Component<{}, ResumeState> {
         const editorProps = {
             addSelector: adder,
             updateData: updater,
+            updateDescription: updateDescription,
             deleteKey: deleter,
             deleteNode: deleteNode
         }

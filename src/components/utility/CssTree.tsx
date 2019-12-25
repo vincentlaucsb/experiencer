@@ -25,6 +25,8 @@ export default class CssNode {
     /** CSS :root selector */
     public cssRoot?: CssNode;
 
+    public description?: string;
+
     constructor(name: string, properties: object, selector?: string) {
         this._name = name;
         this._children = new Array<CssNode>();

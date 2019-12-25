@@ -1,91 +1,83 @@
-﻿// TODO: This whole file is a strong candidate for refactoring/testing when time is available
-
-import React from "react";
+﻿import React from "react";
 import uuid from 'uuid/v4';
-
-interface MappedTextFieldsState {
-    isAddingKey: boolean;
-    isEditing: boolean;
-    newKey: string;
-}
 
 interface ValueFieldProps {
     value?: string;
     isEditing: boolean;
     updateText: (value: string) => void;
     suggestions?: Array<string>;
-
     delete?: () => void;
-    toggleParentEdit: () => void;
 }
 
-function ValueField(props: ValueFieldProps) {
-    let [value, updateValue] = React.useState(props.value || "");
-    let [isEditing, setEditing] = React.useState(props.isEditing);
+interface ValueState {
+    value: string;
+}
 
-    /** Is this the first time mounting? */
-    let [initialMount, setInitialMount] = React.useState(false);
+class ValueField extends React.Component<ValueFieldProps, ValueState> {
+    constructor(props) {
+        super(props);
 
-    /** This field will automatically be in an editing state when it first mounts */
-    if (!initialMount) {
-        setEditing(true);
-        setInitialMount(true);
+        this.state = {
+            value: props.value || ''
+        };
+
+        this.keyDownHandler = this.keyDownHandler.bind(this);
     }
 
-    const onClick = (event: React.MouseEvent<HTMLSpanElement>) => {
-        setEditing(true);
-
-        if (!props.isEditing) {
-            props.toggleParentEdit();
-        }
-    }
-
-    const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
-            setEditing(false);
-            props.updateText(value);
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.isEditing && prevProps.isEditing !== this.props.isEditing) {
+            if (this.props.value !== this.state.value) {
+                this.props.updateText(this.state.value);
+            }
         }
     }
 
-    React.useEffect(() => {
-        // When the parent tells this to stop editing, then stop editing
-        if (!props.isEditing && isEditing) {
-            setEditing(false);
+    componentWillUnmount() {
+        if (this.props.value !== this.state.value) {
+            this.props.updateText(this.state.value);
+        }
+    }
+
+    keyDownHandler(event: React.KeyboardEvent) {
+        if (event.key === 'Escape') {
+            // Restore original value
+            this.setState({ value: this.props.value || "" });
+        }
+    }
+
+    render() {
+        let suggestions = <></>
+        let suggestionId = "";
+        if (this.props.suggestions) {
+            suggestionId = uuid();
+            suggestions = (<datalist id={suggestionId}>
+                {this.props.suggestions.map((value) => <option value={value} />)}
+            </datalist>
+            );
         }
 
-        // Update parent
-        if (!initialMount) {
-            props.updateText(value);
+        if (this.props.isEditing) {
+            return <>
+                <input autoFocus onChange={(event) => this.setState({ value: event.target.value })}
+                    onKeyDown={this.keyDownHandler}
+                    value={this.state.value}
+                    list={suggestionId}
+                />
+                {suggestions}
+                <button onClick={this.props.delete}>Delete</button>
+            </>
         }
-    }, [props.isEditing, isEditing]);
 
-    let suggestions = <></>
-    let suggestionId = "";
-    if (props.suggestions) {
-        suggestionId = uuid();
-        suggestions = (<datalist id={suggestionId}>
-            {props.suggestions.map((value) => <option value={value} />)}
-        </datalist>
+        return (
+            <span>{this.state.value.length > 0 ? this.state.value : "Enter a value"}</span>
         );
     }
+}
 
-    if (isEditing) {
-        return <>
-            <input autoFocus onChange={(event) => updateValue(event.target.value)}
-                onKeyDown={onKeyDown}
-                value={value}
-                list={suggestionId}
-            />
-            {suggestions}
-            <button onClick={props.delete}>Delete</button>
-        </>
-    }
-
-    return (
-        <span onClick={onClick}>
-            {value.length > 0 ? value : "Enter a value"}
-        </span>
-    );
+interface MappedTextFieldsState {
+    activeKey: string;
+    isAddingKey: boolean;
+    isEditing: boolean;
 }
 
 export interface MappedTextFieldsProps {
@@ -107,12 +99,13 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
     constructor(props) {
         super(props);
         this.state = {
+            activeKey: "",
             isAddingKey: false,
-            isEditing: false,
-            newKey: ""
+            isEditing: false
         };
 
         this.addNewKey = this.addNewKey.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
         this.updateText = this.updateText.bind(this);
         this.setEditing = this.setEditing.bind(this);
     }
@@ -141,16 +134,10 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
     }
 
     addNewKey(key: string) {
-        /** If an empty key is entered, assume this is because the user wants to stop editing
-        if (key.length == 0) {
-            this.setEditing(false);
-            return;
-        } */
-
         this.updateText(key, '');
         this.setState({
             isAddingKey: false,
-            newKey: key
+            activeKey: key
         });
     }
 
@@ -174,14 +161,40 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
         });
     }
 
+    /**
+     * Keydown from an input field
+     * @param event
+     */
+    handleKeyDown(event: React.KeyboardEvent) {
+        switch (event.key) {
+            case 'Escape':
+            case 'Enter':
+                this.setState({ activeKey: '' });
+                this.setState({ isAddingKey: false });
+                break;
+        }
+    }
+
+    /** Props for anything containing an input cell */
+    inputContainerProps(key?: string) {
+        let props: any = {
+            onKeyDown: this.handleKeyDown
+        };
+
+        if (key) {
+            props.onClick = () => this.setState({ activeKey: key });
+        }
+
+        return props;
+    }
+
     render() {
         let keyAdder = <></>
         if (this.state.isAddingKey && this.state.isEditing) {
             keyAdder = <tr>
-                <th scope="row">
+                <th scope="row" {...this.inputContainerProps()}>
                 <ValueField
-                        isEditing={this.state.isEditing}
-                        toggleParentEdit={() => this.setState({ isEditing: true })}
+                        isEditing={this.state.isAddingKey}
                         updateText={this.addNewKey}
                         suggestions={this.props.keySuggestions}
                     />
@@ -210,17 +223,13 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                             this.setState({ isAddingKey: true });
                         }
                     }} scope="row">{key}</th>
-                    <td>
+                    <td {...this.inputContainerProps(key)}>
                         <ValueField
-                            isEditing={this.state.isEditing}
-                            toggleParentEdit={() => this.setState({ isEditing: true })}
+                            isEditing={this.state.activeKey === key}
                             updateText={this.updateText.bind(this, key)}
                             value={value}
                             suggestions={suggestions}
-                            delete={() => {
-                                this.props.deleteKey(key);
-                            }}
-                    />
+                            delete={() => { this.props.deleteKey(key); }} />
                     </td>
                 </tr>})}
 

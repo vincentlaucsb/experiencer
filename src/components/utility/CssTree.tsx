@@ -138,18 +138,7 @@ export default class CssNode {
         return data;
     }
 
-    /** Return a CSS stylesheet */
-    stylesheet(parentSelector?: string) {
-        let selector = this.selector;
-        if (parentSelector) {
-            selector = `${parentSelector} ${this.selector}`
-
-            // Don't add space for pseudo-elements and pseudo-classes
-            if (this.selector.charAt(0) === ':') {
-                selector = `${parentSelector}${this.selector}`
-            }
-        }
-
+    private formatProperties() {
         let cssProperties = new Array<string>();
         if (this.properties.size > 0) {
             for (let [property, entry] of this.properties.entries()) {
@@ -157,25 +146,48 @@ export default class CssNode {
             }
         }
 
-        const thisCss = this.properties.size > 0 ? `${selector} {\n${cssProperties.join('\n')}\n}` : ``;
+        return cssProperties.join('\n');
+    }
 
-        let childStylesheets = new Array<string>();
-        // :root before others
-        if (this.cssRoot) {
-            childStylesheets.push(this.cssRoot.stylesheet());
+    /** Return a CSS stylesheet */
+    stylesheet(parentSelector?: string) {
+        // Generate individual rulesets for "," seperated selectors
+        let selectors = this.selector.split(',');
+        let stylesheets = new Array<string>();
+
+        for (let selector of selectors) {
+            // No need for trailing/leading whitespace
+            selector = selector.trim();
+
+            if (parentSelector) {
+                // Don't add space for pseudo-elements and pseudo-classes
+                selector = (selector.charAt(0) === ':') ? `${parentSelector}${selector}`
+                    : `${parentSelector} ${selector}`;
+            }
+
+            let cssProperties = this.formatProperties();
+            const thisCss = this.properties.size > 0 ? `${selector} {\n${cssProperties}\n}` : ``;
+
+            let childStylesheets = new Array<string>();
+            // :root before others
+            if (this.cssRoot) {
+                childStylesheets.push(this.cssRoot.stylesheet());
+            }
+
+            for (let cssTree of this.children.values()) {
+                childStylesheets.push(cssTree.stylesheet(selector));
+            }
+
+            let finalStylesheet = thisCss;
+            if (childStylesheets.length > 0) {
+                finalStylesheet += "\n\n";
+                finalStylesheet += childStylesheets.join('\n\n');
+            }
+
+            stylesheets.push(finalStylesheet);
         }
 
-        for (let cssTree of this.children.values()) {
-            childStylesheets.push(cssTree.stylesheet(selector));
-        }
-
-        let finalStylesheet = thisCss;
-        if (childStylesheets.length > 0) {
-            finalStylesheet += "\n\n";
-            finalStylesheet += childStylesheets.join('\n\n');
-        }
-
-        return finalStylesheet;
+        return stylesheets.join('\n\n');
     }
 
     /**

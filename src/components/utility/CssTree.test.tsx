@@ -86,6 +86,19 @@ test('Stylesheet Test', () => {
 }`);
 })
 
+test('Stylesheet Comma Test', () => {
+    const cssNode = new CssNode('Text Field', {
+        "font-family": "Tahoma, sans-serif"
+    }, 'span, a');
+    expect(cssNode.stylesheet()).toBe(`span {
+\tfont-family: Tahoma, sans-serif;
+}
+
+a {
+\tfont-family: Tahoma, sans-serif;
+}`);
+})
+
 test('Stylesheet Test w/ Children', () => {
     const cssNode = new CssNode('Text Field', {
         "font-family": "Tahoma, sans-serif"
@@ -103,14 +116,39 @@ span strong {
 }`);
 })
 
+test('Stylesheet Test w/ Children + Comma', () => {
+    const cssNode = new CssNode('Text Field', {
+        "font-family": "Tahoma, sans-serif"
+    }, 'span, a');
+    cssNode.add(new CssNode('Bold', {
+        "font-size": "120%"
+    }, 'strong'));
+
+    expect(cssNode.stylesheet()).toBe(`span {
+\tfont-family: Tahoma, sans-serif;
+}
+
+span strong {
+\tfont-size: 120%;
+}
+
+a {
+\tfont-family: Tahoma, sans-serif;
+}
+
+a strong {
+\tfont-size: 120%;
+}`);
+})
+
 test('Stylesheet Test w/ Children and Pseduoelements', () => {
     const cssNode = new CssNode('Text Field', {
         "font-family": "Tahoma, sans-serif"
     }, 'span');
 
-    cssNode.add(new CssNode(':after', {
+    cssNode.add(new CssNode('::after', {
         "content": '","'
-    }, ':after'));
+    }, '::after'));
 
     cssNode.add(new CssNode('Bold', {
         "font-size": "120%"
@@ -120,7 +158,7 @@ test('Stylesheet Test w/ Children and Pseduoelements', () => {
 \tfont-family: Tahoma, sans-serif;
 }
 
-span:after {
+span::after {
 \tcontent: ",";
 }
 

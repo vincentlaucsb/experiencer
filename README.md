@@ -2,7 +2,7 @@
 
 Experiencer is an intuitive, flexible resume editor written using React supporting rich text, multiple-column layouts, and HTML/CSS output.
 
-![Experiencer Video Demo](Experiencer-Demo.gif)
+![Experiencer Screenshot](Experiencer-Screenshot.png)
 
 ## Try it Live
 

@@ -259,15 +259,26 @@ export default class CssEditor extends React.Component<CssEditorProps> {
     }
 
     render() {
+        let after = <Button onClick={(event) => {
+            this.props.addSelector(this.props.root.fullPath, '::after', '::after');
+            event.stopPropagation();
+        }}>::after</Button>
+        let before = <Button onClick={(event) => {
+            this.props.addSelector(this.props.root.fullPath, '::before', '::before');
+            event.stopPropagation();
+        }}>::before</Button>
+
+        if (this.props.root.hasName("::after")) {
+            after = <></>
+        }
+
+        if (this.props.root.hasName("::before")) {
+            before = <></>
+        }
+
         let beforeAfter = <>
-            <Button onClick={(event) => {
-                this.props.addSelector(this.props.root.fullPath, '::after', '::after');
-                event.stopPropagation();
-            }}>::after</Button>
-            <Button onClick={(event) => {
-                this.props.addSelector(this.props.root.fullPath, '::before', '::before');
-                event.stopPropagation();
-            }}>::before</Button>
+            {after}
+            {before}
             <CssSelectorAdder
                 addSelector={(name, selector) => this.props.addSelector(this.props.root.fullPath, name, selector)}
                 selector={this.props.root.fullSelector}

@@ -65,6 +65,18 @@ test('find Test', () => {
     expect(arraysEqual(listItemCss.fullPath, ['Lists', 'List Item'])).toBeTruthy();
 })
 
+test('No Duplicate Test', () => {
+    const cssNode = makeCssTree();
+    cssNode.add(new CssNode(':after', {}, ':after'));
+    expect(cssNode.hasName(':after'));
+
+    const addDup = () => {
+        cssNode.add(new CssNode(':after', {}, ':after'));
+    };
+
+    expect(addDup).toThrow();
+});
+
 test('Stylesheet Test', () => {
     const cssNode = new CssNode('Text Field', {
             "font-family": "Tahoma, sans-serif"

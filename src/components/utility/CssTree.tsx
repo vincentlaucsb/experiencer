@@ -13,6 +13,9 @@ export default class CssNode {
     /** A mapping of keys to CSS properties */
     private _children: Array<CssNode>;
 
+    /** Keep track of names added */
+    private _childNames = new Set<string>();
+
     private _name: string;
     private _selector: string;
     private _properties: Map<string, string>;
@@ -180,9 +183,22 @@ export default class CssNode {
      * @param css
      */
     add(css: CssNode): CssNode {
+        if (this.hasName(css.name)) {
+            throw new Error(`Already have a child named ${css.name}`);
+        }
+
         css.parent = this;
         this.children.push(css);
+        this._childNames.add(css.name);
         return this.children[this.children.length - 1];
+    }
+
+    /**
+     * Returns true if there is already a child node with the given name
+     * @param name Name to look for
+     */
+    hasName(name: string) {
+        return this._childNames.has(name);
     }
 
     /** Return a copy of this subtree with the same names and selectors

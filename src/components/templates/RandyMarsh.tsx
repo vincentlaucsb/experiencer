@@ -16,7 +16,8 @@ export function randyMarshCss() {
     randyCss.properties = new Map<string, string>([
         ["font-family", "var(--sans-serif)"],
         ["font-size", "11pt"],
-        ["display", "grid"]
+        ["display", "grid"],
+        ["height", "100%"]
     ]);
 
     const headshot = randyCss.add(new CssNode(

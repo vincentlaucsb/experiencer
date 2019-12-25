@@ -96,6 +96,8 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
                 'lower-alpha', 'lower-latin', 'upper-alpha', 'upper-latin',
                 'none'
             ]],
+
+            // TODO: Copy values for list-style
             ['list-style-type', ['disc']],
             ['list-style-position', ['inside', 'outside']],
             ['margin', new Array<string>()],

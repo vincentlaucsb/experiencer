@@ -40,9 +40,12 @@ class Resume extends React.Component<{}, ResumeState> {
     shouldUpdateCss = false;
     style: HTMLStyleElement;
     unselect: Action;
+    resumeRef: React.RefObject<HTMLDivElement>;
 
     constructor(props) {
         super(props);
+
+        this.resumeRef = React.createRef<HTMLDivElement>();
 
         // Custom CSS
         const head = document.getElementsByTagName("head")[0];
@@ -74,6 +77,7 @@ class Resume extends React.Component<{}, ResumeState> {
         this.renderCssEditor = this.renderCssEditor.bind(this);
 
         /** Load & Save */
+        this.exportHtml = this.exportHtml.bind(this);
         this.loadData = this.loadData.bind(this);
         this.saveFile = this.saveFile.bind(this);
 
@@ -363,6 +367,41 @@ class Resume extends React.Component<{}, ResumeState> {
     //#endregion
     
     //#region Serialization
+    exportHtml() {
+        // TODO: Make this user defineable
+        const filename = 'resume.html';
+
+        let resumeHtml = '';
+        if (this.resumeRef.current) {
+            resumeHtml = this.resumeRef.current.outerHTML;
+        }
+
+        let html = `<!doctype html>
+
+<html lang="en">
+    <head>
+        <title>Resume</title>
+        <meta charset="utf-8">
+        <style>
+            ${this.css.stylesheet()}
+        </style>
+        <link href="https://fonts.googleapis.com/css?family=Merriweather|Open+Sans&display=swap" rel="stylesheet">
+    </head>
+    <body style="margin: 0">
+        ${resumeHtml}
+    </body>
+</html>
+`
+
+        var blob = new Blob([html],
+            {
+                type: "text/html;charset=utf-8"
+            }
+        );
+
+        saveAs(blob, filename);
+    }
+
     loadData(data: object, mode: EditorMode = 'normal') {
         let savedData = data as ResumeSaveData;
         this.nodes.children = assignIds(savedData.children);
@@ -549,7 +588,7 @@ class Resume extends React.Component<{}, ResumeState> {
         };
 
         const resume = <div id="resume-container">
-            <div id="resume">
+            <div id="resume" ref={this.resumeRef}>
             <ResumeHotKeys {...this.resumeHotKeysProps} />
             {this.state.children.map((elem, idx, arr) => {
 
@@ -579,6 +618,7 @@ class Resume extends React.Component<{}, ResumeState> {
                     <Button><Octicon icon={Home} />Home</Button>
                     <Button onClick={this.changeTemplate}>New</Button>
                     <FileLoader loadData={this.loadData} />
+                    <Button onClick={this.exportHtml}>Export</Button>
                     <FileSaver saveFile={this.saveFile} />
                     <Button onClick={this.print}>Print</Button>
                 </PureMenu>

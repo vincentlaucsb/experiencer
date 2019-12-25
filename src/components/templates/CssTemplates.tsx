@@ -137,6 +137,7 @@ export default function getDefaultCss(): CssNode {
     let defaultCss = new CssNode('Resume CSS', {
         'font-family': 'Merriweather, serif',
         'font-size': '10pt',
+        'height': '100%',
         'padding': 'var(--edge-margin)',
     }, '#resume');
 

@@ -1,40 +1,71 @@
 ﻿import * as React from "react";
-import Row, { RowProps, BasicRowProps } from "./Row";
-import ReactQuill from "react-quill";
-import RichText from "./RichText";
+import { RowProps, BasicRowProps } from "./Row";
+import ResumeNodeBase from "./ResumeNodeBase";
+import QuillEditor from "./controls/QuillEditor";
 
 interface HeaderBase {
+    distribution?: 'top-to-bottom' | 'left-to-right' | 'bottom-to-top' | 'right-to-left';
+    justifyContent?: string;
     subtitle?: string;
 }
 
 export interface BasicHeaderProps extends BasicRowProps, HeaderBase { };
 export interface HeaderProps extends RowProps, HeaderBase { };
 
-export default class Header extends Row<HeaderProps> {
+export default class Header extends ResumeNodeBase<HeaderProps> {
     static readonly type: string = 'Header';
 
-    get className(): string {
-        let classNames = new Set(super.className.split(' '));
-        classNames.delete('row');
-        return Array.from(classNames).join(' ');
+    get style(): React.CSSProperties {
+        let style: React.CSSProperties = {};
+        style.display = 'flex';
+        style.justifyContent = this.props.justifyContent || 'space-between';
+
+        switch (this.props.distribution || 'top-to-bottom') {
+            case 'top-to-bottom':
+                style.flexDirection = 'column';
+                break;
+            case 'bottom-to-top':
+                style.flexDirection = 'column-reverse';
+                break;
+            case 'left-to-right':
+                style.flexDirection = 'row';
+                break;
+            case 'right-to-left':
+                style.flexDirection = 'row-reverse';
+                break;
+        }
+
+        return style;
     }
 
     render() {
-        let value = this.props.isEditing ? <ReactQuill
-            modules={RichText.quillModules}
-            value={this.props.value || ""}
-            onChange={(text) => this.updateData("value", text)}
-        /> : <h1 dangerouslySetInnerHTML={{ __html: this.props.value || "Enter a title" }} />;
+        let value = <h1 dangerouslySetInnerHTML={{ __html: this.props.value || "Enter a title" }} />
+        let subtitle = <h2 className="subtitle" dangerouslySetInnerHTML={{ __html: this.props.subtitle || "" }} />
 
-        let subtitle = this.props.isEditing ? <ReactQuill
-            modules={RichText.quillModules}
-            value={this.props.subtitle || ""}
-            onChange={(text) => this.updateData("subtitle", text)}
-        /> : <h2 className="subtitle" dangerouslySetInnerHTML={{ __html: this.props.subtitle || "" }} />;
+        if (this.isEditing) {
+            value = <QuillEditor
+                id={`${this.props.uuid}-title`}
+                value={this.props.value || ""}
+                onChange={(text) => this.updateData("value", text)}
+                selectTriggerProps={{
+                    onMouseEnter: () => {},
+                    onMouseLeave: () => {}
+                }}
+            />
 
+            subtitle = <QuillEditor
+                id={`${this.props.uuid}-subtitle`}
+                value={this.props.subtitle || ""}
+                onChange={(text) => this.updateData("subtitle", text)}
+                selectTriggerProps={{
+                    onMouseEnter: () => { },
+                    onMouseLeave: () => { }
+                }}
+            />
+        }
+        
         return (
             <header className={this.className} style={this.style} {...this.selectTriggerProps}>
-                {this.renderGrabHandle()}
                 <hgroup>
                     {value}
                     {subtitle}

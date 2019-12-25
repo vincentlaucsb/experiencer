@@ -1,0 +1,30 @@
+﻿@import "variables";
+
+ul.node-tree {
+    padding-left: $spacing;
+
+    ul {
+        margin-left: $spacing;
+        border-left: 1px solid $main;
+    }
+
+    li {
+        list-style-type: none;
+        cursor: pointer;
+        padding: $spacing/8 0;
+    }
+
+    li.tree-item-selected {
+        background: transparentize($light-accent, 0.5);
+
+        > span {
+            font-weight: bold;
+        }
+    }
+}
+
+%icon {
+    // text-align: center;
+    width: $spacing;
+    display: inline-block;
+}

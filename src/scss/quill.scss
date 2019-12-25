@@ -1,0 +1,23 @@
+@import "variables";
+
+#resume {
+    div.resume-ql {
+        margin-bottom: $spacing;
+    }
+
+    .quill-toolbar {
+        border: 0;
+        background: #ffffff;
+    }
+
+    /** Main container for Quill editor */
+    .ql-container {
+        min-width: 200px;
+        width: 100%;
+        border: 0;
+    }
+
+    hgroup .ql-container {
+        border-bottom: 1px solid $main;
+    }
+}

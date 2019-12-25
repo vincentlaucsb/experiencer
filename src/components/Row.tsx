@@ -4,7 +4,6 @@ import { ResumeNode, BasicResumeNode } from "./utility/NodeTree";
 import Column from "./Column";
 
 interface RowBase {
-    evenColumns?: boolean;
     justifyContent?: string;
     reverseDirection?: boolean;
 }
@@ -63,16 +62,6 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
 
         return properties;
     }
-
-    get additionalProps() {
-        if (this.props.evenColumns) {
-            return {
-                evenColumns: this.props.evenColumns
-            }
-        }
-
-        return {};
-    }
     
     justifyContent(text: string) {
         this.updateData('justifyContent', text);
@@ -83,7 +72,7 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
         if (this.isHovering && !this.isSelected) {
             return <div className="row-grab-handle-container">
                 <div className="row-grab-handle">
-                    Click here to select row
+                    <p>Click here to select row</p>
                 </div>
             </div>
         }
@@ -91,10 +80,10 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
         return <></>
     }
     
-    render() {
+    render() { 
         return (
-            <div className={this.className} id={this.props.htmlId} style={this.style} {...this.selectTriggerProps}>
-                {this.renderGrabHandle()}
+            <div className={this.className}
+                id={this.props.htmlId} style={this.style} {...this.selectTriggerProps}>
                 {this.renderChildren()}
             </div>
         );

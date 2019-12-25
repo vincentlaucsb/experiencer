@@ -56,15 +56,8 @@ export default class ResumeNodeBase<P
         let classes = new Array<string>();
 
         if (!this.isPrinting) {
-            if (this.isHovering) {
+            if (this.isHovering && !this.isSelectBlocked) {
                 classes.push('resume-hovering');
-
-                if (this.isSelectBlocked) {
-                    classes.push('resume-hovering-over-children');
-                }
-                else {
-                    classes.push('resume-hovering-over-self');
-                }
             }
 
             if (this.isSelected) {
@@ -129,7 +122,10 @@ export default class ResumeNodeBase<P
         }
 
         return {
-            onClick: this.setSelected,
+            onClick: (event: React.MouseEvent<any>) => {
+                this.setSelected();
+                event.stopPropagation();
+            },
             onMouseEnter: () => this.props.hoverOver(this.props.id),
             onMouseLeave: () => this.props.hoverOut(this.props.id)
         };
@@ -153,11 +149,7 @@ export default class ResumeNodeBase<P
     updateData(key: string, data: string | boolean | object | Array<any>) {
         this.props.updateData(this.props.id, key, data);
     }
-
-    get additionalProps(): object {
-        return {};
-    }
-
+    
     renderChildren() {
         const children = this.props.children as Array<ResumeNode>;
         if (children) {
@@ -165,7 +157,6 @@ export default class ResumeNodeBase<P
                 const uniqueId = elem.uuid;
                 const props = {
                     ...elem,
-                    ...this.additionalProps,
                     mode: this.props.mode,
                     isHovering: this.props.isHovering,
                     isSelected: this.props.isSelected,

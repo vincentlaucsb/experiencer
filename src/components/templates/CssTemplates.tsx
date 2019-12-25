@@ -33,7 +33,7 @@ function getRichTextCss(): CssNode {
     }, '.rich-text');
 
     let listCss = richTextCss.add(new CssNode('Lists', {
-        'padding-left': '1.5em' /** Reduced padding */
+        'padding-left': 'var(--large-spacing)'
     }, 'ul'));
 
     listCss.add(new CssNode('List Item', {
@@ -45,24 +45,24 @@ function getRichTextCss(): CssNode {
 
 function getSectionCss(): CssNode {
     let sectionCss = new CssNode(Section.type, {
-        'margin-bottom': '16px'
+        'margin-bottom': 'var(--large-spacing)'
     }, 'section');
 
     sectionCss.add(new CssNode('Title', {
-        'font-family': 'Verdana, sans-serif',
+        'font-family': 'var(--sans-serif)',
         'font-weight': 'bold',
         'font-size': '15pt',
         'text-transform': 'uppercase'
-    }, 'h2'));
+    }, '> h2'));
 
     sectionCss.add(new CssNode(
-        'Contents', {
+        'Content', {
             'margin-top': '8px',
             'margin-left': '8px',
             'padding-left': '16px',
             'padding-right': '8px',
             'border-left': '3px dotted #dddddd',
-        }, '.entry-content'
+        }, '> div.content'
     ));
 
     return sectionCss;
@@ -71,62 +71,98 @@ function getSectionCss(): CssNode {
 function getEntryCss(): CssNode {
     let entryCss = new CssNode(Entry.type,
         {
-            'margin-bottom': '15px'
-        }, '.entry');
+            'margin-bottom': 'var(--large-spacing)'
+        }, 'div.entry');
 
     let entryTitleCss = entryCss.add(new CssNode('Title Block',
         {
-            'margin-bottom': '4px'
-        }, 'hgroup'));
+            'margin-bottom': 'var(--small-spacing)'
+        }, '> hgroup'));
 
     let entryTitleHeadingCss = entryTitleCss.add(
         new CssNode('Title', {
-        'font-size': '13pt',
-    }, 'h3.title'));
+            'font-family': 'var(--serif)',
+            'font-size': '13pt',
+        }, '> h3'));
 
     entryTitleHeadingCss.add(new CssNode('First Title Field', {
         'font-weight': 'bold'
-    }, '.field-0'));
+    }, 'span.field-0'));
 
     entryTitleHeadingCss.add(new CssNode('Other Title Fields', {
         'font-weight': 'normal'
     }, ':not(.field-0)'));
 
-    entryTitleHeadingCss.add(new CssNode('First Title Field (After)', {
-        'content': "','",
-        'padding-right': '0.33em'
-    }, '.field-0::after'))
-
     let subtitleCss = entryTitleCss.add(new CssNode('Subtitle', {
-        'font-family': 'sans-serif',
-    }, 'h4.subtitle'));
+        'display': 'flex',
+        'flex-wrap': 'wrap',
+        'font-weight': 'normal'
+    }, '> h4'));
 
-    subtitleCss.add(new CssNode('Other Subtitle Fields', {
-        'margin-left': '1em'
-    }, '.field:not(.field-0)'));
+    subtitleCss.add(new CssNode('First Field', {
+        'font-weight': 'bold'
+    }, 'span.field-0'));
+
+    subtitleCss.add(new CssNode('Middle Fields', {
+    }, 'span.field-middle'));
+
+    subtitleCss.add(new CssNode('Last Field', {
+    }, 'span.field-last'));
 
     return entryCss;
 }
 
+function getHeaderCss() {
+    const headerCss = new CssNode('Header', {
+        'margin-bottom': 'var(--large-spacing)'
+    }, 'header');
+
+    const titleGroup = headerCss.add(new CssNode(
+        'Title Group', {}, '> hgroup'));
+
+    titleGroup.add(new CssNode('Title', {
+        'font-family': 'var(--serif)',
+        'font-weight': 'normal'
+    }, '> h1'));
+
+    const subtitleGroup = titleGroup.add(new CssNode('Subtitle', {
+        'font-weight': 'normal'
+    }, '> h2'));
+
+    return headerCss;
+}
+
 /** Return the default CSS template */
-export default function getDefaultCss() : CssNode {
+export default function getDefaultCss(): CssNode {
     let defaultCss = new CssNode('Resume CSS', {
         'font-family': 'Merriweather, serif',
         'font-size': '10pt',
-        'padding': '0.5in',
+        'height': '100%',
+        'padding': 'var(--edge-margin)',
     }, '#resume');
 
-    defaultCss.add(new CssNode('Links', {
+    defaultCss.cssRoot = new CssNode(':root', {
+        '--serif': 'Merriweather, serif',
+        '--sans-serif': 'Open Sans, sans-serif',
+        '--edge-margin': '0.5in',
+        '--small-spacing': '4px',
+        '--spacing': '8px',
+        '--large-spacing': '16px'
+    }, ':root');
+
+    defaultCss.add(new CssNode('All Resume Descendents', {
+        'margin': '0'
+    }, '*'));
+
+    defaultCss.add(new CssNode('Image', {
+        'max-width': '100%',
+        'max-height': '100%',
+        'object-fit': 'scale-down'
+    }, 'img'));
+
+    defaultCss.add(new CssNode('Link', {
         'color': '#000000'
     }, 'a, a:hover'));
-
-    let headerCss = defaultCss.add(new CssNode('Header', {
-        'margin-bottom': '16px'
-    }, 'header'));
-
-    headerCss.add(new CssNode('Subtitle', {
-        'font-weight': 'normal'
-    }, 'h2.subtitle'));
 
     let dlCss = defaultCss.add(new CssNode('Description List', {
     }, 'dl'));
@@ -135,10 +171,13 @@ export default function getDefaultCss() : CssNode {
         'padding-left': '0.5rem'
     }, 'dd'));
 
+    /**
     let gridCss = defaultCss.add(new CssNode('Grid', {
 
     }, 'div.grid-container'));
+    */
 
+    defaultCss.add(getHeaderCss());
     defaultCss.add(getSectionCss());
     defaultCss.add(getEntryCss());
     defaultCss.add(getRichTextCss());

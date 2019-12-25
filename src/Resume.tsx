@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { saveAs } from 'file-saver';
+import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
 
 import 'purecss/build/pure-min.css';
 import 'react-quill/dist/quill.snow.css';
@@ -14,7 +15,6 @@ import Landing from './components/help/Landing';
 import TopNavBar from './components/controls/TopNavBar';
 import ResumeHotKeys from './components/controls/ResumeHotkeys';
 import ResumeState, { ResumeSaveData } from './components/controls/ResumeState';
-import StyleEditor from './components/controls/StyleEditor';
 import Help from './components/help/Help';
 import HoverTracker, { IdType } from './components/utility/HoverTracker';
 import TopEditingBar, { EditingBarProps } from './components/controls/TopEditingBar';
@@ -31,6 +31,9 @@ import CssEditor from './components/utility/CssEditor';
 import Row from './components/Row';
 import Section from './components/Section';
 import Grid from './components/Grid';
+import NodeTreeVisualizer from './components/utility/NodeTreeVisualizer';
+import Tabs from './components/controls/Tabs';
+import ResumeContextMenu from './components/controls/ResumeContextMenu';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering = new HoverTracker();
@@ -39,9 +42,13 @@ class Resume extends React.Component<{}, ResumeState> {
     shouldUpdateCss = false;
     style: HTMLStyleElement;
     unselect: Action;
+    resumeRef: React.RefObject<HTMLDivElement>;
+    prevHoverNode: number[] | undefined;
 
     constructor(props) {
         super(props);
+
+        this.resumeRef = React.createRef<HTMLDivElement>();
 
         // Custom CSS
         const head = document.getElementsByTagName("head")[0];
@@ -52,9 +59,7 @@ class Resume extends React.Component<{}, ResumeState> {
         this.state = {
             css: this.css,
             children: [],
-            additionalCss: "",
-            mode: "landing",
-            sectionTitlePosition: "top"
+            mode: "landing"
         };
         this.renderStyle();
 
@@ -69,10 +74,13 @@ class Resume extends React.Component<{}, ResumeState> {
         this.updateNestedChild = this.updateNestedChild.bind(this);
 
         /** Templates and Styling **/
+        this.renderSidebar = this.renderSidebar.bind(this);
         this.changeTemplate = this.changeTemplate.bind(this);
         this.renderStyle = this.renderStyle.bind(this);
+        this.renderCssEditor = this.renderCssEditor.bind(this);
 
         /** Load & Save */
+        this.exportHtml = this.exportHtml.bind(this);
         this.loadData = this.loadData.bind(this);
         this.saveFile = this.saveFile.bind(this);
 
@@ -177,10 +185,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
     // Push style changes to browser
     renderStyle() {
-        this.style.innerHTML = `
-${this.state.css.stylesheet()}
-
-${this.state.additionalCss}`;
+        this.style.innerHTML = this.state.css.stylesheet();
     }
 
     /**
@@ -195,7 +200,7 @@ ${this.state.additionalCss}`;
     //#region Changing Templates
     changeTemplate() {
         this.loadData(
-            ResumeTemplateProvider.templates['Randy Marsh'](),
+            ResumeTemplateProvider.templates['Integrity'](),
             'changingTemplate'
         );
     }
@@ -247,10 +252,7 @@ ${this.state.additionalCss}`;
     }
 
     addSection() {
-        this.addChild({
-            type: Section.type,
-            headerPosition: this.state.sectionTitlePosition
-        });
+        this.addChild({ type: Section.type });
     }
 
     addColumn() {
@@ -368,6 +370,41 @@ ${this.state.additionalCss}`;
     //#endregion
     
     //#region Serialization
+    exportHtml() {
+        // TODO: Make this user defineable
+        const filename = 'resume.html';
+
+        let resumeHtml = '';
+        if (this.resumeRef.current) {
+            resumeHtml = this.resumeRef.current.outerHTML;
+        }
+
+        let html = `<!doctype html>
+
+<html lang="en">
+    <head>
+        <title>Resume</title>
+        <meta charset="utf-8">
+        <style>
+            ${this.css.stylesheet()}
+        </style>
+        <link href="https://fonts.googleapis.com/css?family=Merriweather|Open+Sans&display=swap" rel="stylesheet">
+    </head>
+    <body style="margin: 0">
+        ${resumeHtml}
+    </body>
+</html>
+`
+
+        var blob = new Blob([html],
+            {
+                type: "text/html;charset=utf-8"
+            }
+        );
+
+        saveAs(blob, filename);
+    }
+
     loadData(data: object, mode: EditorMode = 'normal') {
         let savedData = data as ResumeSaveData;
         this.nodes.children = assignIds(savedData.children);
@@ -376,7 +413,6 @@ ${this.state.additionalCss}`;
         this.setState({
             css: this.css,
             children: this.nodes.children,
-            additionalCss: savedData.css as string,
             mode: mode
         })
 
@@ -387,8 +423,7 @@ ${this.state.additionalCss}`;
     saveFile(filename: string) {
         const data: ResumeSaveData = {
             children: this.state.children,
-            builtinCss: this.css.dump(),
-            css: this.state.additionalCss
+            builtinCss: this.css.dump()
         };
 
         var blob = new Blob([JSON.stringify(data)],
@@ -422,8 +457,7 @@ ${this.state.additionalCss}`;
             saveFile: this.saveFile,
             changeTemplate: this.changeTemplate,
             toggleHelp: () => this.toggleMode('help'),
-            toggleLanding: () => this.setState({ mode: 'landing' }),
-            toggleStyleEditor: () => this.toggleMode('editingStyle')
+            toggleLanding: () => this.setState({ mode: 'landing' })
         }
 
         return props;
@@ -456,20 +490,6 @@ ${this.state.additionalCss}`;
         }
     }
 
-    get styleEditorProps() {
-        const onStyleChange = (css: string) => {
-            this.setState({ additionalCss: css });
-        }
-        const toggleStyleEditor = () => this.toggleMode('editingStyle');
-
-        return {
-            onStyleChange: onStyleChange,
-            renderStyle: this.renderStyle,
-            toggleStyleEditor: toggleStyleEditor,
-            ...this.state
-        }
-    }
-
     print() {
         requestAnimationFrame(() => {
             this.setState({ mode: 'printing' });
@@ -479,18 +499,66 @@ ${this.state.additionalCss}`;
     }
     //#endregion
 
+    renderSidebar() {
+        let CssEditor = this.renderCssEditor;
+        return <Tabs>
+            <NodeTreeVisualizer key="Tree" childNodes={this.state.children}
+                selectNode={(id) => this.setState({ selectedNode: id })}
+                selectedNode={this.state.selectedNode}
+            />
+            <CssEditor key="CSS" />
+            <div key="Raw CSS">
+                <pre>
+                    <code>
+                        {this.state.css.stylesheet()}
+                    </code>
+                </pre>
+            </div>
+        </Tabs>
+    }
+
     renderCssEditor() {
+        const adder = (path, name, selector) => {
+            (this.css.findNode(path) as CssNode).add(new CssNode(name, {}, selector));
+            this.setState({ css: this.css });
+            this.shouldUpdateCss = true;
+        }
+
         const updater = (path, key, value) => {
             this.css.setProperty(path, key, value);
             this.setState({ css: this.css });
             this.shouldUpdateCss = true;
         };
 
+        const updateDescription = (path, value) => {
+            const target = this.css.findNode(path);
+            if (target) {
+                target.description = value;
+            }
+
+            this.setState({ css: this.css });
+            this.shouldUpdateCss = true;
+        }
+
         const deleter = (path, key) => {
             this.css.deleteProperty(path, key);
             this.setState({ css: this.css });
             this.shouldUpdateCss = true;
         };
+
+        const deleteNode = (path) => {
+            this.css.delete(path);
+            this.setState({ css: this.css });
+            this.shouldUpdateCss = true;
+        }
+
+        const editorProps = {
+            addSelector: adder,
+            updateData: updater,
+            updateDescription: updateDescription,
+            deleteKey: deleter,
+            deleteNode: deleteNode
+        }
 
         if (this.selectedNode) {
             const rootNode = this.state.css.findNode(
@@ -499,35 +567,21 @@ ${this.state.additionalCss}`;
             let specificCssEditor = <></>
             if (this.selectedNode.htmlId && this.state.css.findNode([`#${this.selectedNode.htmlId}`])) {
                 const specificRoot = this.state.css.findNode([`#${this.selectedNode.htmlId}`]) as CssNode;
-                specificCssEditor = <CssEditor
-                    key={specificRoot.fullSelector}
-                    isPrinting={this.isPrinting}
-                    root={specificRoot}
-                    updateData={updater}
-                    deleteData={deleter}
-                />
+                specificCssEditor = <CssEditor key={specificRoot.fullSelector} root={specificRoot}
+                    {...editorProps} />
             }
 
             if (rootNode) {
                 return <>
                     {specificCssEditor}
-                    <CssEditor isPrinting={this.isPrinting}
-                        key={rootNode.fullSelector}
-                        root={rootNode}
-                        updateData={updater}
-                        deleteData={deleter}
-                    />
+                    <CssEditor {...editorProps} key={rootNode.fullSelector} root={rootNode} />
                 </>
             }
 
             return <></>
         }
                 
-        return <CssEditor isPrinting={this.isPrinting}
-            root={this.state.css}
-            updateData={updater}
-            deleteData={deleter}
-        />
+        return <CssEditor root={this.state.css} autoCollapse={true} {...editorProps} />
     }
 
     render() {
@@ -536,28 +590,40 @@ ${this.state.additionalCss}`;
            return <>{props.children}</>
         };
 
-        const resume = <div id="resume">
-            <ResumeHotKeys {...this.resumeHotKeysProps} />
-            {this.state.children.map((elem, idx, arr) => {
+        const resume = <div id="resume-container">
+            <ContextMenuTrigger id="resume-menu">
+                <div id="resume" ref={this.resumeRef} onContextMenu={() => this.setState({
+                    selectedNode: this.hovering.currentId })}>
+                    <ResumeHotKeys {...this.resumeHotKeysProps} />
+                
 
-                const uniqueId = elem.uuid;
-                const props = {
-                    ...elem,
-                    mode: this.state.mode,
-                    toggleEdit: this.editSelected.bind(this),
-                    updateData: this.updateNestedChild,
-                    ...this.hoverProps,
+                {this.state.children.map((elem, idx, arr) => {
 
-                    index: idx,
-                    numSiblings: arr.length
-                };
+                    const uniqueId = elem.uuid;
+                    const props = {
+                        ...elem,
+                        mode: this.state.mode,
+                        toggleEdit: this.editSelected.bind(this),
+                        updateData: this.updateNestedChild,
+                        ...this.hoverProps,
 
-                return <ResumeComponent key={uniqueId} {...props} />
-            })}
+                        index: idx,
+                        numSiblings: arr.length
+                    };
+
+                    return <ResumeComponent key={uniqueId} {...props} />
+                })}
+                </div>
+            </ContextMenuTrigger>
+
+            <ResumeContextMenu
+                nodes={this.nodes}
+                currentId={this.state.selectedNode}
+                selectNode={(id) => this.setState({selectedNode: id})}
+            />
         </div>
 
         let main = resume;
-        let sidebar: JSX.Element;
 
         const topEditingBar = this.state.selectedNode ? <TopEditingBar {...this.editingBarProps as EditingBarProps} /> : <div id="toolbar"
             className="no-print">
@@ -566,6 +632,7 @@ ${this.state.additionalCss}`;
                     <Button><Octicon icon={Home} />Home</Button>
                     <Button onClick={this.changeTemplate}>New</Button>
                     <FileLoader loadData={this.loadData} />
+                    <Button onClick={this.exportHtml}>Export</Button>
                     <FileSaver saveFile={this.saveFile} />
                     <Button onClick={this.print}>Print</Button>
                 </PureMenu>
@@ -590,19 +657,11 @@ ${this.state.additionalCss}`;
 
         // Render the final layout based on editor mode
         switch (this.state.mode) {
-            case 'editingStyle':
             case 'help':
-                if (this.state.mode === 'editingStyle') {
-                    sidebar = <StyleEditor {...this.styleEditorProps} />
-                }
-                else {
-                    sidebar = <Help close={() => this.toggleMode()} />
-                }
-
                 return <ResizableSidebarLayout
                     topNav={editingTop}
                     main={resume}
-                    sideBar={sidebar}
+                    sideBar={<Help close={() => this.toggleMode()} />}
                 />
             case 'changingTemplate':
                 return <StaticSidebarLayout
@@ -615,17 +674,14 @@ ${this.state.additionalCss}`;
                 return <DefaultLayout
                     topNav={editingTop}
                     main={main} />
+            case 'printing':
+                return main;
             default:
-                /**
-                return <DefaultLayout
-                    topNav={editingTop}
-                    main={main} />
-                    */
-                return <StaticSidebarLayout
+                return <ResizableSidebarLayout
                     topNav={editingTop}
                     main={resume}
                     isPrinting={this.isPrinting}
-                    sideBar={this.renderCssEditor()}
+                    sideBar={this.renderSidebar()}
             />
         }
     }

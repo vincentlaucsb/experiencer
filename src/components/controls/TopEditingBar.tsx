@@ -56,9 +56,10 @@ function AddOption(props: AddOptionProps) {
 
 export interface EditingBarProps extends SelectedNodeActions {
     id: IdType;
-    node: ResumeNode,
+
+    node?: ResumeNode,
     addHtmlId: (htmlId: string) => void;
-    updateNode: (key: string, value: string | string[] | boolean) => void;
+    updateNode: (key: string, value: string | string[] | boolean | number | number[]) => void;
 
     addChild: AddChild;
     toggleEdit: ModifyChild;
@@ -129,61 +130,66 @@ export default function TopEditingBar(props: EditingBarProps) {
     </PureMenuItem>
 
     const id = props.id;
-    const type = props.node.type;
-    const customOptions = toolbarOptions(props.node, props.updateNode);
-    let moveUpText = "Up";
-    let moveDownText = "Down";
-    let editButton = <></>
-    
-    // If we are selecting a child of a container type,
-    // give the option of adding another child to the parent
-    const childTypes = ComponentTypes.childTypes(type);
-    let parentOptions = <></>
 
-    if (ComponentTypes.isEditable(props.node.type)) {
-        editButton = <Item onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Item>
+    if (props.node) {
+        const type = props.node.type;
+        const customOptions = toolbarOptions(props.node, props.updateNode);
+        let moveUpText = "Up";
+        let moveDownText = "Down";
+        let editButton = <></>
+
+        // If we are selecting a child of a container type,
+        // give the option of adding another child to the parent
+        const childTypes = ComponentTypes.childTypes(type);
+        let parentOptions = <></>
+
+        if (ComponentTypes.isEditable(props.node.type)) {
+            editButton = <Item onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Item>
+        }
+
+        if (type === DescriptionListItem.type) {
+            const parentId = id.slice(0, id.length - 1);
+            parentOptions = <AddOption id={parentId} addChild={
+                props.addChild as AddChild
+            } options={ComponentTypes.childTypes(DescriptionList.type)} />
+        }
+
+        if (type === Column.type) {
+            moveUpText = "Left";
+            moveDownText = "Right";
+        }
+
+        return <div id="toolbar">
+            <div className="toolbar-section">
+                <PureMenu horizontal>
+                    <AddOption id={id} addChild={props.addChild as AddChild} options={childTypes} />
+                    {editButton}
+                    <Item onClick={props.delete}>Delete</Item>
+                    <ClipboardMenu {...props} />
+                    <CustomOptions options={customOptions} />
+                    <Button onClick={props.unselect}>Unselect</Button>
+                </PureMenu>
+                <span className="label">Current Node ({props.node.type})</span>
+            </div>
+            <div className="toolbar-section">
+                <PureMenu horizontal>
+                    <Item onClick={() => props.moveUp()} disabled={!props.moveUpEnabled}>{moveUpText}</Item>
+                    <Item onClick={() => props.moveDown()} disabled={!props.moveDownEnabled}>{moveDownText}</Item>
+                </PureMenu>
+                <span className="label">Move</span>
+            </div>
+            <div className="toolbar-section">
+                <PureMenu horizontal>
+                    <HtmlIdAdder
+                        key={props.node.uuid}
+                        htmlId={props.node.htmlId}
+                        addHtmlId={props.addHtmlId}
+                    />
+                </PureMenu>
+            </div>
+            {parentOptions}
+        </div>
     }
 
-    if (type === DescriptionListItem.type) {
-        const parentId = id.slice(0, id.length - 1);
-        parentOptions = <AddOption id={parentId} addChild={
-            props.addChild as AddChild
-        } options={ComponentTypes.childTypes(DescriptionList.type)} />
-    }
-
-    if (type === Column.type) {
-        moveUpText = "Left";
-        moveDownText = "Right";
-    }
-
-    return <div id="toolbar">
-        <div className="toolbar-section">
-            <PureMenu horizontal>
-                <AddOption id={id} addChild={props.addChild as AddChild} options={childTypes} />
-                {editButton}
-                <Item onClick={props.delete}>Delete</Item>
-                <ClipboardMenu {...props} />
-                <CustomOptions options={customOptions} />
-                <Button onClick={props.unselect}>Unselect</Button>
-            </PureMenu>
-            <span className="label">Current Node ({ props.node.type })</span>
-        </div>
-        <div className="toolbar-section">
-            <PureMenu horizontal>
-                <Item onClick={() => props.moveUp()} disabled={!props.moveUpEnabled}>{moveUpText}</Item>
-                <Item onClick={() => props.moveDown()} disabled={!props.moveDownEnabled}>{moveDownText}</Item>
-            </PureMenu>
-            <span className="label">Move</span>
-        </div>
-        <div className="toolbar-section">
-            <PureMenu horizontal>
-                <HtmlIdAdder
-                    key={props.node.uuid}
-                    htmlId={props.node.htmlId}
-                    addHtmlId={props.addHtmlId}
-                />
-            </PureMenu>
-        </div>
-        {parentOptions}
-    </div>
+    return <></>
 }

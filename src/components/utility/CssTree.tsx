@@ -1,8 +1,10 @@
 ﻿import { isNullOrUndefined } from "util";
+import { deleteAt } from "../Helpers";
 
 /** Return a JSON serializable format of a CssNode and its descendents */
 export interface CssNodeDump {
     children: Array<CssNodeDump>;
+    root?: CssNodeDump;
     name: string;
     selector: string;
     properties: Array<[string, string]>;
@@ -11,10 +13,19 @@ export interface CssNodeDump {
 export default class CssNode {
     /** A mapping of keys to CSS properties */
     private _children: Array<CssNode>;
+
+    /** Keep track of names added */
+    private _childNames = new Set<string>();
+
     private _name: string;
     private _selector: string;
     private _properties: Map<string, string>;
     private parent?: CssNode;
+
+    /** CSS :root selector */
+    public cssRoot?: CssNode;
+
+    public description?: string;
 
     constructor(name: string, properties: object, selector?: string) {
         this._name = name;
@@ -36,16 +47,44 @@ export default class CssNode {
         return this._selector;
     }
 
-    /** Compute the full CSS selector for this subtree */
-    get fullSelector() {
-        let selector = this._selector;
+    /** Get the root of the tree */
+    get treeRoot() {
         let parent = this.parent;
-        while (!isNullOrUndefined(parent)) {
-            selector = `${parent.selector} ${selector}`;
-            parent = parent.parent;
+        if (!parent) {
+            return this;
         }
 
-        return selector;
+        while (true) {
+            if (isNullOrUndefined(parent.parent)) {
+                return parent;
+            }
+            else {
+                parent = parent.parent;
+            }
+        }
+    }
+
+    /** Compute the full CSS selector for this subtree */
+    // **TODO: Fix selector generator wrt commas*/
+    /** TODO: Use this to generate stylesheets */
+    get fullSelector() {
+        let parent = this.parent;
+        let selectors = this._selector.split(',');
+        let finalSelectors = new Array<string>();
+
+        for (let selector of selectors) {
+            selector = selector.trim();
+            while (!isNullOrUndefined(parent)) {
+                // No space for pseudo-classes or elements
+                const space = (selector.charAt(0) === ':') ? '' : ' ';
+                selector = `${parent.selector}${space}${selector}`;
+                parent = parent.parent;
+            }
+
+            finalSelectors.push(selector);
+        }
+
+        return finalSelectors.join(', ');
     }
 
     /** Get this node's path in the subtree */
@@ -85,44 +124,79 @@ export default class CssNode {
             rootNode.add(CssNode.load(node));
         }
 
+        // Load root
+        if (data.root) {
+            rootNode.cssRoot = CssNode.load(data.root);
+        }
+
         return rootNode;
     }
 
     dump() : CssNodeDump {
-        return {
+        let data: CssNodeDump = {
             children: this.children.map((elem) => elem.dump()),
             name: this.name,
-            selector: this.selector,
-            properties: Array.from(this.properties.entries())
+            properties: Array.from(this.properties.entries()),
+            selector: this.selector
         }
+
+        if (this.cssRoot) {
+            data.root = this.cssRoot.dump();
+        }
+
+        return data;
+    }
+
+    private formatProperties() {
+        let cssProperties = new Array<string>();
+        if (this.properties.size > 0) {
+            for (let [property, entry] of this.properties.entries()) {
+                cssProperties.push(`\t${property}: ${entry};`);
+            }
+        }
+
+        return cssProperties.join('\n');
     }
 
     /** Return a CSS stylesheet */
     stylesheet(parentSelector?: string) {
-        let selector = this.selector;
-        if (parentSelector) {
-            selector = `${parentSelector} ${this.selector}`
-        }
+        // Generate individual rulesets for "," seperated selectors
+        let selectors = this.selector.split(',');
+        let stylesheets = new Array<string>();
 
-        let cssProperties = "";
-        if (this.properties.size > 0) {
-            for (let [property, entry] of this.properties.entries()) {
-                cssProperties += `${property}: ${entry};\n`;
+        for (let selector of selectors) {
+            // No need for trailing/leading whitespace
+            selector = selector.trim();
+
+            if (parentSelector) {
+                // Don't add space for pseudo-elements and pseudo-classes
+                selector = (selector.charAt(0) === ':') ? `${parentSelector}${selector}`
+                    : `${parentSelector} ${selector}`;
             }
+
+            let cssProperties = this.formatProperties();
+            const thisCss = this.properties.size > 0 ? `${selector} {\n${cssProperties}\n}` : ``;
+
+            let childStylesheets = new Array<string>();
+            // :root before others
+            if (this.cssRoot) {
+                childStylesheets.push(this.cssRoot.stylesheet());
+            }
+
+            for (let cssTree of this.children.values()) {
+                childStylesheets.push(cssTree.stylesheet(selector));
+            }
+
+            let finalStylesheet = thisCss;
+            if (childStylesheets.length > 0) {
+                finalStylesheet += "\n\n";
+                finalStylesheet += childStylesheets.join('\n\n');
+            }
+
+            stylesheets.push(finalStylesheet);
         }
 
-        const thisCss = this.properties.size > 0 ? `${selector} {
-    ${cssProperties}
-}` : ``;
-
-        let childStylesheets = "";
-        for (let cssTree of this.children.values()) {
-            childStylesheets += cssTree.stylesheet(selector);
-        }
-
-        return `${thisCss}
-    
-${childStylesheets}`
+        return stylesheets.join('\n\n');
     }
 
     /**
@@ -130,9 +204,47 @@ ${childStylesheets}`
      * @param css
      */
     add(css: CssNode): CssNode {
+        if (this.hasName(css.name)) {
+            throw new Error(`Already have a child named ${css.name}`);
+        }
+
         css.parent = this;
         this.children.push(css);
+        this._childNames.add(css.name);
         return this.children[this.children.length - 1];
+    }
+
+    // TODO: Add tests
+    delete(path: string[]) {
+        const parent = this.findNode(path.slice(0, path.length - 1));
+        const childName = path[path.length - 1];
+        if (parent && parent.hasName(childName)) {
+            parent.deleteDirectChild(childName);
+        }
+    }
+
+    private deleteDirectChild(name: string) {
+        this._childNames.delete(name);
+
+        let deleteIndex = -1;
+        for (let i in this._children) {
+            if (this._children[i].name === name) {
+                deleteIndex = parseInt(i);
+                break;
+            }
+        }
+
+        if (deleteIndex >= 0) {
+            this._children = deleteAt(this._children, deleteIndex);
+        }
+    }
+    
+    /**
+     * Returns true if there is already a child node with the given name
+     * @param name Name to look for
+     */
+    hasName(name: string) {
+        return this._childNames.has(name);
     }
 
     /** Return a copy of this subtree with the same names and selectors

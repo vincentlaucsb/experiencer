@@ -64,3 +64,108 @@ test('find Test', () => {
     expect(listItemCss).toBeDefined();
     expect(arraysEqual(listItemCss.fullPath, ['Lists', 'List Item'])).toBeTruthy();
 })
+
+test('No Duplicate Test', () => {
+    const cssNode = makeCssTree();
+    cssNode.add(new CssNode(':after', {}, ':after'));
+    expect(cssNode.hasName(':after'));
+
+    const addDup = () => {
+        cssNode.add(new CssNode(':after', {}, ':after'));
+    };
+
+    expect(addDup).toThrow();
+});
+
+test('Stylesheet Test', () => {
+    const cssNode = new CssNode('Text Field', {
+            "font-family": "Tahoma, sans-serif"
+        }, 'span');
+    expect(cssNode.stylesheet()).toBe(`span {
+\tfont-family: Tahoma, sans-serif;
+}`);
+})
+
+test('Stylesheet Comma Test', () => {
+    const cssNode = new CssNode('Text Field', {
+        "font-family": "Tahoma, sans-serif"
+    }, 'span, a');
+    expect(cssNode.stylesheet()).toBe(`span {
+\tfont-family: Tahoma, sans-serif;
+}
+
+a {
+\tfont-family: Tahoma, sans-serif;
+}`);
+})
+
+test('Stylesheet Test w/ Children', () => {
+    const cssNode = new CssNode('Text Field', {
+        "font-family": "Tahoma, sans-serif"
+    }, 'span');
+    cssNode.add(new CssNode('Bold', {
+        "font-size": "120%"
+    }, 'strong'));
+
+    expect(cssNode.stylesheet()).toBe(`span {
+\tfont-family: Tahoma, sans-serif;
+}
+
+span strong {
+\tfont-size: 120%;
+}`);
+})
+
+test('Stylesheet Test w/ Children + Comma', () => {
+    const cssNode = new CssNode('Text Field', {
+        "font-family": "Tahoma, sans-serif"
+    }, 'span, a');
+
+    const boldNode = cssNode.add(new CssNode('Bold', {
+        "font-size": "120%"
+    }, 'strong'));
+
+    expect(boldNode.fullSelector).toBe('span strong, a strong');
+    expect(cssNode.stylesheet()).toBe(`span {
+\tfont-family: Tahoma, sans-serif;
+}
+
+span strong {
+\tfont-size: 120%;
+}
+
+a {
+\tfont-family: Tahoma, sans-serif;
+}
+
+a strong {
+\tfont-size: 120%;
+}`);
+})
+
+test('Stylesheet Test w/ Children and Pseduoelements', () => {
+    const cssNode = new CssNode('Text Field', {
+        "font-family": "Tahoma, sans-serif"
+    }, 'span');
+
+    let after = cssNode.add(new CssNode('::after', {
+        "content": '","'
+    }, '::after'));
+
+    cssNode.add(new CssNode('Bold', {
+        "font-size": "120%"
+    }, 'strong'));
+
+    expect(after.fullSelector).toBe('span::after');
+    expect(cssNode.stylesheet()).toBe(`span {
+\tfont-family: Tahoma, sans-serif;
+}
+
+span::after {
+\tcontent: ",";
+}
+
+span strong {
+\tfont-size: 120%;
+}`);
+})

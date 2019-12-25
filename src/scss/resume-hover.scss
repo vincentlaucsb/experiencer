@@ -5,13 +5,19 @@
 }
 
 .resume-hovering {
-    border: 1px dashed $main;
+    // border: 1px dashed $main;
     cursor: pointer;
 }
 
-.resume-selected, .resume-hovering.resume-selected {
-    border: 2px solid $main;
-    cursor: auto;
+img.icon.resume-hovering, img.icon.resume-selected {
+    border: 1px dashed $main;
+}
+
+#resume {
+    div.resume-selected, .resume-selected {
+        border: 2px solid $main;
+        cursor: auto;
+    }
 }
 
 .resume-hidden {
@@ -25,60 +31,6 @@
 
 .resume-editing {
     background: unset;
-}
-
-$grab-handle-size: 35px;
-
-.row-grab-handle-container, .column-grab-handle-container {
-    position: relative;
-    flex-basis: 0;
-    flex-grow: 0;
-    flex-shrink: 0;
-}
-
-.row-grab-handle, .column-grab-handle {
-    display: flex;
-    position: absolute;
-    font-family: $font-family-base;
-    color: $light-shade;
-    cursor: pointer;
-}
-
-.row-grab-handle-container {
-    .row-grab-handle {
-        left: -$grab-handle-size;
-        width: $grab-handle-size;
-        height: 100%;
-        background: $main;
-        writing-mode: vertical-rl;
-        transform: rotate(-180deg);
-        padding-top: 0.5rem;
-    }
-}
-
-.column-grab-handle-container {
-    .column-grab-handle {
-        top: -$grab-handle-size;
-        left: -1px;
-        width: calc(100% - 1rem + 3px);
-        height: $grab-handle-size;
-        background: $dark-accent;
-        padding-left: $spacing;
-    }
-}
-
-/** Disable background if are hovering over a node's children */
-.resume-hovering-over-children {
-    background: none;
-    border: none;
-}
-
-.resume-row.resume-hovering-over-children {
-    border: 1px solid $dark-accent;
-}
-
-.resume-column.resume-hovering-over-children {
-    border: 1px solid $dark-accent;
 }
 
 #resume {

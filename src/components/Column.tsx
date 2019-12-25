@@ -70,7 +70,6 @@ export default class Column extends ResumeNodeBase<ColumnProps> {
 
         return <div {...this.selectTriggerProps} className={this.className} style={this.style}
             id={this.props.htmlId}>
-            {this.renderGrabHandle()}
             {this.renderChildren()}
             {helperText}
         </div>

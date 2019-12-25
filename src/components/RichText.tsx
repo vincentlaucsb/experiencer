@@ -4,6 +4,8 @@ import ReactQuill from 'react-quill';
 import * as Helpers from "./Helpers";
 import ResumeNodeBase from "./ResumeNodeBase";
 import { IdType } from "./utility/HoverTracker";
+import QuillToolbar from "./controls/QuillToolbar";
+import QuillEditor from "./controls/QuillEditor";
 
 export default class RichText extends ResumeNodeBase {
     static quillModules = {
@@ -41,13 +43,14 @@ export default class RichText extends ResumeNodeBase {
         
         if (this.isEditing) {
             return (
-                <div className={this.className} id={this.props.htmlId} {...this.selectTriggerProps}>
-                    <ReactQuill
-                        modules={RichText.quillModules}
-                        value={this.props.value || ""}
-                        onChange={((this.props.updateData as (id: IdType, key: string, data: any) => void).bind(this, this.props.id, "value") as (data: any) => void)}
-                    />
-                </div>
+                <QuillEditor
+                    id={this.props.uuid}
+                    value={this.props.value || ""}
+                    className={this.className}
+                    htmlId={this.props.htmlId}
+                    selectTriggerProps={this.selectTriggerProps}
+                    onChange={(value) => this.props.updateData(this.props.id, "value", value)}
+                />
             );
         }
 

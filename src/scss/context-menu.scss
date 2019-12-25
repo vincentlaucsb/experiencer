@@ -1,0 +1,20 @@
+﻿@import "variables";
+
+nav.react-contextmenu {
+    background: $light-shade;
+    border: 1px solid $light-accent;
+    font-size: 10pt;
+
+    h3 {
+        margin: 0;
+        padding: $spacing/4 $spacing;
+    }
+
+    div.react-contextmenu-item {
+        padding: $spacing/4 $spacing;
+    }
+
+    div.react-contextmenu-item:hover {
+        background: $dark-accent;
+    }
+}

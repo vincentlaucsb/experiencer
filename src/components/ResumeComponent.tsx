@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
 
-import Section, { SectionProps } from "./Section";
+import Section from "./Section";
 import Entry, { BasicEntryProps } from "./Entry";
 import DescriptionList, { DescriptionListItem } from "./List";
 import RichText from "./RichText";
@@ -11,11 +11,11 @@ import { BasicResumeNode } from "./utility/NodeTree";
 import Row from "./Row";
 import Column from "./Column";
 import Grid from "./Grid";
+import Icon from "./Icon";
 
 export type EditorMode = 'normal'
     | 'landing'
     | 'help'
-    | 'editingStyle'
     | 'changingTemplate'
     | 'printing';
 
@@ -54,11 +54,13 @@ export default function ResumeComponent(props: ResumeComponentProps) {
         case Header.type:
             return <Header {...newProps} />
         case Section.type:
-            return <Section {...newProps as SectionProps} />;
+            return <Section {...newProps} />;
         case Entry.type:
             return <Entry {...newProps} />;
         case RichText.type:
             return <RichText {...newProps} />;
+        case Icon.type:
+            return <Icon {...newProps} />
         default:
             return <React.Fragment></React.Fragment>
     }
@@ -81,7 +83,9 @@ export class ComponentTypes {
             case Grid.type:
                 return [
                     Row.type,
+                    Column.type,
                     Section.type,
+                    Icon.type,
                     Entry.type,
                     RichText.type,
                     AliasTypes.BulletedList,
@@ -112,7 +116,8 @@ export class ComponentTypes {
                     Entry.type,
                     RichText.type,
                     AliasTypes.BulletedList,
-                    DescriptionList.type
+                    DescriptionList.type,
+                    Grid.type
                 ];
             case RichText.type:
                 return [];
@@ -236,6 +241,13 @@ export class ComponentTypes {
                         type: Section.type
                     }
                 }
+            case Icon.type:
+                return {
+                    text: Icon.type,
+                    node: {
+                        type: Icon.type
+                    }
+                }
             default:
                 throw new Error(`Couldn't find information for component named ${type}`);
         }
@@ -254,9 +266,6 @@ export class ComponentTypes {
     }
 }
 
-/** Stores types which are just an alias for another type */
-export class AliasTypes {
-    static get BulletedList() {
-        return 'BulletedList';
-    }
+class AliasTypes {
+    static readonly BulletedList = 'Bulleted List';
 }

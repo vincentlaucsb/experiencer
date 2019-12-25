@@ -5,20 +5,62 @@ section.css-category * {
 }
 
 section.css-category {
-    h2, h3, h4, h5, h6 {
-        font-family: sans-serif;
+    font-size: 11pt;
+
+    h2 {
         margin: 0.3em 0;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+
+        span.button-group {
+            font-size: initial;
+
+            button {
+                font-size: 9pt;
+                margin-left: $spacing/4;
+            }
+
+            text-align: right;
+        }
     }
 
     th {
         text-align: left;
         padding-right: 0.5em;
     }
-
     // font-family: monospace;
-    margin-bottom: 1em;
+    margin: $spacing 0;
+}
+
+/** Nested Categories */
+section.css-category-1 .css-category {
+    border: 1px solid $main;
+
+    h2 {
+        background: $main;
+        margin: 0;
+        padding: $spacing/2 $spacing;
+        color: $light-accent;
+        font-size: 1.2em;
+    }
+
+    div.css-category-content {
+        background: $light-shade;
+        padding: $spacing/2 $spacing;
+    }
 }
 
 #resume .resume-highlighted {
     background: darken($light-shade, 0.25);
+}
+
+.css-ruleset {
+    table {
+        margin-left: $spacing;
+
+        th::after {
+            content: ':'
+        }
+    }
 }

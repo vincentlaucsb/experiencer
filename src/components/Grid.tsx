@@ -11,19 +11,24 @@ export default class Grid extends ResumeNodeBase {
     }
 
     get style() : React.CSSProperties {
-        return {
+        let style: React.CSSProperties = {
             display: "grid",
-            minWidth: "100px",
-            minHeight: "100px"
         };
+
+        if (this.isEmpty) {
+            style.minWidth = '100px';
+            style.minHeight = '100px';
+        }
+
+        return style;
     }
 
     /** Returns a "handle" which can be used to select the column itself and not the columns it contains */
     renderGrabHandle() {
         if (this.isHovering && !this.isSelected) {
-            return <div className="column-grab-handle-container">
-                <div className="column-grab-handle">
-                    Click here to select grid
+            return <div className="row-grab-handle-container">
+                <div className="row-grab-handle">
+                    <p>Click here to select grid</p>
                 </div>
             </div>
         }
@@ -34,7 +39,6 @@ export default class Grid extends ResumeNodeBase {
     render() {
         return <div className={this.className} style={this.style} id={this.props.htmlId} {...this.selectTriggerProps}>
             {this.renderChildren()}
-            {this.renderGrabHandle()}
         </div>
     }
 }

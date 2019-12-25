@@ -1,4 +1,4 @@
-﻿import { assignIds, process } from "./Helpers";
+﻿import { assignIds, process, arraysEqual } from "./Helpers";
 
 test('assignIDs Test', () => {
     const node = {
@@ -25,6 +25,13 @@ test('assignIDs Test', () => {
     );
 
     expect(node.children[0]['uuid']).not.toBe(node.children[1]['uuid']);
+});
+
+test('Helpers Test', () => {
+    let left = [0, 1, 0];
+    let right = [0, 1, 1];
+
+    expect(arraysEqual(left, right)).toBeFalsy();
 });
 
 test('process Test', () => {

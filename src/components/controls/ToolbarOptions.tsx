@@ -1,9 +1,10 @@
 ﻿import Entry, { EntryProps, BasicEntryProps } from "../Entry";
 import { ResumeNode } from "../utility/NodeTree";
 import Row, { BasicRowProps } from "../Row";
-import Section, { BasicSectionProps } from "../Section";
+import Section from "../Section";
 import { Action } from "../ResumeNodeBase";
-import Header from "../Header";
+import Header, { BasicHeaderProps } from "../Header";
+import Icon, { BasicIconProps } from "../Icon";
 
 export interface ToolbarOption {
     text: string;
@@ -21,9 +22,18 @@ export type CustomToolbarOptions = Array<ToolbarOption>;
  */
 export default function toolbarOptions(
     node: ResumeNode,
-    updateNode: (key: string, value: boolean | string | string[]) => void):
+    updateNode: (key: string, value: boolean | string | string[] | number | number[]) => void):
     CustomToolbarOptions
 {
+    const addLineBreak = (node: BasicEntryProps) => {
+        if (node.subtitle) {
+            let arr = node.subtitleBreaks || [];
+            arr.push(node.subtitle.length - 1);
+            return arr;
+        }
+
+        return [];
+    }
 
     const addTitleField = (node: BasicEntryProps) => {
         let arr = node.title || [];
@@ -53,6 +63,8 @@ export default function toolbarOptions(
         return [];
     };
 
+    const justifyContent = (option: string) => updateNode('justifyContent', option);
+
     switch (node.type) {
         case Entry.type:
             return [
@@ -70,6 +82,11 @@ export default function toolbarOptions(
                                 updateNode('subtitle', addSubtitleField(node))
                         },
                         {
+                            text: 'Add line break',
+                            action: () =>
+                                updateNode('subtitleBreaks', addLineBreak(node))
+                        },
+                        {
                             text: 'Remove title field (from right)',
                             action: () => updateNode('title', removeTitleField(node)),
                         },
@@ -82,22 +99,74 @@ export default function toolbarOptions(
             ];
 
         case Header.type:
-        case Row.type:
-            const rowNode = node as BasicRowProps;
-            let columnDistribution = {
-                text: 'Distribute Columns Evenly',
-                action: () => updateNode('evenColumns', !rowNode.evenColumns || false)
-            };
-            
-            if (rowNode.evenColumns) {
-                console.log("Distribute columns automatically");
-                columnDistribution.text = 'Distribute Columns Automatically';
-            }
-
-            const justifyContent = (option: string) => updateNode('justifyContent', option);
+            const headerProps = node as BasicHeaderProps;
+            const distribute = (value: string) => updateNode('distribution', value);
 
             return [
-                columnDistribution,
+                {
+                    text: `Distribute ${headerProps.distribution}`,
+                    actions: [
+                        {
+                            text: 'Top-to-Bottom',
+                            action: () => distribute('top-to-bottom')
+                        },
+                        {
+                            text: 'Bottom-to-Top',
+                            action: () => distribute('bottom-to-top')
+                        },
+                        {
+                            text: 'Left-to-Right',
+                            action: () => distribute('left-to-right')
+                        },
+                        {
+                            text: 'Right-to-Left',
+                            action: () => distribute('right-to-left')
+                        }
+                    ]
+                },
+                {
+                    text: 'Justify Content',
+                    actions: [
+                        {
+                            text: 'Space between',
+                            action: () => justifyContent('space-between')
+                        },
+                        {
+                            text: 'Stack at beginning',
+                            action: () => justifyContent('flex-start')
+                        },
+                        {
+                            text: 'Stack at end',
+                            action: () => justifyContent('flex-end')
+                        },
+                        {
+                            text: 'Stack center',
+                            action: () => justifyContent('center')
+                        },
+                        {
+                            text: 'Space around',
+                            action: () => justifyContent('space-around')
+                        },
+                        {
+                            text: 'Space evenly',
+                            action: () => justifyContent('space-evenly')
+                        }
+                    ]
+                }
+            ]
+
+        case Icon.type:
+            const iconNode = node as BasicIconProps;
+            return [
+                {
+                    text: 'GitHub',
+                    action: () => updateNode('icon', 'github')
+                }
+            ];
+
+        case Row.type:
+            const rowNode = node as BasicRowProps;
+            return [
                 {
                     text: 'Reverse Contents',
                     action: () => updateNode('reverseDirection', !rowNode.reverseDirection || false)
@@ -132,18 +201,6 @@ export default function toolbarOptions(
                     ]
                 }
             ];
-
-        case Section.type:
-            const sectionProps = node as BasicSectionProps;
-            const flipHeader = sectionProps.headerPosition === 'top' ? {
-                text: 'Header on Left',
-                action: () => updateNode('headerPosition', 'left')
-            } : {
-                    text: 'Header on Top',
-                    action: () => updateNode('headerPosition', 'top')
-                };
-
-            return [flipHeader];
 
         default:
             return [];

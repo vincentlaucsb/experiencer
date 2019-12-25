@@ -7,6 +7,9 @@ import { BasicResumeNode } from "./utility/NodeTree";
 interface EntryBase {
     title?: string[];
     subtitle?: string[];
+
+    /** Position of subtitle line breaks */
+    subtitleBreaks?: number[];
 }
 
 export interface BasicEntryProps extends BasicResumeNode, EntryBase { };
@@ -72,19 +75,32 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
             return fields.map((text, index, arr) => {
                 const isLast = index === arr.length - 1;
                 let classNames = ['field', `field-${index}`];
-                if (isLast) {
+                if (isLast && index != 0) {
                     classNames.push('field-last');
                 }
+                else if (index > 0) {
+                    classNames.push('field-middle');
+                }
 
-                return <ResumeTextField
+                /** Conditionally add line break */
+                let lineBreak = <></>
+                if (this.props.subtitleBreaks && this.props.subtitleBreaks.indexOf(index) >= 0) {
+                    lineBreak = <hr style={{
+                        flexBasis: "100%",
+                        border: 0
+                    }}/>
+                }
+
+                return <><ResumeTextField
                     displayClassName={classNames.join(' ')}
                     key={index}
                     onChange={(data: string) => updater(key, index, data)}
                     value={text || ""}
-                    label="Field"
                     defaultText="Enter a value"
                     {...this.textFieldProps}
                 />
+                    {lineBreak}
+                    </>
             });
         }
 

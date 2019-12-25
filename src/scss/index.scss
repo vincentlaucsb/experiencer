@@ -1,8 +1,13 @@
+@import "context-menu";
 @import "variables";
 @import "landing";
 @import "resume-hover";
+@import "node-tree";
 @import "forms";
 @import "css-editor";
+@import "quill";
+@import "inputs";
+@import "zindex";
 
 %flex-row {
     display: flex;
@@ -17,15 +22,22 @@
 /* App Stuff */
 body {
     background: $light-shade;
+    font-family: Open Sans, sans-serif;
     color: $dark-shade;
     margin: 0;
+}
+
+#resume-container {
+    width: 8.5in;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* Resizer */
 .Resizer.vertical {
     width: 2px;
-    border-left: 2px solid #000000;
-    padding: 0 0.5rem;
+    border-left: 2px solid $dark-shade;
+    margin: 0.5rem;
     cursor: col-resize;
 }
 
@@ -143,18 +155,25 @@ div.button-tooltip {
 }
 
 @media screen {
+    #resume-container {
+        width: 8.5in;
+    }
+
     #resume {
         border: 1px solid #dddddd;
-        width: 8.5in;
-        max-width: 8.5in;
         min-height: 11in;
         margin-bottom: $spacing;
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 
 @media print {
+    body {
+        background: none;
+    }
+
     #resume {
-        width: 100%;
         height: 100%;
         border: none;
     }

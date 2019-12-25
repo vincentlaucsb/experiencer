@@ -19,7 +19,7 @@ export default class HoverTracker {
     }
 
     get currentId() : IdType {
-        return this._currentId;
+        return [ ...this._currentId ];
     }
 
     hoverOver(id: IdType) {

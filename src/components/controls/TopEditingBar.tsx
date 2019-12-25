@@ -56,6 +56,7 @@ function AddOption(props: AddOptionProps) {
 
 export interface EditingBarProps extends SelectedNodeActions {
     id: IdType;
+    // TODO: Make ths nullable
     node: ResumeNode,
     addHtmlId: (htmlId: string) => void;
     updateNode: (key: string, value: string | string[] | boolean | number | number[]) => void;

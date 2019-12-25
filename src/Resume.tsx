@@ -59,7 +59,6 @@ class Resume extends React.Component<{}, ResumeState> {
         this.state = {
             css: this.css,
             children: [],
-            hoverBeforeRightClick: [],
             mode: "landing"
         };
         this.renderStyle();
@@ -171,10 +170,6 @@ class Resume extends React.Component<{}, ResumeState> {
         if (this.shouldUpdateCss) {
             this.renderStyle();
             this.shouldUpdateCss = false;
-        }
-
-        if (prevState.hoverNode != this.state.hoverNode) {
-            this.prevHoverNode = prevState.hoverNode;
         }
 
         // If the previously selected node was editing, bring it
@@ -597,7 +592,8 @@ class Resume extends React.Component<{}, ResumeState> {
 
         const resume = <div id="resume-container">
             <ContextMenuTrigger id="resume-menu">
-                <div id="resume" ref={this.resumeRef}>
+                <div id="resume" ref={this.resumeRef} onContextMenu={() => this.setState({
+                    selectedNode: this.hovering.currentId })}>
                     <ResumeHotKeys {...this.resumeHotKeysProps} />
                 
 
@@ -620,7 +616,9 @@ class Resume extends React.Component<{}, ResumeState> {
                 </div>
             </ContextMenuTrigger>
 
-            <ResumeContextMenu currentId={this.prevHoverNode}
+            <ResumeContextMenu
+                nodes={this.nodes}
+                currentId={this.state.selectedNode}
                 selectNode={(id) => this.setState({selectedNode: id})}
             />
         </div>

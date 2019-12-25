@@ -12,7 +12,6 @@ export default interface ResumeState {
     css: CssNode;
     children: Array<ResumeNode>;
     mode: EditorMode;
-    hoverBeforeRightClick: IdType;
 
     activeTemplate?: string;
     clipboard?: object;

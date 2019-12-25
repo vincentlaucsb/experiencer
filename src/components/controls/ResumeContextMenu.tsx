@@ -1,51 +1,35 @@
 ﻿import React from "react";
 import { IdType } from "../utility/HoverTracker";
 import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
+import ResumeNodeTree from "../utility/NodeTree";
 
 export interface ResumeContextProps {
     currentId?: IdType;
+    nodes: ResumeNodeTree;
     selectNode: (id: IdType) => void;
 }
 
-export interface ResumeContextState {
-    stopUpdating: boolean;
-}
-
-export default class ResumeContextMenu extends React.Component<ResumeContextProps, ResumeContextState> {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            stopUpdating: false
+export default class ResumeContextMenu extends React.Component<ResumeContextProps> {
+    get currentNode() {
+        if (this.props.currentId) {
+            return this.props.nodes.getNodeById(this.props.currentId);
         }
-
-        this.hideHandler = this.hideHandler.bind(this);
-    }
-
-    hideHandler() {
-        console.log("Menu was hidden");
-        this.setState({ stopUpdating: false });
     }
 
     hoveringMenu(currentNode?: IdType) {
-        console.log(currentNode);
-
         if (currentNode) {
             let menuItems = Array<IdType>();
-
-            console.log(currentNode);
+            currentNode.pop();
 
             while (currentNode.length > 0) {
                 menuItems.push([...currentNode]);
                 currentNode.pop();
             }
-
-            console.log(menuItems);
-
+            
             return <>
                 {menuItems.map((value) => {
                     return <MenuItem onClick={() => this.props.selectNode(value)}>
-                        {value}
+                        Select {this.props.nodes.getNodeById(value).type}
                     </MenuItem>
                 })}
             </>
@@ -61,14 +45,14 @@ export default class ResumeContextMenu extends React.Component<ResumeContextProp
             menu = this.hoveringMenu([...this.props.currentId]);
         }
 
+        let header = <></>
+        if (this.currentNode) {
+            header = <h3>{this.currentNode.type}</h3>
+        }
+
         return (
-            <ContextMenu id="resume-menu"
-                onShow={() => {
-                    console.log("Menu is showing");
-                    this.setState({ stopUpdating: true });
-                }}
-                onHide={this.hideHandler}
-            >
+            <ContextMenu id="resume-menu">
+                {header}
                 {menu}
             </ContextMenu>
         );

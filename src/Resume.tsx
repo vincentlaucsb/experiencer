@@ -14,7 +14,6 @@ import Landing from './components/help/Landing';
 import TopNavBar from './components/controls/TopNavBar';
 import ResumeHotKeys from './components/controls/ResumeHotkeys';
 import ResumeState, { ResumeSaveData } from './components/controls/ResumeState';
-import StyleEditor from './components/controls/StyleEditor';
 import Help from './components/help/Help';
 import HoverTracker, { IdType } from './components/utility/HoverTracker';
 import TopEditingBar, { EditingBarProps } from './components/controls/TopEditingBar';
@@ -466,6 +465,13 @@ class Resume extends React.Component<{}, ResumeState> {
                 selectedNode={this.state.selectedNode}
             />
             <CssEditor key="CSS" />
+            <div key="Raw CSS">
+                <pre>
+                    <code>
+                        {this.state.css.stylesheet()}
+                    </code>
+                </pre>
+            </div>
         </Tabs>
     }
 

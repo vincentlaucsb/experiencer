@@ -138,12 +138,13 @@ export default class CssNode {
         const thisCss = this.properties.size > 0 ? `${selector} {\n${cssProperties.join('\n')}\n}` : ``;
 
         let childStylesheets = new Array<string>();
-        for (let cssTree of this.children.values()) {
-            childStylesheets.push(cssTree.stylesheet(selector));
-        }
-
+        // :root before others
         if (this.root) {
             childStylesheets.push(this.root.stylesheet());
+        }
+
+        for (let cssTree of this.children.values()) {
+            childStylesheets.push(cssTree.stylesheet(selector));
         }
 
         let finalStylesheet = thisCss;

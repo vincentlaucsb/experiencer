@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { saveAs } from 'file-saver';
+import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
 
 import 'purecss/build/pure-min.css';
 import 'react-quill/dist/quill.snow.css';
@@ -32,6 +33,7 @@ import Section from './components/Section';
 import Grid from './components/Grid';
 import NodeTreeVisualizer from './components/utility/NodeTreeVisualizer';
 import Tabs from './components/controls/Tabs';
+import ResumeContextMenu from './components/controls/ResumeContextMenu';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering = new HoverTracker();
@@ -41,6 +43,7 @@ class Resume extends React.Component<{}, ResumeState> {
     style: HTMLStyleElement;
     unselect: Action;
     resumeRef: React.RefObject<HTMLDivElement>;
+    prevHoverNode: number[] | undefined;
 
     constructor(props) {
         super(props);
@@ -56,6 +59,7 @@ class Resume extends React.Component<{}, ResumeState> {
         this.state = {
             css: this.css,
             children: [],
+            hoverBeforeRightClick: [],
             mode: "landing"
         };
         this.renderStyle();
@@ -167,6 +171,10 @@ class Resume extends React.Component<{}, ResumeState> {
         if (this.shouldUpdateCss) {
             this.renderStyle();
             this.shouldUpdateCss = false;
+        }
+
+        if (prevState.hoverNode != this.state.hoverNode) {
+            this.prevHoverNode = prevState.hoverNode;
         }
 
         // If the previously selected node was editing, bring it
@@ -588,25 +596,33 @@ class Resume extends React.Component<{}, ResumeState> {
         };
 
         const resume = <div id="resume-container">
-            <div id="resume" ref={this.resumeRef}>
-            <ResumeHotKeys {...this.resumeHotKeysProps} />
-            {this.state.children.map((elem, idx, arr) => {
+            <ContextMenuTrigger id="resume-menu">
+                <div id="resume" ref={this.resumeRef}>
+                    <ResumeHotKeys {...this.resumeHotKeysProps} />
+                
 
-                const uniqueId = elem.uuid;
-                const props = {
-                    ...elem,
-                    mode: this.state.mode,
-                    toggleEdit: this.editSelected.bind(this),
-                    updateData: this.updateNestedChild,
-                    ...this.hoverProps,
+                {this.state.children.map((elem, idx, arr) => {
 
-                    index: idx,
-                    numSiblings: arr.length
-                };
+                    const uniqueId = elem.uuid;
+                    const props = {
+                        ...elem,
+                        mode: this.state.mode,
+                        toggleEdit: this.editSelected.bind(this),
+                        updateData: this.updateNestedChild,
+                        ...this.hoverProps,
 
-                return <ResumeComponent key={uniqueId} {...props} />
-            })}
-            </div>
+                        index: idx,
+                        numSiblings: arr.length
+                    };
+
+                    return <ResumeComponent key={uniqueId} {...props} />
+                })}
+                </div>
+            </ContextMenuTrigger>
+
+            <ResumeContextMenu currentId={this.prevHoverNode}
+                selectNode={(id) => this.setState({selectedNode: id})}
+            />
         </div>
 
         let main = resume;

@@ -1,4 +1,5 @@
 ﻿import { isNullOrUndefined } from "util";
+import { deleteAt } from "../Helpers";
 
 /** Return a JSON serializable format of a CssNode and its descendents */
 export interface CssNodeDump {
@@ -211,6 +212,31 @@ export default class CssNode {
         return this.children[this.children.length - 1];
     }
 
+    // TODO: Add tests
+    delete(path: string[]) {
+        const parent = this.findNode(path.slice(0, path.length - 1));
+        const childName = path[path.length - 1];
+        if (parent && parent.hasName(childName)) {
+            parent.deleteDirectChild(childName);
+        }
+    }
+
+    private deleteDirectChild(name: string) {
+        this._childNames.delete(name);
+
+        let deleteIndex = -1;
+        for (let i in this._children) {
+            if (this._children[i].name === name) {
+                deleteIndex = parseInt(i);
+                break;
+            }
+        }
+
+        if (deleteIndex >= 0) {
+            this._children = deleteAt(this._children, deleteIndex);
+        }
+    }
+    
     /**
      * Returns true if there is already a child node with the given name
      * @param name Name to look for

@@ -494,10 +494,17 @@ class Resume extends React.Component<{}, ResumeState> {
             this.shouldUpdateCss = true;
         };
 
+        const deleteNode = (path) => {
+            this.css.delete(path);
+            this.setState({ css: this.css });
+            this.shouldUpdateCss = true;
+        }
+
         const editorProps = {
             addSelector: adder,
             updateData: updater,
-            deleteData: deleter
+            deleteKey: deleter,
+            deleteNode: deleteNode
         }
 
         if (this.selectedNode) {

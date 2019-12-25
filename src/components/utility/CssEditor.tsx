@@ -10,7 +10,8 @@ export interface CssEditorProps {
     root: CssNode;
     addSelector: (path: string[], name: string, selector: string) => void;
     updateData: (path: string[], key: string, value: string) => void;
-    deleteData: (path: string[], key: string) => void;
+    deleteKey: (path: string[], key: string) => void;
+    deleteNode: (path: string[]) => void;
 }
 
 export default class CssEditor extends React.Component<CssEditorProps> {
@@ -234,7 +235,7 @@ export default class CssEditor extends React.Component<CssEditorProps> {
                     <MappedTextFields value={cssProperties}
                         container={this.mapContainer}
                         updateValue={this.props.updateData.bind(this, this.path)}
-                        deleteKey={this.props.deleteData.bind(this, this.path)}
+                        deleteKey={this.props.deleteKey.bind(this, this.path)}
                         keySuggestions={Array.from(this.cssProperties.keys())}
                         valueSuggestions={this.cssProperties}
                     />
@@ -246,14 +247,15 @@ export default class CssEditor extends React.Component<CssEditorProps> {
     }
 
     renderChildren() {
-        return this.props.root.children.map((css) => {
+        return this.props.root.children.map((css: CssNode) => {
             return <CssEditor
                 key={css.fullSelector}
                 root={css}
                 autoCollapse={this.props.autoCollapse}
                 addSelector={this.props.addSelector}
                 updateData={this.props.updateData}
-                deleteData={this.props.deleteData}
+                deleteKey={this.props.deleteKey}
+                deleteNode={this.props.deleteNode}
             />
         });
     }
@@ -263,10 +265,22 @@ export default class CssEditor extends React.Component<CssEditorProps> {
             this.props.addSelector(this.props.root.fullPath, '::after', '::after');
             event.stopPropagation();
         }}>::after</Button>
+
         let before = <Button onClick={(event) => {
             this.props.addSelector(this.props.root.fullPath, '::before', '::before');
             event.stopPropagation();
         }}>::before</Button>
+
+        let deleteButton = <></>
+        if (this.props.deleteNode) {
+            deleteButton = <Button onClick={(event) => {
+                if (this.props.deleteNode) {
+                    this.props.deleteNode(this.props.root.fullPath);
+                }
+
+                event.stopPropagation();
+            }}>Delete</Button>
+        }
 
         if (this.props.root.hasName("::after")) {
             after = <></>
@@ -276,20 +290,19 @@ export default class CssEditor extends React.Component<CssEditorProps> {
             before = <></>
         }
 
-        let beforeAfter = <>
+        let buttons = <span className="button-group">
             {after}
             {before}
             <CssSelectorAdder
                 addSelector={(name, selector) => this.props.addSelector(this.props.root.fullPath, name, selector)}
                 selector={this.props.root.fullSelector}
             />
-        </>
+            {deleteButton}
+        </span>
 
         const trigger = <h2 onMouseOver={() => this.toggleHighlight()} onMouseOut={() => this.toggleHighlight(false)}>
             {this.props.root.name}
-            <span className="button-group">
-                {beforeAfter}
-            </span>
+            {buttons}            
         </h2>
 
         const isOpen = (this.path.length !== 1) || !this.props.autoCollapse;

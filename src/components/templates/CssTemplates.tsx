@@ -155,7 +155,8 @@ export default function getDefaultCss(): CssNode {
 
     defaultCss.add(new CssNode('Image', {
         'max-width': '100%',
-        'max-height': '100%'
+        'max-height': '100%',
+        'object-fit': 'scale-down'
     }, 'img'));
 
     defaultCss.add(new CssNode('Link', {

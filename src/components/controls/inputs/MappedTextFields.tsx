@@ -77,7 +77,11 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
 interface MappedTextFieldsState {
     activeKey: string;
     isAddingKey: boolean;
-    isEditing: boolean;
+}
+
+export interface ContainerProps {
+    children?: any;
+    onClick: (event: React.MouseEvent) => void;
 }
 
 export interface MappedTextFieldsProps {
@@ -92,7 +96,7 @@ export interface MappedTextFieldsProps {
     valueSuggestions?: Map<string, Array<string>>;
 
     /** Render prop for rendering the element containing the input fields */
-    container: (props: any) => JSX.Element;
+    container: (props: ContainerProps) => JSX.Element;
 }
 
 export default class MappedTextFields extends React.Component<MappedTextFieldsProps, MappedTextFieldsState> {
@@ -100,41 +104,23 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
         super(props);
         this.state = {
             activeKey: "",
-            isAddingKey: false,
-            isEditing: false
+            isAddingKey: false
         };
 
         this.addNewKey = this.addNewKey.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.updateText = this.updateText.bind(this);
-        this.setEditing = this.setEditing.bind(this);
     }
 
     get data() {
         return this.props.value;
     }
 
-    get editingButton() {
-        const setAddingKey = (b: boolean) => this.setState({ isAddingKey: b });
-
-        if (this.state.isEditing) {
-            return (
-                <>
-                    <button onClick={() => setAddingKey(true)}>Add New Item</button>
-                    <button onClick={() => this.setEditing(false)}>Done Editing</button>
-                </>
-            )
-        }
-
-        if (this.data.size == 0) {
-            return <button onClick={() => this.setEditing(true)}>Add an item</button>
-        }
-
-        return <></>
-    }
-
     addNewKey(key: string) {
-        this.updateText(key, '');
+        if (key.length > 0) {
+            this.updateText(key, '');
+        }
+
         this.setState({
             isAddingKey: false,
             activeKey: key
@@ -145,21 +131,6 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
         // Update parent
         this.props.updateValue(key, value);
     };
-
-    setEditing(isEditing: boolean) {
-        let isAddingKey = this.state.isAddingKey;
-        if (isEditing === false) {
-            isAddingKey = false;
-
-            // Update parent
-            // this.props.updateValue(this.data);
-        }
-
-        this.setState({
-            isAddingKey: isAddingKey,
-            isEditing: isEditing
-        });
-    }
 
     /**
      * Keydown from an input field
@@ -178,22 +149,29 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
     /** Props for anything containing an input cell */
     inputContainerProps(key?: string) {
         let props: any = {
+            onClick: (event: React.MouseEvent) => {
+                event.stopPropagation();
+            },
             onKeyDown: this.handleKeyDown
         };
 
         if (key) {
-            props.onClick = () => this.setState({ activeKey: key });
+            const oldProps = { ...props };
+            props.onClick = (event: React.MouseEvent) => {
+                oldProps.onClick(event);
+                this.setState({ activeKey: key });
+            }
         }
 
         return props;
     }
-
+    
     render() {
         let keyAdder = <></>
-        if (this.state.isAddingKey && this.state.isEditing) {
+        if (this.state.isAddingKey) {
             keyAdder = <tr>
                 <th scope="row" {...this.inputContainerProps()}>
-                <ValueField
+                    <ValueField
                         isEditing={this.state.isAddingKey}
                         updateText={this.addNewKey}
                         suggestions={this.props.keySuggestions}
@@ -208,7 +186,9 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
         const Container = this.props.container;
 
         return <React.Fragment>
-            <Container>
+            <Container onClick={(event) => {
+                this.setState({ isAddingKey: true });
+            }}>
                 {Array.from(this.data.entries()).map(([key, value]) => {
                     let suggestions;
                     if (this.props.valueSuggestions && this.props.valueSuggestions.has(key)) {
@@ -216,13 +196,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                     }
 
                 return <tr key={key}>
-                    <th onKeyDown={(event) => {
-                        // When the user is done editing the value field, allow them
-                        // to add another field
-                        if (event.key === 'Enter') {
-                            this.setState({ isAddingKey: true });
-                        }
-                    }} scope="row">{key}</th>
+                    <th>{key}</th>
                     <td {...this.inputContainerProps(key)}>
                         <ValueField
                             isEditing={this.state.activeKey === key}
@@ -235,10 +209,6 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
 
                 {keyAdder}
             </Container>
-
-            <div>
-                {this.editingButton}
-            </div>
         </React.Fragment>
     }
 }

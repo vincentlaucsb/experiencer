@@ -1,6 +1,6 @@
 ﻿import CssNode from "./CssTree";
 import React from "react";
-import MappedTextFields from "../controls/inputs/MappedTextFields";
+import MappedTextFields, { ContainerProps } from "../controls/inputs/MappedTextFields";
 import Collapse from "../controls/Collapse";
 import { Button } from "../controls/Buttons";
 import CssSelectorAdder from "./CssSelectorAdder";
@@ -193,8 +193,8 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
      * Contains the rows of a CSS ruleset
      * @param props
      */
-    mapContainer(props: any) {
-        return <table>
+    mapContainer(props: ContainerProps) {
+        return <table onClick={props.onClick}>
             <tbody>
                 {props.children}
             </tbody>

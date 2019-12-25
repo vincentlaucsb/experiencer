@@ -35,7 +35,7 @@ export default function FileSaver(props: FileSaverProps) {
     return (
         <Popover content={form} position="bottom" isOpen={open}>
             <Button onClick={() => setOpen(!open)}>
-                <Octicon icon={DesktopDownload} />Save
+                <Octicon icon={DesktopDownload} />Save As
             </Button>
         </Popover>
     );

@@ -22,7 +22,7 @@ import ResumeNodeTree, { ResumeNode, BasicResumeNode } from './components/utilit
 import CssNode from './components/utility/CssTree';
 import PureMenu, { PureMenuLink, PureMenuItem } from './components/controls/PureMenu';
 import { Button } from './components/controls/Buttons';
-import Octicon, { Home } from "@primer/octicons-react";
+import Octicon, { Home, Saved } from "@primer/octicons-react";
 import { RenderIf } from './components/controls/HelperComponents';
 import FileLoader from './components/controls/FileLoader';
 import FileSaver from './components/controls/FileSaver';
@@ -82,6 +82,7 @@ class Resume extends React.Component<{}, ResumeState> {
         /** Load & Save */
         this.exportHtml = this.exportHtml.bind(this);
         this.loadData = this.loadData.bind(this);
+        this.saveLocal = this.saveLocal.bind(this);
         this.saveFile = this.saveFile.bind(this);
 
         this.editSelected = this.editSelected.bind(this);
@@ -419,14 +420,32 @@ class Resume extends React.Component<{}, ResumeState> {
         this.shouldUpdateCss = true;
     }
 
-    // Save data to an external file
-    saveFile(filename: string) {
-        const data: ResumeSaveData = {
+    loadLocal() {
+        const savedData = localStorage.getItem('experiencer');
+        if (savedData) {
+            try {
+                this.loadData(JSON.parse(savedData));
+            }
+            catch {
+                console.log("Nope, that didn't work.");
+            }
+        }
+    }
+
+    dump(): ResumeSaveData {
+        return {
             children: this.state.children,
             builtinCss: this.css.dump()
         };
+    }
 
-        var blob = new Blob([JSON.stringify(data)],
+    saveLocal() {
+        localStorage.setItem('experiencer', JSON.stringify(this.dump()));
+    }
+
+    // Save data to an external file
+    saveFile(filename: string) {
+        var blob = new Blob([JSON.stringify(this.dump())],
             {
                 type: "text/plain;charset=utf-8"
             }
@@ -633,6 +652,7 @@ class Resume extends React.Component<{}, ResumeState> {
                     <Button onClick={this.changeTemplate}>New</Button>
                     <FileLoader loadData={this.loadData} />
                     <Button onClick={this.exportHtml}>Export</Button>
+                    <Button onClick={this.saveLocal}>Save</Button>
                     <FileSaver saveFile={this.saveFile} />
                     <Button onClick={this.print}>Print</Button>
                 </PureMenu>
@@ -670,7 +690,7 @@ class Resume extends React.Component<{}, ResumeState> {
                     sideBar={this.renderTemplateChanger()}
                 />
             case 'landing':
-                main = <Landing />
+                main = <Landing loadLocal={() => { this.loadLocal() }} />
                 return <DefaultLayout
                     topNav={editingTop}
                     main={main} />

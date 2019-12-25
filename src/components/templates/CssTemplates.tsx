@@ -140,7 +140,7 @@ export default function getDefaultCss(): CssNode {
         'padding': 'var(--edge-margin)',
     }, '#resume');
 
-    defaultCss.root = new CssNode(':root', {
+    defaultCss.cssRoot = new CssNode(':root', {
         '--serif': 'Merriweather, serif',
         '--sans-serif': 'Open Sans, sans-serif',
         '--edge-margin': '0.5in',

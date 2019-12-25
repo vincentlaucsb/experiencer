@@ -32,7 +32,7 @@ export function randyMarshCss() {
         'border-radius': '50%'
     }, 'img'));
 
-    let rootCss = randyCss.root as CssNode;
+    let rootCss = randyCss.cssRoot as CssNode;
     if (rootCss) {
         rootCss.properties.set('--header-base-height', '120px');
         rootCss.properties.set('--header-padding-bottom', 'var(--large-spacing)');

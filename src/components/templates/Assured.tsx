@@ -8,7 +8,7 @@ import CssNode from "../utility/CssTree";
 
 export function assuredCss() {
     let defaultCss = getDefaultCss();
-    let rootCss = defaultCss.root as CssNode;
+    let rootCss = defaultCss.cssRoot as CssNode;
     if (rootCss) {
         rootCss.properties.set('--accent', '#315eaa');
     }

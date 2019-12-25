@@ -17,7 +17,9 @@ export default class CssNode {
     private _selector: string;
     private _properties: Map<string, string>;
     private parent?: CssNode;
-    public root?: CssNode;
+
+    /** CSS :root selector */
+    public cssRoot?: CssNode;
 
     constructor(name: string, properties: object, selector?: string) {
         this._name = name;
@@ -37,6 +39,23 @@ export default class CssNode {
 
     get selector() {
         return this._selector;
+    }
+
+    /** Get the root of the tree */
+    get treeRoot() {
+        let parent = this.parent;
+        if (!parent) {
+            return this;
+        }
+
+        while (true) {
+            if (isNullOrUndefined(parent.parent)) {
+                return parent;
+            }
+            else {
+                parent = parent.parent;
+            }
+        }
     }
 
     /** Compute the full CSS selector for this subtree */
@@ -95,7 +114,7 @@ export default class CssNode {
 
         // Load root
         if (data.root) {
-            rootNode.root = CssNode.load(data.root);
+            rootNode.cssRoot = CssNode.load(data.root);
         }
 
         return rootNode;
@@ -109,8 +128,8 @@ export default class CssNode {
             selector: this.selector
         }
 
-        if (this.root) {
-            data.root = this.root.dump();
+        if (this.cssRoot) {
+            data.root = this.cssRoot.dump();
         }
 
         return data;
@@ -139,8 +158,8 @@ export default class CssNode {
 
         let childStylesheets = new Array<string>();
         // :root before others
-        if (this.root) {
-            childStylesheets.push(this.root.stylesheet());
+        if (this.cssRoot) {
+            childStylesheets.push(this.cssRoot.stylesheet());
         }
 
         for (let cssTree of this.children.values()) {

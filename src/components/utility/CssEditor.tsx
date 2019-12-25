@@ -21,7 +21,7 @@ export default class CssEditor extends React.Component<CssEditorProps> {
     }
 
     /** A list of suggested CSS properties */
-    static get cssProperties() {
+    get cssProperties() {
         const properties = new Map<string, Array<string>>([
             ['align-content', ['start', 'center', 'space-between', 'space-around']],
             ['align-items',
@@ -124,12 +124,25 @@ export default class CssEditor extends React.Component<CssEditorProps> {
             ['word-spacing', ['normal']]
         ]);
 
+        // TODO: Refactor map adding code
         // 'initial', 'inherit', 'unset' apply to all CSS properties
         // https://developer.mozilla.org/en-US/docs/Web/CSS/Value_definition_syntax
         for (let k of properties.keys()) {
             let values = properties.get(k);
             if (values) {
                 values.push('initial', 'inherit', 'unset');
+                properties.set(k, values);
+            }
+        }
+
+        // Add var() suggestions
+        for (let k of properties.keys()) {
+            let values = properties.get(k);
+            if (values) {
+                for (let sug of this.varSuggestions) {
+                    values.push(`var(${sug})`);
+                }
+
                 properties.set(k, values);
             }
         }
@@ -141,6 +154,22 @@ export default class CssEditor extends React.Component<CssEditorProps> {
         }
 
         return properties;
+    }
+
+    get varSuggestions() {
+        const treeRoot = this.props.root.treeRoot;
+        let suggestions = new Array<string>();
+
+        if (treeRoot && treeRoot.cssRoot) {
+            for (let k of treeRoot.cssRoot.properties.keys()) {
+                // Variable declaration
+                if (k.slice(0, 2) === '--') {
+                    suggestions.push(k);
+                }
+            }
+        }
+
+        return suggestions;
     }
 
     get path() {
@@ -180,7 +209,7 @@ export default class CssEditor extends React.Component<CssEditorProps> {
         const selector = this.props.root.fullSelector;
         let root = <></>
 
-        let cssRoot = this.props.root.root as CssNode;
+        let cssRoot = this.props.root.cssRoot as CssNode;
         if (cssRoot) {
             root = (
                 <div className="css-ruleset">
@@ -206,8 +235,8 @@ export default class CssEditor extends React.Component<CssEditorProps> {
                         container={this.mapContainer}
                         updateValue={this.props.updateData.bind(this, this.path)}
                         deleteKey={this.props.deleteData.bind(this, this.path)}
-                        keySuggestions={Array.from(CssEditor.cssProperties.keys())}
-                        valueSuggestions={CssEditor.cssProperties}
+                        keySuggestions={Array.from(this.cssProperties.keys())}
+                        valueSuggestions={this.cssProperties}
                     />
                     {"}"}
                 </div>

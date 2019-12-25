@@ -20,6 +20,12 @@ export default class CssEditor extends React.Component<CssEditorProps> {
         this.mapContainer = this.mapContainer.bind(this);
     }
 
+    /** A list of suggested CSS properties */
+    static readonly cssProperties: Array<string> = [
+        'display',
+        'font-family'
+    ];
+
     get path() {
         return this.props.root.fullPath;
     }
@@ -67,7 +73,7 @@ export default class CssEditor extends React.Component<CssEditorProps> {
                         updateValue={(key: string, value: string) => {
                             cssRoot.setProperty([], key, value);
                         }}
-                        deleteValue={(key: string) => {
+                        deleteKey={(key: string) => {
                             cssRoot.deleteProperty([], key);
                         }} />
                     {"}"}
@@ -80,9 +86,11 @@ export default class CssEditor extends React.Component<CssEditorProps> {
                 <div className="css-ruleset">
                     {selector} {"{"}
                     <MappedTextFields value={cssProperties}
-                    container={this.mapContainer}
-                    updateValue={this.props.updateData.bind(this, this.path)}
-                    deleteValue={this.props.deleteData.bind(this, this.path)} />
+                        container={this.mapContainer}
+                        updateValue={this.props.updateData.bind(this, this.path)}
+                        deleteKey={this.props.deleteData.bind(this, this.path)}
+                        keySuggestions={CssEditor.cssProperties}
+                    />
                     {"}"}
                 </div>
                 {root}

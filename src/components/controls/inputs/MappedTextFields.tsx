@@ -1,6 +1,7 @@
 ﻿// TODO: This whole file is a strong candidate for refactoring/testing when time is available
 
 import React from "react";
+import uuid from 'uuid/v4';
 
 interface MappedTextFieldsState {
     isAddingKey: boolean;
@@ -12,7 +13,7 @@ interface ValueFieldProps {
     value?: string;
     isEditing: boolean;
     updateText: (value: string) => void;
-    shouldFocus: boolean;
+    suggestions?: Array<string>;
 
     delete?: () => void;
     toggleParentEdit: () => void;
@@ -21,12 +22,12 @@ interface ValueFieldProps {
 function ValueField(props: ValueFieldProps) {
     let [value, updateValue] = React.useState(props.value || "");
     let [isEditing, setEditing] = React.useState(props.isEditing);
+
+    /** Is this the first time mounting? */
     let [initialMount, setInitialMount] = React.useState(false);
 
-    /** This field will automatically be in an editing state when it first mounts
-     *  if shouldFocus is true
-     */
-    if (props.shouldFocus && !initialMount) {
+    /** This field will automatically be in an editing state when it first mounts */
+    if (!initialMount) {
         setEditing(true);
         setInitialMount(true);
     }
@@ -58,12 +59,24 @@ function ValueField(props: ValueFieldProps) {
         }
     }, [props.isEditing, isEditing]);
 
+    let suggestions = <></>
+    let suggestionId = "";
+    if (props.suggestions) {
+        suggestionId = uuid();
+        suggestions = (<datalist id={suggestionId}>
+            {props.suggestions.map((value) => <option value={value} />)}
+        </datalist>
+        );
+    }
+
     if (isEditing) {
         return <>
-            <input autoFocus={props.shouldFocus} onChange={(event) => updateValue(event.target.value)}
+            <input autoFocus onChange={(event) => updateValue(event.target.value)}
                 onKeyDown={onKeyDown}
                 value={value}
+                list={suggestionId}
             />
+            {suggestions}
             <button onClick={props.delete}>Delete</button>
         </>
     }
@@ -78,7 +91,12 @@ function ValueField(props: ValueFieldProps) {
 export interface MappedTextFieldsProps {
     value: Map<string, string>;
     updateValue: (key: string, value: string) => void;
-    deleteValue: (key: string) => void;
+    deleteKey: (key: string) => void;
+
+    /** An array of text input suggestions for new keys */
+    keySuggestions?: Array<string>;
+
+    /** Render prop for rendering the element containing the input fields */
     container: (props: any) => JSX.Element;
 }
 
@@ -159,9 +177,11 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
             keyAdder = <tr>
                 <th scope="row">
                 <ValueField
-                    isEditing={this.state.isEditing}
-                    toggleParentEdit={() => this.setState({ isEditing: true })}
-                        shouldFocus={true} updateText={this.addNewKey} />
+                        isEditing={this.state.isEditing}
+                        toggleParentEdit={() => this.setState({ isEditing: true })}
+                        updateText={this.addNewKey}
+                        suggestions={this.props.keySuggestions}
+                    />
                 </th>
                 <td>
                     <input disabled />
@@ -174,8 +194,6 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
         return <React.Fragment>
             <Container>
               {Array.from(this.data.entries()).map(([key, value]) => {
-                const shouldFocus = key === this.state.newKey;
-
                 return <tr key={key}>
                     <th onKeyDown={(event) => {
                         // When the user is done editing the value field, allow them
@@ -187,9 +205,8 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                         toggleParentEdit={() => this.setState({ isEditing: true })}
                         updateText={this.updateText.bind(this, key)}
                         value={value}
-                        shouldFocus={shouldFocus}
                         delete={() => {
-                            this.props.deleteValue(key);
+                            this.props.deleteKey(key);
                         }}
                     />
                     </td>

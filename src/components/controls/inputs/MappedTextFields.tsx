@@ -96,6 +96,9 @@ export interface MappedTextFieldsProps {
     /** An array of text input suggestions for new keys */
     keySuggestions?: Array<string>;
 
+    /** Mapping of keys to their respective value suggestions */
+    valueSuggestions?: Map<string, Array<string>>;
+
     /** Render prop for rendering the element containing the input fields */
     container: (props: any) => JSX.Element;
 }
@@ -193,21 +196,30 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
 
         return <React.Fragment>
             <Container>
-              {Array.from(this.data.entries()).map(([key, value]) => {
+                {Array.from(this.data.entries()).map(([key, value]) => {
+                    let suggestions;
+                    if (this.props.valueSuggestions && this.props.valueSuggestions.has(key)) {
+                        suggestions = this.props.valueSuggestions.get(key);
+                    }
+
                 return <tr key={key}>
                     <th onKeyDown={(event) => {
                         // When the user is done editing the value field, allow them
                         // to add another field
                         if (event.key === 'Enter') {
                             this.setState({ isAddingKey: true });
-                    }}} scope="row">{key}</th><td><ValueField
-                        isEditing={this.state.isEditing}
-                        toggleParentEdit={() => this.setState({ isEditing: true })}
-                        updateText={this.updateText.bind(this, key)}
-                        value={value}
-                        delete={() => {
-                            this.props.deleteKey(key);
-                        }}
+                        }
+                    }} scope="row">{key}</th>
+                    <td>
+                        <ValueField
+                            isEditing={this.state.isEditing}
+                            toggleParentEdit={() => this.setState({ isEditing: true })}
+                            updateText={this.updateText.bind(this, key)}
+                            value={value}
+                            suggestions={suggestions}
+                            delete={() => {
+                                this.props.deleteKey(key);
+                            }}
                     />
                     </td>
                 </tr>})}

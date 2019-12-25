@@ -21,42 +21,56 @@ export default class CssEditor extends React.Component<CssEditorProps> {
     }
 
     /** A list of suggested CSS properties */
-    static readonly cssProperties: Array<string> = [
-        'align-items',
-        'background',
-        'border',
-        'border-bottom',
-        'border-left',
-        'border-radius',
-        'border-right',
-        'border-top',
-        'color',
-        'content',
-        'display',
-        'flex-direction',
-        'font-family',
-        'font-size',
-        'font-weight',
-        'grid-column-gap',
-        'grid-row-gap',
-        'grid-template-columns',
-        'grid-template-rows',
-        'height',
-        'justify-content',
-        'margin',
-        'margin-bottom',
-        'margin-left',
-        'margin-right',
-        'margin-top',
-        'padding',
-        'padding-bottom',
-        'padding-left',
-        'padding-right',
-        'padding-top',
-        'text-align',
-        'text-transform',
-        'width'
-    ];
+    static get cssProperties() {
+        const properties = new Map<string, Array<string>>([
+            ['align-items', new Array<string>()],
+            ['background', new Array<string>()],
+            ['border', new Array<string>()],
+            ['border-bottom', new Array<string>()],
+            ['border-left', new Array<string>()],
+            ['border-radius', new Array<string>()],
+            ['border-right', new Array<string>()],
+            ['border-top', new Array<string>()],
+            ['color', new Array<string>()],
+            ['content', new Array<string>()],
+            ['display', new Array<string>()],
+            ['flex-direction', new Array<string>()],
+            ['font-family', new Array<string>()],
+            ['font-size', new Array<string>()],
+            ['font-weight', new Array<string>()],
+            ['grid-column-gap', new Array<string>()],
+            ['grid-row-gap', new Array<string>()],
+            ['grid-template-columns', new Array<string>()],
+            ['grid-template-row', new Array<string>()],
+            ['height', new Array<string>()],
+            ['justify-content', new Array<string>()],
+            ['margin', new Array<string>()],
+            ['margin-bottom', new Array<string>()],
+            ['margin-left', new Array<string>()],
+            ['margin-right', new Array<string>()],
+            ['margin-top', new Array<string>()],
+            ['padding', new Array<string>()],
+            ['padding-bottom', new Array<string>()],
+            ['padding-left', new Array<string>()],
+            ['padding-right', new Array<string>()],
+            ['padding-top', new Array<string>()],
+            ['text-align', new Array<string>()],
+            ['text-transform', new Array<string>()],
+            ['width', new Array<string>()]
+        ]);
+
+        // 'initial', 'inherit', 'unset' apply to all CSS properties
+        // https://developer.mozilla.org/en-US/docs/Web/CSS/Value_definition_syntax
+        for (let k of properties.keys()) {
+            let values = properties.get(k);
+            if (values) {
+                values.push('initial', 'inherit', 'unset');
+                properties.set(k, values);
+            }
+        }
+
+        return properties;
+    }
 
     get path() {
         return this.props.root.fullPath;
@@ -121,7 +135,8 @@ export default class CssEditor extends React.Component<CssEditorProps> {
                         container={this.mapContainer}
                         updateValue={this.props.updateData.bind(this, this.path)}
                         deleteKey={this.props.deleteData.bind(this, this.path)}
-                        keySuggestions={CssEditor.cssProperties}
+                        keySuggestions={Array.from(CssEditor.cssProperties.keys())}
+                        valueSuggestions={CssEditor.cssProperties}
                     />
                     {"}"}
                 </div>

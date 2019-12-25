@@ -8,8 +8,7 @@ export default class ResumeTemplateProvider {
         "Assured": () => {
             let data: ResumeSaveData = {
                 builtinCss: assuredCss().dump(),
-                children: assignIds(assuredNodes()),
-                css: ''
+                children: assignIds(assuredNodes())
             };
 
             return data;
@@ -18,8 +17,7 @@ export default class ResumeTemplateProvider {
         "Integrity": () => {
             let data: ResumeSaveData = {
                 builtinCss: randyMarshCss().dump(),
-                children: assignIds([ randyMarsh() ]),
-                css: ''
+                children: assignIds([ randyMarsh() ])
             };
 
             return data;

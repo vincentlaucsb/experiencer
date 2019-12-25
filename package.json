@@ -13,7 +13,6 @@
     "file-saver": "^2.0.2",
     "purecss": "^1.0.1",
     "react": "^16.11.0",
-    "react-ace": "^8.0.0",
     "react-contexify": "^4.1.1",
     "react-dom": "^16.11.0",
     "react-hotkeys": "^2.0.0",

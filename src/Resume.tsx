@@ -54,7 +54,6 @@ class Resume extends React.Component<{}, ResumeState> {
         this.state = {
             css: this.css,
             children: [],
-            additionalCss: "",
             mode: "landing"
         };
         this.renderStyle();
@@ -180,10 +179,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
     // Push style changes to browser
     renderStyle() {
-        this.style.innerHTML = `
-${this.state.css.stylesheet()}
-
-${this.state.additionalCss}`;
+        this.style.innerHTML = this.state.css.stylesheet();
     }
 
     /**
@@ -376,7 +372,6 @@ ${this.state.additionalCss}`;
         this.setState({
             css: this.css,
             children: this.nodes.children,
-            additionalCss: savedData.css as string,
             mode: mode
         })
 
@@ -387,8 +382,7 @@ ${this.state.additionalCss}`;
     saveFile(filename: string) {
         const data: ResumeSaveData = {
             children: this.state.children,
-            builtinCss: this.css.dump(),
-            css: this.state.additionalCss
+            builtinCss: this.css.dump()
         };
 
         var blob = new Blob([JSON.stringify(data)],
@@ -466,21 +460,12 @@ ${this.state.additionalCss}`;
 
     renderSidebar() {
         let CssEditor = this.renderCssEditor;
-        const styleEditorProps = {
-            additionalCss: this.state.additionalCss,
-            onStyleChange: (css: string) => {
-                this.setState({ additionalCss: css });
-            },
-            renderStyle: this.renderStyle,
-        }
-
         return <Tabs>
             <NodeTreeVisualizer key="Tree" childNodes={this.state.children}
                 selectNode={(id) => this.setState({ selectedNode: id })}
                 selectedNode={this.state.selectedNode}
             />
             <CssEditor key="CSS" />
-            <StyleEditor key="Raw CSS" {...styleEditorProps} />
         </Tabs>
     }
 

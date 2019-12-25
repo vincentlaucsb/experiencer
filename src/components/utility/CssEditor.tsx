@@ -22,8 +22,40 @@ export default class CssEditor extends React.Component<CssEditorProps> {
 
     /** A list of suggested CSS properties */
     static readonly cssProperties: Array<string> = [
+        'align-items',
+        'background',
+        'border',
+        'border-bottom',
+        'border-left',
+        'border-radius',
+        'border-right',
+        'border-top',
+        'color',
+        'content',
         'display',
-        'font-family'
+        'flex-direction',
+        'font-family',
+        'font-size',
+        'font-weight',
+        'grid-column-gap',
+        'grid-row-gap',
+        'grid-template-columns',
+        'grid-template-rows',
+        'height',
+        'justify-content',
+        'margin',
+        'margin-bottom',
+        'margin-left',
+        'margin-right',
+        'margin-top',
+        'padding',
+        'padding-bottom',
+        'padding-left',
+        'padding-right',
+        'padding-top',
+        'text-align',
+        'text-transform',
+        'width'
     ];
 
     get path() {

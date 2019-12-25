@@ -62,20 +62,26 @@ export default class CssNode {
     }
 
     /** Compute the full CSS selector for this subtree */
+    // **TODO: Fix selector generator wrt commas*/
+    /** TODO: Use this to generate stylesheets */
     get fullSelector() {
         let parent = this.parent;
-        let selector = this._selector;
-        while (!isNullOrUndefined(parent)) {
-            selector = `${parent.selector} ${selector}`;
+        let selectors = this._selector.split(',');
+        let finalSelectors = new Array<string>();
 
-            // No space for pseudo-classes or elements
-            if (selector.charAt(0) === ':') {
-                selector = `${parent.selector}${selector}`
+        for (let selector of selectors) {
+            selector = selector.trim();
+            while (!isNullOrUndefined(parent)) {
+                // No space for pseudo-classes or elements
+                const space = (selector.charAt(0) === ':') ? '' : ' ';
+                selector = `${parent.selector}${space}${selector}`;
+                parent = parent.parent;
             }
-            parent = parent.parent;
+
+            finalSelectors.push(selector);
         }
 
-        return selector;
+        return finalSelectors.join(', ');
     }
 
     /** Get this node's path in the subtree */

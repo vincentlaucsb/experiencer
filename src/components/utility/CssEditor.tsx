@@ -193,12 +193,18 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
      * Contains the rows of a CSS ruleset
      * @param props
      */
-    mapContainer(props: ContainerProps) {
-        return <table onClick={props.onClick}>
-            <tbody>
-                {props.children}
-            </tbody>
-        </table>
+    mapContainer(selector: string, props: ContainerProps) {
+        return (
+            <div className="css-ruleset" onClick={props.onClick}>
+                {selector} {"{"}
+                <table>
+                    <tbody>
+                        {props.children}
+                    </tbody>
+                </table>
+                {"}"}
+            </div>
+        );
     }
 
     /** Highlight all DOM nodes matching the current selector */
@@ -219,40 +225,27 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     /** Render the set of CSS properties */
     renderProperties() {
         const cssProperties = this.props.root.properties;
-        const selector = this.props.root.fullSelector;
         let root = <></>
 
         let cssRoot = this.props.root.cssRoot as CssNode;
         if (cssRoot) {
-            root = (
-                <div className="css-ruleset">
-                    {":root{"}
-                    <MappedTextFields value={cssRoot.properties}
-                        container={this.mapContainer}
-                        updateValue={(key: string, value: string) => {
-                            cssRoot.setProperty([], key, value);
-                        }}
-                        deleteKey={(key: string) => {
-                            cssRoot.deleteProperty([], key);
-                        }} />
-                    {"}"}
-                </div>
-            );
+            root = <MappedTextFields value={cssRoot.properties}
+                    container={(props) => this.mapContainer(":root", props)}
+                    updateValue={(key: string, value: string) => {
+                        cssRoot.setProperty([], key, value);
+                    }}
+                    deleteKey={(key: string) => { cssRoot.deleteProperty([], key); }} />
         }
 
         return (
             <>
-                <div className="css-ruleset">
-                    {selector} {"{"}
-                    <MappedTextFields value={cssProperties}
-                        container={this.mapContainer}
-                        updateValue={this.props.updateData.bind(this, this.path)}
-                        deleteKey={this.props.deleteKey.bind(this, this.path)}
-                        keySuggestions={Array.from(this.cssProperties.keys())}
-                        valueSuggestions={this.cssProperties}
-                    />
-                    {"}"}
-                </div>
+                <MappedTextFields value={cssProperties}
+                    container={(props) => this.mapContainer(this.props.root.fullSelector, props)}
+                    updateValue={this.props.updateData.bind(this, this.path)}
+                    deleteKey={this.props.deleteKey.bind(this, this.path)}
+                    keySuggestions={Array.from(this.cssProperties.keys())}
+                    valueSuggestions={this.cssProperties}
+                />
                 {root}
             </>
         );
@@ -287,6 +280,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     }
 
     render() {
+        // TODO: Clean these up
         let after = <Button onClick={(event) => {
             this.props.addSelector(this.props.root.fullPath, '::after', '::after');
             event.stopPropagation();

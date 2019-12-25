@@ -24,6 +24,11 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
         this.keyDownHandler = this.keyDownHandler.bind(this);
     }
 
+    get deleter() {
+        return (this.props.delete) ? <button onClick={this.props.delete}>Delete</button> :
+            <></>
+    }
+
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.isEditing && prevProps.isEditing !== this.props.isEditing) {
             if (this.props.value !== this.state.value) {
@@ -64,7 +69,7 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
                     list={suggestionId}
                 />
                 {suggestions}
-                <button onClick={this.props.delete}>Delete</button>
+                {this.deleter}
             </>
         }
 
@@ -116,6 +121,18 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
         return this.props.value;
     }
 
+    componentDidUpdate(prevProps, prevState: MappedTextFieldsState) {
+        /** Prevent two text inputs from being active at once */
+        if (this.state.isAddingKey && this.state.activeKey) {
+            if (prevState.isAddingKey) {
+                this.setState({ isAddingKey: false });
+            }
+            else {
+                this.setState({ activeKey: '' });
+            }
+        }
+    }
+
     addNewKey(key: string) {
         if (key.length > 0) {
             this.updateText(key, '');
@@ -139,9 +156,34 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
     handleKeyDown(event: React.KeyboardEvent) {
         switch (event.key) {
             case 'Escape':
-            case 'Enter':
                 this.setState({ activeKey: '' });
                 this.setState({ isAddingKey: false });
+                break;
+            case 'Enter':
+                if (this.state.isAddingKey) {
+                    this.setState({ isAddingKey: false });
+                    return;
+                }
+
+                const currentKey = this.state.activeKey;
+                const keys = this.props.value.keys();
+
+                // Get key after the current one
+                let nextUp = false;
+                for (let k of keys) {
+                    if (k === currentKey) {
+                        nextUp = true;
+                    }
+                    else if (nextUp) {
+                        this.setState({ activeKey: k });
+                        return;
+                    }
+                }
+
+                this.setState({
+                    activeKey: '',
+                    isAddingKey: true
+                });
                 break;
         }
     }
@@ -195,17 +237,20 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                         suggestions = this.props.valueSuggestions.get(key);
                     }
 
-                return <tr key={key}>
-                    <th>{key}</th>
-                    <td {...this.inputContainerProps(key)}>
-                        <ValueField
-                            isEditing={this.state.activeKey === key}
-                            updateText={this.updateText.bind(this, key)}
-                            value={value}
-                            suggestions={suggestions}
-                            delete={() => { this.props.deleteKey(key); }} />
-                    </td>
-                </tr>})}
+                    return (
+                        <tr key={key} {...this.inputContainerProps(key)}>
+                            <th>{key}</th>
+                            <td>
+                                <ValueField
+                                    isEditing={this.state.activeKey === key}
+                                    updateText={this.updateText.bind(this, key)}
+                                    value={value}
+                                    suggestions={suggestions}
+                                    delete={() => { this.props.deleteKey(key); }} />
+                            </td>
+                        </tr>
+                    );
+                })}
 
                 {keyAdder}
             </Container>

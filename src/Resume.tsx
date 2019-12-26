@@ -601,37 +601,53 @@ class Resume extends React.Component<{}, ResumeState> {
 
     renderHighlightbox() {
         let root = this.resumeRef.current;
-        let ref: React.RefObject<HTMLDivElement> | undefined;
+        let nodes = Array<JSX.Element>();
+
+        if (this.state.hoverNode) {
+            let ref: React.RefObject<HTMLDivElement> | undefined;
+            ref = this.refDict.get(this.state.hoverNode.join('-'));
+
+            if (root && ref && ref.current) {
+                let dims = ref.current.getBoundingClientRect();
+
+                let hoverBoxStyle: React.CSSProperties = {
+                    background: "gray",
+                    opacity: 0.2,
+                    position: 'fixed',
+                    top: `${dims.top}px`,
+                    left: `${dims.left}px`,
+                    width: `${dims.width}px`,
+                    height: `${dims.height}px`
+                };
+
+                let selectedBoxStyle = hoverBoxStyle;
+                nodes.push(<div className="resume-hl-box" style={hoverBoxStyle} />);
+            }
+        }
 
         if (this.state.selectedNode) {
+            let ref: React.RefObject<HTMLDivElement> | undefined;
             ref = this.refDict.get(this.state.selectedNode.join('-'));
-        }
 
-        if (root && ref && ref.current) {
-            let dims = ref.current.getBoundingClientRect();
+            if (root && ref && ref.current) {
+                let dims = ref.current.getBoundingClientRect();
 
-            let boxStyle: React.CSSProperties = {
-                background: "gray",
-                opacity: 0.2,
-                position: 'fixed',
-                top: `${dims.top}px`,
-                left: `${dims.left}px`,
-                width: `${dims.width}px`,
-                height: `${dims.height}px`
-            };
+                let hoverBoxStyle: React.CSSProperties = {
+                    background: "gray",
+                    opacity: 0.2,
+                    position: 'fixed',
+                    top: `${dims.top}px`,
+                    left: `${dims.left}px`,
+                    width: `${dims.width}px`,
+                    height: `${dims.height}px`
+                };
 
-        /**
-            if (this.isSelected) {
-                boxStyle.background = "none";
-                boxStyle.border = "2px solid black";
+                let selectedBoxStyle = hoverBoxStyle;
+                nodes.push(<div className="resume-hl-box" style={hoverBoxStyle} />);
             }
-            */
-
-            let node = <div className="resume-hl-box" style={boxStyle} />
-            return ReactDOM.createPortal(node, root);
         }
-
-        return <></>
+        
+        return nodes.map((elem) => <>{elem}</>);
     }
 
     render() {
@@ -642,30 +658,27 @@ class Resume extends React.Component<{}, ResumeState> {
 
         const resume = <div id="resume-container">
             {this.renderHighlightbox()}
-
             <ContextMenuTrigger id="resume-menu">
                 <div id="resume" ref={this.resumeRef} onContextMenu={() => this.setState({
                     selectedNode: this.hovering.currentId })}>
                     <ResumeHotKeys {...this.resumeHotKeysProps} />
                 
+                    {this.state.children.map((elem, idx, arr) => {
+                        const uniqueId = elem.uuid;
+                        const props = {
+                            ...elem,
+                            mode: this.state.mode,
+                            toggleEdit: this.editSelected.bind(this),
+                            updateData: this.updateNestedChild,
+                            updateRef: this.updateRef,
+                            ...this.hoverProps,
 
-                {this.state.children.map((elem, idx, arr) => {
-
-                    const uniqueId = elem.uuid;
-                    const props = {
-                        ...elem,
-                        mode: this.state.mode,
-                        toggleEdit: this.editSelected.bind(this),
-                        updateData: this.updateNestedChild,
-                        updateRef: this.updateRef,
-                        ...this.hoverProps,
-
-                        index: idx,
-                        numSiblings: arr.length
-                    };
+                            index: idx,
+                            numSiblings: arr.length
+                        };
 
                     return <ResumeComponent key={uniqueId} {...props} />
-                })}
+                    })}
                 </div>
             </ContextMenuTrigger>
 

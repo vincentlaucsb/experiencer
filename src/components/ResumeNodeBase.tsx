@@ -93,6 +93,10 @@ export default class ResumeNodeBase<P
         return this.props.mode === 'printing';
     }
 
+    get isSelected(): boolean {
+        return this.props.selectedUuid === this.props.uuid;
+    }
+
     /**
      * Returns true if we are directly hovering over one of this node's children.
      * The purpose of this is to avoid selecting multiple nodes at once.
@@ -183,9 +187,9 @@ export default class ResumeNodeBase<P
     setSelected() {
         // !this.isSelectBlocked prevents a node from being selected if we are directly hovering
         // over one of its child nodes
-        //if (!this.isSelected && !this.isSelectBlocked) {
+        if (!this.isSelected && !this.isSelectBlocked) {
             // Pass this node's unselect back up to <Resume />
             this.props.updateSelected(this.props.id);
-        //}
+        }
     }
 }

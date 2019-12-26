@@ -55,7 +55,7 @@ export default class RichText extends ResumeNodeBase {
             );
         }
 
-        return <div className={this.className} id={this.props.htmlId}
+        return <div ref={this.ref} className={this.className} id={this.props.htmlId}
             {...this.selectTriggerProps}
             dangerouslySetInnerHTML={{ __html: textValue }} />
     }

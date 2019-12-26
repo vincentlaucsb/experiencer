@@ -69,6 +69,7 @@ export default class TextField extends React.Component<TextFieldProps, TextField
             return <>
                 {label}
                 <input
+                    autoFocus
                     onChange={(event) => this.setState({ value: event.target.value })}
                     onBlur={() => this.setState({ isEditing: false })}
                     onKeyDown={this.onKeyDown}

@@ -28,14 +28,14 @@ export interface ResumeNodeProps extends ResumePassProps {
 
     selectedUuid?: string;
     isHidden?: boolean;
+
+    // TODO: Remove isEditing?
     isEditing?: boolean;
 }
 
 // Represents a node that is part of the user's resume
 export default class ResumeNodeBase<P
     extends ResumeNodeProps=ResumeNodeProps> extends React.PureComponent<P> {
-    ref = React.createRef<HTMLDivElement>();
-
     constructor(props: P) {
         super(props);
         this.updateData = this.updateData.bind(this);

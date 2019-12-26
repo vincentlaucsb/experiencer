@@ -29,17 +29,19 @@ export default class RichText extends ResumeNodeBase {
         
         if (this.isEditing) {
             return (
+                <div className={this.className} id={this.props.htmlId} {...this.selectTriggerProps}>
                 <QuillEditor
                     id={this.props.uuid}
                     value={this.props.value || ""}
                     className={this.className}
                     htmlId={this.props.htmlId}
                     onChange={(value) => this.props.updateData(this.props.id, "value", value)}
-                />
+                    />
+                </div>
             );
         }
 
-        return <div ref={this.ref} className={this.className} id={this.props.htmlId}
+        return <div className={this.className} id={this.props.htmlId}
             {...this.selectTriggerProps}
             dangerouslySetInnerHTML={{ __html: textValue }} />
     }

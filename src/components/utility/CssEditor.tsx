@@ -5,6 +5,7 @@ import Collapse from "../controls/Collapse";
 import { Button } from "../controls/Buttons";
 import CssSelectorAdder from "./CssSelectorAdder";
 import ResumeTextField from "../controls/inputs/TextField";
+import ReactDOM from "react-dom";
 
 export interface CssEditorProps {
     autoCollapse?: boolean;
@@ -18,6 +19,7 @@ export interface CssEditorProps {
 
 export interface CssEditorState {
     editingDescription: boolean;
+    highlight: boolean;
 }
 
 export default class CssEditor extends React.Component<CssEditorProps, CssEditorState> {
@@ -25,7 +27,8 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         super(props);
 
         this.state = {
-            editingDescription: false
+            editingDescription: false,
+            highlight: false
         };
 
         this.mapContainer = this.mapContainer.bind(this);
@@ -208,17 +211,35 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     }
 
     /** Highlight all DOM nodes matching the current selector */
-    toggleHighlight(highlight = true) {
+    renderHighlightBoxes() {
         const hits = document.querySelectorAll(this.props.root.fullSelector);
+        const root = document.getElementById("resume");
+        if (root && this.state.highlight) {
+            let elems = new Array<JSX.Element>();
+            hits.forEach((node: Element) => {
+                const bounds = node.getBoundingClientRect();
+                const computedStyle = window.getComputedStyle(node);
 
-        if (highlight) {
-            hits.forEach((node: Element) => {
-                node.classList.add('resume-highlighted');
+                let left = `calc(${bounds.left}px - ${computedStyle.marginLeft})`;
+                let top = `calc(${bounds.top}px - ${computedStyle.marginTop})`
+
+                elems.push(<div className="resume-hl-box"
+                    style={{
+                        position: "fixed",
+                        borderLeftWidth: `${computedStyle.marginLeft}`,
+                        borderRightWidth: `${computedStyle.marginRight}`,
+                        borderTopWidth: `${computedStyle.marginTop}`,
+                        borderBottomWidth: `${computedStyle.marginBottom}`,
+                        left: left,
+                        width: `${bounds.width}px`,
+                        height: `${bounds.height}px`,
+                        top: top,
+                        zIndex: 2000
+                    }}
+                />);
             });
-        } else {
-            hits.forEach((node: Element) => {
-                node.classList.remove('resume-highlighted');
-            })
+
+            return ReactDOM.createPortal(elems, root);
         }
     }
 
@@ -320,7 +341,9 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
             {deleteButton}
         </span>
 
-        const trigger = <h2 onMouseOver={() => this.toggleHighlight()} onMouseOut={() => this.toggleHighlight(false)}>
+        const trigger = <h2
+            onMouseOver={() => this.setState({ highlight: true })}
+            onMouseOut={() => this.setState({ highlight: false })}>
             {this.props.root.name}
             {buttons}            
         </h2>
@@ -329,6 +352,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
         return (
             <section className={`css-category no-print css-category-${this.path.length}`}>
+                {this.renderHighlightBoxes()}
                 <Collapse trigger={trigger} isOpen={isOpen}>
                     {this.renderDescription()}
                     <div className="css-category-content">

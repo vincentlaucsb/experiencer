@@ -22,3 +22,11 @@ header#app-header, header#app-header * {
 div.ReactModalPortal, div.ReactModalPortal * {
     z-index: $header-z + 2;
 }
+
+div.Pane1, div.Pane1 * {
+    z-index: 1;
+}
+
+div.Pane2, div.Pane2 * {
+    z-index: 2;
+}

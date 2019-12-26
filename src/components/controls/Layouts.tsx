@@ -43,9 +43,8 @@ export function ResizableSidebarLayout(props: SidebarLayoutProps) {
         {props.topNav}
         <SplitPane split="vertical" defaultSize="500px" primary="second"
             style={{ height: "100%" }}
-            pane1Style={{ height: "100%", overflowY: "auto" }}
-            pane2Style={{ overflow: "auto" }}
-        >
+            pane1Style={{ height: "100%", overflow: "auto" }}
+            pane2Style={{ overflow: "auto" }}>
             {props.main}
             {props.sideBar}
         </SplitPane>

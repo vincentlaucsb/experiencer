@@ -51,8 +51,12 @@ section.css-category-1 .css-category {
     }
 }
 
-#resume .resume-highlighted {
-    background: darken($light-shade, 0.25);
+/** Highlighting boxes */
+.resume-hl-box {
+    background: transparentize(darken($light-shade, 0.25), 0.5);
+    border-color: transparentize($light-accent, 0.5);
+    border-style: solid;
+    border-width: 0;
 }
 
 .css-ruleset {

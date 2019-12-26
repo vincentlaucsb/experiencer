@@ -28,9 +28,8 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
 
     static readonly type = 'Entry';
 
-    /** Get the class name for the main <div> container */
-    get className(): string {
-        return 'entry';
+    get className() {
+        return ['entry', super.className].join(' ');
     }
 
     get title() {

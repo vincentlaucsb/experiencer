@@ -18,12 +18,10 @@ export interface ResumePassProps extends ResumeNode {
     mode: EditorMode;
     hoverOver: (id: IdType) => void;
     hoverOut: (id: IdType) => void;
-    isHovering: (id: IdType) => boolean;
     isSelectBlocked: (id: IdType) => boolean;
     toggleEdit: ModifyChild;
     updateData: (id: IdType, key: string, data: NodeProperty) => void;
     updateSelected: (id?: IdType) => void;
-    updateRef: (id: IdType, ref: React.RefObject<HTMLDivElement>) => void;
 }
 
 export interface ResumeNodeProps extends ResumePassProps {
@@ -74,10 +72,6 @@ export default class ResumeNodeBase<P
         }
 
         return true;
-    }
-
-    get isHovering(): boolean {
-        return this.props.isHovering(this.props.id) && !this.isPrinting;
     }
 
     get isEditing() {
@@ -135,11 +129,7 @@ export default class ResumeNodeBase<P
             onEnterDown: this.toggleEdit
         };
     }
-
-    componentDidMount() {
-        this.props.updateRef(this.props.id, this.ref);
-    }
-
+    
     toggleEdit() {
         this.props.toggleEdit(this.props.id);
     }
@@ -156,14 +146,12 @@ export default class ResumeNodeBase<P
                     const props = {
                         ...elem,
                         mode: this.props.mode,
-                        isHovering: this.props.isHovering,
                         isSelectBlocked: this.props.isSelectBlocked,
                         hoverOver: this.props.hoverOver,
                         hoverOut: this.props.hoverOut,
                         toggleEdit: this.props.toggleEdit,
                         updateData: this.props.updateData,
                         updateSelected: this.props.updateSelected,
-                        updateRef: this.props.updateRef,
                         selectedUuid: this.props.selectedUuid,
 
                         index: idx,

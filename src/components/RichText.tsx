@@ -28,8 +28,7 @@ export default class RichText extends ResumeNodeBase {
         const baseProps = super.selectTriggerProps;
 
         // Click to edit
-        //if (this.isSelected && !this.props.isEditing) {
-        if (!this.props.isEditing) {
+        if (this.isSelected && !this.props.isEditing) {
             baseProps.onClick = () => {
                 this.setSelected();
                 this.toggleEdit();

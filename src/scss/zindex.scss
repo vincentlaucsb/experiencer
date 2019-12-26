@@ -1,4 +1,6 @@
-﻿/** Overlap control */
+﻿@import "variables";
+
+/** Overlap control */
 #resume, #resume * {
     z-index: 0;
 }
@@ -27,7 +29,8 @@ div.Pane1, div.Pane1 * {
     z-index: 1;
 
     .resume-hl-box {
-        z-index: 0;
+        background: transparentize($dark-accent, 0.75);
+        z-index: 2;
     }
 }
 

@@ -42,10 +42,6 @@ export default class DescriptionList extends ResumeNodeBase {
     static readonly type = 'DescriptionList';
 
     render() {
-        if (this.props.isHidden && this.isPrinting) {
-            return <></>
-        }
-
         return <dl className={this.className} {...this.selectTriggerProps}>
             {this.renderChildren()}
         </dl>

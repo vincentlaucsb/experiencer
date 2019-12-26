@@ -38,9 +38,7 @@ export default class ResumeNodeBase<P
 
     constructor(props: P) {
         super(props);
-        
         this.updateData = this.updateData.bind(this);
-        this.setSelected = this.setSelected.bind(this);
     }
 
     static get flexRowStyle(): React.CSSProperties {
@@ -74,15 +72,6 @@ export default class ResumeNodeBase<P
         return this.props.isEditing; // && this.isSelected;
     }
 
-    /** Prevent component from being edited from the template changing screen */
-    get isEditable(): boolean {
-        return !this.isPrinting && !(this.props.mode === 'changingTemplate');
-    }
-
-    get isPrinting() : boolean {
-        return this.props.mode === 'printing';
-    }
-
     get isSelected(): boolean {
         return this.props.selectedUuid === this.props.uuid;
     }
@@ -97,13 +86,13 @@ export default class ResumeNodeBase<P
 
     /** Returns hover/select trigger props */
     get selectTriggerProps() {
-        if (!this.isEditable) {
-            return {};
-        }
-
         return {
-            onClick: () => {
-                this.setSelected();
+            onClick: (event: React.MouseEvent) => {
+                // isSelectBlocked prevents us from selecting a parent
+                // node
+                if (!this.isSelected && !this.isSelectBlocked) {
+                    this.props.updateSelected(this.props.id);
+                }
             },
             onMouseEnter: () => {
                 this.props.hoverOver(this.props.id);
@@ -154,18 +143,5 @@ export default class ResumeNodeBase<P
         }
         
         return <React.Fragment />
-    }
-
-    toggleHidden() {
-        this.props.updateData(this.props.id, 'isHidden', !this.props.isHidden);
-    }
-
-    setSelected() {
-        // !this.isSelectBlocked prevents a node from being selected if we are directly hovering
-        // over one of its child nodes
-        if (!this.isSelected && !this.isSelectBlocked) {
-            // Pass this node's unselect back up to <Resume />
-            this.props.updateSelected(this.props.id);
-        }
     }
 }

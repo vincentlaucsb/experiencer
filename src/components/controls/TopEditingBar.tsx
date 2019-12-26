@@ -61,6 +61,7 @@ export interface EditingBarProps extends SelectedNodeActions {
     selectedNodeId?: IdType;
     selectedNode?: ResumeNode,
     addHtmlId: (htmlId: string) => void;
+    addCssClasses: (classes: string) => void;
     updateNode: (key: string, value: string | string[] | boolean | number | number[]) => void;
 
     addChild: AddChild;
@@ -177,7 +178,9 @@ export default function TopEditingBar(props: EditingBarProps) {
                     <HtmlIdAdder
                         key={props.selectedNode.uuid}
                         htmlId={props.selectedNode.htmlId}
+                        cssClasses={props.selectedNode.classNames}
                         addHtmlId={props.addHtmlId}
+                        addCssClasses={props.addCssClasses}
                     />
                 </PureMenu>
             </div>

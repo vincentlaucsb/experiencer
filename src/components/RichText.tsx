@@ -21,7 +21,8 @@ export default class RichText extends ResumeNodeBase {
     static readonly type = 'Rich Text';
 
     get className() {
-        return super.className + ' rich-text';
+        return ['rich-text',
+            this.props.classNames, super.className].join(' ');
     }
     
     render(): JSX.Element {

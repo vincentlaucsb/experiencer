@@ -60,6 +60,7 @@ class Resume extends React.Component<{}, ResumeState> {
         this.toggleMode = this.toggleMode.bind(this);
 
         /** Resume Nodes */
+        this.addCssClasses = this.addCssClasses.bind(this);
         this.addHtmlId = this.addHtmlId.bind(this);
         this.addNestedChild = this.addNestedChild.bind(this);
         this.updateNestedChild = this.updateNestedChild.bind(this);
@@ -244,6 +245,14 @@ class Resume extends React.Component<{}, ResumeState> {
                 css: this.css,
                 children: this.nodes.children
             });
+        }
+    }
+
+    addCssClasses(classes: string) {
+        const currentNode = this.selectedNode as ResumeNode;
+        if (currentNode) {
+            currentNode.classNames = classes;
+            this.setState({ children: this.nodes.children });
         }
     }
 
@@ -477,6 +486,7 @@ class Resume extends React.Component<{}, ResumeState> {
             selectedNodeId: this.state.selectedNode,
             selectedNode: this.selectedNode,
             addHtmlId: this.addHtmlId,
+            addCssClasses: this.addCssClasses,
             updateNode: this.updateSelected,
             addChild: this.addNestedChild,
             moveUpEnabled: this.moveSelectedUpEnabled,

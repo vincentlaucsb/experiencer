@@ -7,8 +7,9 @@
 
 $header-z: 1000;
 
+.resume-popover, .resume-popover *,
 .css-selector-adder, .css-selector-adder * {
-    z-index: $header-z + 1;
+    z-index: $header-z + 2;
 }
 
 header#app-header, header#app-header * {

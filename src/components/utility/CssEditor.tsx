@@ -212,34 +212,41 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
     /** Highlight all DOM nodes matching the current selector */
     renderHighlightBoxes() {
-        const hits = document.querySelectorAll(this.props.root.fullSelector);
-        const root = document.getElementById("resume");
-        if (root && this.state.highlight) {
-            let elems = new Array<JSX.Element>();
-            hits.forEach((node: Element) => {
-                const bounds = node.getBoundingClientRect();
-                const computedStyle = window.getComputedStyle(node);
+        let selector = this.props.root.fullSelector;
+        try {
+            const hits = document.querySelectorAll(selector);
+            const root = document.getElementById("resume");
+            if (root && this.state.highlight) {
+                let elems = new Array<JSX.Element>();
+                hits.forEach((node: Element) => {
+                    const bounds = node.getBoundingClientRect();
+                    const computedStyle = window.getComputedStyle(node);
 
-                let left = `calc(${bounds.left}px - ${computedStyle.marginLeft})`;
-                let top = `calc(${bounds.top}px - ${computedStyle.marginTop})`
+                    let left = `calc(${bounds.left}px - ${computedStyle.marginLeft})`;
+                    let top = `calc(${bounds.top}px - ${computedStyle.marginTop})`
 
-                elems.push(<div className="resume-hl-box"
-                    style={{
-                        position: "fixed",
-                        borderLeftWidth: `${computedStyle.marginLeft}`,
-                        borderRightWidth: `${computedStyle.marginRight}`,
-                        borderTopWidth: `${computedStyle.marginTop}`,
-                        borderBottomWidth: `${computedStyle.marginBottom}`,
-                        left: left,
-                        width: `${bounds.width}px`,
-                        height: `${bounds.height}px`,
-                        top: top,
-                        zIndex: 2000
-                    }}
-                />);
-            });
+                    elems.push(<div className="resume-hl-box"
+                        style={{
+                            position: "fixed",
+                            borderLeftWidth: `${computedStyle.marginLeft}`,
+                            borderRightWidth: `${computedStyle.marginRight}`,
+                            borderTopWidth: `${computedStyle.marginTop}`,
+                            borderBottomWidth: `${computedStyle.marginBottom}`,
+                            left: left,
+                            width: `${bounds.width}px`,
+                            height: `${bounds.height}px`,
+                            top: top,
+                            zIndex: 2000
+                        }}
+                    />);
+                });
 
-            return ReactDOM.createPortal(elems, root);
+                return ReactDOM.createPortal(elems, root);
+            }
+        }
+        catch (e) {
+            // TODO: Handle invalid selectors
+            console.log(e);
         }
     }
 

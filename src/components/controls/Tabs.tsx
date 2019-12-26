@@ -9,11 +9,13 @@ export default function Tabs(props: any) {
 
     return <div>
         {keys.map((key) => {
-            const onClick = (event) => {
-                setKey(key);
-            }
-
-            return <button onClick={onClick}>{key}</button>
+            const onClick = () => { setKey(key); }
+            return (
+                <button
+                    key={key}
+                    onClick={onClick}
+                >{key}</button>
+            );
         })}
 
         {props.children[activeIndex]}

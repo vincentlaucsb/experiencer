@@ -7,6 +7,10 @@
 
 $header-z: 1000;
 
+.css-selector-adder, .css-selector-adder * {
+    z-index: $header-z + 1;
+}
+
 header#app-header, header#app-header * {
     z-index: $header-z;
 
@@ -35,5 +39,5 @@ div.Pane1, div.Pane1 * {
 }
 
 div.Pane2, div.Pane2 * {
-    z-index: 2;
+    z-index: 2;   
 }

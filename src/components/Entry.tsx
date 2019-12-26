@@ -115,9 +115,14 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
     }
     
     render() {
+        /** hgroup onclick stops event from bubbling up to resume */
         return (
             <div ref={this.ref} className={this.className} {...this.selectTriggerProps}>
-                <hgroup>
+                <hgroup onClick={(event) => {
+                    if (this.props.isEditing) {
+                        event.stopPropagation();
+                    }
+                }}>
                     <h3 className="title">{this.getFields('title')}</h3>
                     <h4 className="subtitle">{this.getFields('subtitle')}</h4>
                 </hgroup>

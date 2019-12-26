@@ -294,9 +294,6 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
             onChange={(text) => {
                 this.props.updateDescription(this.props.root.fullPath, text);
             }}
-            isEditing={this.state.editingDescription}
-            onClick={() => this.setState({ editingDescription: !this.state.editingDescription })}
-            onEnterDown={() => this.setState({ editingDescription: !this.state.editingDescription })}
         />
     }
 

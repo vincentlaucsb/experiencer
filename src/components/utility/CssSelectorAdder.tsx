@@ -24,27 +24,13 @@ export default function CssSelectorAdder(props: CssSelectorAdderProps) {
             <h3>Add Selector</h3>
             <h4>
                 {props.selector} <TextField
-                    isEditing={isEditing}
                     value={selector}
                     onChange={(text) => setSelector(text)}
-                    onClick={() => {
-                        setEditing(!isEditing);
-                    }}
-                    onEnterDown={() => {
-                        setEditing(!isEditing);
-                    }}
                 />
             </h4>
             <p>Name: <TextField
-                isEditing={isEditing}
                 value={name}
                 onChange={(text) => setName(text)}
-                onClick={() => {
-                    setEditing(!isEditing);
-                }}
-                onEnterDown={() => {
-                    setEditing(!isEditing);
-                }}
                 />
             </p>
             <button onClick={handleSubmit}>Submit</button>
@@ -52,7 +38,8 @@ export default function CssSelectorAdder(props: CssSelectorAdderProps) {
     );
 
     return (
-        <Popover content={form} isOpen={isOpen}>
+        <Popover containerClassName="css-selector-adder"
+            content={form} isOpen={isOpen}>
             <Button onClick={(event) => {
                 setOpen(!isOpen);
                 event.stopPropagation();

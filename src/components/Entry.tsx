@@ -93,6 +93,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
                 return <><TextField
                     displayClassName={classNames.join(' ')}
                     key={index}
+                    editBlocked={!this.isSelected}
                     onChange={(data: string) => updater(key, index, data)}
                     value={text || ""}
                     defaultText="Enter a value"

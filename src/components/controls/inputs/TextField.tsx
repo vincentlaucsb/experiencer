@@ -5,6 +5,7 @@ interface TextFieldProps {
     label?: string;
     defaultText?: string;
     displayClassName?: string;
+    editBlocked?: boolean;
 
     /** A callback which modifies the display text */
     displayProcessor?: (text?: string) => string;
@@ -30,6 +31,10 @@ export default class TextField extends React.Component<TextFieldProps, TextField
 
     /** Update parent when appropriate */
     componentDidUpdate() {
+        if (this.props.editBlocked && this.state.isEditing) {
+            this.setState({ isEditing: false });
+        }
+
         if (!this.state.isEditing) {
             if (this.state.value !== this.props.value) {
                 // Update parent

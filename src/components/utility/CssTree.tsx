@@ -67,7 +67,7 @@ export default class CssNode {
     /** Compute the full CSS selector for this subtree */
     get fullSelector() {
         // Build an array of all of this node's ancestors
-        let nodes = new Array<CssNode>();
+        let nodes = new Array<CssNode>(this);
         let parent = this.parent;
         while (!isNullOrUndefined(parent)) {
             nodes.push(parent);
@@ -76,19 +76,19 @@ export default class CssNode {
 
         // Now ordered from top to bottom
         nodes = nodes.reverse();
-        nodes.push(this);
 
         let selectors = new Array<string>();
-        let buffer = new Array<string>();
 
+        // Build CSS selector by traversing from the top down,
+        // appending each node's selector to each selector in the 
+        // current array of selectors as we go
         for (let node of nodes) {
-            let partialSelectors = new Array<string>();
-            for (let selector of node.selector.split(',')) {
-                partialSelectors.push(selector.trim());
-            }
+            // Split selectors by comma and remove extra whitespace
+            let partialSelectors = node.selector.split(',').map(
+                (sel: string) => sel.trim());
 
             if (selectors.length > 0) {
-                buffer = [...selectors];
+                let buffer = [...selectors];
                 selectors = new Array<string>();
                 for (let selector of buffer) {
                     for (let partialSelector of partialSelectors) {
@@ -98,6 +98,7 @@ export default class CssNode {
                 }
             }
             else {
+                // Base case
                 selectors = [...partialSelectors];
             }
         }

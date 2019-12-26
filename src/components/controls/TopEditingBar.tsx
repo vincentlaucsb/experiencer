@@ -64,7 +64,6 @@ export interface EditingBarProps extends SelectedNodeActions {
     updateNode: (key: string, value: string | string[] | boolean | number | number[]) => void;
 
     addChild: AddChild;
-    toggleEdit: ModifyChild;
     moveUpEnabled: boolean;
     moveDownEnabled: boolean;
     updateSelected: (key: string, data: any) => void;
@@ -137,16 +136,11 @@ export default function TopEditingBar(props: EditingBarProps) {
         const customOptions = toolbarOptions(props.selectedNode, props.updateNode);
         let moveUpText = "Up";
         let moveDownText = "Down";
-        let editButton = <></>
 
         // If we are selecting a child of a container type,
         // give the option of adding another child to the parent
         const childTypes = ComponentTypes.childTypes(type);
         let parentOptions = <></>
-
-        if (ComponentTypes.isEditable(props.selectedNode.type)) {
-            editButton = <Item onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Item>
-        }
 
         if (type === DescriptionListItem.type) {
             const parentId = id.slice(0, id.length - 1);
@@ -164,7 +158,6 @@ export default function TopEditingBar(props: EditingBarProps) {
             <div className="toolbar-section">
                 <PureMenu horizontal>
                     <AddOption id={id} addChild={props.addChild as AddChild} options={childTypes} />
-                    {editButton}
                     <Item onClick={props.delete}>Delete</Item>
                     <ClipboardMenu {...props} />
                     <CustomOptions options={customOptions} />

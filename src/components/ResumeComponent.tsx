@@ -252,18 +252,6 @@ export class ComponentTypes {
                 throw new Error(`Couldn't find information for component named ${type}`);
         }
     }
-
-    /**
-     * Whether or not it makes sense to "edit" a type
-     * @param type
-     */
-    static isEditable(type: string) {
-        let editable = new Set([
-            Section.type, RichText.type, Header.type, DescriptionListItem.type, Entry.type
-        ]);
-
-        return editable.has(type);
-    }
 }
 
 class AliasTypes {

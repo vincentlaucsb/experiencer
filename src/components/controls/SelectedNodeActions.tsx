@@ -2,7 +2,6 @@
 
 /** Things you can do with a selected node */
 export interface SelectedNodeActions {
-    edit: Action;
     delete: Action;
     moveUp: Action;
     moveDown: Action;

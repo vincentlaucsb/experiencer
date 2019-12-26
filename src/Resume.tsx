@@ -445,7 +445,6 @@ class Resume extends React.Component<{}, ResumeState> {
     //#region Helper Component Props
     get selectedNodeActions() : SelectedNodeActions {
         return {
-            edit: this.editSelected,
             delete: this.deleteSelected,
             moveUp: this.moveSelectedUp,
             moveDown: this.moveSelectedDown,
@@ -480,7 +479,6 @@ class Resume extends React.Component<{}, ResumeState> {
             addHtmlId: this.addHtmlId,
             updateNode: this.updateSelected,
             addChild: this.addNestedChild,
-            toggleEdit: this.editSelected,
             moveUpEnabled: this.moveSelectedUpEnabled,
             moveDownEnabled: this.moveSelectedDownEnabled,
             unselect: this.unselect,

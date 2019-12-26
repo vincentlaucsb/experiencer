@@ -92,6 +92,7 @@ export default class ResumeNodeBase<P
                 // node
                 if (!this.isSelected && !this.isSelectBlocked) {
                     this.props.updateSelected(this.props.id);
+                    event.stopPropagation();
                 }
             },
             onMouseEnter: () => {

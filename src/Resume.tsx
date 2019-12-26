@@ -27,7 +27,7 @@ import { SelectedNodeActions } from './components/controls/SelectedNodeActions';
 import CssEditor from './components/utility/CssEditor';
 import NodeTreeVisualizer from './components/utility/NodeTreeVisualizer';
 import Tabs from './components/controls/Tabs';
-import ResumeContextMenu from './components/controls/ResumeContextMenu';
+import ResumeContextMenu, { ResumeContextProps } from './components/controls/ResumeContextMenu';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering = new HoverTracker();

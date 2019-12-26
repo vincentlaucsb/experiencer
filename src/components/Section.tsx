@@ -16,12 +16,12 @@ export default class Section extends ResumeNodeBase {
         />
 
         let helperText = <></>
-        if (this.isEmpty && !this.isSelected) {
+        if (this.isEmpty) { // && !this.isSelected) {
             helperText = <p>This section is empty. Click here to select it and add content.</p>
         }
 
         return (
-            <section className={this.className} id={this.props.htmlId} {...this.selectTriggerProps}>
+            <section ref={this.ref} className={this.className} id={this.props.htmlId} {...this.selectTriggerProps}>
                 <h2>{title}</h2>
                 <div className="content">
                     {this.renderChildren()}

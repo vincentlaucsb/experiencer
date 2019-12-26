@@ -25,6 +25,10 @@ div.ReactModalPortal, div.ReactModalPortal * {
 
 div.Pane1, div.Pane1 * {
     z-index: 1;
+
+    .resume-hl-box {
+        z-index: 0;
+    }
 }
 
 div.Pane2, div.Pane2 * {

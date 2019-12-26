@@ -41,26 +41,12 @@ export class DescriptionListItem extends ResumeNodeBase<DescriptionItemProps> {
 export default class DescriptionList extends ResumeNodeBase {
     static readonly type = 'DescriptionList';
 
-    /** Returns a "handle" which can be used to select the column itself and not the columns it contains */
-    renderGrabHandle() {
-        if (this.isHovering && !this.isSelected) {
-            return <div className="column-grab-handle-container">
-                <div className="column-grab-handle">
-                    Click here to select description list
-                </div>
-            </div>
-        }
-
-        return <></>
-    }
-
     render() {
         if (this.props.isHidden && this.isPrinting) {
             return <></>
         }
 
         return <dl className={this.className} {...this.selectTriggerProps}>
-            {this.renderGrabHandle()}
             {this.renderChildren()}
         </dl>
     }

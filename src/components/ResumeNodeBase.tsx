@@ -4,6 +4,7 @@ import { process } from "./Helpers";
 import { IdType } from "./utility/HoverTracker";
 import ResumeComponent from "./ResumeComponent";
 import { ResumeNode } from "./utility/NodeTree";
+import ReactDOM from "react-dom";
 
 export type Action = (() => void);
 export type ModifyChild = (id: IdType) => void;
@@ -18,24 +19,27 @@ export interface ResumePassProps extends ResumeNode {
     hoverOver: (id: IdType) => void;
     hoverOut: (id: IdType) => void;
     isHovering: (id: IdType) => boolean;
-    isSelected: (id: string) => boolean;
     isSelectBlocked: (id: IdType) => boolean;
     toggleEdit: ModifyChild;
     updateData: (id: IdType, key: string, data: NodeProperty) => void;
     updateSelected: (id?: IdType) => void;
+    updateRef: (id: IdType, ref: React.RefObject<HTMLDivElement>) => void;
 }
 
 export interface ResumeNodeProps extends ResumePassProps {
     id: IdType;   // Hierarchical ID based on the node's position in the resume; subject to change
     isLast: boolean;
 
+    selectedUuid?: string;
     isHidden?: boolean;
-    isEditing?: boolean
+    isEditing?: boolean;
 }
 
 // Represents a node that is part of the user's resume
 export default class ResumeNodeBase<P
     extends ResumeNodeProps=ResumeNodeProps> extends React.PureComponent<P> {
+    ref = React.createRef<HTMLDivElement>();
+
     constructor(props: P) {
         super(props);
         
@@ -55,21 +59,6 @@ export default class ResumeNodeBase<P
     /** Get the class name for the main container */
     get className(): string {
         let classes = new Array<string>();
-
-        if (!this.isPrinting) {
-            if (this.isHovering && !this.isSelectBlocked) {
-                classes.push('resume-hovering');
-            }
-
-            if (this.isSelected) {
-                classes.push('resume-selected');
-
-                if (this.props.isEditing) {
-                    classes.push('resume-editing');
-                }
-            }
-        }
-
         if (this.props.isHidden) {
             classes.push('resume-hidden');
         }
@@ -92,7 +81,7 @@ export default class ResumeNodeBase<P
     }
 
     get isEditing() {
-        return this.props.isEditing && this.isSelected;
+        return this.props.isEditing; // && this.isSelected;
     }
 
     /** Prevent component from being edited from the template changing screen */
@@ -102,10 +91,6 @@ export default class ResumeNodeBase<P
 
     get isPrinting() : boolean {
         return this.props.mode === 'printing';
-    }
-
-    get isSelected(): boolean {
-        return this.props.isSelected(this.props.uuid);
     }
 
     /**
@@ -127,8 +112,12 @@ export default class ResumeNodeBase<P
                 this.setSelected();
                 event.stopPropagation();
             },
-            onMouseEnter: () => this.props.hoverOver(this.props.id),
-            onMouseLeave: () => this.props.hoverOut(this.props.id)
+            onMouseEnter: () => {
+                this.props.hoverOver(this.props.id);
+            },
+            onMouseLeave: () => {
+                this.props.hoverOut(this.props.id);
+            }
         };
     }
 
@@ -137,10 +126,14 @@ export default class ResumeNodeBase<P
     get textFieldProps() {
         return {
             displayProcessor: process,
-            isEditing: this.props.isEditing && this.isSelected,
-            onClick: this.isSelected ? this.toggleEdit : undefined,
+            isEditing: this.props.isEditing, // && this.isSelected,
+            onClick: this.toggleEdit, // this.isSelected ? this.toggleEdit : undefined,
             onEnterDown: this.toggleEdit
         };
+    }
+
+    componentDidMount() {
+        this.props.updateRef(this.props.id, this.ref);
     }
 
     toggleEdit() {
@@ -155,30 +148,31 @@ export default class ResumeNodeBase<P
         const children = this.props.children as Array<ResumeNode>;
         if (children) {
             return children.map((elem: ResumeNode, idx: number, arr: ResumeNode[]) => {
-                const uniqueId = elem.uuid;
-                const props = {
-                    ...elem,
-                    mode: this.props.mode,
-                    isHovering: this.props.isHovering,
-                    isSelected: this.props.isSelected,
-                    isSelectBlocked: this.props.isSelectBlocked,
-                    hoverOver: this.props.hoverOver,
-                    hoverOut: this.props.hoverOut,
-                    toggleEdit: this.props.toggleEdit,
-                    updateData: this.props.updateData,
-                    updateSelected: this.props.updateSelected,
+                    const uniqueId = elem.uuid;
+                    const props = {
+                        ...elem,
+                        mode: this.props.mode,
+                        isHovering: this.props.isHovering,
+                        isSelectBlocked: this.props.isSelectBlocked,
+                        hoverOver: this.props.hoverOver,
+                        hoverOut: this.props.hoverOut,
+                        toggleEdit: this.props.toggleEdit,
+                        updateData: this.props.updateData,
+                        updateSelected: this.props.updateSelected,
+                        updateRef: this.props.updateRef,
+                        selectedUuid: this.props.selectedUuid,
 
-                    index: idx,
-                    numSiblings: arr.length,
+                        index: idx,
+                        numSiblings: arr.length,
 
-                    // Crucial for generating IDs so hover/select works properly
-                    parentId: this.props.id
-                };
+                        // Crucial for generating IDs so hover/select works properly
+                        parentId: this.props.id
+                    };
 
-                return <ResumeComponent key={uniqueId} {...props} />
-            })
+                    return <ResumeComponent key={uniqueId} {...props} />
+                })
         }
-
+        
         return <React.Fragment />
     }
 
@@ -189,9 +183,9 @@ export default class ResumeNodeBase<P
     setSelected() {
         // !this.isSelectBlocked prevents a node from being selected if we are directly hovering
         // over one of its child nodes
-        if (!this.isSelected && !this.isSelectBlocked) {
+        //if (!this.isSelected && !this.isSelectBlocked) {
             // Pass this node's unselect back up to <Resume />
             this.props.updateSelected(this.props.id);
-        }
+        //}
     }
 }

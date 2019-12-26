@@ -28,6 +28,7 @@ import CssEditor from './components/utility/CssEditor';
 import NodeTreeVisualizer from './components/utility/NodeTreeVisualizer';
 import Tabs from './components/controls/Tabs';
 import ResumeContextMenu from './components/controls/ResumeContextMenu';
+import ReactDOM from 'react-dom';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering = new HoverTracker();
@@ -38,6 +39,7 @@ class Resume extends React.Component<{}, ResumeState> {
     unselect: Action;
     resumeRef: React.RefObject<HTMLDivElement>;
     prevHoverNode: number[] | undefined;
+    refDict = new Map<string, React.RefObject<HTMLDivElement>>();
 
     constructor(props) {
         super(props);
@@ -59,6 +61,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
         this.print = this.print.bind(this);
         this.toggleMode = this.toggleMode.bind(this);
+        this.updateRef = this.updateRef.bind(this);
 
         /** Resume Nodes */
         this.addHtmlId = this.addHtmlId.bind(this);
@@ -136,10 +139,7 @@ class Resume extends React.Component<{}, ResumeState> {
                 return !arraysEqual(id, this.hovering.currentId);
             },
 
-            // Returns true if the given node is currently selected
-            isSelected: (uuid: string) => {
-                return this.selectedNode ? uuid === this.selectedNode['uuid'] : false;
-            },
+            selectedUuid: this.selectedNode ? this.selectedNode.uuid : undefined,
 
             // Update the selected node
             updateSelected: (id?: IdType) => {
@@ -595,6 +595,45 @@ class Resume extends React.Component<{}, ResumeState> {
         return <CssEditor root={this.state.css} autoCollapse={true} {...editorProps} />
     }
 
+    updateRef(id: IdType, ref: React.RefObject<HTMLDivElement>) {
+        this.refDict.set(id.join('-'), ref);
+    }
+
+    renderHighlightbox() {
+        let root = this.resumeRef.current;
+        let ref: React.RefObject<HTMLDivElement> | undefined;
+
+        if (this.state.selectedNode) {
+            ref = this.refDict.get(this.state.selectedNode.join('-'));
+        }
+
+        if (root && ref && ref.current) {
+            let dims = ref.current.getBoundingClientRect();
+
+            let boxStyle: React.CSSProperties = {
+                background: "gray",
+                opacity: 0.2,
+                position: 'fixed',
+                top: `${dims.top}px`,
+                left: `${dims.left}px`,
+                width: `${dims.width}px`,
+                height: `${dims.height}px`
+            };
+
+        /**
+            if (this.isSelected) {
+                boxStyle.background = "none";
+                boxStyle.border = "2px solid black";
+            }
+            */
+
+            let node = <div className="resume-hl-box" style={boxStyle} />
+            return ReactDOM.createPortal(node, root);
+        }
+
+        return <></>
+    }
+
     render() {
         // TODO: Make this moar better
         const Toolbar = (props: any) => {
@@ -602,6 +641,8 @@ class Resume extends React.Component<{}, ResumeState> {
         };
 
         const resume = <div id="resume-container">
+            {this.renderHighlightbox()}
+
             <ContextMenuTrigger id="resume-menu">
                 <div id="resume" ref={this.resumeRef} onContextMenu={() => this.setState({
                     selectedNode: this.hovering.currentId })}>
@@ -616,6 +657,7 @@ class Resume extends React.Component<{}, ResumeState> {
                         mode: this.state.mode,
                         toggleEdit: this.editSelected.bind(this),
                         updateData: this.updateNestedChild,
+                        updateRef: this.updateRef,
                         ...this.hoverProps,
 
                         index: idx,

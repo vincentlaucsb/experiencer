@@ -48,23 +48,10 @@ export default class Column extends ResumeNodeBase<ColumnProps> {
 
         return properties;
     }
-
-    /** Returns a "handle" which can be used to select the column itself and not the columns it contains */
-    renderGrabHandle() {
-        if (this.isHovering && !this.isSelected) {
-            return <div className="column-grab-handle-container">
-                <div className="column-grab-handle">
-                    Click here to select column
-                </div>
-            </div>
-        }
-
-        return <></>
-    }
-
+    
     render() {
         let helperText = <></>;
-        if (this.isEmpty && !this.isSelected) {
+        if (this.isEmpty) { // && !this.isSelected) {
             helperText = <span>Column {this.position}: Click to select and add content</span>
         }
 

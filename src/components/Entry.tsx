@@ -3,6 +3,7 @@ import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import ResumeTextField from "./controls/inputs/TextField";
 import { pushArray } from "./Helpers";
 import { BasicResumeNode } from "./utility/NodeTree";
+import ReactDOM from "react-dom";
 
 interface EntryBase {
     title?: string[];
@@ -29,8 +30,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
 
     /** Get the class name for the main <div> container */
     get className(): string {
-        let classes = ['entry', super.className];
-        return classes.join(' ');
+        return 'entry';
     }
 
     get title() {
@@ -117,7 +117,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
     
     render() {
         return (
-            <div className={this.className} {...this.selectTriggerProps}>
+            <div ref={this.ref} className={this.className} {...this.selectTriggerProps}>
                 <hgroup>
                     <h3 className="title">{this.getFields('title')}</h3>
                     <h4 className="subtitle">{this.getFields('subtitle')}</h4>

@@ -178,44 +178,28 @@ export default class CssNode {
     }
 
     /** Return a CSS stylesheet */
-    stylesheet(parentSelector?: string) {
-        // Generate individual rulesets for "," seperated selectors
-        let selectors = this.selector.split(',');
-        let stylesheets = new Array<string>();
+    stylesheet() {
+        let cssProperties = this.formatProperties();
+        const thisCss = this.properties.size > 0 ? `${this.fullSelector} {\n${cssProperties}\n}` : ``;
 
-        for (let selector of selectors) {
-            // No need for trailing/leading whitespace
-            selector = selector.trim();
+        let childStylesheets = new Array<string>();
 
-            if (parentSelector) {
-                // Don't add space for pseudo-elements and pseudo-classes
-                selector = (selector.charAt(0) === ':') ? `${parentSelector}${selector}`
-                    : `${parentSelector} ${selector}`;
-            }
-
-            let cssProperties = this.formatProperties();
-            const thisCss = this.properties.size > 0 ? `${selector} {\n${cssProperties}\n}` : ``;
-
-            let childStylesheets = new Array<string>();
-            // :root before others
-            if (this.cssRoot) {
-                childStylesheets.push(this.cssRoot.stylesheet());
-            }
-
-            for (let cssTree of this.children.values()) {
-                childStylesheets.push(cssTree.stylesheet(selector));
-            }
-
-            let finalStylesheet = thisCss;
-            if (childStylesheets.length > 0) {
-                finalStylesheet += "\n\n";
-                finalStylesheet += childStylesheets.join('\n\n');
-            }
-
-            stylesheets.push(finalStylesheet);
+        // :root before others
+        if (this.cssRoot) {
+            childStylesheets.push(this.cssRoot.stylesheet());
         }
 
-        return stylesheets.join('\n\n');
+        for (let cssTree of this.children.values()) {
+            childStylesheets.push(cssTree.stylesheet());
+        }
+
+        let finalStylesheet = thisCss;
+        if (childStylesheets.length > 0) {
+            finalStylesheet += "\n\n";
+            finalStylesheet += childStylesheets.join('\n\n');
+        }
+
+        return finalStylesheet;
     }
 
     /**

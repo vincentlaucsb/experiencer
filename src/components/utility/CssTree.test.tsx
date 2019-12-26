@@ -97,11 +97,7 @@ test('Stylesheet Comma Test', () => {
     const cssNode = new CssNode('Text Field', {
         "font-family": "Tahoma, sans-serif"
     }, 'span, a');
-    expect(cssNode.stylesheet()).toBe(`span {
-\tfont-family: Tahoma, sans-serif;
-}
-
-a {
+    expect(cssNode.stylesheet()).toBe(`span, a {
 \tfont-family: Tahoma, sans-serif;
 }`);
 })
@@ -133,19 +129,11 @@ test('Stylesheet Test w/ Children + Comma', () => {
     }, 'strong'));
 
     expect(boldNode.fullSelector).toBe('span strong, a strong');
-    expect(cssNode.stylesheet()).toBe(`span {
+    expect(cssNode.stylesheet()).toBe(`span, a {
 \tfont-family: Tahoma, sans-serif;
 }
 
-span strong {
-\tfont-size: 120%;
-}
-
-a {
-\tfont-family: Tahoma, sans-serif;
-}
-
-a strong {
+span strong, a strong {
 \tfont-size: 120%;
 }`);
 })

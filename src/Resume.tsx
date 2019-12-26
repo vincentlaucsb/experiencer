@@ -91,6 +91,8 @@ class Resume extends React.Component<{}, ResumeState> {
         this.unselect = () => {
             this.setState({ selectedNode: undefined });
         };
+
+        this.handleClick = this.handleClick.bind(this);
     }
     
 
@@ -170,9 +172,9 @@ class Resume extends React.Component<{}, ResumeState> {
         // out of an editing state
         if (prevState.selectedNode && (prevState.selectedNode !== this.state.selectedNode)) {
             // Make sure node wasn't deleted before we try to modify it
-            const prevNode = this.nodes.getNodeById(prevState.selectedNode);
-            if (prevNode) {
-                (prevNode as ResumeNodeProps).isEditing = false;
+            const prevNode = this.nodes.getNodeById(prevState.selectedNode) as ResumeNodeProps;
+            if (prevNode.isEditing) {
+                prevNode.isEditing = false;
             }
         }
     }
@@ -591,6 +593,10 @@ class Resume extends React.Component<{}, ResumeState> {
         return <CssEditor root={this.state.css} autoCollapse={true} {...editorProps} />
     }
 
+    handleClick() {
+        this.editSelected();
+    }
+
     render() {
         // TODO: Make this moar better
         const Toolbar = (props: any) => {
@@ -599,7 +605,9 @@ class Resume extends React.Component<{}, ResumeState> {
 
         const resume = <div id="resume-container">
             <ContextMenuTrigger id="resume-menu">
-                <div id="resume" ref={this.resumeRef} onContextMenu={() => this.setState({
+                <div id="resume" ref={this.resumeRef}
+                    onClick={this.handleClick}
+                    onContextMenu={() => this.setState({
                     selectedNode: this.hovering.currentId })}>
                     <ResumeHotKeys {...this.resumeHotKeysProps} />
                 
@@ -608,7 +616,6 @@ class Resume extends React.Component<{}, ResumeState> {
                         const props = {
                             ...elem,
                             mode: this.state.mode,
-                            toggleEdit: this.editSelected.bind(this),
                             updateData: this.updateNestedChild,
                             ...this.hoverProps,
 

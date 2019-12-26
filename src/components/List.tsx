@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
 import 'react-contexify/dist/ReactContexify.min.css';
-import ResumeTextField from "./controls/inputs/TextField";
+import TextField from "./controls/inputs/TextField";
 import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 
 interface DescriptionItemProps extends ResumeNodeProps {
@@ -15,7 +15,7 @@ export class DescriptionListItem extends ResumeNodeBase<DescriptionItemProps> {
     }
 
     render() {
-        const term = <ResumeTextField
+        const term = <TextField
             label="Term"
             onChange={this.updateData.bind(this, "term")}
             value={this.props.term}
@@ -23,7 +23,7 @@ export class DescriptionListItem extends ResumeNodeBase<DescriptionItemProps> {
             {...this.textFieldProps}
         />
 
-        const value = <ResumeTextField
+        const value = <TextField
             label="Value"
             onChange={this.updateData.bind(this, "value")}
             value={this.props.value || ""}

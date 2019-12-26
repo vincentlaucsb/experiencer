@@ -47,20 +47,12 @@ export default class Header extends ResumeNodeBase<HeaderProps> {
                 id={`${this.props.uuid}-title`}
                 value={this.props.value || ""}
                 onChange={(text) => this.updateData("value", text)}
-                selectTriggerProps={{
-                    onMouseEnter: () => {},
-                    onMouseLeave: () => {}
-                }}
             />
 
             subtitle = <QuillEditor
                 id={`${this.props.uuid}-subtitle`}
                 value={this.props.subtitle || ""}
                 onChange={(text) => this.updateData("subtitle", text)}
-                selectTriggerProps={{
-                    onMouseEnter: () => { },
-                    onMouseLeave: () => { }
-                }}
             />
         }
         

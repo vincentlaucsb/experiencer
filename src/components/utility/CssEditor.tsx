@@ -4,7 +4,7 @@ import MappedTextFields, { ContainerProps } from "../controls/inputs/MappedTextF
 import Collapse from "../controls/Collapse";
 import { Button } from "../controls/Buttons";
 import CssSelectorAdder from "./CssSelectorAdder";
-import ResumeTextField from "../controls/inputs/TextField";
+import TextField from "../controls/inputs/TextField";
 import ReactDOM from "react-dom";
 
 export interface CssEditorProps {
@@ -289,7 +289,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
     renderDescription() {
         // TODO: Clean up
-        return <ResumeTextField
+        return <TextField
             value={this.props.root.description || ""}
             onChange={(text) => {
                 this.props.updateDescription(this.props.root.fullPath, text);

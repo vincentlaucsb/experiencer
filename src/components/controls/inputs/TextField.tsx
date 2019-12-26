@@ -20,7 +20,7 @@ interface ResumeTextFieldProps {
     onEnterDown?: () => void;
 }
 
-export default function ResumeTextField(props: ResumeTextFieldProps) {
+export default function TextField(props: ResumeTextFieldProps) {
     const initialValue = props.value || "";
     let [value, setValue] = React.useState(initialValue);
     let [escapePressed, setEscape] = React.useState(false);

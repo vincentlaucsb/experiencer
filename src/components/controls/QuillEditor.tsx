@@ -8,21 +8,19 @@ export interface QuillEditorProps {
 
     className?: string;
     htmlId?: string;
-    selectTriggerProps: any;
     onChange: (value: string) => void;
 }
 
 export default function QuillEditor(props: QuillEditorProps) {
     let [showToolbar, setToolbar] = React.useState(false);
 
-    const selectTriggerProps = { ...props.selectTriggerProps };
-    selectTriggerProps.onMouseEnter = () => {
-        props.selectTriggerProps.onMouseEnter();
-        setToolbar(true);
-    };
-    selectTriggerProps.onMouseLeave = () => {
-        props.selectTriggerProps.onMouseLeave();
-        setToolbar(false);
+    const selectTriggerProps = {
+        onClick: (event: React.MouseEvent) => {
+            // Prevent <Resume>'s click handler from unselecting us
+            event.stopPropagation();
+        },
+        onMouseEnter: () => setToolbar(true),
+        onMouseLeave: () => setToolbar(false)
     }
 
     const toolbarId = `quill-toolbar-${props.id}`

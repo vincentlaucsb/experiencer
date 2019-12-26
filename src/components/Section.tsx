@@ -1,13 +1,13 @@
 ﻿import * as React from "react";
 import ResumeNodeBase from "./ResumeNodeBase";
-import ResumeTextField from "./controls/inputs/TextField";
+import TextField from "./controls/inputs/TextField";
 
 /** Represents a section in a resume */
 export default class Section extends ResumeNodeBase {
     static readonly type = 'Section';
     
     render() {
-        const title = <ResumeTextField
+        const title = <TextField
             onChange={this.updateData.bind(this, "value")}
             value={this.props.value || ''}
             label="Title"

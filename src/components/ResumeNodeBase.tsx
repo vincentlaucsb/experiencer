@@ -4,7 +4,6 @@ import { process } from "./Helpers";
 import { IdType } from "./utility/HoverTracker";
 import ResumeComponent from "./ResumeComponent";
 import { ResumeNode } from "./utility/NodeTree";
-import ReactDOM from "react-dom";
 
 export type Action = (() => void);
 export type ModifyChild = (id: IdType) => void;
@@ -19,7 +18,6 @@ export interface ResumePassProps extends ResumeNode {
     hoverOver: (id: IdType) => void;
     hoverOut: (id: IdType) => void;
     isSelectBlocked: (id: IdType) => boolean;
-    toggleEdit: ModifyChild;
     updateData: (id: IdType, key: string, data: NodeProperty) => void;
     updateSelected: (id?: IdType) => void;
 }
@@ -42,8 +40,6 @@ export default class ResumeNodeBase<P
         super(props);
         
         this.updateData = this.updateData.bind(this);
-        this.toggleEdit = this.toggleEdit.bind(this);
-        this.toggleHidden = this.toggleHidden.bind(this);
         this.setSelected = this.setSelected.bind(this);
     }
 
@@ -57,8 +53,8 @@ export default class ResumeNodeBase<P
     /** Get the class name for the main container */
     get className(): string {
         let classes = new Array<string>();
-        if (this.props.isHidden) {
-            classes.push('resume-hidden');
+        if (this.isSelected) {
+            classes.push('resume-selected');
         }
 
         return classes.join(' ');
@@ -106,9 +102,8 @@ export default class ResumeNodeBase<P
         }
 
         return {
-            onClick: (event: React.MouseEvent<any>) => {
+            onClick: () => {
                 this.setSelected();
-                event.stopPropagation();
             },
             onMouseEnter: () => {
                 this.props.hoverOver(this.props.id);
@@ -124,16 +119,10 @@ export default class ResumeNodeBase<P
     get textFieldProps() {
         return {
             displayProcessor: process,
-            isEditing: this.props.isEditing, // && this.isSelected,
-            onClick: this.toggleEdit, // this.isSelected ? this.toggleEdit : undefined,
-            onEnterDown: this.toggleEdit
+            isEditing: this.props.isEditing
         };
     }
-    
-    toggleEdit() {
-        this.props.toggleEdit(this.props.id);
-    }
-    
+
     updateData(key: string, data: NodeProperty) {
         this.props.updateData(this.props.id, key, data);
     }
@@ -149,7 +138,6 @@ export default class ResumeNodeBase<P
                         isSelectBlocked: this.props.isSelectBlocked,
                         hoverOver: this.props.hoverOver,
                         hoverOut: this.props.hoverOut,
-                        toggleEdit: this.props.toggleEdit,
                         updateData: this.props.updateData,
                         updateSelected: this.props.updateSelected,
                         selectedUuid: this.props.selectedUuid,

@@ -24,20 +24,6 @@ export default class RichText extends ResumeNodeBase {
         return super.className + ' rich-text';
     }
     
-    get selectTriggerProps() {
-        const baseProps = super.selectTriggerProps;
-
-        // Click to edit
-        if (this.isSelected && !this.props.isEditing) {
-            baseProps.onClick = () => {
-                this.setSelected();
-                this.toggleEdit();
-            }
-        }
-
-        return baseProps;
-    }
-
     render(): JSX.Element {
         const textValue = Helpers.process(this.props.value) as string || "Empty text";
         
@@ -48,7 +34,6 @@ export default class RichText extends ResumeNodeBase {
                     value={this.props.value || ""}
                     className={this.className}
                     htmlId={this.props.htmlId}
-                    selectTriggerProps={this.selectTriggerProps}
                     onChange={(value) => this.props.updateData(this.props.id, "value", value)}
                 />
             );

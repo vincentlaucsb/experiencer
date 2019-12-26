@@ -1,5 +1,5 @@
 ﻿import { Button } from "../controls/Buttons";
-import ResumeTextField from "../controls/inputs/TextField";
+import TextField from "../controls/inputs/TextField";
 import React from "react";
 import Popover from "react-tiny-popover";
 
@@ -23,7 +23,7 @@ export default function CssSelectorAdder(props: CssSelectorAdderProps) {
             style={{ background: "white" }}>
             <h3>Add Selector</h3>
             <h4>
-                {props.selector} <ResumeTextField
+                {props.selector} <TextField
                     isEditing={isEditing}
                     value={selector}
                     onChange={(text) => setSelector(text)}
@@ -35,7 +35,7 @@ export default function CssSelectorAdder(props: CssSelectorAdderProps) {
                     }}
                 />
             </h4>
-            <p>Name: <ResumeTextField
+            <p>Name: <TextField
                 isEditing={isEditing}
                 value={name}
                 onChange={(text) => setName(text)}

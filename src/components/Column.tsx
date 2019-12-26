@@ -2,14 +2,7 @@
 import React from "react";
 import { BasicResumeNode } from "./utility/NodeTree";
 
-interface ColumnBase {
-    evenColumns?: boolean;
-}
-
-export interface BasicColumnProps extends BasicResumeNode, ColumnBase { }
-interface ColumnProps extends ResumeNodeProps, ColumnBase { }
-
-export default class Column extends ResumeNodeBase<ColumnProps> {
+export default class Column extends ResumeNodeBase {
     static readonly type = 'Column';
 
     /** Get the index of this column */
@@ -33,10 +26,6 @@ export default class Column extends ResumeNodeBase<ColumnProps> {
             display: 'flex',
             flexDirection: 'column',
         };
-
-        if (this.props.evenColumns) {
-            properties.flexBasis = '100%';
-        }
 
         if (!(this.props.children && this.props.children.length > 0)) {
             properties = {

@@ -65,6 +65,13 @@ test('find Test', () => {
     expect(arraysEqual(listItemCss.fullPath, ['Lists', 'List Item'])).toBeTruthy();
 })
 
+test('fullSelector Test - Complex Tree', () => {
+    let cssNode = new CssNode('Headings', {}, 'h1, h2');
+    let text = cssNode.add(new CssNode('Text', {}, 'p, span'));
+    let grandchild = text.add(new CssNode('Link', {}, 'a'));
+    expect(grandchild.fullSelector).toBe('h1 p a, h1 span a, h2 p a, h2 span a');
+})
+
 test('No Duplicate Test', () => {
     const cssNode = makeCssTree();
     cssNode.add(new CssNode(':after', {}, ':after'));

@@ -65,26 +65,44 @@ export default class CssNode {
     }
 
     /** Compute the full CSS selector for this subtree */
-    // **TODO: Fix selector generator wrt commas*/
-    /** TODO: Use this to generate stylesheets */
     get fullSelector() {
+        // Build an array of all of this node's ancestors
+        let nodes = new Array<CssNode>();
         let parent = this.parent;
-        let selectors = this._selector.split(',');
-        let finalSelectors = new Array<string>();
-
-        for (let selector of selectors) {
-            selector = selector.trim();
-            while (!isNullOrUndefined(parent)) {
-                // No space for pseudo-classes or elements
-                const space = (selector.charAt(0) === ':') ? '' : ' ';
-                selector = `${parent.selector}${space}${selector}`;
-                parent = parent.parent;
-            }
-
-            finalSelectors.push(selector);
+        while (!isNullOrUndefined(parent)) {
+            nodes.push(parent);
+            parent = parent.parent;
         }
 
-        return finalSelectors.join(', ');
+        // Now ordered from top to bottom
+        nodes = nodes.reverse();
+        nodes.push(this);
+
+        let selectors = new Array<string>();
+        let buffer = new Array<string>();
+
+        for (let node of nodes) {
+            let partialSelectors = new Array<string>();
+            for (let selector of node.selector.split(',')) {
+                partialSelectors.push(selector.trim());
+            }
+
+            if (selectors.length > 0) {
+                buffer = [...selectors];
+                selectors = new Array<string>();
+                for (let selector of buffer) {
+                    for (let partialSelector of partialSelectors) {
+                        const space = (partialSelector.charAt(0) === ":") ? "" : " ";
+                        selectors.push(`${selector}${space}${partialSelector}`);
+                    }
+                }
+            }
+            else {
+                selectors = [...partialSelectors];
+            }
+        }
+
+        return selectors.join(', ');
     }
 
     /** Get this node's path in the subtree */

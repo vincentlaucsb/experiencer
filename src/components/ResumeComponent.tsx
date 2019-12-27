@@ -70,6 +70,7 @@ export default function ResumeComponent(props: ResumeComponentProps) {
 export interface NodeInformation {
     text: string;
     node: BasicResumeNode;
+    icon?: string;
 }
 
 /** Stores schema information */
@@ -86,11 +87,11 @@ export class ComponentTypes {
                     Row.type,
                     Column.type,
                     Section.type,
-                    Icon.type,
                     Entry.type,
                     RichText.type,
                     AliasTypes.BulletedList,
-                    DescriptionList.type
+                    DescriptionList.type,
+                    Icon.type
                 ];
             case Row.type:
                 return Column.type;
@@ -175,14 +176,16 @@ export class ComponentTypes {
                     node: {
                         type: RichText.type,
                         value: '<ul><li></li></ul>'
-                    }
+                    },
+                    icon: 'listine-dots',
                 }
             case Column.type:
                 return {
                     text: Column.type,
                     node: {
                         type: Column.type
-                    }
+                    },
+                    icon: 'swoosh-down'
                 }
             case DescriptionList.type:
                 return {
@@ -194,7 +197,8 @@ export class ComponentTypes {
                                 type: DescriptionListItem.type
                             }
                         ]
-                    }
+                    },
+                    icon: 'sub-listing'
                 }
             case DescriptionListItem.type:
                 return {
@@ -208,21 +212,24 @@ export class ComponentTypes {
                         type: Entry.type,
                         title: [''],
                         subtitle: ['']
-                    } as BasicEntryProps
+                    } as BasicEntryProps,
+                    icon: 'calendar'
                 }
             case Grid.type:
                 return {
                     text: 'Grid',
                     node: {
                         type: Grid.type
-                    }
+                    },
+                    icon: 'table'
                 }
             case RichText.type:
                 return {
                     text: 'Rich Text',
                     node: {
                         type: RichText.type
-                    }
+                    },
+                    icon: 'paragraph'
                 }
             case Row.type:
                 return {
@@ -233,14 +240,16 @@ export class ComponentTypes {
                             { type: Column.type },
                             { type: Column.type }
                         ]
-                    }
+                    },
+                    icon: 'swoosh-right',
                 }
             case Section.type:
                 return {
                     text: Section.type,
                     node: {
                         type: Section.type
-                    }
+                    },
+                    icon: 'book-mark'
                 }
             case Icon.type:
                 return {

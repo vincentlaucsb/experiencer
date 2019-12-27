@@ -371,6 +371,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
     /** Paste whatever is currently in the clipboard */
     pasteClipboard() {
+        // Default target: root
         let target: IdType = [];
         if (this.state.selectedNode) {
             target = this.state.selectedNode;
@@ -506,7 +507,9 @@ class Resume extends React.Component<{}, ResumeState> {
             moveUpEnabled: this.moveSelectedUpEnabled,
             moveDownEnabled: this.moveSelectedDownEnabled,
             unselect: this.unselect,
-            updateSelected: this.updateSelected
+            updateSelected: this.updateSelected,
+            undo: this.undoChange,
+            redo: this.redoChange
         }
     }
 

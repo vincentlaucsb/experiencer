@@ -1,13 +1,13 @@
-﻿import Entry, { EntryProps, BasicEntryProps } from "../Entry";
+﻿import Entry, { BasicEntryProps } from "../Entry";
 import { ResumeNode } from "../utility/NodeTree";
 import Row, { BasicRowProps } from "../Row";
-import Section from "../Section";
 import { Action } from "../ResumeNodeBase";
 import Header, { BasicHeaderProps } from "../Header";
 import Icon, { BasicIconProps } from "../Icon";
 
 export interface ToolbarOption {
     text: string;
+    icon?: string;
     action?: Action;
     actions?: Array<ToolbarOption>;
 }
@@ -72,17 +72,17 @@ export default function toolbarOptions(
                     text: 'Title Options',
                     actions: [
                         {
-                            text: 'Add another title field',
+                            text: 'Add title field',
                             action: () =>
                                 updateNode('title', addTitleField(node))
                         },
                         {
-                            text: 'Add another subtitle field',
+                            text: 'Add subtitle field',
                             action: () =>
                                 updateNode('subtitle', addSubtitleField(node))
                         },
                         {
-                            text: 'Add line break',
+                            text: 'Add subtitle line break',
                             action: () =>
                                 updateNode('subtitleBreaks', addLineBreak(node))
                         },

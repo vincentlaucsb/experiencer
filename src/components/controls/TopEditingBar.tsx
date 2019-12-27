@@ -41,11 +41,7 @@ function AddOption(props: AddOptionProps) {
         let optionsDetail: AddOptions = options.map((nodeType: string) => nodeInfo(nodeType));
         return <PureDropdown content={<Button>Insert</Button>}>
             {optionsDetail.map((opt) =>
-                <PureMenuItem key={opt.text} onClick={() => props.addChild(props.id, assignIds(opt.node))}>
-                    <PureMenuLink>
-                        {opt.text}
-                    </PureMenuLink>
-                </PureMenuItem>
+                <IconicMenuItem key={opt.text} icon={opt.icon} label={opt.text} onClick={() => props.addChild(props.id, assignIds(opt.node))} />
             )}
         </PureDropdown>
     }
@@ -69,7 +65,9 @@ export interface EditingBarProps extends SelectedNodeActions {
     moveUpEnabled: boolean;
     moveDownEnabled: boolean;
     updateSelected: (key: string, data: any) => void;
+    undo: Action;
     unselect: Action;
+    redo: Action;
 }
 
 function ClipboardMenu(props: EditingBarProps) {
@@ -145,22 +143,31 @@ export default function TopEditingBar(props: EditingBarProps) {
     </PureMenuItem>
 
     let children = (
-        <div className="toolbar-section">
-            <PureMenu horizontal>
-                <Button onClick={() => props.addChild([], assignIds({ type: Section.type }))}>Add Section</Button>
-                <Button onClick={() => props.addChild([], assignIds(ComponentTypes.defaultValue(Row.type).node))}>Add Row & Columns</Button>
-                <Button onClick={() => props.addChild([], assignIds(ComponentTypes.defaultValue(Grid.type).node))}>Add Grid</Button>
-            </PureMenu>
-            <span className="label">Resume Components</span>
-        </div>
+        <>
+            <div className="toolbar-section">
+                <PureMenu horizontal>
+                    <Button onClick={props.undo}>Undo</Button>
+                    <Button onClick={props.redo}>Redo</Button>
+                </PureMenu>
+                <span className="label">Editing</span>
+            </div>
+            <div className="toolbar-section">
+                <PureMenu horizontal>
+                    <Button onClick={() => props.addChild([], assignIds({ type: Section.type }))}>Add Section</Button>
+                    <Button onClick={() => props.addChild([], assignIds(ComponentTypes.defaultValue(Row.type).node))}>Add Row & Columns</Button>
+                    <Button onClick={() => props.addChild([], assignIds(ComponentTypes.defaultValue(Grid.type).node))}>Add Grid</Button>
+                </PureMenu>
+                <span className="label">Resume Components</span>
+            </div>
+        </>
     );
 
     const id = props.selectedNodeId;
     if (id && props.selectedNode) {
         const type = props.selectedNode.type;
         const customOptions = toolbarOptions(props.selectedNode, props.updateNode);
-        let moveUpText = "Up";
-        let moveDownText = "Down";
+        let moveUpText = <i className="icofont-rounded-up" />;
+        let moveDownText = <i className="icofont-rounded-down" />;
 
         // If we are selecting a child of a container type,
         // give the option of adding another child to the parent
@@ -179,8 +186,8 @@ export default function TopEditingBar(props: EditingBarProps) {
         }
 
         if (type === Column.type) {
-            moveUpText = "Left";
-            moveDownText = "Right";
+            moveUpText = <i className="icofont-rounded-left" />
+            moveDownText = <i className="icofont-rounded-right" />
         }
 
         children = (

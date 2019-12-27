@@ -71,7 +71,9 @@ export default function HtmlIdAdder(props: htmlIdAdderProps) {
                 <input id="css-classes" className={classNameInputClass} type="text" onChange={onCssChange} value={cssClasses} />
             </div>
 
-            <Button type="submit">Save</Button>
+            <div className="pure-controls">
+                <Button type="submit">Save</Button>
+            </div>
         </form>
     );
 

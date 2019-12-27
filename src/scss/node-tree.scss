@@ -21,6 +21,17 @@ ul.node-tree {
             font-weight: bold;
         }
     }
+
+    span.tree-item-section {
+        font-weight: bold;
+    }
+
+    /** Italic font for types that don't have their own
+        text headers or values
+     */
+    span.tree-item-Column, span.tree-item-Grid {
+        font-style: italic;
+    }
 }
 
 %icon {

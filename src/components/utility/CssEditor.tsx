@@ -4,8 +4,9 @@ import MappedTextFields, { ContainerProps } from "../controls/inputs/MappedTextF
 import Collapse from "../controls/Collapse";
 import { Button } from "../controls/Buttons";
 import CssSelectorAdder from "./CssSelectorAdder";
-import ResumeTextField from "../controls/inputs/TextField";
+import TextField from "../controls/inputs/TextField";
 import ReactDOM from "react-dom";
+import PureMenu, { PureDropdown, PureMenuItem } from "../controls/menus/PureMenu";
 
 export interface CssEditorProps {
     autoCollapse?: boolean;
@@ -33,6 +34,18 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
         this.mapContainer = this.mapContainer.bind(this);
     }
+
+    static readonly pseudoElements = [
+        '::after',
+        '::before',
+        ':first',
+        ':first-child',
+        ':first-of-type',
+        ':last-child',
+        ':last-of-type',
+        ':only-child',
+        ':only-of-type'
+    ];
 
     /** A list of suggested CSS properties */
     get cssProperties() {
@@ -172,6 +185,24 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         return properties;
     }
 
+    get highlighter() {
+        let className = "hl";
+        if (this.state.highlight) {
+            className += " hl-active";
+        }
+
+        return (
+            <Button
+                className={className}
+                onClick={(event) => {
+                    this.setState({ highlight: !this.state.highlight });
+                    event.stopPropagation();
+                }}>
+                <i className="icofont-binoculars" />
+            </Button>
+        );
+    }
+
     get varSuggestions() {
         const treeRoot = this.props.root.treeRoot;
         let suggestions = new Array<string>();
@@ -191,6 +222,56 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     get path() {
         return this.props.root.fullPath;
     }
+
+    get toolbar() {
+        let deleteButton = <></>
+        if (this.props.deleteNode && this.props.root.selector !== '#resume') {
+            deleteButton = <Button onClick={(event) => {
+                if (this.props.deleteNode) {
+                    this.props.deleteNode(this.props.root.fullPath);
+                }
+
+                event.stopPropagation();
+            }}><i className="icofont-ui-delete" /></Button>
+        }
+        
+        let pseudoMenu = (
+            <PureDropdown content={<Button>::</Button>}>
+                {CssEditor.pseudoElements.map((sel) => {
+                    if (this.props.root.hasName(sel)) {
+                        return <></>
+                    }
+
+                    return <PureMenuItem>
+                          <Button onClick={(event) => {
+                            this.props.addSelector(this.props.root.fullPath, sel, sel);
+                            event.stopPropagation();
+                          }}>{sel}</Button>
+                    </PureMenuItem>
+                })}
+            </PureDropdown>
+        );
+
+        let listProps = {
+            // Stop parent collapsing
+            onClick: (event: React.MouseEvent) => {
+                event.stopPropagation();
+            }
+        }
+
+        return (
+            <PureMenu horizontal listProps={listProps}>
+                <PureMenuItem>{pseudoMenu}</PureMenuItem>
+                <PureMenuItem>
+                    <CssSelectorAdder
+                        addSelector={(name, selector) => this.props.addSelector(this.props.root.fullPath, name, selector)}
+                        selector={this.props.root.fullSelector}
+                        />
+                </PureMenuItem>
+                <PureMenuItem>{deleteButton}</PureMenuItem>
+            </PureMenu>
+        );
+    }
     
     /**
      * Contains the rows of a CSS ruleset
@@ -200,7 +281,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         return (
             <div className="css-ruleset" onClick={props.onClick}>
                 {selector} {"{"}
-                <table>
+                <table className="css-ruleset-table">
                     <tbody>
                         {props.children}
                     </tbody>
@@ -212,34 +293,41 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
     /** Highlight all DOM nodes matching the current selector */
     renderHighlightBoxes() {
-        const hits = document.querySelectorAll(this.props.root.fullSelector);
-        const root = document.getElementById("resume");
-        if (root && this.state.highlight) {
-            let elems = new Array<JSX.Element>();
-            hits.forEach((node: Element) => {
-                const bounds = node.getBoundingClientRect();
-                const computedStyle = window.getComputedStyle(node);
+        let selector = this.props.root.fullSelector;
+        try {
+            const hits = document.querySelectorAll(selector);
+            const root = document.getElementById("resume");
+            if (root && this.state.highlight) {
+                let elems = new Array<JSX.Element>();
+                hits.forEach((node: Element) => {
+                    const bounds = node.getBoundingClientRect();
+                    const computedStyle = window.getComputedStyle(node);
 
-                let left = `calc(${bounds.left}px - ${computedStyle.marginLeft})`;
-                let top = `calc(${bounds.top}px - ${computedStyle.marginTop})`
+                    let left = `calc(${bounds.left}px - ${computedStyle.marginLeft})`;
+                    let top = `calc(${bounds.top}px - ${computedStyle.marginTop})`
 
-                elems.push(<div className="resume-hl-box"
-                    style={{
-                        position: "fixed",
-                        borderLeftWidth: `${computedStyle.marginLeft}`,
-                        borderRightWidth: `${computedStyle.marginRight}`,
-                        borderTopWidth: `${computedStyle.marginTop}`,
-                        borderBottomWidth: `${computedStyle.marginBottom}`,
-                        left: left,
-                        width: `${bounds.width}px`,
-                        height: `${bounds.height}px`,
-                        top: top,
-                        zIndex: 2000
-                    }}
-                />);
-            });
+                    elems.push(<div className="resume-hl-box"
+                        style={{
+                            position: "fixed",
+                            borderLeftWidth: `${computedStyle.marginLeft}`,
+                            borderRightWidth: `${computedStyle.marginRight}`,
+                            borderTopWidth: `${computedStyle.marginTop}`,
+                            borderBottomWidth: `${computedStyle.marginBottom}`,
+                            left: left,
+                            width: `${bounds.width}px`,
+                            height: `${bounds.height}px`,
+                            top: top,
+                            zIndex: 2000
+                        }}
+                    />);
+                });
 
-            return ReactDOM.createPortal(elems, root);
+                return ReactDOM.createPortal(elems, root);
+            }
+        }
+        catch (e) {
+            // TODO: Handle invalid selectors
+            console.log(e);
         }
     }
 
@@ -288,64 +376,22 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     }
 
     renderDescription() {
-        // TODO: Clean up
-        return <ResumeTextField
+        return <TextField
             value={this.props.root.description || ""}
+            displayClassName="css-description"
             onChange={(text) => {
                 this.props.updateDescription(this.props.root.fullPath, text);
             }}
-            isEditing={this.state.editingDescription}
-            onClick={() => this.setState({ editingDescription: !this.state.editingDescription })}
-            onEnterDown={() => this.setState({ editingDescription: !this.state.editingDescription })}
         />
     }
 
     render() {
-        // TODO: Clean these up
-        let after = <Button onClick={(event) => {
-            this.props.addSelector(this.props.root.fullPath, '::after', '::after');
-            event.stopPropagation();
-        }}>::after</Button>
-
-        let before = <Button onClick={(event) => {
-            this.props.addSelector(this.props.root.fullPath, '::before', '::before');
-            event.stopPropagation();
-        }}>::before</Button>
-
-        let deleteButton = <></>
-        if (this.props.deleteNode) {
-            deleteButton = <Button onClick={(event) => {
-                if (this.props.deleteNode) {
-                    this.props.deleteNode(this.props.root.fullPath);
-                }
-
-                event.stopPropagation();
-            }}>Delete</Button>
-        }
-
-        if (this.props.root.hasName("::after")) {
-            after = <></>
-        }
-
-        if (this.props.root.hasName("::before")) {
-            before = <></>
-        }
-
-        let buttons = <span className="button-group">
-            {after}
-            {before}
-            <CssSelectorAdder
-                addSelector={(name, selector) => this.props.addSelector(this.props.root.fullPath, name, selector)}
-                selector={this.props.root.fullSelector}
-            />
-            {deleteButton}
-        </span>
-
-        const trigger = <h2
-            onMouseOver={() => this.setState({ highlight: true })}
-            onMouseOut={() => this.setState({ highlight: false })}>
-            {this.props.root.name}
-            {buttons}            
+        const trigger = <h2 className="css-title-heading">
+            <span className="css-title">
+                {this.props.root.name}
+            </span>
+            {this.highlighter}
+            {this.toolbar}    
         </h2>
 
         const isOpen = (this.path.length !== 1) || !this.props.autoCollapse;
@@ -354,8 +400,8 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
             <section className={`css-category no-print css-category-${this.path.length}`}>
                 {this.renderHighlightBoxes()}
                 <Collapse trigger={trigger} isOpen={isOpen}>
-                    {this.renderDescription()}
                     <div className="css-category-content">
+                        {this.renderDescription()}
                         {this.renderProperties()}
                         {this.renderChildren()}
                     </div>

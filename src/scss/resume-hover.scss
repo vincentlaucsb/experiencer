@@ -1,45 +1,16 @@
 @import "variables";
 
-.resume-hovering, .resume-selected {
+.resume-selected {
     background: $light-shade;
-}
-
-.resume-hovering {
-    // border: 1px dashed $main;
-    cursor: pointer;
-}
-
-img.icon.resume-hovering, img.icon.resume-selected {
-    border: 1px dashed $main;
 }
 
 #resume {
     div.resume-selected, .resume-selected {
-        border: 2px solid $main;
+        border: 2px solid $dark-shade;
         cursor: auto;
     }
 }
 
-.resume-hidden {
-    font-style: italic;
-    color: #aaaaaa;
-}
-
-.resume-default {
-    font-style: italic;
-}
-
 .resume-editing {
     background: unset;
-}
-
-#resume {
-    a.dropdown-item, button {
-        /** Use Bootstrap style for editing controls */
-        font-family: $font-family-base;
-    }
-
-    li.list-options {
-        list-style-type: none;
-    }
 }

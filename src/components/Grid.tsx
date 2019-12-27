@@ -2,9 +2,7 @@
 import React from "react";
 
 export default class Grid extends ResumeNodeBase {
-    static get type() {
-        return 'Grid';
-    }
+    static readonly type = 'Grid';
 
     get className() {
         return ['grid-container', super.className].join(' ');
@@ -21,19 +19,6 @@ export default class Grid extends ResumeNodeBase {
         }
 
         return style;
-    }
-
-    /** Returns a "handle" which can be used to select the column itself and not the columns it contains */
-    renderGrabHandle() {
-        if (this.isHovering && !this.isSelected) {
-            return <div className="row-grab-handle-container">
-                <div className="row-grab-handle">
-                    <p>Click here to select grid</p>
-                </div>
-            </div>
-        }
-
-        return <></>
     }
 
     render() {

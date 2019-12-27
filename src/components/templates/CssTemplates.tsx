@@ -5,40 +5,19 @@ import RichText from "../RichText";
 
 function getRowCss(): CssNode {
     let rowCss = new CssNode('Row', {
-
     }, '.row');
-
-    let columnCss = rowCss.add(new CssNode('Column', {
-
-    }, '.column'));
-
-    rowCss.add(new CssNode('First Column', {
-
-    }, '.column-0'));
-
-    rowCss.add(new CssNode('All Columns Except First', {
-        'margin-left': '1em'
-    }, '.column:not(.column-0)'));
-
-    rowCss.add(new CssNode('Last Column', {
-
-    }, '.column-last'));
-
+    
     return rowCss;
 }
 
 function getRichTextCss(): CssNode {
-    let richTextCss = new CssNode(RichText.type, {
+    let richTextCss = new CssNode(RichText.type, {}, '.rich-text');
 
-    }, '.rich-text');
-
-    let listCss = richTextCss.add(new CssNode('Lists', {
+    let listCss = richTextCss.add('Lists', {
         'padding-left': 'var(--large-spacing)'
-    }, 'ul'));
+    }, 'ul');
 
-    listCss.add(new CssNode('List Item', {
-        'list-style-type': 'square' /** Default: circle */
-    }, 'li'));
+    listCss.add('List Item', { 'list-style-type': 'square' }, 'li');
 
     return richTextCss;
 }
@@ -48,66 +27,57 @@ function getSectionCss(): CssNode {
         'margin-bottom': 'var(--large-spacing)'
     }, 'section');
 
-    sectionCss.add(new CssNode('Title', {
+    sectionCss.add('Title', {
         'font-family': 'var(--sans-serif)',
         'font-weight': 'bold',
         'font-size': '15pt',
         'text-transform': 'uppercase'
-    }, '> h2'));
+    }, '> h2');
 
-    sectionCss.add(new CssNode(
-        'Content', {
-            'margin-top': '8px',
-            'margin-left': '8px',
-            'padding-left': '16px',
-            'padding-right': '8px',
-            'border-left': '3px dotted #dddddd',
-        }, '> div.content'
-    ));
+    sectionCss.add('Content', {
+        'margin-top': '8px',
+        'margin-left': '8px',
+        'padding-left': '16px',
+        'padding-right': '8px',
+        'border-left': '3px dotted #dddddd',
+    }, '> div.content');
 
     return sectionCss;
 }
 
 function getEntryCss(): CssNode {
     let entryCss = new CssNode(Entry.type,
-        {
-            'margin-bottom': 'var(--large-spacing)'
-        }, 'div.entry');
+        { 'margin-bottom': 'var(--large-spacing)' }, 'div.entry');
 
-    let entryTitleCss = entryCss.add(new CssNode('Title Block',
-        {
-            'margin-bottom': 'var(--small-spacing)'
-        }, '> hgroup'));
+    let entryTitleCss = entryCss.add('Title Block',
+        { 'margin-bottom': 'var(--small-spacing)' }, '> hgroup');
 
-    let entryTitleHeadingCss = entryTitleCss.add(
-        new CssNode('Title', {
+    let entryTitleHeadingCss = entryTitleCss.add('Title', {
             'font-family': 'var(--serif)',
             'font-size': '13pt',
-        }, '> h3'));
+        }, '> h3');
 
-    entryTitleHeadingCss.add(new CssNode('First Title Field', {
+    entryTitleHeadingCss.add('First Field', {
         'font-weight': 'bold'
-    }, 'span.field-0'));
+    }, 'span.field-0');
 
-    entryTitleHeadingCss.add(new CssNode('Other Title Fields', {
+    entryTitleHeadingCss.add('Middle Fields', {
         'font-weight': 'normal'
-    }, ':not(.field-0)'));
+    }, 'span.field-middle');
 
-    let subtitleCss = entryTitleCss.add(new CssNode('Subtitle', {
+    entryTitleHeadingCss.add('Last Field', {
+        'font-weight': 'normal'
+    }, 'span.field-last');
+
+    let subtitleCss = entryTitleCss.add('Subtitle', {
         'display': 'flex',
         'flex-wrap': 'wrap',
         'font-weight': 'normal'
-    }, '> h4'));
+    }, '> h4');
 
-    subtitleCss.add(new CssNode('First Field', {
-        'font-weight': 'bold'
-    }, 'span.field-0'));
-
-    subtitleCss.add(new CssNode('Middle Fields', {
-    }, 'span.field-middle'));
-
-    subtitleCss.add(new CssNode('Last Field', {
-    }, 'span.field-last'));
+    subtitleCss.add('First Field', { 'font-weight': 'bold' }, 'span.field-0');
+    subtitleCss.add('Middle Fields', {}, 'span.field-middle');
+    subtitleCss.add('Last Field', {}, 'span.field-last');
 
     return entryCss;
 }
@@ -117,17 +87,12 @@ function getHeaderCss() {
         'margin-bottom': 'var(--large-spacing)'
     }, 'header');
 
-    const titleGroup = headerCss.add(new CssNode(
-        'Title Group', {}, '> hgroup'));
-
-    titleGroup.add(new CssNode('Title', {
+    const titleGroup = headerCss.add('Title Group', {}, '> hgroup');
+    titleGroup.add('Title', {
         'font-family': 'var(--serif)',
         'font-weight': 'normal'
-    }, '> h1'));
-
-    const subtitleGroup = titleGroup.add(new CssNode('Subtitle', {
-        'font-weight': 'normal'
-    }, '> h2'));
+    }, '> h1');
+    titleGroup.add('Subtitle', { 'font-weight': 'normal' }, '> h2');
 
     return headerCss;
 }
@@ -150,37 +115,26 @@ export default function getDefaultCss(): CssNode {
         '--large-spacing': '16px'
     }, ':root');
 
-    defaultCss.add(new CssNode('All Resume Descendents', {
-        'margin': '0'
-    }, '*'));
+    defaultCss.add('All Resume Descendents', { 'margin': '0' }, '*');
 
-    defaultCss.add(new CssNode('Image', {
+    defaultCss.add('Image', {
         'max-width': '100%',
         'max-height': '100%',
         'object-fit': 'scale-down'
-    }, 'img'));
+    }, 'img');
 
-    defaultCss.add(new CssNode('Link', {
-        'color': '#000000'
-    }, 'a, a:hover'));
+    defaultCss.add('Link', { 'color': '#000000' }, 'a, a:hover');
 
-    let dlCss = defaultCss.add(new CssNode('Description List', {
-    }, 'dl'));
+    let dlCss = defaultCss.add('Description List', { }, 'dl');
+    dlCss.add('Definitions', { 'padding-left': '0.5rem' }, 'dd');
 
-    dlCss.add(new CssNode('Definitions', {
-        'padding-left': '0.5rem'
-    }, 'dd'));
+    defaultCss.add('Column', {}, 'div.column');
+    defaultCss.add('Grid', {}, 'div.grid-container');
 
-    /**
-    let gridCss = defaultCss.add(new CssNode('Grid', {
-
-    }, 'div.grid-container'));
-    */
-
-    defaultCss.add(getHeaderCss());
-    defaultCss.add(getSectionCss());
-    defaultCss.add(getEntryCss());
-    defaultCss.add(getRichTextCss());
-    defaultCss.add(getRowCss());
+    defaultCss.addNode(getHeaderCss());
+    defaultCss.addNode(getSectionCss());
+    defaultCss.addNode(getEntryCss());
+    defaultCss.addNode(getRichTextCss());
+    defaultCss.addNode(getRowCss());
     return defaultCss;
 }

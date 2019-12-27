@@ -62,24 +62,7 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
 
         return properties;
     }
-    
-    justifyContent(text: string) {
-        this.updateData('justifyContent', text);
-    }
 
-    /** Returns a "handle" which can be used to select the row itself and not the columns it contains */
-    renderGrabHandle() {
-        if (this.isHovering && !this.isSelected) {
-            return <div className="row-grab-handle-container">
-                <div className="row-grab-handle">
-                    <p>Click here to select row</p>
-                </div>
-            </div>
-        }
-
-        return <></>
-    }
-    
     render() { 
         return (
             <div className={this.className}

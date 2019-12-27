@@ -1,84 +1,101 @@
 ﻿import React from "react";
 
-interface ResumeTextFieldProps {
-    isEditing?: boolean;
-
+interface TextFieldProps {
     value?: string;
     label?: string;
     defaultText?: string;
     displayClassName?: string;
+    editBlocked?: boolean;
 
     /** A callback which modifies the display text */
     displayProcessor?: (text?: string) => string;
-
     onChange: (text: string) => void;
-
-    /** Callback when display text is clicked */
-    onClick?: () => void;
-
-    /** Callback when enter key is pressed */
-    onEnterDown?: () => void;
 }
 
-export default function ResumeTextField(props: ResumeTextFieldProps) {
-    const initialValue = props.value || "";
-    let [value, setValue] = React.useState(initialValue);
-    let [escapePressed, setEscape] = React.useState(false);
+export interface TextFieldState {
+    value: string;
+    isEditing: boolean;
+}
 
-    const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-        if (event.key === 'Enter' && props.onEnterDown) {
-            props.onEnterDown();
+export default class TextField extends React.Component<TextFieldProps, TextFieldState> {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            value: props.value,
+            isEditing: false
+        };
+
+        this.onKeyDown = this.onKeyDown.bind(this);
+    }
+
+    /** Update parent when appropriate */
+    componentDidUpdate(prevProps: TextFieldProps) {
+        /** Top level node gave us new data */
+        if (this.props.editBlocked && this.state.isEditing) {
+            this.setState({ isEditing: false });
         }
-        else if (event.key === 'Escape') {
-            setEscape(true);
-            setValue(initialValue);
 
-            // TODO: Add a different toggleEdit method
-            if (props.onClick) {
-                props.onClick();
+        if (!this.state.isEditing) {
+            if (prevProps.value !== this.props.value) {
+                // Parent updated us
+                this.setState({
+                    value: this.props.value || ""
+                });
+            } else if (this.state.value !== this.props.value) {
+                // Update parent
+                this.props.onChange(this.state.value);
             }
         }
-
-        // event.stopPropagation();
-    };
-
-    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setValue(event.target.value);
-    }
-
-    React.useEffect(() => {
-        if (props.isEditing) {
-            setEscape(false);
-        }
-        else if (value !== initialValue && !escapePressed) {
-            props.onChange(value);
-        }
-    }, [props.isEditing]);
-
-    let label = <></>
-    if (props.label) {
-        label = <label>{props.label || "Value"}</label>
-    }
-
-    if (props.isEditing) {
-        return <>
-            {label}
-            <input
-                onChange={onChange}
-                onKeyDown={onKeyDown}
-                value={value}
-            />
-        </>
-    }
-
-    let displayValue = props.value;
-    if (props.value && props.value.length > 0) {
-        displayValue = props.displayProcessor ? props.displayProcessor(props.value) : props.value;
-    }
-    else {
-        displayValue = "Enter a value";
     }
     
-    return <span className={props.displayClassName} onClick={props.onClick}
-    >{displayValue}</span>
+    onKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+        if (event.key === 'Enter') {
+            this.setState({ isEditing: false });
+            this.props.onChange(this.state.value);
+        }
+        else if (event.key === 'Escape') {
+            // Restore original value
+            this.setState({
+                isEditing: false,
+                value: this.props.value || ''
+            });
+        }
+    };
+
+    render() {
+        const props = this.props;
+
+        let label = <></>
+        if (props.label) {
+            label = <label>{props.label || "Value"}</label>
+        }
+
+        if (this.state.isEditing) {
+            return <>
+                {label}
+                <input
+                    autoFocus
+                    onChange={(event) => this.setState({ value: event.target.value })}
+                    onBlur={() => this.setState({ isEditing: false })}
+                    onKeyDown={this.onKeyDown}
+                    value={this.state.value}
+                />
+            </>
+        }
+
+        let displayValue = props.value;
+        if (props.value && props.value.length > 0) {
+            displayValue = props.displayProcessor ? props.displayProcessor(props.value) : props.value;
+        }
+        else {
+            displayValue = "Enter a value";
+        }
+
+        return (
+            <span
+                onClick={() => this.setState({ isEditing: true })}
+                className={props.displayClassName}>{displayValue}</span>
+        );
+    }
 }

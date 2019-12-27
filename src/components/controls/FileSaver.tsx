@@ -1,6 +1,5 @@
 ﻿import * as React from "react";
 import { Button } from './Buttons';
-import Popover from 'react-tiny-popover';
 
 interface FileSaverProps {
     close: () => void;

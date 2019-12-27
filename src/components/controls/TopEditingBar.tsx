@@ -1,20 +1,21 @@
 ﻿import React from "react";
 import { Button } from "./Buttons";
-import { Action, ModifyChild, AddChild } from "../ResumeNodeBase";
+import { Action, AddChild, NodeProperty } from "../ResumeNodeBase";
 import { IdType } from "../utility/HoverTracker";
-import PureMenu, { PureDropdown, PureMenuItem, PureMenuLink } from "./PureMenu";
+import PureMenu, { PureDropdown, PureMenuItem, PureMenuLink } from "./menus/PureMenu";
 import ResumeHotKeys from "./ResumeHotkeys";
 import { SelectedNodeActions } from "./SelectedNodeActions";
-import { ComponentTypes, NodeInformation } from "../ResumeComponent";
 import DescriptionList, { DescriptionListItem } from "../List";
 import HtmlIdAdder from "./HtmlIdAdder";
 import { assignIds } from "../Helpers";
 import { ResumeNode } from "../utility/NodeTree";
-import toolbarOptions, { CustomToolbarOptions } from "./ToolbarOptions";
+import ComponentTypes, { NodeInformation } from "../schema/ComponentTypes";
+import toolbarOptions, { CustomToolbarOptions } from "../schema/ToolbarOptions";
 import Column from "../Column";
 import Grid from "../Grid";
 import Row from "../Row";
 import Section from "../Section";
+import IconicMenuItem from "./menus/MenuItem";
 
 type AddOptions = Array<NodeInformation>;
 
@@ -33,27 +34,23 @@ function AddOption(props: AddOptionProps) {
     const nodeInfo = (type: string) => ComponentTypes.defaultValue(type);
 
     if (Array.isArray(options)) {
-        if (options.length == 0) {
+        if (options.length === 0) {
             return <></>
         }
 
         let optionsDetail: AddOptions = options.map((nodeType: string) => nodeInfo(nodeType));
         return <PureDropdown content={<Button>Insert</Button>}>
             {optionsDetail.map((opt) =>
-                <PureMenuItem key={opt.text} onClick={() => props.addChild(props.id, assignIds(opt.node))}>
-                    <PureMenuLink>
-                        {opt.text}
-                    </PureMenuLink>
-                </PureMenuItem>
+                <IconicMenuItem key={opt.text} icon={opt.icon} label={opt.text} onClick={() => props.addChild(props.id, assignIds(opt.node))} />
             )}
         </PureDropdown>
     }
 
     const node: NodeInformation = nodeInfo(options as string);
     return (
-            <Button onClick={() => props.addChild(props.id, assignIds(node.node))}>
-                Add {node.text}
-            </Button>
+        <Button onClick={() => props.addChild(props.id, assignIds(node.node))}>
+            Add {node.text}
+        </Button>
     );
 }
 
@@ -61,21 +58,19 @@ export interface EditingBarProps extends SelectedNodeActions {
     selectedNodeId?: IdType;
     selectedNode?: ResumeNode,
     addHtmlId: (htmlId: string) => void;
-    updateNode: (key: string, value: string | string[] | boolean | number | number[]) => void;
+    addCssClasses: (classes: string) => void;
+    updateNode: (key: string, value: NodeProperty) => void;
 
     addChild: AddChild;
-    toggleEdit: ModifyChild;
     moveUpEnabled: boolean;
     moveDownEnabled: boolean;
     updateSelected: (key: string, data: any) => void;
+    undo: Action;
     unselect: Action;
+    redo: Action;
 }
 
 function ClipboardMenu(props: EditingBarProps) {
-    const DropdownItem = (props: any) => <PureMenuItem onClick={props.onClick}>
-        <PureMenuLink>{props.children}</PureMenuLink>
-    </PureMenuItem>
-
     /**
      * Get the keyboard shortcut associated with key
      * @param key Resume hotkey key
@@ -83,18 +78,34 @@ function ClipboardMenu(props: EditingBarProps) {
     const getShortcut = (key: string) : string => {
         return ResumeHotKeys.keyMap[key]['sequence'];
     }
-
-    const copySc = getShortcut('COPY_SELECTED');
-    const pasteSc = getShortcut('PASTE_SELECTED');
-    const cutSc = getShortcut('CUT_SELECTED');
+    
+    let menuItems = [
+        {
+            label: 'Cut',
+            icon: "ui-cut",
+            action: props.cutClipboard, shortcut: getShortcut('CUT_SELECTED')
+        },
+        {
+            label: 'Copy',
+            icon: "ui-copy",
+            action: props.copyClipboard, shortcut: getShortcut('COPY_SELECTED')
+        },
+        {
+            label: 'Paste',
+            icon: "ui-clip-board",
+            action: props.pasteClipboard, shortcut: getShortcut('PASTE_SELECTED')
+        }
+    ];
 
     return (
         <PureDropdown content={<Button>Clipboard</Button>}>
-            <DropdownItem onClick={props.cutClipboard}>Cut ({cutSc})</DropdownItem>
-            <DropdownItem onClick={props.copyClipboard}>
-                Copy ({copySc})
-            </DropdownItem>
-            <DropdownItem onClick={props.pasteClipboard}>Paste ({pasteSc})</DropdownItem>
+            {menuItems.map((value) =>
+                <IconicMenuItem
+                    icon={value.icon}
+                    shortcut={value.shortcut}
+                    label={value.label}
+                    onClick={value.action} />
+            )}
         </PureDropdown>
     );
 }
@@ -131,22 +142,41 @@ export default function TopEditingBar(props: EditingBarProps) {
         <Button disabled={props.disabled}>{props.children}</Button>
     </PureMenuItem>
 
+    let children = (
+        <>
+            <div className="toolbar-section">
+                <PureMenu horizontal>
+                    <Button onClick={props.undo}>Undo</Button>
+                    <Button onClick={props.redo}>Redo</Button>
+                </PureMenu>
+                <span className="label">Editing</span>
+            </div>
+            <div className="toolbar-section">
+                <PureMenu horizontal>
+                    <Button onClick={() => props.addChild([], assignIds({ type: Section.type }))}>Add Section</Button>
+                    <Button onClick={() => props.addChild([], assignIds(ComponentTypes.defaultValue(Row.type).node))}>Add Row & Columns</Button>
+                    <Button onClick={() => props.addChild([], assignIds(ComponentTypes.defaultValue(Grid.type).node))}>Add Grid</Button>
+                </PureMenu>
+                <span className="label">Resume Components</span>
+            </div>
+        </>
+    );
+
     const id = props.selectedNodeId;
     if (id && props.selectedNode) {
         const type = props.selectedNode.type;
         const customOptions = toolbarOptions(props.selectedNode, props.updateNode);
-        let moveUpText = "Up";
-        let moveDownText = "Down";
-        let editButton = <></>
+        let moveUpText = <i className="icofont-rounded-up" />;
+        let moveDownText = <i className="icofont-rounded-down" />;
 
         // If we are selecting a child of a container type,
         // give the option of adding another child to the parent
         const childTypes = ComponentTypes.childTypes(type);
         let parentOptions = <></>
 
-        if (ComponentTypes.isEditable(props.selectedNode.type)) {
-            editButton = <Item onClick={() => (props.toggleEdit as ModifyChild)(id)}>Edit</Item>
-        }
+        const htmlId = props.selectedNode.htmlId ?
+            <span className="label">#{props.selectedNode.htmlId}</span> :
+            <></>
 
         if (type === DescriptionListItem.type) {
             const parentId = id.slice(0, id.length - 1);
@@ -156,52 +186,45 @@ export default function TopEditingBar(props: EditingBarProps) {
         }
 
         if (type === Column.type) {
-            moveUpText = "Left";
-            moveDownText = "Right";
+            moveUpText = <i className="icofont-rounded-left" />
+            moveDownText = <i className="icofont-rounded-right" />
         }
 
-        return <div id="toolbar">
-            <div className="toolbar-section">
-                <PureMenu horizontal>
-                    <AddOption id={id} addChild={props.addChild as AddChild} options={childTypes} />
-                    {editButton}
-                    <Item onClick={props.delete}>Delete</Item>
-                    <ClipboardMenu {...props} />
-                    <CustomOptions options={customOptions} />
-                    <Button onClick={props.unselect}>Unselect</Button>
-                </PureMenu>
-                <span className="label">Current Node ({props.selectedNode.type})</span>
-            </div>
-            <div className="toolbar-section">
-                <PureMenu horizontal>
-                    <Item onClick={() => props.moveUp()} disabled={!props.moveUpEnabled}>{moveUpText}</Item>
-                    <Item onClick={() => props.moveDown()} disabled={!props.moveDownEnabled}>{moveDownText}</Item>
-                </PureMenu>
-                <span className="label">Move</span>
-            </div>
-            <div className="toolbar-section">
-                <PureMenu horizontal>
-                    <HtmlIdAdder
-                        key={props.selectedNode.uuid}
-                        htmlId={props.selectedNode.htmlId}
-                        addHtmlId={props.addHtmlId}
-                    />
-                </PureMenu>
-            </div>
-            {parentOptions}
-        </div>
+        children = (
+            <React.Fragment>
+                <div className="toolbar-section">
+                    <PureMenu horizontal>
+                        <AddOption id={id} addChild={props.addChild as AddChild} options={childTypes} />
+                        <Item onClick={props.delete}>Delete</Item>
+                        <ClipboardMenu {...props} />
+                        <CustomOptions options={customOptions} />
+                        <Button onClick={props.unselect}>Unselect</Button>
+                    </PureMenu>
+                    <span className="label">Current Node ({props.selectedNode.type})</span>
+                </div>
+                <div className="toolbar-section">
+                    <PureMenu horizontal>
+                        <Item onClick={() => props.moveUp()} disabled={!props.moveUpEnabled}>{moveUpText}</Item>
+                        <Item onClick={() => props.moveDown()} disabled={!props.moveDownEnabled}>{moveDownText}</Item>
+                    </PureMenu>
+                    <span className="label">Move</span>
+                </div>
+                <div className="toolbar-section">
+                    <PureMenu horizontal>
+                        <HtmlIdAdder
+                            key={props.selectedNode.uuid}
+                            htmlId={props.selectedNode.htmlId}
+                            cssClasses={props.selectedNode.classNames}
+                            addHtmlId={props.addHtmlId}
+                            addCssClasses={props.addCssClasses}
+                        />
+                    </PureMenu>
+                    {htmlId}
+                </div>
+                {parentOptions}
+            </React.Fragment>
+        );
     }
-    
-    return (
-        <div id="toolbar">
-            <div className="toolbar-section">
-                <PureMenu horizontal>
-                    <Button onClick={() => props.addChild([], assignIds({ type: Section.type }))}>Add Section</Button>
-                    <Button onClick={() => props.addChild([], assignIds(ComponentTypes.defaultValue(Row.type).node))}>Add Row & Columns</Button>
-                    <Button onClick={() => props.addChild([], assignIds(ComponentTypes.defaultValue(Grid.type).node))}>Add Grid</Button>
-                </PureMenu>
-                <span className="label">Resume Components</span>
-            </div>
-        </div>
-    );
+
+    return <div id="toolbar">{children}</div>
 }

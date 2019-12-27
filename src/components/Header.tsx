@@ -1,7 +1,7 @@
 ﻿import * as React from "react";
 import { RowProps, BasicRowProps } from "./Row";
 import ResumeNodeBase from "./ResumeNodeBase";
-import QuillEditor from "./controls/QuillEditor";
+import QuillEditor from "./controls/inputs/QuillEditor";
 
 interface HeaderBase {
     distribution?: 'top-to-bottom' | 'left-to-right' | 'bottom-to-top' | 'right-to-left';
@@ -47,25 +47,17 @@ export default class Header extends ResumeNodeBase<HeaderProps> {
                 id={`${this.props.uuid}-title`}
                 value={this.props.value || ""}
                 onChange={(text) => this.updateData("value", text)}
-                selectTriggerProps={{
-                    onMouseEnter: () => {},
-                    onMouseLeave: () => {}
-                }}
             />
 
             subtitle = <QuillEditor
                 id={`${this.props.uuid}-subtitle`}
                 value={this.props.subtitle || ""}
                 onChange={(text) => this.updateData("subtitle", text)}
-                selectTriggerProps={{
-                    onMouseEnter: () => { },
-                    onMouseLeave: () => { }
-                }}
             />
         }
         
         return (
-            <header className={this.className} style={this.style} {...this.selectTriggerProps}>
+            <header className={this.className} id={this.props.htmlId} style={this.style} {...this.selectTriggerProps}>
                 <hgroup>
                     {value}
                     {subtitle}

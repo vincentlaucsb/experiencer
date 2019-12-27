@@ -1,9 +1,11 @@
-﻿import React from "react";
+﻿import React, { ReactNode } from "react";
 
 interface PureMenuProps {
     children?: any;
     id?: string;
     horizontal?: boolean;
+    divProps?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
+    listProps?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLUListElement>, HTMLUListElement>;
 }
 
 export default function PureMenu(props: PureMenuProps) {
@@ -13,8 +15,9 @@ export default function PureMenu(props: PureMenuProps) {
     }
 
     return (
-        <div id={props.id} className={classes.join(' ')}>
-            <ul className="pure-menu-list">
+        <div id={props.id} className={classes.join(' ')}
+            {...props.divProps}>
+            <ul className="pure-menu-list" {...props.listProps}>
                 {props.children}
             </ul>
         </div>
@@ -22,17 +25,22 @@ export default function PureMenu(props: PureMenuProps) {
 }
 
 interface PureMenuItemProps {
-    children?: any;
+    children?: ReactNode;
     selected?: boolean;
 
     onClick?: (event: React.MouseEvent) => void;
 
     /** Additional class names for the menu item */
+    className?: string;
     classNames?: Array<string>;
 }
 
-export function PureMenuItem<P extends PureMenuItemProps>(props: P) {
+export function PureMenuItem(props: PureMenuItemProps) {
     let classes = ['pure-menu-item'];
+    if (props.className) {
+        classes.push(props.className);
+    }
+
     if (props.selected) {
         classes.push('pure-menu-selected');
     }
@@ -41,12 +49,12 @@ export function PureMenuItem<P extends PureMenuItemProps>(props: P) {
         props.classNames.forEach((value) => classes.push(value));
     }
 
-    return <li className={classes.join(' ')} onClick={props.onClick} {...props}>
+    return <li className={classes.join(' ')} onClick={props.onClick}>
         {props.children}
     </li>
 }
 
-export function PureMenuLink(props: { children: string }) {
+export function PureMenuLink(props: { children: any }) {
     return (
         <a href="#" className="pure-menu-link">
             {props.children}

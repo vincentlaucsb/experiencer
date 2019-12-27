@@ -4,7 +4,7 @@ import HelpPage from "./HelpPage";
 import { Action } from "../ResumeNodeBase";
 import SavingHelp from "./SavingHelp";
 import StartHelp from "./StartHelp";
-import PureMenu, { PureMenuItem, PureMenuLink } from "../controls/PureMenu";
+import PureMenu, { PureMenuItem, PureMenuLink } from "../controls/menus/PureMenu";
 
 interface HelpProps {
     close: Action;

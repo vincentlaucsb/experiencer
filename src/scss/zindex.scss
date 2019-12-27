@@ -1,9 +1,16 @@
-﻿/** Overlap control */
+﻿@import "variables";
+
+/** Overlap control */
 #resume, #resume * {
     z-index: 0;
 }
 
 $header-z: 1000;
+
+.resume-popover, .resume-popover *,
+.css-selector-adder, .css-selector-adder * {
+    z-index: $header-z + 2;
+}
 
 header#app-header, header#app-header * {
     z-index: $header-z;
@@ -23,10 +30,15 @@ div.ReactModalPortal, div.ReactModalPortal * {
     z-index: $header-z + 2;
 }
 
-div.Pane1, div.Pane1 * {
+Vertical.div.Pane1, Vertical.div.Pane1 * {
     z-index: 1;
+
+    .resume-hl-box {
+        background: transparentize($dark-accent, 0.75);
+        z-index: 2;
+    }
 }
 
 div.Pane2, div.Pane2 * {
-    z-index: 2;
+    z-index: 2;   
 }

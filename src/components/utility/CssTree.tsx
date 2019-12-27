@@ -65,26 +65,45 @@ export default class CssNode {
     }
 
     /** Compute the full CSS selector for this subtree */
-    // **TODO: Fix selector generator wrt commas*/
-    /** TODO: Use this to generate stylesheets */
     get fullSelector() {
+        // Build an array of all of this node's ancestors
+        let nodes = new Array<CssNode>(this);
         let parent = this.parent;
-        let selectors = this._selector.split(',');
-        let finalSelectors = new Array<string>();
-
-        for (let selector of selectors) {
-            selector = selector.trim();
-            while (!isNullOrUndefined(parent)) {
-                // No space for pseudo-classes or elements
-                const space = (selector.charAt(0) === ':') ? '' : ' ';
-                selector = `${parent.selector}${space}${selector}`;
-                parent = parent.parent;
-            }
-
-            finalSelectors.push(selector);
+        while (!isNullOrUndefined(parent)) {
+            nodes.push(parent);
+            parent = parent.parent;
         }
 
-        return finalSelectors.join(', ');
+        // Now ordered from top to bottom
+        nodes = nodes.reverse();
+
+        let selectors = new Array<string>();
+
+        // Build CSS selector by traversing from the top down,
+        // appending each node's selector to each selector in the 
+        // current array of selectors as we go
+        for (let node of nodes) {
+            // Split selectors by comma and remove extra whitespace
+            let partialSelectors = node.selector.split(',').map(
+                (sel: string) => sel.trim());
+
+            if (selectors.length > 0) {
+                let buffer = [...selectors];
+                selectors = new Array<string>();
+                for (let selector of buffer) {
+                    for (let partialSelector of partialSelectors) {
+                        const space = (partialSelector.charAt(0) === ":") ? "" : " ";
+                        selectors.push(`${selector}${space}${partialSelector}`);
+                    }
+                }
+            }
+            else {
+                // Base case
+                selectors = [...partialSelectors];
+            }
+        }
+
+        return selectors.join(', ');
     }
 
     /** Get this node's path in the subtree */
@@ -121,7 +140,7 @@ export default class CssNode {
 
         // Load children
         for (let node of data.children) {
-            rootNode.add(CssNode.load(node));
+            rootNode.addNode(CssNode.load(node));
         }
 
         // Load root
@@ -159,58 +178,46 @@ export default class CssNode {
     }
 
     /** Return a CSS stylesheet */
-    stylesheet(parentSelector?: string) {
-        // Generate individual rulesets for "," seperated selectors
-        let selectors = this.selector.split(',');
-        let stylesheets = new Array<string>();
+    stylesheet() {
+        let cssProperties = this.formatProperties();
+        const thisCss = this.properties.size > 0 ? `${this.fullSelector} {\n${cssProperties}\n}` : ``;
 
-        for (let selector of selectors) {
-            // No need for trailing/leading whitespace
-            selector = selector.trim();
+        let childStylesheets = new Array<string>();
 
-            if (parentSelector) {
-                // Don't add space for pseudo-elements and pseudo-classes
-                selector = (selector.charAt(0) === ':') ? `${parentSelector}${selector}`
-                    : `${parentSelector} ${selector}`;
-            }
-
-            let cssProperties = this.formatProperties();
-            const thisCss = this.properties.size > 0 ? `${selector} {\n${cssProperties}\n}` : ``;
-
-            let childStylesheets = new Array<string>();
-            // :root before others
-            if (this.cssRoot) {
-                childStylesheets.push(this.cssRoot.stylesheet());
-            }
-
-            for (let cssTree of this.children.values()) {
-                childStylesheets.push(cssTree.stylesheet(selector));
-            }
-
-            let finalStylesheet = thisCss;
-            if (childStylesheets.length > 0) {
-                finalStylesheet += "\n\n";
-                finalStylesheet += childStylesheets.join('\n\n');
-            }
-
-            stylesheets.push(finalStylesheet);
+        // :root before others
+        if (this.cssRoot) {
+            childStylesheets.push(this.cssRoot.stylesheet());
         }
 
-        return stylesheets.join('\n\n');
+        for (let cssTree of this.children.values()) {
+            childStylesheets.push(cssTree.stylesheet());
+        }
+
+        let finalStylesheet = thisCss;
+        if (childStylesheets.length > 0) {
+            finalStylesheet += "\n\n";
+            finalStylesheet += childStylesheets.join('\n\n');
+        }
+
+        return finalStylesheet;
     }
 
     /**
      * Add a CssNode and return a reference to the added node
      * @param css
      */
-    add(css: CssNode): CssNode {
-        if (this.hasName(css.name)) {
-            throw new Error(`Already have a child named ${css.name}`);
+    add(name: string, properties, selector?: string): CssNode {
+        return this.addNode(new CssNode(name, properties, selector || name));
+    }
+
+    addNode(node: CssNode): CssNode {
+        if (this.hasName(node.name)) {
+            throw new Error(`Already have a child named ${node.name}`);
         }
 
-        css.parent = this;
-        this.children.push(css);
-        this._childNames.add(css.name);
+        node.parent = this;
+        this.children.push(node);
+        this._childNames.add(node.name);
         return this.children[this.children.length - 1];
     }
 
@@ -258,7 +265,7 @@ export default class CssNode {
 
         let newTree = new CssNode(newName, {}, newSelector);
         for (let node of this.children) {
-            newTree.add(node.copySkeleton());
+            newTree.addNode(node.copySkeleton());
         }
 
         return newTree;
@@ -268,9 +275,13 @@ export default class CssNode {
      * Find a CSS node somewhere in this subtree
      * @param path A list of names ordered from higher up in the tree to lower
      */
-    findNode(path: string[]): CssNode | undefined {
-        if (path.length == 0) {
+    findNode(path: string | string[]): CssNode | undefined {
+        if (path.length === 0) {
             return this;
+        }
+
+        if (!Array.isArray(path)) {
+            path = [path];
         }
 
         for (let node of this.children) {
@@ -300,8 +311,9 @@ export default class CssNode {
             targetNode.properties.delete(key);
         }
     }
-
-    setProperties(path: string[], properties: Array<[string, string]> | Map<string, string>) {
+    
+    setProperties(path: string | string[],
+        properties: Array<[string, string]> | Map<string, string>) {
         const targetNode = this.findNode(path);
         if (targetNode) {
             if (Array.isArray(properties)) {

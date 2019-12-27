@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
 import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
-import ResumeTextField from "./controls/inputs/TextField";
+import TextField from "./controls/inputs/TextField";
 import { pushArray } from "./Helpers";
 import { BasicResumeNode } from "./utility/NodeTree";
 
@@ -27,10 +27,8 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
 
     static readonly type = 'Entry';
 
-    /** Get the class name for the main <div> container */
-    get className(): string {
-        let classes = ['entry', super.className];
-        return classes.join(' ');
+    get className() {
+        return ['entry', super.className].join(' ');
     }
 
     get title() {
@@ -75,7 +73,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
             return fields.map((text, index, arr) => {
                 const isLast = index === arr.length - 1;
                 let classNames = ['field', `field-${index}`];
-                if (isLast && index != 0) {
+                if (isLast && index !== 0) {
                     classNames.push('field-last');
                 }
                 else if (index > 0) {
@@ -91,9 +89,10 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
                     }}/>
                 }
 
-                return <><ResumeTextField
+                return <><TextField
                     displayClassName={classNames.join(' ')}
                     key={index}
+                    editBlocked={!this.isSelected}
                     onChange={(data: string) => updater(key, index, data)}
                     value={text || ""}
                     defaultText="Enter a value"
@@ -116,9 +115,14 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
     }
     
     render() {
+        /** hgroup onclick stops event from bubbling up to resume */
         return (
             <div className={this.className} {...this.selectTriggerProps}>
-                <hgroup>
+                <hgroup onClick={(event) => {
+                    if (this.isEditing) {
+                        event.stopPropagation();
+                    }
+                }}>
                     <h3 className="title">{this.getFields('title')}</h3>
                     <h4 className="subtitle">{this.getFields('subtitle')}</h4>
                 </hgroup>

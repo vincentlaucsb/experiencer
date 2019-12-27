@@ -1,27 +1,53 @@
 @import "variables";
 
-section.css-category * {
-    margin: 0;
+.tabs-container {
+    @extend %flex-col;
+    height: 100%;
+
+    .tabs {
+        .tabs-button {
+            background: inherit;
+            border: none;
+            border-radius: unset;
+        }
+
+        .tabs-button-active {
+            background: $main;
+            color: $light-shade;
+        }
+    }
+
+    .tabs-children {
+        border: solid $main;
+        border-width: 2px 0px 0px 2px;
+        padding: $spacing;
+        overflow-y: auto;
+        flex-grow: 2;
+    }
 }
 
-section.css-category {
+pre {
+    font-family: $monospace;
     font-size: 11pt;
+}
 
-    h2 {
+/* || CSS Style Categories */
+section.css-category {
+    * {
+        margin: 0;
+    }
+
+    font-size: 11pt;
+    margin: $spacing 0;
+
+    h2.css-title-heading {
         margin: 0.3em 0;
         cursor: pointer;
         display: flex;
         justify-content: space-between;
 
-        span.button-group {
-            font-size: initial;
-
-            button {
-                font-size: 9pt;
-                margin-left: $spacing/4;
-            }
-
-            text-align: right;
+        span.css-title {
+            flex-shrink: 0;
         }
     }
 
@@ -29,25 +55,101 @@ section.css-category {
         text-align: left;
         padding-right: 0.5em;
     }
-    // font-family: monospace;
-    margin: $spacing 0;
-}
+    /* || Controls */
+    .pure-menu-horizontal {
+        font-size: initial;
 
-/** Nested Categories */
-section.css-category-1 .css-category {
-    border: 1px solid $main;
+        button {
+            font-size: 9pt;
+            margin-left: $spacing/4;
+        }
 
-    h2 {
-        background: $main;
-        margin: 0;
-        padding: $spacing/2 $spacing;
-        color: $light-accent;
-        font-size: 1.2em;
+        text-align: right;
     }
 
-    div.css-category-content {
-        background: $light-shade;
-        padding: $spacing/2 $spacing;
+    button.hl {
+        background: inherit;
+        border: none;
+        color: $light-accent;
+    }
+
+    button.hl:hover, button.hl.hl-active {
+        color: $dark-shade;
+    }
+
+    /* || Rulesets */
+    span.css-description {
+        margin-top: $spacing;
+    }
+
+    /* || Property Lists */
+    div.css-ruleset {
+        font-family: $monospace;
+        margin-top: $spacing;
+
+        table.css-ruleset-table {
+            margin-left: $spacing;
+
+            th::after {
+                content: ':'
+            }
+
+            td.property-value {
+                span::after {
+                    content: ";";
+                }
+            }
+        }
+    }
+}
+
+/** || Nested Categories */
+section.css-category-1 {
+    /** All nested categories */
+    section.css-category {
+        border: 1px solid $main;
+
+        h2 {
+            margin: 0;
+            padding: $spacing/2 $spacing;
+            color: $light-shade;
+        }
+
+        div.css-category-content {
+            background: $light-shade;
+            padding: $spacing/2 $spacing;
+        }
+
+        button {
+            background: inherit;
+            color: inherit;
+        }
+
+        button:hover {
+            /** TODO: Add gradient */
+        }
+    }
+
+    /** First nested category */
+    section.css-category-2 h2 {
+        background: $dark-shade;
+        font-size: large;
+    }
+
+    section.css-category-3 {
+        h2 {
+            background: $dark-accent;
+            font-size: medium;
+        }
+    }
+
+    section.css-category-4 h2 {
+        background: $main;
+        font-size: small;
+    }
+
+    section.css-category-5 h2 {
+        background: $light-accent;
     }
 }
 
@@ -57,14 +159,4 @@ section.css-category-1 .css-category {
     border-color: transparentize($light-accent, 0.5);
     border-style: solid;
     border-width: 0;
-}
-
-.css-ruleset {
-    table {
-        margin-left: $spacing;
-
-        th::after {
-            content: ':'
-        }
-    }
 }

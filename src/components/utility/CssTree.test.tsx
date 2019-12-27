@@ -55,7 +55,7 @@ test('findNode Test', () => {
 
 test('find Test', () => {
     const cssNode = makeCssTree();
-    const listCss = cssNode.findNode(['Lists']) as CssNode;
+    const listCss = cssNode.findNode('Lists') as CssNode;
     const listItemCss = cssNode.findNode(['Lists', 'List Item']) as CssNode;
 
     expect(listCss).toBeDefined();
@@ -65,13 +65,20 @@ test('find Test', () => {
     expect(arraysEqual(listItemCss.fullPath, ['Lists', 'List Item'])).toBeTruthy();
 })
 
+test('fullSelector Test - Complex Tree', () => {
+    let cssNode = new CssNode('Headings', {}, 'h1, h2');
+    let text = cssNode.add('Text', {}, 'p, span');
+    let grandchild = text.add('Link', {}, 'a');
+    expect(grandchild.fullSelector).toBe('h1 p a, h1 span a, h2 p a, h2 span a');
+})
+
 test('No Duplicate Test', () => {
     const cssNode = makeCssTree();
-    cssNode.add(new CssNode(':after', {}, ':after'));
+    cssNode.add(':after', {});
     expect(cssNode.hasName(':after'));
 
     const addDup = () => {
-        cssNode.add(new CssNode(':after', {}, ':after'));
+        cssNode.add(':after', {});
     };
 
     expect(addDup).toThrow();
@@ -90,11 +97,7 @@ test('Stylesheet Comma Test', () => {
     const cssNode = new CssNode('Text Field', {
         "font-family": "Tahoma, sans-serif"
     }, 'span, a');
-    expect(cssNode.stylesheet()).toBe(`span {
-\tfont-family: Tahoma, sans-serif;
-}
-
-a {
+    expect(cssNode.stylesheet()).toBe(`span, a {
 \tfont-family: Tahoma, sans-serif;
 }`);
 })
@@ -103,9 +106,7 @@ test('Stylesheet Test w/ Children', () => {
     const cssNode = new CssNode('Text Field', {
         "font-family": "Tahoma, sans-serif"
     }, 'span');
-    cssNode.add(new CssNode('Bold', {
-        "font-size": "120%"
-    }, 'strong'));
+    cssNode.add('Bold', { "font-size": "120%" }, 'strong');
 
     expect(cssNode.stylesheet()).toBe(`span {
 \tfont-family: Tahoma, sans-serif;
@@ -121,24 +122,14 @@ test('Stylesheet Test w/ Children + Comma', () => {
         "font-family": "Tahoma, sans-serif"
     }, 'span, a');
 
-    const boldNode = cssNode.add(new CssNode('Bold', {
-        "font-size": "120%"
-    }, 'strong'));
+    const boldNode = cssNode.add('Bold', { "font-size": "120%" }, 'strong');
 
     expect(boldNode.fullSelector).toBe('span strong, a strong');
-    expect(cssNode.stylesheet()).toBe(`span {
+    expect(cssNode.stylesheet()).toBe(`span, a {
 \tfont-family: Tahoma, sans-serif;
 }
 
-span strong {
-\tfont-size: 120%;
-}
-
-a {
-\tfont-family: Tahoma, sans-serif;
-}
-
-a strong {
+span strong, a strong {
 \tfont-size: 120%;
 }`);
 })
@@ -148,13 +139,8 @@ test('Stylesheet Test w/ Children and Pseduoelements', () => {
         "font-family": "Tahoma, sans-serif"
     }, 'span');
 
-    let after = cssNode.add(new CssNode('::after', {
-        "content": '","'
-    }, '::after'));
-
-    cssNode.add(new CssNode('Bold', {
-        "font-size": "120%"
-    }, 'strong'));
+    let after = cssNode.add('::after', { "content": '","' });
+    cssNode.add('Bold', { "font-size": "120%" }, 'strong');
 
     expect(after.fullSelector).toBe('span::after');
     expect(cssNode.stylesheet()).toBe(`span {

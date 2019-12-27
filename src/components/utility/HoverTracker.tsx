@@ -5,13 +5,9 @@
  * */
 export default class HoverTracker {
     private _currentId: IdType;
-    private _hovering: Set<string>;
 
     constructor() {
         this._currentId = new Array<number>();
-        this._hovering = new Set<string>();
-
-        this.isHovering = this.isHovering.bind(this);
     }
 
     get currentDepth() {
@@ -43,20 +39,15 @@ export default class HoverTracker {
             if (id[lastIdx] !== this.currentId[lastIdx]) {
                 // We are hovering over a completely new set of elements
                 this._currentId = id;
-                this._hovering.clear();
             }
         }
 
-        this._hovering.add(id.join('-'));
     }
 
-    hoverOut(id: IdType) {
-        // TODO: Explain what this is
+    hoverOut() {
+        // Assume that when we hover out, we are still inside the node's parent
+        // If we are wrong, that's okay because the parent's ID will just get
+        // replaced by hoverOver
         this._currentId.pop();
-        this._hovering.delete(id.join('-'));
-    }
-
-    isHovering(id: IdType) {
-        return this._hovering.has(id.join('-'));
     }
 }

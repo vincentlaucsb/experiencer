@@ -1,5 +1,5 @@
 ﻿import { Button } from "../controls/Buttons";
-import ResumeTextField from "../controls/inputs/TextField";
+import TextField from "../controls/inputs/TextField";
 import React from "react";
 import Popover from "react-tiny-popover";
 
@@ -12,7 +12,6 @@ export default function CssSelectorAdder(props: CssSelectorAdderProps) {
     let [isOpen, setOpen] = React.useState(false);
     let [selector, setSelector] = React.useState("");
     let [name, setName] = React.useState("");
-    let [isEditing, setEditing] = React.useState(false);
 
     const handleSubmit = (event) => {
         props.addSelector(name, selector);
@@ -23,28 +22,14 @@ export default function CssSelectorAdder(props: CssSelectorAdderProps) {
             style={{ background: "white" }}>
             <h3>Add Selector</h3>
             <h4>
-                {props.selector} <ResumeTextField
-                    isEditing={isEditing}
+                {props.selector} <TextField
                     value={selector}
                     onChange={(text) => setSelector(text)}
-                    onClick={() => {
-                        setEditing(!isEditing);
-                    }}
-                    onEnterDown={() => {
-                        setEditing(!isEditing);
-                    }}
                 />
             </h4>
-            <p>Name: <ResumeTextField
-                isEditing={isEditing}
+            <p>Name: <TextField
                 value={name}
                 onChange={(text) => setName(text)}
-                onClick={() => {
-                    setEditing(!isEditing);
-                }}
-                onEnterDown={() => {
-                    setEditing(!isEditing);
-                }}
                 />
             </p>
             <button onClick={handleSubmit}>Submit</button>
@@ -52,7 +37,8 @@ export default function CssSelectorAdder(props: CssSelectorAdderProps) {
     );
 
     return (
-        <Popover content={form} isOpen={isOpen}>
+        <Popover containerClassName="css-selector-adder"
+            content={form} isOpen={isOpen}>
             <Button onClick={(event) => {
                 setOpen(!isOpen);
                 event.stopPropagation();

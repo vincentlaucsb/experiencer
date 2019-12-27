@@ -1,6 +1,6 @@
 ﻿import * as React from "react";
 import 'react-contexify/dist/ReactContexify.min.css';
-import ResumeTextField from "./controls/inputs/TextField";
+import TextField from "./controls/inputs/TextField";
 import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 
 interface DescriptionItemProps extends ResumeNodeProps {
@@ -15,7 +15,7 @@ export class DescriptionListItem extends ResumeNodeBase<DescriptionItemProps> {
     }
 
     render() {
-        const term = <ResumeTextField
+        const term = <TextField
             label="Term"
             onChange={this.updateData.bind(this, "term")}
             value={this.props.term}
@@ -23,7 +23,7 @@ export class DescriptionListItem extends ResumeNodeBase<DescriptionItemProps> {
             {...this.textFieldProps}
         />
 
-        const value = <ResumeTextField
+        const value = <TextField
             label="Value"
             onChange={this.updateData.bind(this, "value")}
             value={this.props.value || ""}
@@ -41,26 +41,8 @@ export class DescriptionListItem extends ResumeNodeBase<DescriptionItemProps> {
 export default class DescriptionList extends ResumeNodeBase {
     static readonly type = 'DescriptionList';
 
-    /** Returns a "handle" which can be used to select the column itself and not the columns it contains */
-    renderGrabHandle() {
-        if (this.isHovering && !this.isSelected) {
-            return <div className="column-grab-handle-container">
-                <div className="column-grab-handle">
-                    Click here to select description list
-                </div>
-            </div>
-        }
-
-        return <></>
-    }
-
     render() {
-        if (this.props.isHidden && this.isPrinting) {
-            return <></>
-        }
-
         return <dl className={this.className} {...this.selectTriggerProps}>
-            {this.renderGrabHandle()}
             {this.renderChildren()}
         </dl>
     }

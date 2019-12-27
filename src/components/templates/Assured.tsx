@@ -18,7 +18,7 @@ export function assuredCss() {
         ["font-size", "11pt"]
     ]);
 
-    const header = defaultCss.findNode(["Header"]);
+    const header = defaultCss.findNode("Header");
     if (header) {
         header.properties = new Map<string, string>([
             ["background", "#eeeeee"],
@@ -27,15 +27,15 @@ export function assuredCss() {
             ["padding-bottom", "var(--large-spacing)"],
         ]);
 
-        header.add(new CssNode('Rich Text', {
+        header.add('Rich Text', {
             'text-align': 'right',
             'font-size': '10pt'
-        }, '.rich-text'));
+        }, '.rich-text');
 
-        header.add(new CssNode('Icon', {
+        header.add('Icon', {
             'height': '24px',
             'vertical-align': 'middle'
-        }, 'svg.icon, img.icon'));
+        }, 'svg.icon, img.icon');
     }
 
     let contactLeft = new CssNode(
@@ -59,8 +59,8 @@ export function assuredCss() {
         },
         '#contact-right');
 
-    defaultCss.add(contactLeft);
-    defaultCss.add(contactRight);
+    defaultCss.addNode(contactLeft);
+    defaultCss.addNode(contactRight);
     defaultCss.setProperties(["Section", "Title"], [
         ["font-family", "var(--serif)"],
         ["font-weight", "bold"],
@@ -72,30 +72,26 @@ export function assuredCss() {
         new Map<string, string>()
     );
     
-    defaultCss.add(new CssNode(
-        '#main',
-        {
-            'padding-left': 'var(--edge-margin)',
-            'padding-right': 'var(--edge-margin)',
-            'grid-template-columns': '1fr 180px',
-            'grid-column-gap': 'var(--large-spacing)'
-        },
-        '#main'
-    ));
+    defaultCss.add('#main', {
+        'padding-left': 'var(--edge-margin)',
+        'padding-right': 'var(--edge-margin)',
+        'grid-template-columns': '1fr 180px',
+        'grid-column-gap': 'var(--large-spacing)'
+    });
 
-    const sidebar = defaultCss.add(new CssNode('#sidebar', {}, '#sidebar'));
-    sidebar.add(new CssNode('Last Subtitle Field', {
+    const sidebar = defaultCss.add('#sidebar', {});
+    sidebar.add('Last Subtitle Field', {
         'margin-left': '0'
-    }, 'div.entry > hgroup > h4 span.field-last'));
+    }, 'div.entry > hgroup > h4 span.field-last');
 
     const subtitleFields = defaultCss.findNode(["Entry", "Title Block", "Subtitle"]) as CssNode;
     let middleFields = subtitleFields.findNode(["Middle Fields"]) as CssNode;
-    middleFields.add(new CssNode(":before", {
+    middleFields.add(":before", {
         content: '"|"',
         padding: "0.5em"
-    }, ":before"));
+    });
 
-    subtitleFields.setProperties(["Last Field"], [
+    subtitleFields.setProperties("Last Field", [
         ["margin-left", "auto"],
         ["text-align", "right"]
     ]);

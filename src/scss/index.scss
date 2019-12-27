@@ -8,6 +8,7 @@
 @import "css-editor";
 @import "quill";
 @import "inputs";
+@import "top-menu";
 @import "zindex";
 
 %flex-row {
@@ -15,15 +16,10 @@
     flex-direction: row;
 }
 
-%flex-col {
-    display: flex;
-    flex-direction: column;
-}
-
 /* App Stuff */
 body {
     background: $light-shade;
-    font-family: Open Sans, sans-serif;
+    font-family: $sans-serif;
     color: $dark-shade;
     margin: 0;
 }
@@ -36,101 +32,8 @@ body {
 
 /* Resizer */
 .Resizer.vertical {
-    width: 2px;
-    border-left: 2px solid $dark-shade;
-    margin: 0.5rem;
+    width: $spacing;
     cursor: col-resize;
-}
-
-header#app-header {
-    $header-background: $main;
-
-    background: $header-background;
-    color: $light-shade;
-    /** Keep toolbar at top */
-    position: sticky;
-    top: 0;
-    margin-bottom: $spacing;
-
-    .pure-menu-active, .pure-menu-active:focus {
-        background: $dark-accent;
-    }
-
-    div#brand, div#toolbar {
-        @extend %flex-row;
-        align-content: center;
-    }
-
-    div#toolbar {
-        border-top: 1px solid $light-accent;
-        color: $light-shade;
-        padding: $spacing * 0.5;
-
-        div.toolbar-section {
-            @extend %flex-col;
-            border-right: 1px dotted $light-accent;
-            align-items: center;
-
-            .label {
-                color: $light-accent;
-                font-size: 0.8em;
-            }
-
-            .label:hover {
-                cursor: default;
-            }
-        }
-
-        div.toolbar-section:last-child {
-            border-right: none;
-        }
-
-        button.pure-button {
-            background: $header-background;
-            color: $light-shade;
-
-            svg {
-                margin-right: $spacing * 0.25;
-            }
-        }
-
-        button.pure-button:hover {
-            background: $dark-accent;
-        }
-    }
-
-    div#brand {
-        padding-left: $spacing * 0.5;
-
-        h1 {
-            margin: $spacing;
-            font-size: 20pt;
-            cursor: pointer;
-        }
-
-        .pure-menu-horizontal {
-            margin-left: $spacing * 2;
-            display: flex;
-            flex-direction: column;
-            align-self: center;
-        }
-
-        .pure-menu-selected {
-            a {
-                color: $light-shade;
-                font-weight: bold;
-            }
-        }
-
-        .pure-menu-link:hover {
-            background: $dark-accent;
-            color: $light-shade;
-        }
-        // GitHub Icon
-        svg {
-            color: $light-accent;
-        }
-    }
 }
 
 .button-disabled {

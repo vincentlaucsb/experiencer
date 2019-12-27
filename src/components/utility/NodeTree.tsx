@@ -8,6 +8,7 @@ import { assignIds, deleteAt, moveUp, moveDown, deepCopy } from "../Helpers";
  * */
 export interface BasicResumeNode {
     children?: Array<BasicResumeNode>;
+    classNames?: string;
     htmlId?: string;
     value?: string;
 
@@ -55,7 +56,7 @@ export default class ResumeNodeTree implements ResumeNode {
     /** Given an array of nodes and a hierarchical ID, return a reference to the 
      *  node pointed to by id */
     getNodeById(id: IdType) {
-        if (id.length == 0) {
+        if (id.length === 0) {
             return this;
         }
 
@@ -115,13 +116,7 @@ export default class ResumeNodeTree implements ResumeNode {
         let targetNode = this.getNodeById(id);
         targetNode[key] = data;
     }
-
-    toggleEdit(id: IdType) {
-        let targetNode = this.getNodeById(id);
-        const currentValue = targetNode['isEditing'];
-        targetNode['isEditing'] = !currentValue;
-    }
-
+    
     moveUp(id: IdType) {
         let parentNode = this.getParentOfId(id);
         if (parentNode.children) {

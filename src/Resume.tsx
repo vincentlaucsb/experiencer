@@ -656,10 +656,14 @@ class Resume extends React.Component<{}, ResumeState> {
                     sideBar={this.renderTemplateChanger()}
                 />
             case 'landing':
-                const main = <Landing loadLocal={() => { this.loadLocal() }} />
                 return <DefaultLayout
                     topNav={editingTop}
-                    main={main} />
+                    main={<Landing
+                        loadLocal={() => { this.loadLocal() }}
+                        new={this.changeTemplate}
+                        loadData={this.loadData}
+                    />
+                    } />
             case 'printing':
                 return resume;
             default:

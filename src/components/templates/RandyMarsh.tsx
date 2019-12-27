@@ -111,12 +111,12 @@ export function randyMarshCss() {
     ]);
 
     let mainColCss = randyCss.addNode(
-        (randyCss.findNode(["Row", "Column"]) as CssNode).copySkeleton('#main-column', '#main-column'));
+        (randyCss.findNode("Column") as CssNode).copySkeleton('#main-column', '#main-column'));
     mainColCss.properties = new Map<string, string>([
         ["padding", "0.5in"]]);
 
     let sidebarCss = randyCss.addNode(
-        (randyCss.findNode(["Row", "Column"]) as CssNode).copySkeleton('#sidebar', '#sidebar'));
+        (randyCss.findNode("Column") as CssNode).copySkeleton('#sidebar', '#sidebar'));
     sidebarCss.properties = new Map<string, string>([
         ["color", "var(--text-color)"],
         ["padding", "0.5in"],

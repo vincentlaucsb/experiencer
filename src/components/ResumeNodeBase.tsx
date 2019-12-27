@@ -24,13 +24,11 @@ export interface ResumePassProps extends ResumeNode {
 
 export interface ResumeNodeProps extends ResumePassProps {
     id: IdType;   // Hierarchical ID based on the node's position in the resume; subject to change
+    isEditing: boolean;
     isLast: boolean;
 
     selectedUuid?: string;
     isHidden?: boolean;
-
-    // TODO: Remove isEditing?
-    isEditing?: boolean;
 }
 
 // Represents a node that is part of the user's resume
@@ -69,7 +67,7 @@ export default class ResumeNodeBase<P
     }
 
     get isEditing() {
-        return this.props.isEditing; // && this.isSelected;
+        return this.props.isEditing && this.isSelected;
     }
 
     get isSelected(): boolean {
@@ -125,6 +123,7 @@ export default class ResumeNodeBase<P
                     const props = {
                         ...elem,
                         mode: this.props.mode,
+                        isEditing: this.props.isEditing,
                         isSelectBlocked: this.props.isSelectBlocked,
                         hoverOver: this.props.hoverOver,
                         hoverOut: this.props.hoverOut,

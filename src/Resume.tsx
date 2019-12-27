@@ -29,6 +29,7 @@ import CssEditor from './components/utility/CssEditor';
 import NodeTreeVisualizer from './components/utility/NodeTreeVisualizer';
 import Tabs from './components/controls/Tabs';
 import ResumeContextMenu from './components/controls/ResumeContextMenu';
+import { isNullOrUndefined } from 'util';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering = new HoverTracker();
@@ -55,8 +56,10 @@ class Resume extends React.Component<{}, ResumeState> {
         this.state = {
             css: this.css,
             children: [],
+            isEditingSelected: false,
             mode: "landing"
         };
+
         this.renderStyle();
 
         this.print = this.print.bind(this);
@@ -173,16 +176,6 @@ class Resume extends React.Component<{}, ResumeState> {
         if (this.shouldUpdateCss) {
             this.renderStyle();
             this.shouldUpdateCss = false;
-        }
-
-        // If the previously selected node was editing, bring it
-        // out of an editing state
-        if (prevState.selectedNode && (prevState.selectedNode !== this.state.selectedNode)) {
-            // Make sure node wasn't deleted before we try to modify it
-            const prevNode = this.nodes.getNodeById(prevState.selectedNode) as ResumeNodeProps;
-            if (prevNode && prevNode.isEditing) {
-                prevNode.isEditing = false;
-            }
         }
     }
 
@@ -333,10 +326,7 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     editSelected() {
-        const id = this.state.selectedNode as IdType;
-        if (id) {
-            this.updateNodes((nodes) => nodes.toggleEdit(id));
-        }
+        this.setState({ isEditingSelected: true });
     }
 
     get moveSelectedUpEnabled() {
@@ -658,6 +648,7 @@ class Resume extends React.Component<{}, ResumeState> {
                             updateData: this.updateNestedChild,
                             ...this.hoverProps,
 
+                            isEditing: this.state.isEditingSelected,
                             index: idx,
                             numSiblings: arr.length
                         };

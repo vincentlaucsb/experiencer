@@ -15,8 +15,8 @@ export default interface ResumeState {
 
     activeTemplate?: string;
     clipboard?: object;
-    currentHighlight?: HTMLDivElement;
 
+    isEditingSelected: boolean;
     hoverNode?: IdType;
     selectedNode?: IdType;
 }

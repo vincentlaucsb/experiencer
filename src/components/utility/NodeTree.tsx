@@ -116,13 +116,7 @@ export default class ResumeNodeTree implements ResumeNode {
         let targetNode = this.getNodeById(id);
         targetNode[key] = data;
     }
-
-    toggleEdit(id: IdType) {
-        let targetNode = this.getNodeById(id);
-        const currentValue = targetNode['isEditing'];
-        targetNode['isEditing'] = !currentValue;
-    }
-
+    
     moveUp(id: IdType) {
         let parentNode = this.getParentOfId(id);
         if (parentNode.children) {

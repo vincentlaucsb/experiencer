@@ -120,7 +120,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         return (
             <div className={this.className} {...this.selectTriggerProps}>
                 <hgroup onClick={(event) => {
-                    if (this.props.isEditing) {
+                    if (this.isEditing) {
                         event.stopPropagation();
                     }
                 }}>

@@ -21,6 +21,7 @@ export type EditorMode = 'normal'
 
 interface ResumeComponentProps extends ResumePassProps {
     index: number;       // The n-th index of this node relative to its parent
+    isEditing: boolean;
     numSiblings: number; // Number of siblings this node has
     parentId?: IdType;   // The id of the parent node
 }

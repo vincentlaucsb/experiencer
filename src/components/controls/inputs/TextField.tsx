@@ -30,13 +30,19 @@ export default class TextField extends React.Component<TextFieldProps, TextField
     }
 
     /** Update parent when appropriate */
-    componentDidUpdate() {
+    componentDidUpdate(prevProps: TextFieldProps) {
+        /** Top level node gave us new data */
         if (this.props.editBlocked && this.state.isEditing) {
             this.setState({ isEditing: false });
         }
 
         if (!this.state.isEditing) {
-            if (this.state.value !== this.props.value) {
+            if (prevProps.value !== this.props.value) {
+                // Parent updated us
+                this.setState({
+                    value: this.props.value || ""
+                });
+            } else if (this.state.value !== this.props.value) {
                 // Update parent
                 this.props.onChange(this.state.value);
             }

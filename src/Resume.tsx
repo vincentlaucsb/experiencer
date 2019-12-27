@@ -269,7 +269,6 @@ class Resume extends React.Component<{}, ResumeState> {
 
         // prev.length > 0 avoids undoing the initial template load
         if (prev && prev.length > 0) {
-            console.log(prev);
             this.redo.push([...this.state.children]);
             this.nodes.children = prev;
             this.setState({

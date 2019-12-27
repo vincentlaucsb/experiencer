@@ -17,21 +17,18 @@ export function randyMarshCss() {
         ["font-family", "var(--sans-serif)"],
         ["font-size", "11pt"],
         ["display", "grid"],
+        ["grid-template-columns", "250px 1fr"],
         ["height", "100%"]
     ]);
 
-    const headshot = randyCss.add(new CssNode(
+    const headshot = randyCss.add(
         '#headshot', {
             'height': 'var(--header-height)',
             'text-align': 'center',
             'padding-bottom': 'var(--header-padding-bottom)'
-        },
-        '#headshot'
-    ));
+        });
 
-    headshot.add(new CssNode('Image', {
-        'border-radius': '50%'
-    }, 'img'));
+    headshot.add('Image', { 'border-radius': '50%' }, 'img');
 
     let rootCss = randyCss.cssRoot as CssNode;
     if (rootCss) {
@@ -44,7 +41,7 @@ export function randyMarshCss() {
         rootCss.properties.set('--secondary-color', '#fbdcb6');
     }
 
-    let headerCss = randyCss.findNode(["Header"]) as CssNode;
+    let headerCss = randyCss.findNode("Header") as CssNode;
     if (headerCss) {
         headerCss.properties = new Map<string, string>([
             ["height", "var(--header-height)"],
@@ -60,33 +57,30 @@ export function randyMarshCss() {
         ]);
     }
 
-    let sectionCss = randyCss.findNode(['Section']) as CssNode;
+    let sectionCss = randyCss.findNode('Section') as CssNode;
     if (sectionCss) {
-        sectionCss.setProperties(['Content'], [
+        sectionCss.setProperties('Content', [
             ['margin-top', 'var(--spacing)']
         ]);
 
-        sectionCss.setProperties(
-            ['Title'],
-            [
-                ["font-family", "var(--sans-serif)"],
-                ["font-weight", "bold"],
-                ["font-size", "20pt"],
-                ["color", "var(--randy-teal)"]
-            ]
-        );
+        sectionCss.setProperties('Title', [
+            ["font-family", "var(--sans-serif)"],
+            ["font-weight", "bold"],
+            ["font-size", "20pt"],
+            ["color", "var(--randy-teal)"]
+        ]);
     }
 
-    const sectionGrid = sectionCss.add(new CssNode('Grid', {
+    const sectionGrid = sectionCss.add('Grid', {
         'grid-template-columns': 'var(--year-column-width) 1fr'
-    }, 'div.grid-container'));
+    }, 'div.grid-container');
 
-    sectionGrid.add(new CssNode('Entry', {
+    sectionGrid.add('Entry', {
         'border-left': '1px solid var(--text-color)',
         'padding-left': 'var(--large-spacing)',
-    }, 'div.entry'));
+    }, 'div.entry');
 
-    let entryCss = randyCss.findNode(["Entry"]) as CssNode;
+    let entryCss = randyCss.findNode("Entry") as CssNode;
     entryCss.properties = new Map<string, string>([
         ['padding-bottom', 'var(--large-spacing)']
     ]);
@@ -94,36 +88,34 @@ export function randyMarshCss() {
     if (entryCss) {
         let titleCss = entryCss.findNode(["Title Block", "Title"]) as CssNode;
         if (titleCss) {
-            titleCss.setProperties(["First Title Field"], [
+            titleCss.setProperties("First Title Field", [
                 ["font-weight", "bold"],
                 ["font-family", "var(--serif)"]
             ]);
 
-            titleCss.setProperties(["Other Title Fields"], [
-                ["font-weight", "normal"]
-            ]);
+            titleCss.setProperties("Other Title Fields", [["font-weight", "normal"]]);
         }
 
         let subtitleCss = entryCss.findNode(["Title Block", "Subtitle", "Last Field"]) as CssNode;
-        subtitleCss.add(new CssNode('::before', {
+        subtitleCss.add('::before', {
             "content": '"\\1f33f"',
             "padding": "var(--spacing)"
-        }, '::before'));
+        });
     }
 
-    let mainRowCss = randyCss.add(
-        (randyCss.findNode(["Row"]) as CssNode).copySkeleton('#main', '#main'));
+    let mainRowCss = randyCss.addNode(
+        (randyCss.findNode("Row") as CssNode).copySkeleton('#main', '#main'));
     mainRowCss.properties = new Map<string, string>([
         ["grid-template-columns", "250px 1fr"],
         ["height", "100%"],
     ]);
 
-    let mainColCss = randyCss.add(
+    let mainColCss = randyCss.addNode(
         (randyCss.findNode(["Row", "Column"]) as CssNode).copySkeleton('#main-column', '#main-column'));
     mainColCss.properties = new Map<string, string>([
         ["padding", "0.5in"]]);
 
-    let sidebarCss = randyCss.add(
+    let sidebarCss = randyCss.addNode(
         (randyCss.findNode(["Row", "Column"]) as CssNode).copySkeleton('#sidebar', '#sidebar'));
     sidebarCss.properties = new Map<string, string>([
         ["color", "var(--text-color)"],
@@ -131,12 +123,10 @@ export function randyMarshCss() {
         ["background", "var(--secondary-color)"]
     ]);
 
-    sidebarCss.add(new CssNode('Heading', {
-        'color': 'var(--text-color)'
-    }, 'h2'));
+    sidebarCss.add('Heading', { 'color': 'var(--text-color)' }, 'h2');
 
-    let tegridyCss = randyCss.add(
-        (randyCss.findNode(["Rich Text"]) as CssNode).copySkeleton('#tegridy', '#tegridy'));
+    let tegridyCss = randyCss.addNode(
+        (randyCss.findNode("Rich Text") as CssNode).copySkeleton('#tegridy', '#tegridy'));
     tegridyCss.properties = new Map<string, string>([
         ["margin-top", "auto"],
         ["text-align", "right"]]);
@@ -144,7 +134,7 @@ export function randyMarshCss() {
     return randyCss;
 }
 
-export function randyMarsh(): BasicResumeNode {
+export function randyMarsh(): BasicResumeNode[] {
     let experience = [
         {
             type: Grid.type,
@@ -313,12 +303,5 @@ export function randyMarsh(): BasicResumeNode {
         ]
     };
 
-    return {
-        "type": Grid.type,
-        "htmlId": "main",
-        "children": [
-            sideColumn,
-            mainColumn,
-        ]
-    }
+    return [ sideColumn, mainColumn ];
 }

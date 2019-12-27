@@ -235,7 +235,7 @@ class Resume extends React.Component<{}, ResumeState> {
             }
 
             currentNode.htmlId = htmlId;
-            this.css.add(root);
+            this.css.addNode(root);
             this.setState({
                 css: this.css,
                 children: this.nodes.children
@@ -562,7 +562,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
     renderCssEditor() {
         const adder = (path, name, selector) => {
-            (this.css.findNode(path) as CssNode).add(new CssNode(name, {}, selector));
+            (this.css.findNode(path) as CssNode).add(name, {}, selector);
             this.setState({ css: this.css });
             this.shouldUpdateCss = true;
         }

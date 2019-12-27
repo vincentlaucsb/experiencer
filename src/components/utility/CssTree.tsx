@@ -140,7 +140,7 @@ export default class CssNode {
 
         // Load children
         for (let node of data.children) {
-            rootNode.add(CssNode.load(node));
+            rootNode.addNode(CssNode.load(node));
         }
 
         // Load root
@@ -206,14 +206,18 @@ export default class CssNode {
      * Add a CssNode and return a reference to the added node
      * @param css
      */
-    add(css: CssNode): CssNode {
-        if (this.hasName(css.name)) {
-            throw new Error(`Already have a child named ${css.name}`);
+    add(name: string, properties, selector?: string): CssNode {
+        return this.addNode(new CssNode(name, properties, selector || name));
+    }
+
+    addNode(node: CssNode): CssNode {
+        if (this.hasName(node.name)) {
+            throw new Error(`Already have a child named ${node.name}`);
         }
 
-        css.parent = this;
-        this.children.push(css);
-        this._childNames.add(css.name);
+        node.parent = this;
+        this.children.push(node);
+        this._childNames.add(node.name);
         return this.children[this.children.length - 1];
     }
 
@@ -261,7 +265,7 @@ export default class CssNode {
 
         let newTree = new CssNode(newName, {}, newSelector);
         for (let node of this.children) {
-            newTree.add(node.copySkeleton());
+            newTree.addNode(node.copySkeleton());
         }
 
         return newTree;
@@ -271,9 +275,13 @@ export default class CssNode {
      * Find a CSS node somewhere in this subtree
      * @param path A list of names ordered from higher up in the tree to lower
      */
-    findNode(path: string[]): CssNode | undefined {
+    findNode(path: string | string[]): CssNode | undefined {
         if (path.length == 0) {
             return this;
+        }
+
+        if (!Array.isArray(path)) {
+            path = [path];
         }
 
         for (let node of this.children) {
@@ -303,8 +311,9 @@ export default class CssNode {
             targetNode.properties.delete(key);
         }
     }
-
-    setProperties(path: string[], properties: Array<[string, string]> | Map<string, string>) {
+    
+    setProperties(path: string | string[],
+        properties: Array<[string, string]> | Map<string, string>) {
         const targetNode = this.findNode(path);
         if (targetNode) {
             if (Array.isArray(properties)) {

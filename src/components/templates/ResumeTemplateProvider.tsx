@@ -17,7 +17,7 @@ export default class ResumeTemplateProvider {
         "Integrity": () => {
             let data: ResumeSaveData = {
                 builtinCss: randyMarshCss().dump(),
-                children: assignIds([ randyMarsh() ])
+                children: assignIds(randyMarsh())
             };
 
             return data;

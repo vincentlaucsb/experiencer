@@ -138,10 +138,7 @@ class Resume extends React.Component<{}, ResumeState> {
                     hoverNode: this.hovering.currentId
                 });
             },
-
-            // Determines if we are currently hovering over a node
-            isHovering: this.hovering.isHovering,
-
+            
             // Determines if a node is selectable or not
             isSelectBlocked: (id: IdType) => {
                 return !arraysEqual(id, this.hovering.currentId);

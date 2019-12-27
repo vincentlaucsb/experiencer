@@ -16,11 +16,6 @@
     flex-direction: row;
 }
 
-%flex-col {
-    display: flex;
-    flex-direction: column;
-}
-
 /* App Stuff */
 body {
     background: $light-shade;
@@ -37,9 +32,7 @@ body {
 
 /* Resizer */
 .Resizer.vertical {
-    width: 2px;
-    border-left: 2px solid $dark-shade;
-    margin: 0.5rem;
+    width: $spacing;
     cursor: col-resize;
 }
 

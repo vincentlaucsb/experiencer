@@ -15,3 +15,8 @@ $light-accent: $lynch;
 $main: $oxford-blue;
 $dark-accent: $san-marino;
 $dark-shade: $baltic-sea;
+
+%flex-col {
+    display: flex;
+    flex-direction: column;
+}

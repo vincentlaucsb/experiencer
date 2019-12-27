@@ -6,10 +6,6 @@ interface ButtonProps extends React.DetailedHTMLProps<React.ButtonHTMLAttributes
 }
 
 export function Button(props: ButtonProps) {
-    const newProps = {
-        ...props
-    };
-
     let classes = ['pure-button'];
     if (props.primary) {
         classes.push('pure-button-primary');
@@ -19,10 +15,16 @@ export function Button(props: ButtonProps) {
         classes.push('pure-button-disabled');
     }
 
-    newProps['primary'] = undefined;
-    newProps['disabled'] = undefined;
+    if (props.className) {
+        classes.push(props.className);
+    }
+
+    const newProps = {
+        ...props,
+        className: classes.join(' '),
+    };
 
     return (
-        <button className={classes.join(' ')} {...props} />
+        <button className={classes.join(' ')} {...newProps} />
     );
 }

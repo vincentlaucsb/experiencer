@@ -1,7 +1,34 @@
 @import "variables";
 
+.tabs-container {
+    @extend %flex-col;
+    height: 100%;
+
+    .tabs {
+        .tabs-button {
+            background: inherit;
+            border: none;
+            border-radius: unset;
+        }
+
+        .tabs-button-active {
+            background: $main;
+            color: $light-shade;
+        }
+    }
+
+    .tabs-children {
+        border: solid $main;
+        border-width: 2px 0px 0px 2px;
+        padding: $spacing;
+        overflow-y: auto;
+        flex-grow: 2;
+    }
+}
+
 pre {
     font-family: $monospace;
+    font-size: 11pt;
 }
 
 /* || CSS Style Categories */

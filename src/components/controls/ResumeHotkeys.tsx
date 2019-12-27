@@ -40,7 +40,7 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
         DELETE_SELECTED: {
             name: 'Deleted Node',
             description: 'Delete the currently selected node',
-            sequence: 'shift+del'
+            sequence: 'del'
         } as ExtendedKeyMapOptions,
 
         UNDO: {

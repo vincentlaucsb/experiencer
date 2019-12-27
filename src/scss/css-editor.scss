@@ -1,10 +1,15 @@
 @import "variables";
 
-section.css-category * {
-    margin: 0;
+pre {
+    font-family: $monospace;
 }
 
+/* || CSS Style Categories */
 section.css-category {
+    * {
+        margin: 0;
+    }
+
     font-size: 11pt;
     margin: $spacing 0;
 
@@ -50,7 +55,9 @@ section.css-category {
         margin-top: $spacing;
     }
 
+    /* || Property Lists */
     div.css-ruleset {
+        font-family: $monospace;
         margin-top: $spacing;
 
         table.css-ruleset-table {

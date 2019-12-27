@@ -29,6 +29,7 @@ import CssEditor from './components/utility/CssEditor';
 import NodeTreeVisualizer from './components/utility/NodeTreeVisualizer';
 import Tabs from './components/controls/Tabs';
 import ResumeContextMenu from './components/controls/ResumeContextMenu';
+import generateHtml from './components/utility/GenerateHtml';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering = new HoverTracker();
@@ -382,33 +383,10 @@ class Resume extends React.Component<{}, ResumeState> {
     exportHtml() {
         // TODO: Make this user defineable
         const filename = 'resume.html';
-
-        let resumeHtml = '';
-        if (this.resumeRef.current) {
-            resumeHtml = this.resumeRef.current.outerHTML;
-        }
-
-        let html = `<!doctype html>
-
-<html lang="en">
-    <head>
-        <title>Resume</title>
-        <meta charset="utf-8">
-        <style>
-            ${this.css.stylesheet()}
-        </style>
-        <link href="https://fonts.googleapis.com/css?family=Merriweather|Open+Sans&display=swap" rel="stylesheet">
-    </head>
-    <body style="margin: 0">
-        ${resumeHtml}
-    </body>
-</html>
-`
-
-        var blob = new Blob([html],
-            {
-                type: "text/html;charset=utf-8"
-            }
+        let resumeHtml = this.resumeRef.current ? this.resumeRef.current.outerHTML : '';
+        var blob = new Blob(
+            [generateHtml(this.css.stylesheet(), resumeHtml)],
+            { type: "text/html;charset=utf-8" }
         );
 
         saveAs(blob, filename);
@@ -434,6 +412,7 @@ class Resume extends React.Component<{}, ResumeState> {
                 this.loadData(JSON.parse(savedData));
             }
             catch {
+                // TODO: Show an error message
                 console.log("Nope, that didn't work.");
             }
         }

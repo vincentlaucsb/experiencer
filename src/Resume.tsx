@@ -8,7 +8,7 @@ import './scss/index.scss';
 import './fonts/icofont.min.css';
 
 import ResumeComponent, { EditorMode, ComponentTypes } from './components/ResumeComponent';
-import { assignIds, deepCopy, arraysEqual } from './components/Helpers';
+import { assignIds, deepCopy, arraysEqual, pushArray } from './components/Helpers';
 import { Action, ResumeNodeProps, NodeProperty } from './components/ResumeNodeBase';
 import ResumeTemplateProvider from './components/templates/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
@@ -38,6 +38,8 @@ class Resume extends React.Component<{}, ResumeState> {
     style: HTMLStyleElement;
     unselect: Action;
     resumeRef: React.RefObject<HTMLDivElement>;
+    undo = new Array<Array<ResumeNode>>();
+    redo = new Array<Array<ResumeNode>>();
 
     constructor(props) {
         super(props);
@@ -61,6 +63,9 @@ class Resume extends React.Component<{}, ResumeState> {
         this.toggleMode = this.toggleMode.bind(this);
 
         /** Resume Nodes */
+        this.updateNodes = this.updateNodes.bind(this);
+        this.undoChange = this.undoChange.bind(this);
+        this.redoChange = this.redoChange.bind(this);
         this.addCssClasses = this.addCssClasses.bind(this);
         this.addHtmlId = this.addHtmlId.bind(this);
         this.addNestedChild = this.addNestedChild.bind(this);
@@ -257,13 +262,42 @@ class Resume extends React.Component<{}, ResumeState> {
         }
     }
 
+    updateNodes(callback: (nodes: ResumeNodeTree) => void) {
+        this.undo.push(deepCopy(this.state.children));
+        callback(this.nodes);
+
+        this.setState({
+            children: this.nodes.children
+        });
+    }
+
+    undoChange() {
+        const prev = this.undo.pop();
+
+        // prev.length > 0 avoids undoing the initial template load
+        if (prev && prev.length > 0) {
+            console.log(prev);
+            this.redo.push([...this.state.children]);
+            this.nodes.children = prev;
+            this.setState({
+                children: prev
+            });
+        }
+    }
+
+    redoChange() {
+        const next = this.redo.pop();
+        if (next) {
+            this.updateNodes((nodes) => nodes.children = next);
+        }
+    }
+
     /**
      * Add an immediate child
      * @param node Node to be added
      */
     addChild<T extends BasicResumeNode>(node: T) {
-        this.nodes.addChild(assignIds(node));
-        this.setState({ children: this.nodes.children });
+        this.updateNodes((nodes) => nodes.addChild(assignIds(node)));
     }
 
     /**
@@ -272,17 +306,15 @@ class Resume extends React.Component<{}, ResumeState> {
      * @param node Node to be added
      */
     addNestedChild(id: IdType, node: ResumeNode) {
-        this.nodes.addNestedChild(id, node);
-        this.setState({ children: this.nodes.children });
+        this.updateNodes((nodes) => nodes.addNestedChild(id, node));
     }
 
     deleteSelected() {
         const id = this.state.selectedNode as IdType;
         if (id) {
-            this.nodes.deleteChild(id);
+            this.updateNodes((nodes) => nodes.deleteChild(id));
             this.hovering.hoverOut(id);
             this.setState({
-                children: this.nodes.children,
                 hoverNode: this.hovering.currentId,
                 selectedNode: undefined
             });
@@ -290,23 +322,20 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     updateNestedChild(id: IdType, key: string, data: any) {
-        this.nodes.updateChild(id, key, data);
-        this.setState({ children: this.nodes.children });
+        this.updateNodes((nodes) => nodes.updateChild(id, key, data));
     }
 
     updateSelected(key: string, data: NodeProperty) {
         const id = this.state.selectedNode as IdType;
         if (id) {
-            this.nodes.updateChild(id, key, data);
-            this.setState({ children: this.nodes.children });
+            this.updateNodes((nodes) => nodes.updateChild(id, key, data));
         }
     }
 
     editSelected() {
         const id = this.state.selectedNode as IdType;
         if (id) {
-            this.nodes.toggleEdit(id);
-            this.setState({ children: this.nodes.children });
+            this.updateNodes((nodes) => nodes.toggleEdit(id));
         }
     }
 
@@ -318,9 +347,8 @@ class Resume extends React.Component<{}, ResumeState> {
     moveSelectedUp() {
         const id = this.state.selectedNode as IdType;
         if (this.moveSelectedUpEnabled) {
-            this.setState({
-                children: this.nodes.children,
-                selectedNode: this.nodes.moveUp(id)
+            this.updateNodes((nodes) => {
+                this.setState({ selectedNode: nodes.moveUp(id) });
             });
         }
     }
@@ -333,9 +361,8 @@ class Resume extends React.Component<{}, ResumeState> {
     moveSelectedDown() {
         const id = this.state.selectedNode as IdType;
         if (this.moveSelectedDownEnabled) {
-            this.setState({
-                children: this.nodes.children,
-                selectedNode: this.nodes.moveDown(id)
+            this.updateNodes((nodes) => {
+                this.setState({ selectedNode: nodes.moveDown(id) });
             });
         }
     }
@@ -405,12 +432,11 @@ class Resume extends React.Component<{}, ResumeState> {
 
     loadData(data: object, mode: EditorMode = 'normal') {
         let savedData = data as ResumeSaveData;
-        this.nodes.children = assignIds(savedData.children);
+        this.updateNodes((nodes) => nodes.children = assignIds(savedData.children));
         this.css = CssNode.load(savedData.builtinCss);
 
         this.setState({
             css: this.css,
-            children: this.nodes.children,
             mode: mode
         })
 
@@ -500,6 +526,8 @@ class Resume extends React.Component<{}, ResumeState> {
     get resumeHotKeysProps() {
         return {
             ...this.selectedNodeActions,
+            undo: this.undoChange,
+            redo: this.redoChange,
             togglePrintMode: () => this.toggleMode('printing'),
             reset: () => {
                 this.unselect();

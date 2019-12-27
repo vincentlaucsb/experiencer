@@ -7,6 +7,8 @@ export interface ResumeHotKeysProps extends SelectedNodeActions {
     /** Editor Modes */
     togglePrintMode: Action;
     reset: Action;
+    undo: Action;
+    redo: Action;
 };
 
 export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
@@ -41,6 +43,16 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
             sequence: 'shift+del'
         } as ExtendedKeyMapOptions,
 
+        UNDO: {
+            name: 'Undo',
+            sequence: 'ctrl+z'
+        } as ExtendedKeyMapOptions,
+
+        REDO: {
+            name: 'Redo',
+            sequence: 'ctrl+y'
+        } as ExtendedKeyMapOptions,
+
         ESCAPE: {
             name: 'Escape',
             description: 'Unselect the selected node and return to normal editing mode',
@@ -70,6 +82,14 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
 
             ESCAPE: (event) => {
                 this.props.reset();  
+            },
+
+            UNDO: (event) => {
+                this.props.undo();
+            },
+
+            REDO: (event) => {
+                this.props.redo();
             },
 
             DELETE_SELECTED: (event) => {

@@ -12,10 +12,10 @@ export default interface ResumeState {
     css: CssNode;
     children: Array<ResumeNode>;
     mode: EditorMode;
-    currentHighlight?: HTMLDivElement;
 
     activeTemplate?: string;
     clipboard?: object;
+    currentHighlight?: HTMLDivElement;
 
     hoverNode?: IdType;
     selectedNode?: IdType;

@@ -1,6 +1,6 @@
 ﻿import React from "react";
 import { Button } from "./Buttons";
-import { Action, AddChild } from "../ResumeNodeBase";
+import { Action, AddChild, NodeProperty } from "../ResumeNodeBase";
 import { IdType } from "../utility/HoverTracker";
 import PureMenu, { PureDropdown, PureMenuItem, PureMenuLink } from "./menus/PureMenu";
 import ResumeHotKeys from "./ResumeHotkeys";
@@ -52,9 +52,9 @@ function AddOption(props: AddOptionProps) {
 
     const node: NodeInformation = nodeInfo(options as string);
     return (
-            <Button onClick={() => props.addChild(props.id, assignIds(node.node))}>
-                Add {node.text}
-            </Button>
+        <Button onClick={() => props.addChild(props.id, assignIds(node.node))}>
+            Add {node.text}
+        </Button>
     );
 }
 
@@ -63,7 +63,7 @@ export interface EditingBarProps extends SelectedNodeActions {
     selectedNode?: ResumeNode,
     addHtmlId: (htmlId: string) => void;
     addCssClasses: (classes: string) => void;
-    updateNode: (key: string, value: string | string[] | boolean | number | number[]) => void;
+    updateNode: (key: string, value: NodeProperty) => void;
 
     addChild: AddChild;
     moveUpEnabled: boolean;
@@ -144,6 +144,17 @@ export default function TopEditingBar(props: EditingBarProps) {
         <Button disabled={props.disabled}>{props.children}</Button>
     </PureMenuItem>
 
+    let children = (
+        <div className="toolbar-section">
+            <PureMenu horizontal>
+                <Button onClick={() => props.addChild([], assignIds({ type: Section.type }))}>Add Section</Button>
+                <Button onClick={() => props.addChild([], assignIds(ComponentTypes.defaultValue(Row.type).node))}>Add Row & Columns</Button>
+                <Button onClick={() => props.addChild([], assignIds(ComponentTypes.defaultValue(Grid.type).node))}>Add Grid</Button>
+            </PureMenu>
+            <span className="label">Resume Components</span>
+        </div>
+    );
+
     const id = props.selectedNodeId;
     if (id && props.selectedNode) {
         const type = props.selectedNode.type;
@@ -172,50 +183,41 @@ export default function TopEditingBar(props: EditingBarProps) {
             moveDownText = "Right";
         }
 
-        return <div id="toolbar">
-            <div className="toolbar-section">
-                <PureMenu horizontal>
-                    <AddOption id={id} addChild={props.addChild as AddChild} options={childTypes} />
-                    <Item onClick={props.delete}>Delete</Item>
-                    <ClipboardMenu {...props} />
-                    <CustomOptions options={customOptions} />
-                    <Button onClick={props.unselect}>Unselect</Button>
-                </PureMenu>
-                <span className="label">Current Node ({props.selectedNode.type})</span>
-            </div>
-            <div className="toolbar-section">
-                <PureMenu horizontal>
-                    <Item onClick={() => props.moveUp()} disabled={!props.moveUpEnabled}>{moveUpText}</Item>
-                    <Item onClick={() => props.moveDown()} disabled={!props.moveDownEnabled}>{moveDownText}</Item>
-                </PureMenu>
-                <span className="label">Move</span>
-            </div>
-            <div className="toolbar-section">
-                <PureMenu horizontal>
-                    <HtmlIdAdder
-                        key={props.selectedNode.uuid}
-                        htmlId={props.selectedNode.htmlId}
-                        cssClasses={props.selectedNode.classNames}
-                        addHtmlId={props.addHtmlId}
-                        addCssClasses={props.addCssClasses}
-                    />
-                </PureMenu>
-                {htmlId}
-            </div>
-            {parentOptions}
-        </div>
+        children = (
+            <React.Fragment>
+                <div className="toolbar-section">
+                    <PureMenu horizontal>
+                        <AddOption id={id} addChild={props.addChild as AddChild} options={childTypes} />
+                        <Item onClick={props.delete}>Delete</Item>
+                        <ClipboardMenu {...props} />
+                        <CustomOptions options={customOptions} />
+                        <Button onClick={props.unselect}>Unselect</Button>
+                    </PureMenu>
+                    <span className="label">Current Node ({props.selectedNode.type})</span>
+                </div>
+                <div className="toolbar-section">
+                    <PureMenu horizontal>
+                        <Item onClick={() => props.moveUp()} disabled={!props.moveUpEnabled}>{moveUpText}</Item>
+                        <Item onClick={() => props.moveDown()} disabled={!props.moveDownEnabled}>{moveDownText}</Item>
+                    </PureMenu>
+                    <span className="label">Move</span>
+                </div>
+                <div className="toolbar-section">
+                    <PureMenu horizontal>
+                        <HtmlIdAdder
+                            key={props.selectedNode.uuid}
+                            htmlId={props.selectedNode.htmlId}
+                            cssClasses={props.selectedNode.classNames}
+                            addHtmlId={props.addHtmlId}
+                            addCssClasses={props.addCssClasses}
+                        />
+                    </PureMenu>
+                    {htmlId}
+                </div>
+                {parentOptions}
+            </React.Fragment>
+        );
     }
-    
-    return (
-        <div id="toolbar">
-            <div className="toolbar-section">
-                <PureMenu horizontal>
-                    <Button onClick={() => props.addChild([], assignIds({ type: Section.type }))}>Add Section</Button>
-                    <Button onClick={() => props.addChild([], assignIds(ComponentTypes.defaultValue(Row.type).node))}>Add Row & Columns</Button>
-                    <Button onClick={() => props.addChild([], assignIds(ComponentTypes.defaultValue(Grid.type).node))}>Add Grid</Button>
-                </PureMenu>
-                <span className="label">Resume Components</span>
-            </div>
-        </div>
-    );
+
+    return <div id="toolbar">{children}</div>
 }

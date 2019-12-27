@@ -27,9 +27,6 @@ interface TopNavBarProps {
 /** The top nav bar for the resume editor */
 export default function TopNavBar(props: TopNavBarProps) {
     let [isOpen, setOpen] = React.useState(false);
-
-    const helpOk = ['normal', 'help'].indexOf(props.mode) >= 0; 
-
     const Item = PureMenuItem;
     const Link = PureMenuLink;
 

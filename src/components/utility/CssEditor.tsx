@@ -35,6 +35,18 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         this.mapContainer = this.mapContainer.bind(this);
     }
 
+    static readonly pseudoElements = [
+        '::after',
+        '::before',
+        ':first',
+        ':first-child',
+        ':first-of-type',
+        ':last-child',
+        ':last-of-type',
+        ':only-child',
+        ':only-of-type'
+    ];
+
     /** A list of suggested CSS properties */
     get cssProperties() {
         const properties = new Map<string, Array<string>>([
@@ -212,19 +224,8 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     }
 
     get toolbar() {
-        // TODO: Clean these up
-        let after = <Button onClick={(event) => {
-            this.props.addSelector(this.props.root.fullPath, '::after', '::after');
-            event.stopPropagation();
-        }}>::after</Button>
-
-        let before = <Button onClick={(event) => {
-            this.props.addSelector(this.props.root.fullPath, '::before', '::before');
-            event.stopPropagation();
-        }}>::before</Button>
-
         let deleteButton = <></>
-        if (this.props.deleteNode) {
+        if (this.props.deleteNode && this.props.root.selector !== '#resume') {
             deleteButton = <Button onClick={(event) => {
                 if (this.props.deleteNode) {
                     this.props.deleteNode(this.props.root.fullPath);
@@ -233,19 +234,23 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
                 event.stopPropagation();
             }}><i className="icofont-ui-delete" /></Button>
         }
+        
+        let pseudoMenu = (
+            <PureDropdown content={<Button>::</Button>}>
+                {CssEditor.pseudoElements.map((sel) => {
+                    if (this.props.root.hasName(sel)) {
+                        return <></>
+                    }
 
-        if (this.props.root.hasName("::after")) {
-            after = <></>
-        }
-
-        if (this.props.root.hasName("::before")) {
-            before = <></>
-        }
-
-        let pseudoMenu = <PureDropdown content={<Button>::</Button>}>
-            {after}
-            {before}
-        </PureDropdown>
+                    return <PureMenuItem>
+                          <Button onClick={(event) => {
+                            this.props.addSelector(this.props.root.fullPath, sel, sel);
+                            event.stopPropagation();
+                          }}>{sel}</Button>
+                    </PureMenuItem>
+                })}
+            </PureDropdown>
+        );
 
         let listProps = {
             // Stop parent collapsing

@@ -1,4 +1,4 @@
-﻿import React from "react";
+﻿import React, { ReactNode } from "react";
 
 interface PureMenuProps {
     children?: any;
@@ -25,7 +25,7 @@ export default function PureMenu(props: PureMenuProps) {
 }
 
 interface PureMenuItemProps {
-    children?: any;
+    children?: ReactNode;
     selected?: boolean;
 
     onClick?: (event: React.MouseEvent) => void;
@@ -35,7 +35,7 @@ interface PureMenuItemProps {
     classNames?: Array<string>;
 }
 
-export function PureMenuItem<P extends PureMenuItemProps>(props: P) {
+export function PureMenuItem(props: PureMenuItemProps) {
     let classes = ['pure-menu-item'];
     if (props.className) {
         classes.push(props.className);

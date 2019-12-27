@@ -6,7 +6,6 @@ ul.pure-menu-children {
 
     li.pure-menu-item {
         display: block grid;
-
         /** icon, label, shortcut (if applicable) */
         grid-template-columns: 30px 1fr 0.5fr;
 
@@ -14,6 +13,7 @@ ul.pure-menu-children {
         color: $light-shade;
         align-items: center;
         padding: .5em 1em;
+        cursor: pointer;
 
         > i {
             color: $light-accent;

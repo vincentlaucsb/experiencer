@@ -238,9 +238,10 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                     }
 
                     return (
-                        <tr key={key} {...this.inputContainerProps(key)}>
-                            <th>{key}</th>
-                            <td>
+                        <tr classname="property"
+                            key={key} {...this.inputContainerProps(key)}>
+                            <th className="property-key">{key}</th>
+                            <td className="property-value">
                                 <ValueField
                                     isEditing={this.state.activeKey === key}
                                     updateText={this.updateText.bind(this, key)}

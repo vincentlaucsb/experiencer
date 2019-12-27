@@ -4,6 +4,8 @@ interface PureMenuProps {
     children?: any;
     id?: string;
     horizontal?: boolean;
+    divProps?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
+    listProps?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLUListElement>, HTMLUListElement>;
 }
 
 export default function PureMenu(props: PureMenuProps) {
@@ -13,8 +15,9 @@ export default function PureMenu(props: PureMenuProps) {
     }
 
     return (
-        <div id={props.id} className={classes.join(' ')}>
-            <ul className="pure-menu-list">
+        <div id={props.id} className={classes.join(' ')}
+            {...props.divProps}>
+            <ul className="pure-menu-list" {...props.listProps}>
                 {props.children}
             </ul>
         </div>

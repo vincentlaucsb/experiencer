@@ -37,14 +37,12 @@ class Resume extends React.Component<{}, ResumeState> {
     shouldUpdateCss = false;
     style: HTMLStyleElement;
     unselect: Action;
-    resumeRef: React.RefObject<HTMLDivElement>;
+    resumeRef = React.createRef<HTMLDivElement>();
     undo = new Array<Array<ResumeNode>>();
     redo = new Array<Array<ResumeNode>>();
 
     constructor(props) {
         super(props);
-
-        this.resumeRef = React.createRef<HTMLDivElement>();
 
         // Custom CSS
         const head = document.getElementsByTagName("head")[0];
@@ -58,9 +56,8 @@ class Resume extends React.Component<{}, ResumeState> {
             isEditingSelected: false,
             mode: "landing"
         };
-
-        this.renderStyle();
-
+        
+        this.handleClick = this.handleClick.bind(this);
         this.print = this.print.bind(this);
         this.toggleMode = this.toggleMode.bind(this);
 
@@ -76,7 +73,6 @@ class Resume extends React.Component<{}, ResumeState> {
         /** Templates and Styling **/
         this.renderSidebar = this.renderSidebar.bind(this);
         this.changeTemplate = this.changeTemplate.bind(this);
-        this.renderStyle = this.renderStyle.bind(this);
         this.renderCssEditor = this.renderCssEditor.bind(this);
 
         /** Load & Save */
@@ -100,19 +96,13 @@ class Resume extends React.Component<{}, ResumeState> {
         this.unselect = () => {
             this.setState({ selectedNode: undefined });
         };
-
-        this.handleClick = this.handleClick.bind(this);
-    }
-    
-
-    /** Prevent component from being edited from the template changing screen */
-    get isEditable(): boolean {
-        return !this.isPrinting && !(this.state.mode === 'changingTemplate');
     }
 
     /** Returns true if we are actively editing a resume */
     get isEditing(): boolean {
-        return this.isEditable && (this.state.children.length > 0);
+        return this.state.mode === 'normal'
+            || this.state.mode === 'help'
+            || (this.state.children.length > 0);
     }
 
     get isPrinting(): boolean {
@@ -166,20 +156,26 @@ class Resume extends React.Component<{}, ResumeState> {
     /**
      * Update stylesheets
      * @param prevProps
-     * @param prevState
      */
-    componentDidUpdate(_prevProps, prevState: ResumeState) {
+    componentDidUpdate(_prevProps) {
         if (this.shouldUpdateCss) {
-            this.renderStyle();
+            this.style.innerHTML = this.state.css.stylesheet();
             this.shouldUpdateCss = false;
         }
     }
 
-    // Push style changes to browser
-    renderStyle() {
-        this.style.innerHTML = this.state.css.stylesheet();
+    /**
+     * Handles clicks on the resume
+     * @param event
+     */
+    handleClick(event: React.MouseEvent) {
+        if (this.state.mode === 'changingTemplate') {
+            this.toggleMode();
+        } else {
+            this.editSelected();
+        }
     }
-
+    
     /**
      * Switch into mode if not already. Otherwise, return to normal.
      * @param mode Mode to check
@@ -626,11 +622,7 @@ class Resume extends React.Component<{}, ResumeState> {
                 
         return <CssEditor root={this.state.css} autoCollapse={true} {...editorProps} />
     }
-
-    handleClick() {
-        this.editSelected();
-    }
-
+    
     render() {
         const resume = <div id="resume-container">
             <ContextMenuTrigger id="resume-menu">
@@ -664,9 +656,7 @@ class Resume extends React.Component<{}, ResumeState> {
                 selectNode={(id) => this.setState({selectedNode: id})}
             />
         </div>
-
-        let main = resume;
-
+        
         const topEditingBar = this.isEditing ? <TopEditingBar {...this.editingBarProps} /> : <></>
         const editingTop = <RenderIf render={!this.isPrinting}>
             <header id="app-header" className="no-print">
@@ -690,12 +680,12 @@ class Resume extends React.Component<{}, ResumeState> {
                     sideBar={this.renderTemplateChanger()}
                 />
             case 'landing':
-                main = <Landing loadLocal={() => { this.loadLocal() }} />
+                const main = <Landing loadLocal={() => { this.loadLocal() }} />
                 return <DefaultLayout
                     topNav={editingTop}
                     main={main} />
             case 'printing':
-                return main;
+                return resume;
             default:
                 return <ResizableSidebarLayout
                     topNav={editingTop}

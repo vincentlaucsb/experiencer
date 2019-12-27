@@ -29,7 +29,6 @@ import CssEditor from './components/utility/CssEditor';
 import NodeTreeVisualizer from './components/utility/NodeTreeVisualizer';
 import Tabs from './components/controls/Tabs';
 import ResumeContextMenu from './components/controls/ResumeContextMenu';
-import { isNullOrUndefined } from 'util';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering = new HoverTracker();
@@ -372,11 +371,13 @@ class Resume extends React.Component<{}, ResumeState> {
 
     /** Paste whatever is currently in the clipboard */
     pasteClipboard() {
-        if (this.selectedNode) {
-            // UUIDs will be added in the method below
-            this.addNestedChild(this.state.selectedNode as IdType,
-                deepCopy(this.state.clipboard));
+        let target: IdType = [];
+        if (this.state.selectedNode) {
+            target = this.state.selectedNode;
         }
+
+        // UUIDs will be added in the method below
+        this.addNestedChild(target, deepCopy(this.state.clipboard));
     }
     //#endregion
     

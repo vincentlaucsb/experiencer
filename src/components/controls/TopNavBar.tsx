@@ -25,31 +25,11 @@ interface TopNavBarProps {
     toggleHelp: Action;
 }
 
-/** Conditionally render buttons
- * @param onClick Click action if button is enabled
- */
-function getButtonProps(onClick?: any) {
-    const enabled = !isUndefined(onClick);
-
-    let props = {
-        disabled: !enabled,
-        // variant: "outline-light" as ButtonProps["variant"]
-    };
-
-    if (enabled) {
-        props['onClick'] = onClick;
-    }
-
-    return props;
-}
-
 /** The top nav bar for the resume editor */
 export default function TopNavBar(props: TopNavBarProps) {
     let [isOpen, setOpen] = React.useState(false);
 
     const helpOk = ['normal', 'help'].indexOf(props.mode) >= 0; 
-    const helpButton = helpOk ? <Button onClick={props.toggleHelp}>
-        Help</Button> : <></>
 
     const Item = PureMenuItem;
     const Link = PureMenuLink;
@@ -74,28 +54,26 @@ export default function TopNavBar(props: TopNavBarProps) {
             <div id="brand">
                 <h1 onClick={props.toggleLanding}>Experiencer</h1>
                 <PureMenu id="top-menu" horizontal>
-                    <Item>
-                        <PureDropdown content={<Item><Link>File</Link></Item>}>
-                            <Item onClick={props.changeTemplate}>
-                                <Link>New</Link>
-                            </Item>
-                            <Item onClick={openLoader}>
-                                <Link>Load</Link>
-                            </Item>
-                            <Item onClick={props.saveLocal}>
-                                <Link>Save</Link>
-                            </Item>
-                            <Item onClick={openSaver}>
-                                <Link>Save As</Link>
-                            </Item>
-                            <Item onClick={props.exportHtml}>
-                                <Link>Export to HTML/CSS</Link>
-                            </Item>
-                            <Item onClick={props.print}>
-                                <Link>Print</Link>
-                            </Item>
-                        </PureDropdown>
-                    </Item>
+                    <PureDropdown content={<Link>File</Link>}>
+                        <Item onClick={props.changeTemplate}>
+                            <Link>New</Link>
+                        </Item>
+                        <Item className="load" onClick={openLoader}>
+                            <Link>Load</Link>
+                        </Item>
+                        <Item onClick={props.saveLocal}>
+                            <Link>Save</Link>
+                        </Item>
+                        <Item className="save-as" onClick={openSaver}>
+                            <Link><i className="icofont-diskette" />Save As</Link>
+                        </Item>
+                        <Item className="html-export" onClick={props.exportHtml}>
+                            <Link>Export to HTML/CSS</Link>
+                        </Item>
+                        <Item className="print" onClick={props.print}>
+                            <Link>Print</Link>
+                        </Item>
+                    </PureDropdown>
                     <Item onClick={props.toggleHelp}>
                         <Link>Help</Link>
                     </Item>

@@ -11,6 +11,10 @@ form#file-loader {
     @extend %file-form;
 }
 
+input.invalid {
+    background: red;
+}
+
 /** Quill */
 
 #resume {

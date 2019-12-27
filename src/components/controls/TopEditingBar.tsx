@@ -143,6 +143,10 @@ export default function TopEditingBar(props: EditingBarProps) {
         const childTypes = ComponentTypes.childTypes(type);
         let parentOptions = <></>
 
+        const htmlId = props.selectedNode.htmlId ?
+            <span className="label">#{props.selectedNode.htmlId}</span> :
+            <></>
+
         if (type === DescriptionListItem.type) {
             const parentId = id.slice(0, id.length - 1);
             parentOptions = <AddOption id={parentId} addChild={
@@ -183,6 +187,7 @@ export default function TopEditingBar(props: EditingBarProps) {
                         addCssClasses={props.addCssClasses}
                     />
                 </PureMenu>
+                {htmlId}
             </div>
             {parentOptions}
         </div>

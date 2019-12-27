@@ -1,13 +1,15 @@
 ﻿import * as React from "react";
 
-interface ButtonProps {
-    children?: Array<string | JSX.Element> | string | JSX.Element;
-    onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+interface ButtonProps extends React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> {
     primary?: boolean;
     disabled?: boolean;
 }
 
-export function Button<P extends ButtonProps>(props: P) {
+export function Button(props: ButtonProps) {
+    const newProps = {
+        ...props
+    };
+
     let classes = ['pure-button'];
     if (props.primary) {
         classes.push('pure-button-primary');
@@ -17,9 +19,10 @@ export function Button<P extends ButtonProps>(props: P) {
         classes.push('pure-button-disabled');
     }
 
+    newProps['primary'] = undefined;
+    newProps['disabled'] = undefined;
+
     return (
-        <button className={classes.join(' ')} onClick={props.onClick}>
-            {props.children}
-        </button>
+        <button className={classes.join(' ')} {...props} />
     );
 }

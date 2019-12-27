@@ -28,11 +28,16 @@ interface PureMenuItemProps {
     onClick?: (event: React.MouseEvent) => void;
 
     /** Additional class names for the menu item */
+    className?: string;
     classNames?: Array<string>;
 }
 
 export function PureMenuItem<P extends PureMenuItemProps>(props: P) {
     let classes = ['pure-menu-item'];
+    if (props.className) {
+        classes.push(props.className);
+    }
+
     if (props.selected) {
         classes.push('pure-menu-selected');
     }
@@ -41,12 +46,12 @@ export function PureMenuItem<P extends PureMenuItemProps>(props: P) {
         props.classNames.forEach((value) => classes.push(value));
     }
 
-    return <li className={classes.join(' ')} onClick={props.onClick} {...props}>
+    return <li className={classes.join(' ')} onClick={props.onClick}>
         {props.children}
     </li>
 }
 
-export function PureMenuLink(props: { children: string }) {
+export function PureMenuLink(props: { children: any }) {
     return (
         <a href="#" className="pure-menu-link">
             {props.children}

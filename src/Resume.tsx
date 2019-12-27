@@ -5,6 +5,7 @@ import { ContextMenuTrigger } from "react-contextmenu";
 import 'purecss/build/pure-min.css';
 import 'react-quill/dist/quill.snow.css';
 import './scss/index.scss';
+import './fonts/icofont.min.css';
 
 import ResumeComponent, { EditorMode, ComponentTypes } from './components/ResumeComponent';
 import { assignIds, deepCopy, arraysEqual } from './components/Helpers';
@@ -174,7 +175,7 @@ class Resume extends React.Component<{}, ResumeState> {
         if (prevState.selectedNode && (prevState.selectedNode !== this.state.selectedNode)) {
             // Make sure node wasn't deleted before we try to modify it
             const prevNode = this.nodes.getNodeById(prevState.selectedNode) as ResumeNodeProps;
-            if (prevNode.isEditing) {
+            if (prevNode && prevNode.isEditing) {
                 prevNode.isEditing = false;
             }
         }

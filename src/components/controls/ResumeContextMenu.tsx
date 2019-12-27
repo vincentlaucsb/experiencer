@@ -28,7 +28,8 @@ export default class ResumeContextMenu extends React.Component<ResumeContextProp
             
             return <>
                 {menuItems.map((value) => {
-                    return <MenuItem onClick={() => this.props.selectNode(value)}>
+                    return <MenuItem key={value.join('-')}
+                        onClick={() => this.props.selectNode(value)}>
                         Select {this.props.nodes.getNodeById(value).type}
                     </MenuItem>
                 })}

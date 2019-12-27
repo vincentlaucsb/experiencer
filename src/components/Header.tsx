@@ -57,7 +57,7 @@ export default class Header extends ResumeNodeBase<HeaderProps> {
         }
         
         return (
-            <header className={this.className} style={this.style} {...this.selectTriggerProps}>
+            <header className={this.className} id={this.props.htmlId} style={this.style} {...this.selectTriggerProps}>
                 <hgroup>
                     {value}
                     {subtitle}

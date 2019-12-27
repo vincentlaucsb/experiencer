@@ -159,6 +159,16 @@ div.button-tooltip {
     background: #ffffff;
 }
 
+#top-menu {
+    .load > a::before {
+        content: "\1f4c2";
+    }
+
+    .save-as > a::before {
+        content: "\1f4be";
+    }
+}
+
 @media screen {
     #resume-container {
         width: 8.5in;

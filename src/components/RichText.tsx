@@ -1,23 +1,9 @@
 ﻿import * as React from "react";
-import ReactQuill from 'react-quill';
-
 import * as Helpers from "./Helpers";
 import ResumeNodeBase from "./ResumeNodeBase";
-import { IdType } from "./utility/HoverTracker";
-import QuillToolbar from "./controls/QuillToolbar";
-import QuillEditor from "./controls/QuillEditor";
+import QuillEditor from "./controls/inputs/QuillEditor";
 
-export default class RichText extends ResumeNodeBase {
-    static quillModules = {
-        toolbar: [
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            ['link', 'image'],
-            [{ 'align': [] }],
-            ['clean']
-        ],
-    };
-
+export default class RichText extends ResumeNodeBase {    
     static readonly type = 'Rich Text';
 
     get className() {

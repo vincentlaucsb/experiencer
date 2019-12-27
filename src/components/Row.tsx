@@ -62,10 +62,6 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
 
         return properties;
     }
-    
-    justifyContent(text: string) {
-        this.updateData('justifyContent', text);
-    }
 
     render() { 
         return (

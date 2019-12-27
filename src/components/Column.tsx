@@ -1,6 +1,5 @@
-﻿import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
+﻿import ResumeNodeBase from "./ResumeNodeBase";
 import React from "react";
-import { BasicResumeNode } from "./utility/NodeTree";
 
 export default class Column extends ResumeNodeBase {
     static readonly type = 'Column';

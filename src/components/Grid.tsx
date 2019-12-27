@@ -2,9 +2,7 @@
 import React from "react";
 
 export default class Grid extends ResumeNodeBase {
-    static get type() {
-        return 'Grid';
-    }
+    static readonly type = 'Grid';
 
     get className() {
         return ['grid-container', super.className].join(' ');

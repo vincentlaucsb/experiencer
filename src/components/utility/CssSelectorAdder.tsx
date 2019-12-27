@@ -12,7 +12,6 @@ export default function CssSelectorAdder(props: CssSelectorAdderProps) {
     let [isOpen, setOpen] = React.useState(false);
     let [selector, setSelector] = React.useState("");
     let [name, setName] = React.useState("");
-    let [isEditing, setEditing] = React.useState(false);
 
     const handleSubmit = (event) => {
         props.addSelector(name, selector);

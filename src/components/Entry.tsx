@@ -3,7 +3,6 @@ import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import TextField from "./controls/inputs/TextField";
 import { pushArray } from "./Helpers";
 import { BasicResumeNode } from "./utility/NodeTree";
-import ReactDOM from "react-dom";
 
 interface EntryBase {
     title?: string[];
@@ -74,7 +73,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
             return fields.map((text, index, arr) => {
                 const isLast = index === arr.length - 1;
                 let classNames = ['field', `field-${index}`];
-                if (isLast && index != 0) {
+                if (isLast && index !== 0) {
                     classNames.push('field-last');
                 }
                 else if (index > 0) {

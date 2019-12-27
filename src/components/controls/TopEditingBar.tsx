@@ -5,12 +5,12 @@ import { IdType } from "../utility/HoverTracker";
 import PureMenu, { PureDropdown, PureMenuItem, PureMenuLink } from "./menus/PureMenu";
 import ResumeHotKeys from "./ResumeHotkeys";
 import { SelectedNodeActions } from "./SelectedNodeActions";
-import { ComponentTypes, NodeInformation } from "../ResumeComponent";
 import DescriptionList, { DescriptionListItem } from "../List";
 import HtmlIdAdder from "./HtmlIdAdder";
 import { assignIds } from "../Helpers";
 import { ResumeNode } from "../utility/NodeTree";
-import toolbarOptions, { CustomToolbarOptions } from "./ToolbarOptions";
+import ComponentTypes, { NodeInformation } from "../schema/ComponentTypes";
+import toolbarOptions, { CustomToolbarOptions } from "../schema/ToolbarOptions";
 import Column from "../Column";
 import Grid from "../Grid";
 import Row from "../Row";
@@ -34,7 +34,7 @@ function AddOption(props: AddOptionProps) {
     const nodeInfo = (type: string) => ComponentTypes.defaultValue(type);
 
     if (Array.isArray(options)) {
-        if (options.length == 0) {
+        if (options.length === 0) {
             return <></>
         }
 

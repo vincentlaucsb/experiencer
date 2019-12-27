@@ -1,7 +1,7 @@
 ﻿import React from "react";
 import { IdType } from "../utility/HoverTracker";
-import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
-import ResumeNodeTree from "../utility/NodeTree";
+import { ContextMenu, MenuItem } from "react-contextmenu";
+import ResumeNodeTree, { ResumeNode } from "../utility/NodeTree";
 
 export interface ResumeContextProps {
     currentId?: IdType;
@@ -10,7 +10,7 @@ export interface ResumeContextProps {
 }
 
 export default class ResumeContextMenu extends React.Component<ResumeContextProps> {
-    get currentNode() {
+    get currentNode(): ResumeNode | undefined {
         if (this.props.currentId) {
             return this.props.nodes.getNodeById(this.props.currentId);
         }
@@ -38,7 +38,6 @@ export default class ResumeContextMenu extends React.Component<ResumeContextProp
 
         return <></>
     }
-
 
     render() {
         let menu = <></>

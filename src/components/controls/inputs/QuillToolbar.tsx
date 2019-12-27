@@ -26,7 +26,7 @@ export default function QuillToolbar(props: QuillToolbarProps) {
                 setOffset(toolbarHeight);
             }
         }
-    });
+    }, [ref, offset]);
 
     return <div style={containerStyle}>
         <div id={props.id} ref={ref} style={{ position: "absolute" }} className="quill-toolbar">

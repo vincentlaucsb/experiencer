@@ -276,7 +276,7 @@ export default class CssNode {
      * @param path A list of names ordered from higher up in the tree to lower
      */
     findNode(path: string | string[]): CssNode | undefined {
-        if (path.length == 0) {
+        if (path.length === 0) {
             return this;
         }
 

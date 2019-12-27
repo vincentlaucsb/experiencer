@@ -56,7 +56,7 @@ export default class ResumeNodeTree implements ResumeNode {
     /** Given an array of nodes and a hierarchical ID, return a reference to the 
      *  node pointed to by id */
     getNodeById(id: IdType) {
-        if (id.length == 0) {
+        if (id.length === 0) {
             return this;
         }
 

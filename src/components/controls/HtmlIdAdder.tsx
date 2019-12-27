@@ -1,7 +1,6 @@
 ﻿import * as React from "react";
 import Popover from 'react-tiny-popover';
 import { Button } from "./Buttons";
-import { Package } from "@primer/octicons-react";
 
 interface htmlIdAdderProps {
     htmlId?: string;

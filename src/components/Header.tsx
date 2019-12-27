@@ -1,7 +1,7 @@
 ﻿import * as React from "react";
 import { RowProps, BasicRowProps } from "./Row";
 import ResumeNodeBase from "./ResumeNodeBase";
-import QuillEditor from "./controls/QuillEditor";
+import QuillEditor from "./controls/inputs/QuillEditor";
 
 interface HeaderBase {
     distribution?: 'top-to-bottom' | 'left-to-right' | 'bottom-to-top' | 'right-to-left';

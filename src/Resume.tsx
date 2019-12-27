@@ -7,9 +7,9 @@ import 'react-quill/dist/quill.snow.css';
 import './scss/index.scss';
 import './fonts/icofont.min.css';
 
-import ResumeComponent, { EditorMode, ComponentTypes } from './components/ResumeComponent';
-import { assignIds, deepCopy, arraysEqual, pushArray } from './components/Helpers';
-import { Action, ResumeNodeProps, NodeProperty } from './components/ResumeNodeBase';
+import ResumeComponent, { EditorMode } from './components/ResumeComponent';
+import { assignIds, deepCopy, arraysEqual } from './components/Helpers';
+import { Action, NodeProperty } from './components/ResumeNodeBase';
 import ResumeTemplateProvider from './components/templates/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
 import Landing from './components/help/Landing';
@@ -30,6 +30,7 @@ import NodeTreeVisualizer from './components/utility/NodeTreeVisualizer';
 import Tabs from './components/controls/Tabs';
 import ResumeContextMenu from './components/controls/ResumeContextMenu';
 import generateHtml from './components/utility/GenerateHtml';
+import ComponentTypes from './components/schema/ComponentTypes';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering = new HoverTracker();
@@ -116,17 +117,13 @@ class Resume extends React.Component<{}, ResumeState> {
             // Add an ID to the set of nodes we are hovering over
             hoverOver: (id: IdType) => {
                 this.hovering.hoverOver(id);
-                this.setState({
-                    hoverNode: this.hovering.currentId
-                });
+                this.setState({ hoverNode: this.hovering.currentId });
             },
 
             // Remove an ID from the set of nodes we are hovering over
-            hoverOut: (id: IdType) => {
-                this.hovering.hoverOut(id);
-                this.setState({
-                    hoverNode: this.hovering.currentId
-                });
+            hoverOut: () => {
+                this.hovering.hoverOut();
+                this.setState({ hoverNode: this.hovering.currentId });
             },
             
             // Determines if a node is selectable or not
@@ -298,7 +295,7 @@ class Resume extends React.Component<{}, ResumeState> {
         const id = this.state.selectedNode as IdType;
         if (id) {
             this.updateNodes((nodes) => nodes.deleteChild(id));
-            this.hovering.hoverOut(id);
+            this.hovering.hoverOut();
             this.setState({
                 hoverNode: this.hovering.currentId,
                 selectedNode: undefined

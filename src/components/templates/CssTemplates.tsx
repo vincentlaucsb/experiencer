@@ -5,10 +5,7 @@ import RichText from "../RichText";
 
 function getRowCss(): CssNode {
     let rowCss = new CssNode('Row', {
-
     }, '.row');
-
-    let columnCss = rowCss.add('Column', {}, '.column');
     
     return rowCss;
 }
@@ -131,6 +128,7 @@ export default function getDefaultCss(): CssNode {
     let dlCss = defaultCss.add('Description List', { }, 'dl');
     dlCss.add('Definitions', { 'padding-left': '0.5rem' }, 'dd');
 
+    defaultCss.add('Column', {}, 'div.column');
     defaultCss.add('Grid', {}, 'div.grid-container');
 
     defaultCss.addNode(getHeaderCss());

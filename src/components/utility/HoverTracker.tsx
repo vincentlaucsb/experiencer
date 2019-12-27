@@ -44,8 +44,10 @@ export default class HoverTracker {
 
     }
 
-    hoverOut(id: IdType) {
-        // TODO: Explain what this is
+    hoverOut() {
+        // Assume that when we hover out, we are still inside the node's parent
+        // If we are wrong, that's okay because the parent's ID will just get
+        // replaced by hoverOver
         this._currentId.pop();
     }
 }

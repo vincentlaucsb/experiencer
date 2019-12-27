@@ -5,27 +5,40 @@ ul.pure-menu-children {
     box-shadow: transparentize($dark-shade, 0.5) 2px 2px 5px;
 
     li.pure-menu-item {
+        display: block grid;
+
+        /** icon, label, shortcut (if applicable) */
+        grid-template-columns: 30px 1fr 0.5fr;
+
         background: $dark-shade;
         color: $light-shade;
-        display: block grid;
         align-items: center;
-        grid-template-columns: 30px 1fr;
         padding: .5em 1em;
 
         > i {
             color: $light-accent;
         }
-
         /** Give buttons in menus the same styling as links */
-        > span {
+        > span.menu-item-label {
             background: inherit;
             border: none;
             text-decoration: none;
             white-space: nowrap;
         }
 
-        > span.no-icon {
+        > span.shortcut {
+            margin-left: $spacing * 2;
+        }
+    }
+
+    li.pure-menu-item.no-icon {
+        /** Shift items right one column */
+        > span.menu-item-label {
             grid-column-start: 2;
+        }
+
+        > span.shortcut {
+            grid-column-start: 3;
         }
     }
 

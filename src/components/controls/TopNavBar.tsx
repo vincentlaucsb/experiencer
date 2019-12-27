@@ -3,11 +3,10 @@ import React from "react";
 import FileLoader from "./FileLoader";
 import FileSaver from "./FileSaver";
 import { EditorMode } from "../ResumeComponent";
-import { isUndefined } from "util";
-import { Button } from "./Buttons";
-import PureMenu, { PureMenuItem, PureMenuLink, PureDropdown } from "./PureMenu";
-import Octicon, { DesktopDownload, Home, MarkGithub } from "@primer/octicons-react";
+import PureMenu, { PureMenuItem, PureMenuLink, PureDropdown } from "./menus/PureMenu";
+import Octicon, { MarkGithub } from "@primer/octicons-react";
 import ReactModal from "react-modal";
+import IconicMenuItem from "./menus/MenuItem";
 
 interface TopNavBarProps {
     mode: EditorMode;
@@ -46,28 +45,6 @@ export default function TopNavBar(props: TopNavBarProps) {
         setModal(<FileSaver close={() => setOpen(false)} saveFile={props.saveFile} />);
     }
 
-    interface MenuItemProps {
-        onClick: (event: React.MouseEvent) => void;
-        icon?: string;
-        label: string;
-    }
-
-    const MenuItem = (props: MenuItemProps) => {
-        let icon = <></>
-        if (props.icon) {
-            icon = <i className={`icofont-${ props.icon }`} />
-        }
-
-        const spanClass = props.icon ? "label" : "label no-icon";
-
-        return (
-            <Item onClick={props.onClick}>
-                {icon}
-                <span className={spanClass}>{props.label}</span>
-            </Item>
-        );    
-    }
-
     return (
         <>
             <ReactModal isOpen={isOpen} className="top-nav-modal">
@@ -77,12 +54,12 @@ export default function TopNavBar(props: TopNavBarProps) {
                 <h1 onClick={props.toggleLanding}>Experiencer</h1>
                 <PureMenu id="top-menu" horizontal>
                     <PureDropdown content={<Link>File</Link>}>
-                        <MenuItem icon="paper" onClick={props.changeTemplate} label="New" />
-                        <MenuItem icon="folder-open" onClick={openLoader} label="Load" />
-                        <MenuItem onClick={props.saveLocal} label="Save" />
-                        <MenuItem icon="save" onClick={openSaver} label="Save As" />
-                        <MenuItem icon="file-html5" onClick={props.exportHtml} label="Export to HTML/CSS" />
-                        <MenuItem icon="printer" onClick={props.print} label="Print" />
+                        <IconicMenuItem icon="paper" onClick={props.changeTemplate} label="New" />
+                        <IconicMenuItem icon="folder-open" onClick={openLoader} label="Load" />
+                        <IconicMenuItem onClick={props.saveLocal} label="Save" />
+                        <IconicMenuItem icon="save" onClick={openSaver} label="Save As" />
+                        <IconicMenuItem icon="file-html5" onClick={props.exportHtml} label="Export to HTML/CSS" />
+                        <IconicMenuItem icon="printer" onClick={props.print} label="Print" />
                     </PureDropdown>
                     <Item onClick={props.toggleHelp}>
                         <Link>Help</Link>

@@ -1,8 +1,8 @@
 ﻿import React from "react";
 import { Button } from "./Buttons";
-import { Action, ModifyChild, AddChild } from "../ResumeNodeBase";
+import { Action, AddChild } from "../ResumeNodeBase";
 import { IdType } from "../utility/HoverTracker";
-import PureMenu, { PureDropdown, PureMenuItem, PureMenuLink } from "./PureMenu";
+import PureMenu, { PureDropdown, PureMenuItem, PureMenuLink } from "./menus/PureMenu";
 import ResumeHotKeys from "./ResumeHotkeys";
 import { SelectedNodeActions } from "./SelectedNodeActions";
 import { ComponentTypes, NodeInformation } from "../ResumeComponent";
@@ -15,6 +15,7 @@ import Column from "../Column";
 import Grid from "../Grid";
 import Row from "../Row";
 import Section from "../Section";
+import IconicMenuItem from "./menus/MenuItem";
 
 type AddOptions = Array<NodeInformation>;
 
@@ -72,10 +73,6 @@ export interface EditingBarProps extends SelectedNodeActions {
 }
 
 function ClipboardMenu(props: EditingBarProps) {
-    const DropdownItem = (props: any) => <PureMenuItem onClick={props.onClick}>
-        <PureMenuLink>{props.children}</PureMenuLink>
-    </PureMenuItem>
-
     /**
      * Get the keyboard shortcut associated with key
      * @param key Resume hotkey key
@@ -83,18 +80,34 @@ function ClipboardMenu(props: EditingBarProps) {
     const getShortcut = (key: string) : string => {
         return ResumeHotKeys.keyMap[key]['sequence'];
     }
-
-    const copySc = getShortcut('COPY_SELECTED');
-    const pasteSc = getShortcut('PASTE_SELECTED');
-    const cutSc = getShortcut('CUT_SELECTED');
+    
+    let menuItems = [
+        {
+            label: 'Cut',
+            icon: "ui-cut",
+            action: props.cutClipboard, shortcut: getShortcut('CUT_SELECTED')
+        },
+        {
+            label: 'Copy',
+            icon: "ui-copy",
+            action: props.copyClipboard, shortcut: getShortcut('COPY_SELECTED')
+        },
+        {
+            label: 'Paste',
+            icon: "ui-clip-board",
+            action: props.pasteClipboard, shortcut: getShortcut('PASTE_SELECTED')
+        }
+    ];
 
     return (
         <PureDropdown content={<Button>Clipboard</Button>}>
-            <DropdownItem onClick={props.cutClipboard}>Cut ({cutSc})</DropdownItem>
-            <DropdownItem onClick={props.copyClipboard}>
-                Copy ({copySc})
-            </DropdownItem>
-            <DropdownItem onClick={props.pasteClipboard}>Paste ({pasteSc})</DropdownItem>
+            {menuItems.map((value) =>
+                <IconicMenuItem
+                    icon={value.icon}
+                    shortcut={value.shortcut}
+                    label={value.label}
+                    onClick={value.action} />
+            )}
         </PureDropdown>
     );
 }

@@ -21,14 +21,14 @@ import HoverTracker, { IdType } from './components/utility/HoverTracker';
 import TopEditingBar, { EditingBarProps } from './components/controls/TopEditingBar';
 import ResumeNodeTree, { ResumeNode, BasicResumeNode } from './components/utility/NodeTree';
 import CssNode from './components/utility/CssTree';
-import PureMenu, { PureMenuLink, PureMenuItem } from './components/controls/PureMenu';
+import PureMenu, { PureMenuLink, PureMenuItem } from './components/controls/menus/PureMenu';
 import { Button } from './components/controls/Buttons';
 import { RenderIf } from './components/controls/HelperComponents';
 import { SelectedNodeActions } from './components/controls/SelectedNodeActions';
 import CssEditor from './components/utility/CssEditor';
 import NodeTreeVisualizer from './components/utility/NodeTreeVisualizer';
 import Tabs from './components/controls/Tabs';
-import ResumeContextMenu, { ResumeContextProps } from './components/controls/ResumeContextMenu';
+import ResumeContextMenu from './components/controls/ResumeContextMenu';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering = new HoverTracker();
@@ -510,9 +510,16 @@ class Resume extends React.Component<{}, ResumeState> {
 
     print() {
         requestAnimationFrame(() => {
-            this.setState({ mode: 'printing' });
+            const prevState = { ...this.state };
+
+            this.setState({
+                selectedNode: undefined,
+                mode: 'printing'
+            });
+
             window.print();
-            this.setState({ mode: 'normal' });
+
+            this.setState(prevState);
         });
     }
     //#endregion
@@ -607,11 +614,6 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     render() {
-        // TODO: Make this moar better
-        const Toolbar = (props: any) => {
-           return <>{props.children}</>
-        };
-
         const resume = <div id="resume-container">
             <ContextMenuTrigger id="resume-menu">
                 <div id="resume" ref={this.resumeRef}

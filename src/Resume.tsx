@@ -56,7 +56,8 @@ class Resume extends React.Component<{}, ResumeState> {
             css: this.css,
             children: [],
             isEditingSelected: false,
-            mode: "landing"
+            mode: "landing",
+            unsavedChanges: false
         };
         
         this.handleClick = this.handleClick.bind(this);
@@ -250,7 +251,8 @@ class Resume extends React.Component<{}, ResumeState> {
         callback(this.nodes);
 
         this.setState({
-            children: this.nodes.children
+            children: this.nodes.children,
+            unsavedChanges: true
         });
     }
 
@@ -262,7 +264,8 @@ class Resume extends React.Component<{}, ResumeState> {
             this.redo.push([...this.state.children]);
             this.nodes.children = prev;
             this.setState({
-                children: prev
+                children: prev,
+                unsavedChanges: true
             });
         }
     }
@@ -271,6 +274,7 @@ class Resume extends React.Component<{}, ResumeState> {
         const next = this.redo.pop();
         if (next) {
             this.updateNodes((nodes) => nodes.children = next);
+            this.setState({ unsavedChanges: true });
         }
     }
 
@@ -423,6 +427,7 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     saveLocal() {
+        this.setState({ unsavedChanges: false });
         localStorage.setItem('experiencer', JSON.stringify(this.dump()));
     }
 
@@ -478,10 +483,12 @@ class Resume extends React.Component<{}, ResumeState> {
             addChild: this.addNestedChild,
             moveUpEnabled: this.moveSelectedUpEnabled,
             moveDownEnabled: this.moveSelectedDownEnabled,
+            unsavedChanges: this.state.unsavedChanges,
             unselect: this.unselect,
             updateSelected: this.updateSelected,
             undo: this.undoChange,
-            redo: this.redoChange
+            redo: this.redoChange,
+            saveLocal: this.saveLocal
         }
     }
 

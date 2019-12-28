@@ -66,8 +66,10 @@ export interface EditingBarProps extends SelectedNodeActions {
     moveDownEnabled: boolean;
     updateSelected: (key: string, data: any) => void;
     undo: Action;
+    unsavedChanges: boolean;
     unselect: Action;
     redo: Action;
+    saveLocal: Action;
 }
 
 function ClipboardMenu(props: EditingBarProps) {
@@ -146,6 +148,7 @@ export default function TopEditingBar(props: EditingBarProps) {
         <>
             <div className="toolbar-section">
                 <PureMenu horizontal>
+                    <Button disabled={!props.unsavedChanges} onClick={props.saveLocal}>Save</Button>
                     <Button onClick={props.undo}>Undo</Button>
                     <Button onClick={props.redo}>Redo</Button>
                 </PureMenu>

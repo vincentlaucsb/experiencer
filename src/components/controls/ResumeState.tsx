@@ -12,6 +12,7 @@ export default interface ResumeState {
     css: CssNode;
     children: Array<ResumeNode>;
     mode: EditorMode;
+    unsavedChanges: boolean;
 
     activeTemplate?: string;
     clipboard?: object;

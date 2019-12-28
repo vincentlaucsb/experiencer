@@ -96,7 +96,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         if (this.props.deleteNode && this.props.root.selector !== '#resume') {
             deleteButton = <Button onClick={(event) => {
                 if (this.props.deleteNode) {
-                    this.props.deleteNode(this.props.root.fullPath);
+                    this.props.deleteNode(this.path);
                 }
 
                 event.stopPropagation();
@@ -112,7 +112,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
                     return <PureMenuItem key={sel}>
                           <Button onClick={(event) => {
-                            this.props.addSelector(this.props.root.fullPath, sel, sel);
+                            this.props.addSelector(this.path, sel, sel);
                             event.stopPropagation();
                           }}>{sel}</Button>
                     </PureMenuItem>
@@ -255,7 +255,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
             value={this.props.root.description || ""}
             displayClassName="css-description"
             onChange={(text) => {
-                this.props.updateDescription(this.props.root.fullPath, text);
+                this.props.updateDescription(this.path, text);
             }}
         />
     }

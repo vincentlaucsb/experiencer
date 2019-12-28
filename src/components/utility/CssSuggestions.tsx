@@ -10,7 +10,7 @@
         return CssSuggestions._properties;
     }
     
-    static generateProperties() {
+    private static generateProperties() {
         let properties = new Map<string, Array<string>>([
             ['align-content', ['start', 'center', 'space-between', 'space-around']],
             ['align-items',

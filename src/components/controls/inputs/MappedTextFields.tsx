@@ -56,7 +56,8 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
         if (this.props.suggestions) {
             suggestionId = uuid();
             suggestions = (<datalist id={suggestionId}>
-                {this.props.suggestions.map((value) => <option value={value} />)}
+                {this.props.suggestions.map((value) =>
+                    <option key={value} value={value} />)}
             </datalist>
             );
         }
@@ -96,6 +97,9 @@ export interface MappedTextFieldsProps {
 
     /** An array of text input suggestions for new keys */
     keySuggestions?: Array<string>;
+
+    /** Value suggestions that apply to all keys */
+    genericValueSuggestions?: Array<string>;
 
     /** Mapping of keys to their respective value suggestions */
     valueSuggestions?: Map<string, Array<string>>;
@@ -232,13 +236,14 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                 this.setState({ isAddingKey: true });
             }}>
                 {Array.from(this.data.entries()).map(([key, value]) => {
-                    let suggestions;
+                    let suggestions = this.props.genericValueSuggestions || [];
                     if (this.props.valueSuggestions && this.props.valueSuggestions.has(key)) {
-                        suggestions = this.props.valueSuggestions.get(key);
+                        suggestions = suggestions.concat(
+                            this.props.valueSuggestions.get(key) || []);
                     }
 
                     return (
-                        <tr classname="property"
+                        <tr className="property"
                             key={key} {...this.inputContainerProps(key)}>
                             <th className="property-key">{key}</th>
                             <td className="property-value">

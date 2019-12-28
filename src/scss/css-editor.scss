@@ -160,3 +160,16 @@ section.css-category-1 {
     border-style: solid;
     border-width: 0;
 }
+/** || Popovers */
+.pseudo-options {
+    @extend %flex-row;
+    max-width: 250px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    button {
+        border-radius: unset;
+        flex-grow: 1;
+        font-size: smaller;
+    }
+}

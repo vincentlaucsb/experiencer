@@ -7,11 +7,6 @@
 
 $header-z: 1000;
 
-.resume-popover, .resume-popover *,
-.css-selector-adder, .css-selector-adder * {
-    z-index: $header-z + 2;
-}
-
 header#app-header, header#app-header * {
     z-index: $header-z;
 
@@ -39,6 +34,15 @@ Vertical.div.Pane1, Vertical.div.Pane1 * {
     }
 }
 
+/** || Sidebar */
 div.Pane2, div.Pane2 * {
-    z-index: 2;   
+    z-index: 2;
+    
+}
+
+/** || Popovers */
+.resume-popover, .resume-popover *,
+.css-selector-adder, .css-selector-adder *,
+.pseudo-options-container, .pseudo-options-container * {
+    z-index: $header-z + 2;
 }

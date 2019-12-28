@@ -3,11 +3,10 @@ import React from "react";
 import MappedTextFields, { ContainerProps } from "../controls/inputs/MappedTextFields";
 import Collapse from "../controls/Collapse";
 import { Button } from "../controls/Buttons";
-import CssSelectorAdder from "./CssSelectorAdder";
 import TextField from "../controls/inputs/TextField";
 import ReactDOM from "react-dom";
-import PureMenu, { PureDropdown, PureMenuItem } from "../controls/menus/PureMenu";
 import CssSuggestions from "./CssSuggestions";
+import CssEditorToolbar from "./CssEditorToolbar";
 
 export interface CssEditorProps {
     autoCollapse?: boolean;
@@ -35,18 +34,6 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
         this.mapContainer = this.mapContainer.bind(this);
     }
-
-    static readonly pseudoElements = [
-        '::after',
-        '::before',
-        ':first',
-        ':first-child',
-        ':first-of-type',
-        ':last-child',
-        ':last-of-type',
-        ':only-child',
-        ':only-of-type'
-    ];
 
     /** A list of suggested CSS properties */
     get cssProperties() {
@@ -89,56 +76,6 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
     get path() {
         return this.props.root.fullPath;
-    }
-
-    get toolbar() {
-        let deleteButton = <></>
-        if (this.props.deleteNode && this.props.root.selector !== '#resume') {
-            deleteButton = <Button onClick={(event) => {
-                if (this.props.deleteNode) {
-                    this.props.deleteNode(this.path);
-                }
-
-                event.stopPropagation();
-            }}><i className="icofont-ui-delete" /></Button>
-        }
-        
-        let pseudoMenu = (
-            <PureDropdown content={<Button>::</Button>}>
-                {CssEditor.pseudoElements.map((sel: string) => {
-                    if (this.props.root.hasName(sel)) {
-                        return <></>
-                    }
-
-                    return <PureMenuItem key={sel}>
-                          <Button onClick={(event) => {
-                            this.props.addSelector(this.path, sel, sel);
-                            event.stopPropagation();
-                          }}>{sel}</Button>
-                    </PureMenuItem>
-                })}
-            </PureDropdown>
-        );
-
-        let listProps = {
-            // Stop parent collapsing
-            onClick: (event: React.MouseEvent) => {
-                event.stopPropagation();
-            }
-        }
-
-        return (
-            <PureMenu horizontal listProps={listProps}>
-                {pseudoMenu}
-                <PureMenuItem>
-                    <CssSelectorAdder
-                        addSelector={(name, selector) => this.props.addSelector(this.props.root.fullPath, name, selector)}
-                        selector={this.props.root.fullSelector}
-                        />
-                </PureMenuItem>
-                <PureMenuItem>{deleteButton}</PureMenuItem>
-            </PureMenu>
-        );
     }
     
     /**
@@ -266,7 +203,11 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
                 {this.props.root.name}
             </span>
             {this.highlighter}
-            {this.toolbar}    
+            <CssEditorToolbar
+                root={this.props.root}
+                addSelector={(name, selector) => this.props.addSelector(this.path, name, selector)}
+                deleteNode={() => this.props.deleteNode(this.path)}
+            />
         </h2>
 
         const isOpen = (this.path.length !== 1) || !this.props.autoCollapse;

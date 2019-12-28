@@ -17,7 +17,8 @@ import Row from "../Row";
 import Section from "../Section";
 import IconicMenuItem from "./menus/MenuItem";
 import { Trashcan } from "@primer/octicons-react";
-import { TrashIcon, SaveIcon, UndoIcon, RedoIcon } from "./InterfaceIcons";
+import { TrashIcon, SaveIcon, UndoIcon, RedoIcon, ClipboardIcon, AddIcon } from "./InterfaceIcons";
+import EditingSection, { EditingSectionProps } from "./toolbar/EditingSection";
 
 type AddOptions = Array<NodeInformation>;
 
@@ -41,7 +42,8 @@ function AddOption(props: AddOptionProps) {
         }
 
         let optionsDetail: AddOptions = options.map((nodeType: string) => nodeInfo(nodeType));
-        return <PureDropdown content={<Button>Insert</Button>}>
+        return <PureDropdown
+            content={<Button className="button-text"><AddIcon />Insert</Button>}>
             {optionsDetail.map((opt) =>
                 <IconicMenuItem key={opt.text} icon={opt.icon} label={opt.text} onClick={() => props.addChild(props.id, assignIds(opt.node))} />
             )}
@@ -56,7 +58,7 @@ function AddOption(props: AddOptionProps) {
     );
 }
 
-export interface EditingBarProps extends SelectedNodeActions {
+export interface EditingBarProps extends SelectedNodeActions, EditingSectionProps {
     selectedNodeId?: IdType;
     selectedNode?: ResumeNode,
     addHtmlId: (htmlId: string) => void;
@@ -67,11 +69,7 @@ export interface EditingBarProps extends SelectedNodeActions {
     moveUpEnabled: boolean;
     moveDownEnabled: boolean;
     updateSelected: (key: string, data: any) => void;
-    undo: Action;
-    unsavedChanges: boolean;
     unselect: Action;
-    redo: Action;
-    saveLocal: Action;
 }
 
 function ClipboardMenu(props: EditingBarProps) {
@@ -102,7 +100,7 @@ function ClipboardMenu(props: EditingBarProps) {
     ];
 
     return (
-        <PureDropdown content={<Button>Clipboard</Button>}>
+        <PureDropdown content={<Button><ClipboardIcon /></Button>}>
             {menuItems.map((value) =>
                 <IconicMenuItem
                     icon={value.icon}
@@ -148,18 +146,7 @@ export default function TopEditingBar(props: EditingBarProps) {
 
     let children = (
         <>
-            <div className="toolbar-section">
-                <PureMenu horizontal>
-                    <Button disabled={!props.unsavedChanges} onClick={props.saveLocal}><SaveIcon /></Button>
-                    <Button onClick={props.undo}>
-                        <UndoIcon />
-                    </Button>
-                    <Button onClick={props.redo}>
-                        <RedoIcon />
-                    </Button>
-                </PureMenu>
-                <span className="label">Editing</span>
-            </div>
+            <EditingSection {...props} />
             <div className="toolbar-section">
                 <PureMenu horizontal>
                     <Button onClick={() => props.addChild([], assignIds({ type: Section.type }))}>Add Section</Button>
@@ -201,6 +188,7 @@ export default function TopEditingBar(props: EditingBarProps) {
 
         children = (
             <React.Fragment>
+                <EditingSection {...props} />
                 <div className="toolbar-section">
                     <PureMenu horizontal>
                         <AddOption id={id} addChild={props.addChild as AddChild} options={childTypes} />

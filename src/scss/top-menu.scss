@@ -106,6 +106,10 @@ header#app-header {
         button.pure-button:hover {
             background: $dark-accent;
         }
+
+        button.button-text i {
+            margin-right: $spacing/2;
+        }
     }
 
     div#brand {

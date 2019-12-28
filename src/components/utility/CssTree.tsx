@@ -190,16 +190,18 @@ export default class CssNode {
         }
 
         for (let cssTree of this.children.values()) {
-            childStylesheets.push(cssTree.stylesheet());
+            const childCss = cssTree.stylesheet();
+            if (childCss.length > 0) {
+                childStylesheets.push(childCss);
+            }
         }
 
-        let finalStylesheet = thisCss;
+        let finalStylesheet = [ thisCss ];
         if (childStylesheets.length > 0) {
-            finalStylesheet += "\n\n";
-            finalStylesheet += childStylesheets.join('\n\n');
+            finalStylesheet = finalStylesheet.concat(childStylesheets);
         }
 
-        return finalStylesheet;
+        return finalStylesheet.join('\n\n');
     }
 
     /**

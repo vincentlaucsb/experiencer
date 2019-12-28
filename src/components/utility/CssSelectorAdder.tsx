@@ -2,6 +2,7 @@
 import TextField from "../controls/inputs/TextField";
 import React from "react";
 import Popover from "react-tiny-popover";
+import { AddIcon } from "../controls/InterfaceIcons";
 
 export interface CssSelectorAdderProps {
     addSelector: (name: string, selector: string) => void;
@@ -39,10 +40,9 @@ export default function CssSelectorAdder(props: CssSelectorAdderProps) {
     return (
         <Popover containerClassName="css-selector-adder"
             content={form} isOpen={isOpen}>
-            <Button onClick={(event) => {
-                setOpen(!isOpen);
-                event.stopPropagation();
-            }}> +</Button>
+            <Button onClick={() => { setOpen(!isOpen) }}>
+                <AddIcon />
+            </Button>
         </Popover>
     )
 }

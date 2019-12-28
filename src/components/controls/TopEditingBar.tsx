@@ -17,7 +17,7 @@ import Row from "../Row";
 import Section from "../Section";
 import IconicMenuItem from "./menus/MenuItem";
 import { Trashcan } from "@primer/octicons-react";
-import { TrashIcon, SaveIcon } from "./InterfaceIcons";
+import { TrashIcon, SaveIcon, UndoIcon, RedoIcon } from "./InterfaceIcons";
 
 type AddOptions = Array<NodeInformation>;
 
@@ -151,8 +151,12 @@ export default function TopEditingBar(props: EditingBarProps) {
             <div className="toolbar-section">
                 <PureMenu horizontal>
                     <Button disabled={!props.unsavedChanges} onClick={props.saveLocal}><SaveIcon /></Button>
-                    <Button onClick={props.undo}>Undo</Button>
-                    <Button onClick={props.redo}>Redo</Button>
+                    <Button onClick={props.undo}>
+                        <UndoIcon />
+                    </Button>
+                    <Button onClick={props.redo}>
+                        <RedoIcon />
+                    </Button>
                 </PureMenu>
                 <span className="label">Editing</span>
             </div>

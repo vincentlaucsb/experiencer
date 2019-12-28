@@ -16,6 +16,8 @@ import Grid from "../Grid";
 import Row from "../Row";
 import Section from "../Section";
 import IconicMenuItem from "./menus/MenuItem";
+import { Trashcan } from "@primer/octicons-react";
+import { TrashIcon, SaveIcon } from "./InterfaceIcons";
 
 type AddOptions = Array<NodeInformation>;
 
@@ -148,7 +150,7 @@ export default function TopEditingBar(props: EditingBarProps) {
         <>
             <div className="toolbar-section">
                 <PureMenu horizontal>
-                    <Button disabled={!props.unsavedChanges} onClick={props.saveLocal}>Save</Button>
+                    <Button disabled={!props.unsavedChanges} onClick={props.saveLocal}><SaveIcon /></Button>
                     <Button onClick={props.undo}>Undo</Button>
                     <Button onClick={props.redo}>Redo</Button>
                 </PureMenu>
@@ -198,7 +200,7 @@ export default function TopEditingBar(props: EditingBarProps) {
                 <div className="toolbar-section">
                     <PureMenu horizontal>
                         <AddOption id={id} addChild={props.addChild as AddChild} options={childTypes} />
-                        <Item onClick={props.delete}>Delete</Item>
+                        <Item onClick={props.delete}><TrashIcon /></Item>
                         <ClipboardMenu {...props} />
                         <CustomOptions options={customOptions} />
                         <Button onClick={props.unselect}>Unselect</Button>

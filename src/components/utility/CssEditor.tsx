@@ -58,7 +58,8 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         );
     }
 
-    get varSuggestions() {
+    /** Gather all CSS variables */
+    get varSuggestions(): Array<string> {
         const treeRoot = this.props.root.treeRoot;
         let suggestions = new Array<string>();
 

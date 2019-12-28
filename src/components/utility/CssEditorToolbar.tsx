@@ -1,9 +1,10 @@
 ﻿import React from "react";
-import { Button } from "../controls/Buttons";
+import { Button, Confirm } from "../controls/Buttons";
 import CssNode from "./CssTree";
 import PureMenu, { PureMenuItem } from "../controls/menus/PureMenu";
 import Popover from "react-tiny-popover";
 import CssSelectorAdder from "./CssSelectorAdder";
+import { TrashIcon } from "../controls/InterfaceIcons";
 
 export interface CssEditorToolbarProps {
     root: CssNode;
@@ -27,14 +28,12 @@ export default function CssEditorToolbar(props: CssEditorToolbarProps) {
     let [pseudoMenuActive, setPseudoMenuActive] = React.useState(false);
 
     let deleteButton = <></>
-    if (props.deleteNode && props.root.selector !== '#resume') {
-        deleteButton = <Button onClick={(event) => {
-            if (props.deleteNode) {
-                props.deleteNode();
-            }
-
-            event.stopPropagation();
-        }}><i className="icofont-ui-delete" /></Button>
+    if (props.root.selector !== '#resume') {
+        deleteButton = (
+            <Confirm onConfirm={() => props.deleteNode()}>
+                <TrashIcon />
+            </Confirm>
+        );
     }
 
     let pseudoMenu = (
@@ -53,29 +52,24 @@ export default function CssEditorToolbar(props: CssEditorToolbarProps) {
             })}
         </div>
     );
-
-    let listProps = {
-        // Stop parent collapsing
-        onClick: (event: React.MouseEvent) => {
-            event.stopPropagation();
-        }
-    }
-
+    
     return (
-        <PureMenu horizontal listProps={listProps}>
+        <div className="css-title-toolbar pure-button-group" role="group"
+            onClick={(event: React.MouseEvent) => {
+                // Stop parent from collapsing
+                event.stopPropagation();
+            }}>
             <Popover containerClassName="pseudo-options-container"
                 content={pseudoMenu} isOpen={pseudoMenuActive}>
                 <Button onClick={() =>
                     setPseudoMenuActive(!pseudoMenuActive)
                 }>::</Button>
             </Popover>
-            <PureMenuItem>
-                <CssSelectorAdder
-                    addSelector={(name, selector) => props.addSelector(name, selector)}
-                    selector={props.root.fullSelector}
-                />
-            </PureMenuItem>
-            <PureMenuItem>{deleteButton}</PureMenuItem>
-        </PureMenu>
+            <CssSelectorAdder
+                addSelector={(name, selector) => props.addSelector(name, selector)}
+                selector={props.root.fullSelector}
+            />
+            {deleteButton}
+        </div>
     );
 }

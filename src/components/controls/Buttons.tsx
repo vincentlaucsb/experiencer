@@ -28,3 +28,35 @@ export function Button(props: ButtonProps) {
         <button className={classes.join(' ')} {...newProps} />
     );
 }
+
+interface ConfirmProps {
+    buttonProps?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
+    children: React.ReactElement;
+    onConfirm: () => void;
+}
+
+export function Confirm(props: ConfirmProps) {
+    let [prompt, setPrompt] = React.useState(false);
+
+    if (prompt) {
+        return (
+            <>
+                <Button onClick={props.onConfirm}>
+                    <i className="icofont-ui-check" />
+                </Button>
+                <Button onClick={() => setPrompt(false)}>
+                    <i className="icofont-ui-close" />
+                </Button>
+            </>
+        );
+    }
+
+    let newButtonProps = {
+        ...props.buttonProps,
+        onClick: () => setPrompt(true)
+    };
+
+    return <Button {...newButtonProps}>
+        {props.children}
+    </Button>
+}

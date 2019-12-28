@@ -83,8 +83,10 @@ export default function HtmlIdAdder(props: htmlIdAdderProps) {
             position="bottom"
             content={expanded}>
             <Button
+                className="button-text"
                 onClick={() => setOpen(!isOpen)}>
-                Set HTML ID
+                <i className="icofont-ui-tag" />
+                Add ID/Classes
             </Button>
         </Popover>
     );

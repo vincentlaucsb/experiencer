@@ -104,7 +104,7 @@ export default function toolbarOptions(
 
             return [
                 {
-                    text: `Distribute ${headerProps.distribution}`,
+                    text: `Distribute Items`,
                     actions: [
                         {
                             text: 'Top-to-Bottom',

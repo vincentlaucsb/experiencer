@@ -1,19 +1,31 @@
 ﻿@import "variables";
 
-/** Header drop downs */
+/** || Toolbar Dropdowns */
 ul.pure-menu-children {
     box-shadow: transparentize($dark-shade, 0.5) 2px 2px 5px;
 
     li.pure-menu-item {
-        display: block grid;
-        /** icon, label, shortcut (if applicable) */
-        grid-template-columns: 30px 1fr 0.5fr;
-
         background: $dark-shade;
         color: $light-shade;
         align-items: center;
         padding: .5em 1em;
         cursor: pointer;
+    }
+
+    li.pure-menu-item:hover {
+        background: $dark-accent;
+
+        i {
+            color: lighten($light-accent, 25%);
+        }
+    }
+}
+
+ul.pure-menu-children.icon-menu {
+    li.pure-menu-item {
+        display: block grid;
+        /** icon, label, shortcut (if applicable) */
+        grid-template-columns: 30px 1fr 0.5fr;
 
         > i {
             color: $light-accent;
@@ -39,14 +51,6 @@ ul.pure-menu-children {
 
         > span.shortcut {
             grid-column-start: 3;
-        }
-    }
-
-    li.pure-menu-item:hover {
-        background: $dark-accent;
-
-        i {
-            color: lighten($light-accent, 25%);
         }
     }
 }

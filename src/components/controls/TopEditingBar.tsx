@@ -43,7 +43,9 @@ function AddOption(props: AddOptionProps) {
 
         let optionsDetail: AddOptions = options.map((nodeType: string) => nodeInfo(nodeType));
         return <PureDropdown
-            content={<Button className="button-text"><AddIcon />Insert</Button>}>
+            content={<Button className="button-text"><AddIcon />Insert</Button>}
+            ulProps={{ className: "icon-menu" }}
+        >
             {optionsDetail.map((opt) =>
                 <IconicMenuItem key={opt.text} icon={opt.icon} label={opt.text} onClick={() => props.addChild(props.id, assignIds(opt.node))} />
             )}
@@ -100,7 +102,9 @@ function ClipboardMenu(props: EditingBarProps) {
     ];
 
     return (
-        <PureDropdown content={<Button><ClipboardIcon /></Button>}>
+        <PureDropdown
+            content={<Button><ClipboardIcon /></Button>}
+            ulProps={{ className: "icon-menu" }}>
             {menuItems.map((value) =>
                 <IconicMenuItem
                     icon={value.icon}
@@ -117,9 +121,11 @@ function ClipboardMenu(props: EditingBarProps) {
  * @param props
  */
 export function CustomOptions(props: { options: CustomToolbarOptions }) {
-    const DropdownItem = (props: any) => <PureMenuItem onClick={props.onClick}>
-        <PureMenuLink>{props.children}</PureMenuLink>
-    </PureMenuItem>
+    const DropdownItem = (props: any) => {
+        return <PureMenuItem onClick={props.onClick}>
+            {props.children}
+        </PureMenuItem>
+    }
 
     return <>
         {props.options.map((item) => {

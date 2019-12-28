@@ -65,6 +65,7 @@ export function PureMenuLink(props: { children: any }) {
 interface PureDropdownProps extends PureMenuItemProps {
     content: any;
     hover?: boolean;
+    ulProps?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLUListElement>, HTMLUListElement>;
 }
 
 export function PureDropdown(props: PureDropdownProps) {
@@ -87,6 +88,16 @@ export function PureDropdown(props: PureDropdownProps) {
         setActive(!active);
     }
 
+    let newUlProps = {
+        className: childClasses.join(' ')
+    };
+
+    if (props.ulProps) {
+        newUlProps = {
+            ...props.ulProps,
+            className: `${props.ulProps.className} ${childClasses.join(' ')}`
+        }
+    }
 
     // TODO: Rework onBlur handler
     return (
@@ -95,7 +106,7 @@ export function PureDropdown(props: PureDropdownProps) {
             onClick={toggler}
             classNames={classes}>
             {props.content}
-            <ul className={childClasses.join(' ')}>
+            <ul {...newUlProps}>
                 {props.children}
             </ul>
         </PureMenuItem>

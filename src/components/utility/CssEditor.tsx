@@ -2,7 +2,6 @@
 import React from "react";
 import MappedTextFields, { ContainerProps } from "../controls/inputs/MappedTextFields";
 import Collapse from "../controls/Collapse";
-import { Button } from "../controls/Buttons";
 import TextField from "../controls/inputs/TextField";
 import ReactDOM from "react-dom";
 import CssSuggestions from "./CssSuggestions";

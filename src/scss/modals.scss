@@ -1,12 +1,42 @@
-﻿.top-nav-modal {
-    border: 1px solid #ccc;
-    background: #fff;
+﻿@import "variables";
+
+/** All modals */
+div[class*='ReactModal__Content'] {
+    .modal-heading {
+        display: flex;
+        align-items: center;
+        margin: 0;
+        background: $main;
+        color: $light-shade;
+        padding: $spacing/2 $spacing;
+
+        .modal-close {
+            border: none;
+            background: inherit;
+            margin-left: auto;
+            padding: 0;
+        }
+
+        .modal-close:hover {
+            color: $light-accent;
+        }
+    }
+
+    .modal-content {
+        padding: $spacing;
+    }
+
+    border: 1px solid $dark-shade;
+    background: $light-shade;
     overflow: auto;
     border-radius: 4px;
     outline: none;
-    padding: 20px;
     width: 50%;
     margin-left: auto;
     margin-right: auto;
     margin-top: 20vh;
+}
+
+/** Modals created by top nav menu */
+.top-nav-modal {
 }

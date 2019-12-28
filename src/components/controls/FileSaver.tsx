@@ -1,5 +1,6 @@
 ﻿import * as React from "react";
 import { Button } from './Buttons';
+import ButtonGroup from "./ButtonGroup";
 
 interface FileSaverProps {
     close: () => void;
@@ -22,6 +23,7 @@ export default function FileSaver(props: FileSaverProps) {
                 <label form="filename">Filename</label>
                 <input onChange={onChange} value={filename} id="filename" />
             </div>
+
             <Button onClick={handleClick} primary>Download</Button>
             <Button onClick={() => props.close()}>Cancel</Button>
         </form>

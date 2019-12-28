@@ -5,6 +5,7 @@ import PureMenu, { PureMenuItem } from "../controls/menus/PureMenu";
 import Popover from "react-tiny-popover";
 import CssSelectorAdder from "./CssSelectorAdder";
 import { TrashIcon } from "../controls/InterfaceIcons";
+import ButtonGroup from "../controls/ButtonGroup";
 
 export interface CssEditorToolbarProps {
     root: CssNode;
@@ -54,7 +55,7 @@ export default function CssEditorToolbar(props: CssEditorToolbarProps) {
     );
     
     return (
-        <div className="css-title-toolbar pure-button-group" role="group"
+        <ButtonGroup className="css-title-toolbar"
             onClick={(event: React.MouseEvent) => {
                 // Stop parent from collapsing
                 event.stopPropagation();
@@ -70,6 +71,6 @@ export default function CssEditorToolbar(props: CssEditorToolbarProps) {
                 selector={props.root.fullSelector}
             />
             {deleteButton}
-        </div>
+        </ButtonGroup>
     );
 }

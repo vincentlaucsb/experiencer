@@ -3,6 +3,7 @@ import PureMenu from "../controls/menus/PureMenu";
 import IconicMenuItem from "../controls/menus/MenuItem";
 import FileLoader from "../controls/FileLoader";
 import ReactModal from "react-modal";
+import Modal from "../controls/Modal";
 
 interface LandingProps {
     className?: string;
@@ -17,9 +18,9 @@ export default function Landing(props: LandingProps) {
 
     return (
         <>
-            <ReactModal isOpen={isOpen} className="top-nav-modal">
+            <Modal title="Load File" isOpen={isOpen} close={() => setOpen(false)} className="landing-modal">
                 {modalContent}
-            </ReactModal>
+            </Modal>
             <div id="landing">
                 <h2>Getting Started</h2>
                 <p>Welcome to Experiencer, a powerful tool that can help you create attractive resumes.</p>

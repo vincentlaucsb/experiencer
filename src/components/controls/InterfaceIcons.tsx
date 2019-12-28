@@ -8,6 +8,10 @@ export function ClipboardIcon() {
     return <i className="icofont-clip-board" />
 }
 
+export function CloseIcon() {
+    return <i className="icofont-close" />
+}
+
 export function TrashIcon() {
     return <i className="icofont-ui-delete" />
 }

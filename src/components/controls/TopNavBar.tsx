@@ -5,8 +5,8 @@ import FileSaver from "./FileSaver";
 import { EditorMode } from "../ResumeComponent";
 import PureMenu, { PureMenuItem, PureMenuLink, PureDropdown } from "./menus/PureMenu";
 import Octicon, { MarkGithub } from "@primer/octicons-react";
-import ReactModal from "react-modal";
 import IconicMenuItem from "./menus/MenuItem";
+import Modal from "./Modal";
 
 interface TopNavBarProps {
     mode: EditorMode;
@@ -31,22 +31,25 @@ export default function TopNavBar(props: TopNavBarProps) {
     const Link = PureMenuLink;
 
     let [modalContent, setModal] = React.useState(<></>);
+    let [title, setTitle] = React.useState("");
 
     let openLoader = () => {
         setOpen(true);
+        setTitle("Load File");
         setModal(<FileLoader close={() => setOpen(false)} loadData={props.loadData} />);
     }
 
     let openSaver = () => {
         setOpen(true);
+        setTitle("Save File");
         setModal(<FileSaver close={() => setOpen(false)} saveFile={props.saveFile} />);
     }
 
     return (
         <>
-            <ReactModal isOpen={isOpen} className="top-nav-modal">
+            <Modal isOpen={isOpen} title={title} close={() => setOpen(false)} className="top-nav-modal">
                 {modalContent}
-            </ReactModal>
+            </Modal>
             <div id="brand">
                 <h1 onClick={props.toggleLanding}>Experiencer</h1>
                 <PureMenu id="top-menu" horizontal>

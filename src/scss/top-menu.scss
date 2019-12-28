@@ -19,6 +19,15 @@ ul.pure-menu-children {
             color: lighten($light-accent, 25%);
         }
     }
+
+    li.pure-menu-item.disabled {
+        color: transparentize($light-shade, 0.5);
+        cursor: default;
+    }
+
+    li.pure-menu-item.disabled:hover {
+        background: $dark-shade;
+    }
 }
 
 ul.pure-menu-children.icon-menu {

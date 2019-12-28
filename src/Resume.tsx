@@ -460,6 +460,7 @@ class Resume extends React.Component<{}, ResumeState> {
         let props = {
             changeTemplate: this.changeTemplate,
             exportHtml: this.exportHtml,
+            isEditing: this.isEditing,
             mode: this.state.mode,
             loadData: this.loadData,
             print: this.print,

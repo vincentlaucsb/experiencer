@@ -9,6 +9,7 @@ import IconicMenuItem from "./menus/MenuItem";
 import Modal from "./Modal";
 
 interface TopNavBarProps {
+    isEditing: boolean;
     mode: EditorMode;
 
     /** Loading and Saving */
@@ -57,10 +58,10 @@ export default function TopNavBar(props: TopNavBarProps) {
                         ulProps={{className: "icon-menu"}}>
                         <IconicMenuItem icon="paper" onClick={props.changeTemplate} label="New" />
                         <IconicMenuItem icon="folder-open" onClick={openLoader} label="Load" />
-                        <IconicMenuItem onClick={props.saveLocal} label="Save" />
-                        <IconicMenuItem icon="save" onClick={openSaver} label="Save As" />
-                        <IconicMenuItem icon="file-html5" onClick={props.exportHtml} label="Export to HTML/CSS" />
-                        <IconicMenuItem icon="printer" onClick={props.print} label="Print" />
+                        <IconicMenuItem disabled={!props.isEditing} onClick={props.saveLocal} label="Save" />
+                        <IconicMenuItem disabled={!props.isEditing} icon="save" onClick={openSaver} label="Save As" />
+                        <IconicMenuItem disabled={!props.isEditing} icon="file-html5" onClick={props.exportHtml} label="Export to HTML/CSS" />
+                        <IconicMenuItem disabled={!props.isEditing} icon="printer" onClick={props.print} label="Print" />
                     </PureDropdown>
                     <Item onClick={props.toggleHelp}>
                         <Link>Help</Link>

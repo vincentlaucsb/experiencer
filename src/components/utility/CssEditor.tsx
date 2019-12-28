@@ -47,14 +47,14 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         }
 
         return (
-            <Button
+            <button
                 className={className}
                 onClick={(event) => {
                     this.setState({ highlight: !this.state.highlight });
                     event.stopPropagation();
                 }}>
                 <i className="icofont-binoculars" />
-            </Button>
+            </button>
         );
     }
 

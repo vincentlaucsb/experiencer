@@ -51,6 +51,7 @@ ul.pure-menu-children {
     }
 }
 
+/** || Header */
 header#app-header {
     $header-background: $main;
 
@@ -70,6 +71,7 @@ header#app-header {
         align-content: center;
     }
 
+    /** || Top Editing Bar */
     div#toolbar {
         border-top: 1px solid $light-accent;
         color: $light-shade;
@@ -112,6 +114,7 @@ header#app-header {
         }
     }
 
+    /** || Top Nav Bar */
     div#brand {
         padding-left: $spacing * 0.5;
 

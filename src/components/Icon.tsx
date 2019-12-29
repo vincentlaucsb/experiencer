@@ -4,7 +4,7 @@ import MapPin from "../icons/feather/map-pin.svg";
 import Globe from "../icons/feather/globe.svg";
 import Email from "../icons/feather/mail.svg";
 import LinkedIn from "../icons/LI-In-Bug.png";
-import Octicon, { MarkGithub, } from "@primer/octicons-react";
+import GitHubDark from "../icons/GitHub-Mark-120px-plus.png";
 import Phone from "../icons/feather/phone.svg";
 import { BasicResumeNode } from "./utility/NodeTree";
 
@@ -31,7 +31,8 @@ export default class Icon extends ResumeNodeBase<IconProps> {
                 src = Email;
                 break;
             case 'github':
-                return <Octicon className="icon" icon={MarkGithub} />
+                src = GitHubDark;
+                break;
             case 'globe':
                 src = Globe;
                 break;

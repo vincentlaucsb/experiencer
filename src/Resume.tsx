@@ -416,6 +416,7 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     loadLocal() {
+        // TODO: Make key a global constant
         const savedData = localStorage.getItem('experiencer');
         if (savedData) {
             try {

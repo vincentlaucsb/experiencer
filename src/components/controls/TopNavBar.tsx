@@ -4,9 +4,9 @@ import FileLoader from "./FileLoader";
 import FileSaver from "./FileSaver";
 import { EditorMode } from "../ResumeComponent";
 import PureMenu, { PureMenuItem, PureMenuLink, PureDropdown } from "./menus/PureMenu";
-import Octicon, { MarkGithub } from "@primer/octicons-react";
 import IconicMenuItem from "./menus/MenuItem";
 import Modal from "./Modal";
+import GitHubLight from "../../icons/GitHub-Mark-Light-120px-plus.png";
 
 interface TopNavBarProps {
     isEditing: boolean;
@@ -69,7 +69,7 @@ export default function TopNavBar(props: TopNavBarProps) {
                 </PureMenu>
                 <div>
                     <a href="https://github.com/vincentlaucsb/experiencer">
-                        <Octicon icon={MarkGithub} />
+                        <img className="github-mark" src={GitHubLight} alt="GitHub" />
                     </a>
                 </div>
                 </div>

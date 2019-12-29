@@ -130,6 +130,8 @@ header#app-header {
     /** || Top Nav Bar */
     div#brand {
         padding-left: $spacing * 0.5;
+        padding-right: $spacing * 0.5;
+        align-items: center;
 
         h1 {
             margin: $spacing;
@@ -156,8 +158,9 @@ header#app-header {
             color: $light-shade;
         }
         // GitHub Icon
-        svg {
+        .github-mark {
             color: $light-accent;
+            width: 32px;
         }
     }
 }

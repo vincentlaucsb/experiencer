@@ -3,13 +3,6 @@ import Entry from "../Entry";
 import Section from "../Section";
 import RichText from "../RichText";
 
-function getRowCss(): CssNode {
-    let rowCss = new CssNode('Row', {
-    }, '.row');
-    
-    return rowCss;
-}
-
 function getRichTextCss(): CssNode {
     let richTextCss = new CssNode(RichText.type, {}, '.rich-text');
 
@@ -109,7 +102,7 @@ export default function getDefaultCss(): CssNode {
         'padding': 'var(--edge-margin)',
     }, '#resume');
 
-    defaultCss.add('All Resume Descendents', { 'margin': '0' }, '*');
+    defaultCss.add('All Elements', { 'margin': '0' }, '*');
 
     defaultCss.add('Image', {
         'max-width': '100%',
@@ -122,14 +115,13 @@ export default function getDefaultCss(): CssNode {
     let dlCss = defaultCss.add('Description List', { }, 'dl');
     dlCss.add('Definitions', { 'padding-left': '0.5rem' }, 'dd');
 
+    defaultCss.add('Row', {}, 'div.row');
     defaultCss.add('Column', {}, 'div.column');
     defaultCss.add('Grid', {}, 'div.grid-container');
-
     defaultCss.addNode(getHeaderCss());
     defaultCss.addNode(getSectionCss());
     defaultCss.addNode(getEntryCss());
     defaultCss.addNode(getRichTextCss());
-    defaultCss.addNode(getRowCss());
     return defaultCss;
 }
 
@@ -142,5 +134,5 @@ export function getRootCss(): CssNode {
         '--spacing': '8px',
         '--large-spacing': '16px',
         '--x-large-spacing': '32px'
-    }, ':root');
+    });
 }

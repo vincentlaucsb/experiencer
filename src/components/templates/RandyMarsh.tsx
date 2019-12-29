@@ -93,18 +93,15 @@ export function randyMarshCss() {
 }
 
 export function randyMarshRootCss(): CssNode {
-    let root = getRootCss();
-    if (root) {
-        root.properties.set('--header-base-height', '120px');
-        root.properties.set('--header-padding-bottom', 'var(--large-spacing)');
-        root.properties.set('--header-height', 'calc(var(--header-base-height) - var(--header-padding-bottom))');
-        root.properties.set('--year-column-width', '100px');
-        root.properties.set('--text-color', '#43353f');
-        root.properties.set('--randy-teal', '#4eb3b9');
-        root.properties.set('--secondary-color', '#fbdcb6');
-    }
-
-    return root;
+    return getRootCss().updateProperties([
+        ['--header-base-height', '120px'],
+        ['--header-padding-bottom', 'var(--large-spacing)'],
+        ['--header-height', 'calc(var(--header-base-height) - var(--header-padding-bottom))'],
+        ['--year-column-width', '100px'],
+        ['--text-color', '#43353f'],
+        ['--randy-teal', '#4eb3b9'],
+        ['--secondary-color', '#fbdcb6'],
+    ]);
 }
 
 export function randyMarsh(): BasicResumeNode[] {

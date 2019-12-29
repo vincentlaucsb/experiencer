@@ -7,31 +7,28 @@ import getDefaultCss, { getRootCss } from "./CssTemplates";
 import CssNode from "../utility/CssTree";
 
 export function assuredCss() {
-    let defaultCss = getDefaultCss();
-    defaultCss.properties = new Map<string, string>([
+    let defaultCss = getDefaultCss().setProperties([
         ["font-family", "var(--sans-serif)"],
         ["font-size", "11pt"]
     ]);
 
-    const header = defaultCss.findNode("Header");
-    if (header) {
-        header.properties = new Map<string, string>([
-            ["background", "#eeeeee"],
-            ["margin-bottom", "var(--large-spacing)"],
-            ["padding", "var(--edge-margin)"],
-            ["padding-bottom", "var(--large-spacing)"],
-        ]);
+    /** Header */
+    const header = defaultCss.mustFindNode("Header").setProperties([
+        ["background", "#eeeeee"],
+        ["margin-bottom", "var(--large-spacing)"],
+        ["padding", "var(--edge-margin)"],
+        ["padding-bottom", "var(--large-spacing)"],
+    ]);
 
-        header.add('Rich Text', {
-            'text-align': 'right',
-            'font-size': '10pt'
-        }, '.rich-text');
+    header.add('Rich Text', {
+        'text-align': 'right',
+        'font-size': '10pt'
+    }, '.rich-text');
 
-        header.add('Icon', {
-            'height': '24px',
-            'vertical-align': 'middle'
-        }, 'svg.icon, img.icon');
-    }
+    header.add('Icon', {
+        'height': '24px',
+        'vertical-align': 'middle'
+    }, 'svg.icon, img.icon');
 
     let contactLeft = new CssNode("#contact-left", {
         "grid-template-columns": "1fr 30px",
@@ -48,10 +45,9 @@ export function assuredCss() {
         "height": "auto"
     });
 
-    let section = defaultCss.mustFindNode('Section');
-    if (section) {
-        section.setProperties([
-            ['margin-bottom', 'var(--x-large-spacing)']]
+    /** Section */
+    defaultCss.mustFindNode('Section').setProperties([
+        ['margin-bottom', 'var(--x-large-spacing)']]
         ).setProperties([
             ['padding-top', 'var(--small-spacing)']
         ], 'Content'
@@ -61,7 +57,6 @@ export function assuredCss() {
             ["font-size", "18pt"],
             ["color", "var(--accent)"]
         ], 'Title');
-    }
 
     defaultCss.addNode(contactLeft);
     defaultCss.addNode(contactRight);
@@ -95,10 +90,7 @@ export function assuredCss() {
 }
 
 export function assuredRootCss(): CssNode {
-    let root = getRootCss();
-    root.properties.set('--accent', '#315eaa');;
-
-    return root;
+    return getRootCss().updateProperties([['--accent', '#315eaa']]);
 }
 
 export function assuredNodes(): Array<BasicResumeNode> {

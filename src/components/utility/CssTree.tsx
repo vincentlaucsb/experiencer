@@ -313,17 +313,22 @@ export default class CssNode {
             targetNode.properties.delete(key);
         }
     }
-    
-    setProperties(properties: Array<[string, string]> | Map<string, string>,
-        path?: string | string[]
-    ) {
+
+    updateProperties(properties: Array<[string, string]>, path?: string | string[]) {
         const targetNode = path ? this.findNode(path) : this;
         if (targetNode) {
-            if (Array.isArray(properties)) {
-                properties = new Map<string, string>(properties);
-            }
+            properties.forEach((pair) => {
+                targetNode.properties.set(pair[0], pair[1]);
+            })
+        }
 
-            targetNode.properties = properties;
+        return this;
+    }
+
+    setProperties(properties: Array<[string, string]>, path?: string | string[]) {
+        const targetNode = path ? this.findNode(path) : this;
+        if (targetNode) {
+            targetNode.properties = new Map<string, string>(properties);
         }
 
         return this;

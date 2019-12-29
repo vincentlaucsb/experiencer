@@ -4,12 +4,22 @@ Experiencer is an intuitive, flexible resume editor written using React supporti
 
 ![Experiencer Screenshot](Experiencer-Screenshot.png)
 
-## Try it Live
+## Features
+### The power of HTML + CSS without the boilerplate
+With a WYSIWYG editor, you can format your resume with the precision of CSS styling without having to 
+copy and paste `<div>` and `<section>` tags every time you want to add a new entry.
+
+### Clean, Semantic HTML/CSS
+The outputted HTML and CSS follows best practices, so if something doesn't go right, you won't be left debugging
+a rat's nest of `<div>` tags or trying to figure out what `.css-class-2412husad-asda` does.
+
+## Use It Live
 
 You can use this app live at [http://vincela.com/experiencer](http://vincela.com/experiencer).
 
 ## Thanks
- * [Material Design Icons](https://github.com/google/material-design-icons)
+ * [Feather Icons](https://feathericons.com/)
+ * [IcoFont](https://icofont.com/)
 
 ## Available Scripts
 

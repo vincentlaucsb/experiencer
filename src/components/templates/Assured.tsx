@@ -33,40 +33,34 @@ export function assuredCss() {
         }, 'svg.icon, img.icon');
     }
 
-    let contactLeft = new CssNode(
-        "#contact-left",
-        {
-            "grid-template-columns": "1fr 30px",
-            "grid-column-gap": "var(--small-spacing)",
-            "width": "auto",
-            "height": "auto",
-            "margin-left": "auto"
-        },
-        "#contact-left");
+    let contactLeft = new CssNode("#contact-left", {
+        "grid-template-columns": "1fr 30px",
+        "grid-column-gap": "var(--small-spacing)",
+        "width": "auto",
+        "height": "auto",
+        "margin-left": "auto"
+    });
 
-    let contactRight = new CssNode(
-        '#contact-right',
-        {
-            "grid-template-columns": "1fr 30px",
-            "grid-column-gap": "var(--spacing)",
-            "width": "auto",
-            "height": "auto"
-        },
-        '#contact-right');
+    let contactRight = new CssNode('#contact-right', {
+        "grid-template-columns": "1fr 30px",
+        "grid-column-gap": "var(--spacing)",
+        "width": "auto",
+        "height": "auto"
+    });
 
-    let section = defaultCss.findNode('Section');
+    let section = defaultCss.mustFindNode('Section');
     if (section) {
-        section.properties.set('margin-bottom', 'var(--x-large-spacing)');
-        section.setProperties('Content', [
-            [ 'padding-top', 'var(--small-spacing)' ]
-        ]);
-
-        section.setProperties("Title", [
+        section.setProperties([
+            ['margin-bottom', 'var(--x-large-spacing)']]
+        ).setProperties([
+            ['padding-top', 'var(--small-spacing)']
+        ], 'Content'
+        ).setProperties([
             ["font-family", "var(--serif)"],
             ["font-weight", "bold"],
             ["font-size", "18pt"],
             ["color", "var(--accent)"]
-        ]);
+        ], 'Title');
     }
 
     defaultCss.addNode(contactLeft);
@@ -84,17 +78,18 @@ export function assuredCss() {
         'margin-left': '0'
     }, 'div.entry > hgroup > h4 span.field-last');
 
-    const subtitleFields = defaultCss.findNode(["Entry", "Title Block", "Subtitle"]) as CssNode;
-    let middleFields = subtitleFields.findNode(["Middle Fields"]) as CssNode;
-    middleFields.add(":before", {
-        content: '"|"',
-        padding: "0.5em"
-    });
+    const subtitleFields = defaultCss.findNode(["Entry", "Title Block", "Subtitle"]);
+    if (subtitleFields) {
+        subtitleFields.mustFindNode("Middle Fields").add(":before", {
+            content: '"|"',
+            padding: "0.5em"
+        });
 
-    subtitleFields.setProperties("Last Field", [
-        ["margin-left", "auto"],
-        ["text-align", "right"]
-    ]);
+        subtitleFields.setProperties([
+            ["margin-left", "auto"],
+            ["text-align", "right"]
+        ], "Last Field");
+    }
 
     return defaultCss;
 }

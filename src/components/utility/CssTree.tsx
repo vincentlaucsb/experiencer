@@ -24,6 +24,12 @@ export default class CssNode {
 
     public description?: string;
 
+    /**
+     * Create a new CSS node
+     * @param name
+     * @param properties
+     * @param selector
+     */
     constructor(name: string, properties: object, selector?: string) {
         this._name = name;
         this._children = new Array<CssNode>();
@@ -33,7 +39,8 @@ export default class CssNode {
             this._properties.set(k, properties[k]);
         }
 
-        this._selector = selector || "";
+        // Use name as selector if not provided
+        this._selector = selector || name;
     }
 
     get name() {
@@ -283,6 +290,16 @@ export default class CssNode {
         return;
     }
 
+    mustFindNode(path: string | string[]): CssNode {
+        const result = this.findNode(path);
+        if (!result) {
+            const pathStr = Array.isArray(path) ? path.join(', ') : path;
+            throw new Error(`Couldn't find node at ${pathStr}`);
+        }
+
+        return result;
+    }
+
     setProperty(path: string[], key: string, value: string) {
         const targetNode = this.findNode(path);
         if (targetNode) {
@@ -297,9 +314,10 @@ export default class CssNode {
         }
     }
     
-    setProperties(path: string | string[],
-        properties: Array<[string, string]> | Map<string, string>) {
-        const targetNode = this.findNode(path);
+    setProperties(properties: Array<[string, string]> | Map<string, string>,
+        path?: string | string[]
+    ) {
+        const targetNode = path ? this.findNode(path) : this;
         if (targetNode) {
             if (Array.isArray(properties)) {
                 properties = new Map<string, string>(properties);
@@ -307,5 +325,7 @@ export default class CssNode {
 
             targetNode.properties = properties;
         }
+
+        return this;
     }
 }

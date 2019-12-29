@@ -54,18 +54,23 @@ export function assuredCss() {
         },
         '#contact-right');
 
+    let section = defaultCss.findNode('Section');
+    if (section) {
+        section.properties.set('margin-bottom', 'var(--x-large-spacing)');
+        section.setProperties('Content', [
+            [ 'padding-top', 'var(--small-spacing)' ]
+        ]);
+
+        section.setProperties("Title", [
+            ["font-family", "var(--serif)"],
+            ["font-weight", "bold"],
+            ["font-size", "18pt"],
+            ["color", "var(--accent)"]
+        ]);
+    }
+
     defaultCss.addNode(contactLeft);
     defaultCss.addNode(contactRight);
-    defaultCss.setProperties(["Section", "Title"], [
-        ["font-family", "var(--serif)"],
-        ["font-weight", "bold"],
-        ["font-size", "18pt"],
-        ["color", "var(--accent)"]
-    ]);
-
-    defaultCss.setProperties(["Section", "Content"],
-        new Map<string, string>()
-    );
     
     defaultCss.add('#main', {
         'padding-left': 'var(--edge-margin)',
@@ -202,6 +207,15 @@ export function assuredNodes(): Array<BasicResumeNode> {
                 "children": [
                     makeList([
                         'Created an app which allows you to control a swarm of room-cleaning robots'
+                    ])
+                ]
+            },
+            {
+                "type": "Entry",
+                "title": ["Creepy Santa"],
+                "children": [
+                    makeList([
+                        "Created an app which allows you to view your crush's Amazon wish list"
                     ])
                 ]
             }

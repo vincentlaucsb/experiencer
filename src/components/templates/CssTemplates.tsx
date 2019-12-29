@@ -46,8 +46,11 @@ function getSectionCss(): CssNode {
 }
 
 function getEntryCss(): CssNode {
-    let entryCss = new CssNode(Entry.type,
-        { 'margin-bottom': 'var(--large-spacing)' }, 'div.entry');
+    let entryCss = new CssNode(Entry.type, {}, 'div.entry');
+
+    entryCss.add('Adjacent Entries', {
+        'margin-top': 'var(--large-spacing)'
+    }, '+ div.entry');
 
     let entryTitleCss = entryCss.add('Title Block',
         { 'margin-bottom': 'var(--small-spacing)' }, '> hgroup');
@@ -137,6 +140,7 @@ export function getRootCss(): CssNode {
         '--edge-margin': '0.5in',
         '--small-spacing': '4px',
         '--spacing': '8px',
-        '--large-spacing': '16px'
+        '--large-spacing': '16px',
+        '--x-large-spacing': '32px'
     }, ':root');
 }

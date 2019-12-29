@@ -31,7 +31,6 @@ import Tabs from './components/controls/Tabs';
 import ResumeContextMenu from './components/controls/ResumeContextMenu';
 import generateHtml from './components/utility/GenerateHtml';
 import ComponentTypes from './components/schema/ComponentTypes';
-import { ChevronUp } from '@primer/octicons-react';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering = new HoverTracker();
@@ -155,13 +154,18 @@ class Resume extends React.Component<{}, ResumeState> {
         return undefined;
     }
 
+    /** Return resume stylesheet */
+    get stylesheet() {
+        return `${this.state.rootCss.stylesheet()}\n\n${this.state.css.stylesheet()}`;
+    }
+
     /**
      * Update stylesheets
      * @param prevProps
      */
     componentDidUpdate(_prevProps) {
         if (this.shouldUpdateCss) {
-            this.style.innerHTML = `${this.state.css.stylesheet()}\n\n${this.state.rootCss.stylesheet()}`;
+            this.style.innerHTML = this.stylesheet;
             this.shouldUpdateCss = false;
         }
     }
@@ -539,7 +543,7 @@ class Resume extends React.Component<{}, ResumeState> {
             <div key="Raw CSS">
                 <pre>
                     <code>
-                        {this.state.css.stylesheet()}
+                        {this.stylesheet}
                     </code>
                 </pre>
             </div>

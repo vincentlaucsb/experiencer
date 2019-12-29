@@ -26,17 +26,13 @@ export default function QuillEditor(props: QuillEditorProps) {
     const toolbarId = `quill-toolbar-${props.id}`
 
     return (
-        <div
-            className={props.className} id={props.htmlId}
-            {...selectTriggerProps}>
+        <div className="resume-ql" {...selectTriggerProps}>
             <QuillToolbar id={toolbarId} show={showToolbar} />
-            <div className="resume-ql">
-                <ReactQuill
-                    modules={{ toolbar: `#${toolbarId}` }}
-                    value={props.value}
-                    onChange={props.onChange}
-                />
-            </div>
+            <ReactQuill
+                modules={{ toolbar: `#${toolbarId}` }}
+                value={props.value}
+                onChange={props.onChange}
+            />
         </div>
     );
 }

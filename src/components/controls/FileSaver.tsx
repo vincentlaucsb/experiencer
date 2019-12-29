@@ -1,6 +1,5 @@
 ﻿import * as React from "react";
 import { Button } from './Buttons';
-import ButtonGroup from "./ButtonGroup";
 
 interface FileSaverProps {
     close: () => void;

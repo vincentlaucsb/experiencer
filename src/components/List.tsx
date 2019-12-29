@@ -1,5 +1,4 @@
 ﻿import * as React from "react";
-import 'react-contexify/dist/ReactContexify.min.css';
 import TextField from "./controls/inputs/TextField";
 import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 

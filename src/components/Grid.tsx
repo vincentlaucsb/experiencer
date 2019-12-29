@@ -22,7 +22,12 @@ export default class Grid extends ResumeNodeBase {
     }
 
     render() {
+        const helperText = this.isEmpty ? <span>
+            This grid is empty. Click here to select it and add items.
+            </span>  : <></>
+
         return <div className={this.className} style={this.style} id={this.props.htmlId} {...this.selectTriggerProps}>
+            {helperText}
             {this.renderChildren()}
         </div>
     }

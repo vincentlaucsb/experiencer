@@ -2,7 +2,7 @@
 import { Button } from "./Buttons";
 import { Action, AddChild, NodeProperty } from "../ResumeNodeBase";
 import { IdType } from "../utility/HoverTracker";
-import PureMenu, { PureDropdown, PureMenuItem, PureMenuLink } from "./menus/PureMenu";
+import PureMenu, { PureDropdown, PureMenuItem } from "./menus/PureMenu";
 import ResumeHotKeys from "./ResumeHotkeys";
 import { SelectedNodeActions } from "./SelectedNodeActions";
 import DescriptionList, { DescriptionListItem } from "../List";
@@ -16,8 +16,7 @@ import Grid from "../Grid";
 import Row from "../Row";
 import Section from "../Section";
 import IconicMenuItem from "./menus/MenuItem";
-import { Trashcan } from "@primer/octicons-react";
-import { TrashIcon, SaveIcon, UndoIcon, RedoIcon, ClipboardIcon, AddIcon } from "./InterfaceIcons";
+import { TrashIcon, ClipboardIcon, AddIcon } from "./InterfaceIcons";
 import EditingSection, { EditingSectionProps } from "./toolbar/EditingSection";
 
 type AddOptions = Array<NodeInformation>;
@@ -155,9 +154,21 @@ export default function TopEditingBar(props: EditingBarProps) {
             <EditingSection {...props} />
             <div className="toolbar-section">
                 <PureMenu horizontal>
-                    <Button onClick={() => props.addChild([], assignIds({ type: Section.type }))}>Add Section</Button>
-                    <Button onClick={() => props.addChild([], assignIds(ComponentTypes.defaultValue(Row.type).node))}>Add Row & Columns</Button>
-                    <Button onClick={() => props.addChild([], assignIds(ComponentTypes.defaultValue(Grid.type).node))}>Add Grid</Button>
+                    <Button
+                        className="button-text"
+                        onClick={() => props.addChild([], assignIds({ type: Section.type }))}>
+                        <i className="icofont-book-mark" />
+                        Add Section</Button>
+                    <Button
+                        className="button-text"
+                        onClick={() => props.addChild([], assignIds(ComponentTypes.defaultValue(Row.type).node))}>
+                        <i className="icofont-swoosh-right" />
+                        Add Row & Columns</Button>
+                    <Button
+                        className="button-text"
+                        onClick={() => props.addChild([], assignIds(ComponentTypes.defaultValue(Grid.type).node))}>
+                        <i className="icofont-table" />
+                        Add Grid</Button>
                 </PureMenu>
                 <span className="label">Resume Components</span>
             </div>

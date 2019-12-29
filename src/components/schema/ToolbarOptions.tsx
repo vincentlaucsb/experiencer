@@ -2,8 +2,8 @@
 import { ResumeNode } from "../utility/NodeTree";
 import Row, { BasicRowProps } from "../Row";
 import { Action } from "../ResumeNodeBase";
-import Header, { BasicHeaderProps } from "../Header";
-import Icon, { BasicIconProps } from "../Icon";
+import Header from "../Header";
+import Icon from "../Icon";
 
 export interface ToolbarOption {
     text: string;
@@ -64,6 +64,35 @@ export default function toolbarOptions(
     };
 
     const justifyContent = (option: string) => updateNode('justifyContent', option);
+    const justifyContentOptions = {
+        text: 'Justify Content',
+        actions: [
+            {
+                text: 'Space between',
+                action: () => justifyContent('space-between')
+            },
+            {
+                text: 'Stack at beginning',
+                action: () => justifyContent('flex-start')
+            },
+            {
+                text: 'Stack at end',
+                action: () => justifyContent('flex-end')
+            },
+            {
+                text: 'Stack center',
+                action: () => justifyContent('center')
+            },
+            {
+                text: 'Space around',
+                action: () => justifyContent('space-around')
+            },
+            {
+                text: 'Space evenly',
+                action: () => justifyContent('space-evenly')
+            }
+        ]
+    };
 
     switch (node.type) {
         case Entry.type:
@@ -99,7 +128,6 @@ export default function toolbarOptions(
             ];
 
         case Header.type:
-            const headerProps = node as BasicHeaderProps;
             const distribute = (value: string) => updateNode('distribution', value);
 
             return [
@@ -124,39 +152,10 @@ export default function toolbarOptions(
                         }
                     ]
                 },
-                {
-                    text: 'Justify Content',
-                    actions: [
-                        {
-                            text: 'Space between',
-                            action: () => justifyContent('space-between')
-                        },
-                        {
-                            text: 'Stack at beginning',
-                            action: () => justifyContent('flex-start')
-                        },
-                        {
-                            text: 'Stack at end',
-                            action: () => justifyContent('flex-end')
-                        },
-                        {
-                            text: 'Stack center',
-                            action: () => justifyContent('center')
-                        },
-                        {
-                            text: 'Space around',
-                            action: () => justifyContent('space-around')
-                        },
-                        {
-                            text: 'Space evenly',
-                            action: () => justifyContent('space-evenly')
-                        }
-                    ]
-                }
+                justifyContentOptions
             ]
 
         case Icon.type:
-            const iconNode = node as BasicIconProps;
             return [
                 {
                     text: 'GitHub',
@@ -171,35 +170,7 @@ export default function toolbarOptions(
                     text: 'Reverse Contents',
                     action: () => updateNode('reverseDirection', !rowNode.reverseDirection || false)
                 },
-                {
-                    text: 'Justify Content',
-                    actions: [
-                        {
-                            text: 'Space between',
-                            action: () => justifyContent('space-between')
-                        },
-                        {
-                            text: 'Stack at beginning',
-                            action: () => justifyContent('flex-start')
-                        },
-                        {
-                            text: 'Stack at end',
-                            action: () => justifyContent('flex-end')
-                        },
-                        {
-                            text: 'Stack center',
-                            action: () => justifyContent('center')
-                        },
-                        {
-                            text: 'Space around',
-                            action: () => justifyContent('space-around')
-                        },
-                        {
-                            text: 'Space evenly',
-                            action: () => justifyContent('space-evenly')
-                        }
-                    ]
-                }
+                justifyContentOptions
             ];
 
         default:

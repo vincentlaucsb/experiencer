@@ -3,16 +3,11 @@ import { BasicHeaderProps } from "../Header";
 import { BasicEntryProps } from "../Entry";
 import { makeList } from "./TemplateHelper";
 import { BasicIconProps } from "../Icon";
-import getDefaultCss from "./CssTemplates";
+import getDefaultCss, { getRootCss } from "./CssTemplates";
 import CssNode from "../utility/CssTree";
 
 export function assuredCss() {
     let defaultCss = getDefaultCss();
-    let rootCss = defaultCss.cssRoot as CssNode;
-    if (rootCss) {
-        rootCss.properties.set('--accent', '#315eaa');
-    }
-
     defaultCss.properties = new Map<string, string>([
         ["font-family", "var(--sans-serif)"],
         ["font-size", "11pt"]
@@ -97,6 +92,13 @@ export function assuredCss() {
     ]);
 
     return defaultCss;
+}
+
+export function assuredRootCss(): CssNode {
+    let root = getRootCss();
+    root.properties.set('--accent', '#315eaa');;
+
+    return root;
 }
 
 export function assuredNodes(): Array<BasicResumeNode> {

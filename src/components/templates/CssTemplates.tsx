@@ -106,15 +106,6 @@ export default function getDefaultCss(): CssNode {
         'padding': 'var(--edge-margin)',
     }, '#resume');
 
-    defaultCss.cssRoot = new CssNode(':root', {
-        '--serif': 'Merriweather, serif',
-        '--sans-serif': 'Open Sans, sans-serif',
-        '--edge-margin': '0.5in',
-        '--small-spacing': '4px',
-        '--spacing': '8px',
-        '--large-spacing': '16px'
-    }, ':root');
-
     defaultCss.add('All Resume Descendents', { 'margin': '0' }, '*');
 
     defaultCss.add('Image', {
@@ -137,4 +128,15 @@ export default function getDefaultCss(): CssNode {
     defaultCss.addNode(getRichTextCss());
     defaultCss.addNode(getRowCss());
     return defaultCss;
+}
+
+export function getRootCss(): CssNode {
+    return new CssNode(':root', {
+        '--serif': 'Merriweather, serif',
+        '--sans-serif': 'Open Sans, sans-serif',
+        '--edge-margin': '0.5in',
+        '--small-spacing': '4px',
+        '--spacing': '8px',
+        '--large-spacing': '16px'
+    }, ':root');
 }

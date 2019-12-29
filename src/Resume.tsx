@@ -31,11 +31,13 @@ import Tabs from './components/controls/Tabs';
 import ResumeContextMenu from './components/controls/ResumeContextMenu';
 import generateHtml from './components/utility/GenerateHtml';
 import ComponentTypes from './components/schema/ComponentTypes';
+import { ChevronUp } from '@primer/octicons-react';
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering = new HoverTracker();
     nodes = new ResumeNodeTree();
     css = new CssNode("Resume CSS", {}, "#resume");
+    rootCss = new CssNode(":root", {}, ":root");
     shouldUpdateCss = false;
     style: HTMLStyleElement;
     unselect: Action;
@@ -54,6 +56,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
         this.state = {
             css: this.css,
+            rootCss: this.rootCss,
             children: [],
             isEditingSelected: false,
             mode: "landing",
@@ -158,7 +161,7 @@ class Resume extends React.Component<{}, ResumeState> {
      */
     componentDidUpdate(_prevProps) {
         if (this.shouldUpdateCss) {
-            this.style.innerHTML = this.state.css.stylesheet();
+            this.style.innerHTML = `${this.state.css.stylesheet()}\n\n${this.state.rootCss.stylesheet()}`;
             this.shouldUpdateCss = false;
         }
     }
@@ -397,10 +400,12 @@ class Resume extends React.Component<{}, ResumeState> {
         let savedData = data as ResumeSaveData;
         this.updateNodes((nodes) => nodes.children = assignIds(savedData.children));
         this.css = CssNode.load(savedData.builtinCss);
+        this.rootCss = CssNode.load(savedData.rootCss);
 
         this.setState({
             css: this.css,
-            mode: mode
+            mode: mode,
+            rootCss: this.rootCss
         })
 
         this.shouldUpdateCss = true;
@@ -422,7 +427,8 @@ class Resume extends React.Component<{}, ResumeState> {
     dump(): ResumeSaveData {
         return {
             children: this.state.children,
-            builtinCss: this.css.dump()
+            builtinCss: this.css.dump(),
+            rootCss: this.rootCss.dump()
         };
     }
 
@@ -540,49 +546,47 @@ class Resume extends React.Component<{}, ResumeState> {
         </Tabs>
     }
 
-    renderCssEditor() {
-        const adder = (path, name, selector) => {
-            (this.css.findNode(path) as CssNode).add(name, {}, selector);
-            this.setState({ css: this.css });
-            this.shouldUpdateCss = true;
-        }
-
-        const updater = (path, key, value) => {
-            this.css.setProperty(path, key, value);
+    makeCssEditorProps(cssNode: CssNode) {
+        const onUpdate = () => {
             this.setState({ css: this.css });
             this.shouldUpdateCss = true;
         };
 
-        const updateDescription = (path, value) => {
-            const target = this.css.findNode(path);
-            if (target) {
-                target.description = value;
+        return {
+            addSelector: (path, name, selector) => {
+                const target = cssNode.findNode(path);
+                if (target) {
+                    target.add(name, {}, selector);
+                }
+                onUpdate();
+            },
+
+            updateData: (path, key, value) => {
+                cssNode.setProperty(path, key, value);
+                onUpdate();
+            },
+
+            updateDescription: (path, value) => {
+                const target = cssNode.findNode(path);
+                if (target) {
+                    target.description = value;
+                }
+                onUpdate();
+            },
+
+            deleteKey: (path, key) => {
+                cssNode.delete(path);
+                onUpdate();
+            },
+
+            deleteNode: (path) => {
+                cssNode.delete(path);
+                onUpdate();
             }
-
-            this.setState({ css: this.css });
-            this.shouldUpdateCss = true;
-        }
-
-        const deleter = (path, key) => {
-            this.css.deleteProperty(path, key);
-            this.setState({ css: this.css });
-            this.shouldUpdateCss = true;
         };
+    }
 
-        const deleteNode = (path) => {
-            this.css.delete(path);
-            this.setState({ css: this.css });
-            this.shouldUpdateCss = true;
-        }
-
-        const editorProps = {
-            addSelector: adder,
-            updateData: updater,
-            updateDescription: updateDescription,
-            deleteKey: deleter,
-            deleteNode: deleteNode
-        }
-
+    renderCssEditor() {
         if (this.selectedNode) {
             const rootNode = this.state.css.findNode(
                 ComponentTypes.cssName(this.selectedNode.type)) as CssNode;
@@ -591,20 +595,23 @@ class Resume extends React.Component<{}, ResumeState> {
             if (this.selectedNode.htmlId && this.state.css.findNode([`#${this.selectedNode.htmlId}`])) {
                 const specificRoot = this.state.css.findNode([`#${this.selectedNode.htmlId}`]) as CssNode;
                 specificCssEditor = <CssEditor key={specificRoot.fullSelector} root={specificRoot}
-                    {...editorProps} />
+                    {...this.makeCssEditorProps(this.css)} />
             }
 
             if (rootNode) {
                 return <>
                     {specificCssEditor}
-                    <CssEditor {...editorProps} key={rootNode.fullSelector} root={rootNode} />
+                    <CssEditor {...this.makeCssEditorProps(this.css)} key={rootNode.fullSelector} root={rootNode} />
                 </>
             }
 
             return <></>
         }
                 
-        return <CssEditor root={this.state.css} autoCollapse={true} {...editorProps} />
+        return <>
+            <CssEditor root={this.state.rootCss} autoCollapse={true} {...this.makeCssEditorProps(this.rootCss)} />
+            <CssEditor root={this.state.css} autoCollapse={true} {...this.makeCssEditorProps(this.css)} />
+        </>
     }
     
     render() {

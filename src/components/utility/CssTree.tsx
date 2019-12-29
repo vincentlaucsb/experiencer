@@ -22,9 +22,6 @@ export default class CssNode {
     private _properties: Map<string, string>;
     private parent?: CssNode;
 
-    /** CSS :root selector */
-    public cssRoot?: CssNode;
-
     public description?: string;
 
     constructor(name: string, properties: object, selector?: string) {
@@ -143,11 +140,6 @@ export default class CssNode {
             rootNode.addNode(CssNode.load(node));
         }
 
-        // Load root
-        if (data.root) {
-            rootNode.cssRoot = CssNode.load(data.root);
-        }
-
         return rootNode;
     }
 
@@ -157,10 +149,6 @@ export default class CssNode {
             name: this.name,
             properties: Array.from(this.properties.entries()),
             selector: this.selector
-        }
-
-        if (this.cssRoot) {
-            data.root = this.cssRoot.dump();
         }
 
         return data;
@@ -183,11 +171,6 @@ export default class CssNode {
         const thisCss = this.properties.size > 0 ? `${this.fullSelector} {\n${cssProperties}\n}` : ``;
 
         let childStylesheets = new Array<string>();
-
-        // :root before others
-        if (this.cssRoot) {
-            childStylesheets.push(this.cssRoot.stylesheet());
-        }
 
         for (let cssTree of this.children.values()) {
             const childCss = cssTree.stylesheet();

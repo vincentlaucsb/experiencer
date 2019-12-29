@@ -5,7 +5,7 @@ import CssNode from "../utility/CssTree";
 import Section from "../Section";
 import Entry, { BasicEntryProps } from "../Entry";
 import RichText from "../RichText";
-import getDefaultCss from "./CssTemplates";
+import getDefaultCss, { getRootCss } from "./CssTemplates";
 import Grid from "../Grid";
 import { makeList } from "./TemplateHelper";
 
@@ -29,17 +29,6 @@ export function randyMarshCss() {
         });
 
     headshot.add('Image', { 'border-radius': '50%' }, 'img');
-
-    let rootCss = randyCss.cssRoot as CssNode;
-    if (rootCss) {
-        rootCss.properties.set('--header-base-height', '120px');
-        rootCss.properties.set('--header-padding-bottom', 'var(--large-spacing)');
-        rootCss.properties.set('--header-height', 'calc(var(--header-base-height) - var(--header-padding-bottom))');
-        rootCss.properties.set('--year-column-width', '100px');
-        rootCss.properties.set('--text-color', '#43353f');
-        rootCss.properties.set('--randy-teal', '#4eb3b9');
-        rootCss.properties.set('--secondary-color', '#fbdcb6');
-    }
 
     let headerCss = randyCss.findNode("Header") as CssNode;
     if (headerCss) {
@@ -132,6 +121,21 @@ export function randyMarshCss() {
         ["text-align", "right"]]);
 
     return randyCss;
+}
+
+export function randyMarshRootCss(): CssNode {
+    let root = getRootCss();
+    if (root) {
+        root.properties.set('--header-base-height', '120px');
+        root.properties.set('--header-padding-bottom', 'var(--large-spacing)');
+        root.properties.set('--header-height', 'calc(var(--header-base-height) - var(--header-padding-bottom))');
+        root.properties.set('--year-column-width', '100px');
+        root.properties.set('--text-color', '#43353f');
+        root.properties.set('--randy-teal', '#4eb3b9');
+        root.properties.set('--secondary-color', '#fbdcb6');
+    }
+
+    return root;
 }
 
 export function randyMarsh(): BasicResumeNode[] {

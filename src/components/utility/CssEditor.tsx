@@ -57,7 +57,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         );
     }
 
-    /** Gather all CSS variables */
+    /** Gather all CSS variables 
     get varSuggestions(): Array<string> {
         const treeRoot = this.props.root.treeRoot;
         let suggestions = new Array<string>();
@@ -72,7 +72,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         }
 
         return suggestions;
-    }
+    }*/
 
     get path() {
         return this.props.root.fullPath;
@@ -140,35 +140,21 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     /** Render the set of CSS properties */
     renderProperties() {
         const cssProperties = this.props.root.properties;
-        const genericValueSuggestions = this.varSuggestions;
+        // const genericValueSuggestions = this.varSuggestions;
 
         // 'initial', 'inherit', 'unset' apply to all CSS properties
         // https://developer.mozilla.org/en-US/docs/Web/CSS/Value_definition_syntax
-        genericValueSuggestions.concat(['initial', 'inherit', 'unset']);
-
-        let root = <></>
-        let cssRoot = this.props.root.cssRoot as CssNode;
-        if (cssRoot) {
-            root = <MappedTextFields value={cssRoot.properties}
-                    container={(props) => this.mapContainer(":root", props)}
-                    updateValue={(key: string, value: string) => {
-                        cssRoot.setProperty([], key, value);
-                    }}
-                    deleteKey={(key: string) => { cssRoot.deleteProperty([], key); }} />
-        }
-
+        const genericValueSuggestions = ['initial', 'inherit', 'unset'];
+        
         return (
-            <>
-                <MappedTextFields value={cssProperties}
-                    container={(props) => this.mapContainer(this.props.root.fullSelector, props)}
-                    updateValue={this.props.updateData.bind(this, this.path)}
-                    deleteKey={this.props.deleteKey.bind(this, this.path)}
-                    keySuggestions={Array.from(this.cssProperties.keys())}
-                    genericValueSuggestions={genericValueSuggestions}
-                    valueSuggestions={this.cssProperties}
-                />
-                {root}
-            </>
+            <MappedTextFields value={cssProperties}
+                container={(props) => this.mapContainer(this.props.root.fullSelector, props)}
+                updateValue={this.props.updateData.bind(this, this.path)}
+                deleteKey={this.props.deleteKey.bind(this, this.path)}
+                keySuggestions={Array.from(this.cssProperties.keys())}
+                genericValueSuggestions={genericValueSuggestions}
+                valueSuggestions={this.cssProperties}
+            />
         );
     }
 

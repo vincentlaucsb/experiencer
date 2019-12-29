@@ -15,6 +15,7 @@ export interface CssEditorProps {
     updateDescription: (path: string[], data: string) => void;
     deleteKey: (path: string[], key: string) => void;
     deleteNode: (path: string[]) => void;
+    varSuggestions?: Array<string>;
 }
 
 export interface CssEditorState {
@@ -56,23 +57,6 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
             </button>
         );
     }
-
-    /** Gather all CSS variables 
-    get varSuggestions(): Array<string> {
-        const treeRoot = this.props.root.treeRoot;
-        let suggestions = new Array<string>();
-
-        if (treeRoot && treeRoot.cssRoot) {
-            for (let k of treeRoot.cssRoot.properties.keys()) {
-                // Variable declaration
-                if (k.slice(0, 2) === '--') {
-                    suggestions.push(`var(${k})`);
-                }
-            }
-        }
-
-        return suggestions;
-    }*/
 
     get path() {
         return this.props.root.fullPath;
@@ -140,11 +124,11 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     /** Render the set of CSS properties */
     renderProperties() {
         const cssProperties = this.props.root.properties;
-        // const genericValueSuggestions = this.varSuggestions;
+        const genericValueSuggestions = this.props.varSuggestions || [];
 
         // 'initial', 'inherit', 'unset' apply to all CSS properties
         // https://developer.mozilla.org/en-US/docs/Web/CSS/Value_definition_syntax
-        const genericValueSuggestions = ['initial', 'inherit', 'unset'];
+        genericValueSuggestions.concat(['initial', 'inherit', 'unset']);
         
         return (
             <MappedTextFields value={cssProperties}

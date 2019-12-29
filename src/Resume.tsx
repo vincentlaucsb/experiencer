@@ -548,7 +548,10 @@ class Resume extends React.Component<{}, ResumeState> {
 
     makeCssEditorProps(cssNode: CssNode) {
         const onUpdate = () => {
-            this.setState({ css: this.css });
+            this.setState({
+                css: this.css,
+                rootCss: this.rootCss
+            });
             this.shouldUpdateCss = true;
         };
 
@@ -575,7 +578,7 @@ class Resume extends React.Component<{}, ResumeState> {
             },
 
             deleteKey: (path, key) => {
-                cssNode.delete(path);
+                cssNode.deleteProperty(path, key);
                 onUpdate();
             },
 
@@ -584,6 +587,20 @@ class Resume extends React.Component<{}, ResumeState> {
                 onUpdate();
             }
         };
+    }
+
+    /** Gather all variable declarations in :root */
+    makeCssEditorVarSuggestions(): Array<string> {
+        let suggestions = new Array<string>();
+
+        for (let k of this.rootCss.properties.keys()) {
+            // Variable declaration
+            if (k.slice(0, 2) === '--') {
+                suggestions.push(`var(${k})`);
+            }
+        }
+        
+        return suggestions;
     }
 
     renderCssEditor() {
@@ -610,7 +627,10 @@ class Resume extends React.Component<{}, ResumeState> {
                 
         return <>
             <CssEditor root={this.state.rootCss} autoCollapse={true} {...this.makeCssEditorProps(this.rootCss)} />
-            <CssEditor root={this.state.css} autoCollapse={true} {...this.makeCssEditorProps(this.css)} />
+            <CssEditor root={this.state.css}
+                autoCollapse={true}
+                varSuggestions={this.makeCssEditorVarSuggestions()}
+                {...this.makeCssEditorProps(this.css)} />
         </>
     }
     

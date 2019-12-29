@@ -1,7 +1,6 @@
 ﻿import React from "react";
 import { Button, Confirm } from "../controls/Buttons";
 import CssNode from "./CssTree";
-import PureMenu, { PureMenuItem } from "../controls/menus/PureMenu";
 import Popover from "react-tiny-popover";
 import CssSelectorAdder from "./CssSelectorAdder";
 import { TrashIcon } from "../controls/InterfaceIcons";
@@ -28,14 +27,13 @@ const pseudoElements = [
 export default function CssEditorToolbar(props: CssEditorToolbarProps) {
     let [pseudoMenuActive, setPseudoMenuActive] = React.useState(false);
 
-    let deleteButton = <></>
-    if (props.root.selector !== '#resume') {
-        deleteButton = (
+    // Don't show delete button for root nodes
+    let deleteButton = (props.root !== props.root.treeRoot) ?
+        <></> : (
             <Confirm onConfirm={() => props.deleteNode()}>
                 <TrashIcon />
             </Confirm>
         );
-    }
 
     let pseudoMenu = (
         <div className="pseudo-options">

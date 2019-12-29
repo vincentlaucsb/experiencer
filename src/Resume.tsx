@@ -393,7 +393,7 @@ class Resume extends React.Component<{}, ResumeState> {
         const filename = 'resume.html';
         let resumeHtml = this.resumeRef.current ? this.resumeRef.current.outerHTML : '';
         var blob = new Blob(
-            [generateHtml(this.css.stylesheet(), resumeHtml)],
+            [generateHtml(this.stylesheet, resumeHtml)],
             { type: "text/html;charset=utf-8" }
         );
 

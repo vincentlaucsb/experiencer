@@ -42,8 +42,9 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
 
     /** Return the style for the main div */
     get style() : React.CSSProperties {
-        let properties = {
-            ...ResumeNodeBase.flexRowStyle,
+        let properties: React.CSSProperties = {
+            display: 'flex',
+            flexDirection: 'row',
             width: "100%",
             justifyContent: this.props.justifyContent || 'space-between'
         }

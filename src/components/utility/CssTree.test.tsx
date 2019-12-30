@@ -24,7 +24,7 @@ function makeCssTree() {
     });
 }
 
-test('copySkeleton Test', () => {
+test('copySkeleton Test', async () => {
     const cssNode = makeCssTree();
     const copy = cssNode.copySkeleton();
 
@@ -41,7 +41,7 @@ test('copySkeleton Test', () => {
     expect(copiedListItemCss.properties.size).toBe(0);
 });
 
-test('findNode Test', () => {
+test('findNode Test', async () => {
     const cssNode = makeCssTree();
     const listCss = cssNode.findNode(['Lists']) as CssNode;
     const listItemCss = cssNode.findNode(['Lists', 'List Item']) as CssNode;
@@ -53,7 +53,7 @@ test('findNode Test', () => {
     expect(listItemCss.fullSelector).toEqual('.rich-text ul li');
 })
 
-test('find Test', () => {
+test('find Test', async () => {
     const cssNode = makeCssTree();
     const listCss = cssNode.findNode('Lists') as CssNode;
     const listItemCss = cssNode.findNode(['Lists', 'List Item']) as CssNode;
@@ -65,14 +65,14 @@ test('find Test', () => {
     expect(arraysEqual(listItemCss.fullPath, ['Lists', 'List Item'])).toBeTruthy();
 })
 
-test('fullSelector Test - Complex Tree', () => {
+test('fullSelector Test - Complex Tree', async () => {
     let cssNode = new CssNode('Headings', {}, 'h1, h2');
     let text = cssNode.add('Text', {}, 'p, span');
     let grandchild = text.add('Link', {}, 'a');
     expect(grandchild.fullSelector).toBe('h1 p a, h1 span a, h2 p a, h2 span a');
 })
 
-test('No Duplicate Test', () => {
+test('No Duplicate Test', async () => {
     const cssNode = makeCssTree();
     cssNode.add(':after', {});
     expect(cssNode.hasName(':after'));
@@ -84,7 +84,7 @@ test('No Duplicate Test', () => {
     expect(addDup).toThrow();
 });
 
-test('Stylesheet Test', () => {
+test('Stylesheet Test', async () => {
     const cssNode = new CssNode('Text Field', {
             "font-family": "Tahoma, sans-serif"
         }, 'span');
@@ -93,7 +93,7 @@ test('Stylesheet Test', () => {
 }`);
 })
 
-test('Stylesheet Comma Test', () => {
+test('Stylesheet Comma Test', async () => {
     const cssNode = new CssNode('Text Field', {
         "font-family": "Tahoma, sans-serif"
     }, 'span, a');
@@ -102,7 +102,7 @@ test('Stylesheet Comma Test', () => {
 }`);
 })
 
-test('Stylesheet Test w/ Children', () => {
+test('Stylesheet Test w/ Children', async () => {
     const cssNode = new CssNode('Text Field', {
         "font-family": "Tahoma, sans-serif"
     }, 'span');
@@ -117,7 +117,7 @@ span strong {
 }`);
 })
 
-test('Stylesheet Test w/ Children + Comma', () => {
+test('Stylesheet Test w/ Children + Comma', async () => {
     const cssNode = new CssNode('Text Field', {
         "font-family": "Tahoma, sans-serif"
     }, 'span, a');
@@ -134,7 +134,7 @@ span strong, a strong {
 }`);
 })
 
-test('Stylesheet Test w/ Children and Pseduoelements', () => {
+test('Stylesheet Test w/ Children and Pseduoelements', async () => {
     const cssNode = new CssNode('Text Field', {
         "font-family": "Tahoma, sans-serif"
     }, 'span');

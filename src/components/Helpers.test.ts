@@ -1,7 +1,7 @@
 ﻿import { assignIds, process, arraysEqual } from "./Helpers";
 import { BasicResumeNode } from "./utility/NodeTree";
 
-test('assignIDs Test', () => {
+test('assignIDs Test', async () => {
     const node = {
         type: 'FlexibleRow',
         childNodes: [
@@ -31,14 +31,14 @@ test('assignIDs Test', () => {
     }
 });
 
-test('Helpers Test', () => {
+test('Helpers Test', async () => {
     let left = [0, 1, 0];
     let right = [0, 1, 1];
 
     expect(arraysEqual(left, right)).toBeFalsy();
 });
 
-test('process Test', () => {
+test('process Test', async () => {
     const textWithNdash = "January 2014 -- December 2016"
     expect(process(textWithNdash)).toBe("January 2014 \u2013 December 2016");
 

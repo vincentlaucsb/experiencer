@@ -21,39 +21,36 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         return ['entry', super.className].join(' ');
     }
 
-    get title() {
-        return this.props.title || [];
-    }
+    /**
+     * Generate the class name for the n-th field
+     * @param index
+     * @param arr
+     */
+    getFieldClassName(index: number, arr: string[]) {
+        const isLast = index === arr.length - 1;
+        let classNames = ['field', `field-${index}`];
+        if (isLast && index !== 0) {
+            classNames.push('field-last');
+        }
+        else if (index > 0) {
+            classNames.push('field-middle');
+        }
 
-    set title(data: Array<string>) {
-        this.updateData('title', data);
-    }
-
-    get subtitle() {
-        return this.props.subtitle || [];
-    }
-
-    set subtitle(data: Array<string>) {
-        this.updateData('subtitle', data);
+        return classNames.join(' ');
     }
 
     getFields(key: 'title' | 'subtitle') {
         const updater = (key: 'title' | 'subtitle', index: number, text: string) => {
-            this.updateExtras(key, index, text);
+            let replTitle = this.props[key] || [];
+
+            // Replace contents
+            replTitle[index] = text;
+            this.updateData(key, replTitle);
         }
 
         const fields = this.props[key];
         if (fields) {
             return fields.map((text, index, arr) => {
-                const isLast = index === arr.length - 1;
-                let classNames = ['field', `field-${index}`];
-                if (isLast && index !== 0) {
-                    classNames.push('field-last');
-                }
-                else if (index > 0) {
-                    classNames.push('field-middle');
-                }
-
                 /** Conditionally add line break */
                 let lineBreak = <></>
                 if (this.props.subtitleBreaks && this.props.subtitleBreaks.indexOf(index) >= 0) {
@@ -63,31 +60,22 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
                     }}/>
                 }
 
-                return <><TextField
-                    displayClassName={classNames.join(' ')}
-                    key={index}
-                    editBlocked={!this.isSelected}
-                    onChange={(data: string) => updater(key, index, data)}
-                    value={text || ""}
-                    defaultText="Enter a value"
-                    {...this.textFieldProps}
-                />
+                return <React.Fragment key={index}>
+                    <TextField
+                        displayClassName={this.getFieldClassName(index, arr)}
+                        editBlocked={!this.isSelected}
+                        onChange={(data: string) => updater(key, index, data)}
+                        value={text || ""}
+                        defaultText="Enter a value"
+                        {...this.textFieldProps} />
                     {lineBreak}
-                    </>
+                </React.Fragment>
             });
         }
 
         return <></>
     }
 
-    updateExtras(key: 'title' | 'subtitle', idx: number, text: string) {
-        let replTitle = this.props[key] || [];
-
-        // Replace contents
-        replTitle[idx] = text;
-        this.updateData(key, replTitle);
-    }
-    
     render() {
         /** hgroup onclick stops event from bubbling up to resume */
         return (

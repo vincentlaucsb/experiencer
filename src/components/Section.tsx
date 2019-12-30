@@ -16,7 +16,7 @@ export default class Section extends ResumeNodeBase {
         />
 
         let helperText = <></>
-        if (this.isEmpty) { // && !this.isSelected) {
+        if (this.isEmpty) {
             helperText = <p>This section is empty. Click here to select it and add content.</p>
         }
 

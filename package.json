@@ -6,6 +6,7 @@
   "dependencies": {
     "@types/react": "^16.9.11",
     "@types/react-dom": "^16.9.4",
+    "@types/testing-library__dom": "^6.11.0",
     "babel-cli": "^6.26.0",
     "babel-preset-react-app": "^9.0.2",
     "file-saver": "^2.0.2",

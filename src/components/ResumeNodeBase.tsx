@@ -1,7 +1,6 @@
 ﻿import * as React from "react";
 import { process } from "./Helpers";
 import { IdType } from "./utility/HoverTracker";
-import ResumeComponent from "./ResumeComponent";
 import { ResumeNode } from "./utility/NodeTree";
 
 export type Action = (() => void);
@@ -33,13 +32,6 @@ export default class ResumeNodeBase<P
     constructor(props: P) {
         super(props);
         this.updateData = this.updateData.bind(this);
-    }
-
-    static get flexRowStyle(): React.CSSProperties {
-        return {
-            display: 'flex',
-            flexDirection: 'row'
-        }
     }
 
     /** Get the class name for the main container */

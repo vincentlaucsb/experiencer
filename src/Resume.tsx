@@ -652,7 +652,7 @@ class Resume extends React.Component<{}, ResumeState> {
                             updateData: this.updateNestedChild,
                             ...this.hoverProps,
 
-                            isEditing: this.state.isEditingSelected,
+                            resumeIsEditing: this.state.isEditingSelected,
                             index: idx,
                             numSiblings: arr.length
                         };

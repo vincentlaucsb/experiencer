@@ -10,7 +10,7 @@ export default class RichText extends ResumeNodeBase {
     render() {
         const textValue = Helpers.process(this.props.value) as string || "Empty text";
         
-        if (this.isEditing) {
+        if (this.props.isEditing) {
             return (
                 <Container className="rich-text" {...this.props}>
                 <QuillEditor

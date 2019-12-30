@@ -20,6 +20,7 @@ export interface ResumePassProps extends ResumeNode {
     selectedUuid?: string;
 }
 
+/** Actual props which go into a resume component */
 export interface ResumeNodeProps extends ResumePassProps {
     id: IdType;   // Hierarchical ID based on the node's position in the resume; subject to change
     isEditing: boolean;
@@ -44,11 +45,7 @@ export default class ResumeNodeBase<P
 
         return true;
     }
-
-    get isEditing() {
-        return this.props.isEditing && this.props.isSelected;
-    }
-
+    
     /**
      * Returns true if we are directly hovering over one of this node's children.
      * The purpose of this is to avoid selecting multiple nodes at once.

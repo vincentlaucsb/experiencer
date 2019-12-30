@@ -43,7 +43,7 @@ export default class Header extends ResumeNodeBase<HeaderProps> {
         let value = <h1 dangerouslySetInnerHTML={{ __html: this.props.value || "Enter a title" }} />
         let subtitle = <h2 className="subtitle" dangerouslySetInnerHTML={{ __html: this.props.subtitle || "" }} />
 
-        if (this.isEditing) {
+        if (this.props.isEditing) {
             value = <QuillEditor
                 id={`${this.props.uuid}-title`}
                 value={this.props.value || ""}

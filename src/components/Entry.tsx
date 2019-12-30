@@ -78,7 +78,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
         return (
             <Container {...this.props} className="entry">
                 <hgroup onClick={(event) => {
-                    if (this.isEditing) {
+                    if (this.props.isEditing) {
                         event.stopPropagation();
                     }
                 }}>

@@ -18,6 +18,7 @@ test('Entry Class Names Test', async () => {
         isLast={false}
         hoverOut={() => { }}
         hoverOver={() => { }}
+        isSelected={false}
         isSelectBlocked={() => { return false }}
         updateData={() => { }}
         updateSelected={() => { }}

@@ -37,7 +37,8 @@ export default function ResumeComponent(props: ResumeComponentProps) {
 
         // Generate unique IDs for component
         id: parentId ? [...parentId, index] : [index],
-        isLast: index === props.numSiblings - 1
+        isLast: index === props.numSiblings - 1,
+        isSelected: props.selectedUuid === props.uuid
     } as ResumeNodeProps;
 
     let Container: typeof React.Component;
@@ -84,6 +85,7 @@ export default function ResumeComponent(props: ResumeComponentProps) {
                 const childProps = {
                     ...elem,
                     isEditing: props.isEditing,
+                    isSelected: props.selectedUuid === elem.uuid,
                     isSelectBlocked: props.isSelectBlocked,
                     hoverOver: props.hoverOver,
                     hoverOut: props.hoverOut,

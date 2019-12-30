@@ -25,7 +25,7 @@ import PureMenu, { PureMenuLink, PureMenuItem } from './components/controls/menu
 import { Button } from './components/controls/Buttons';
 import { RenderIf } from './components/controls/HelperComponents';
 import { SelectedNodeActions } from './components/controls/SelectedNodeActions';
-import CssEditor from './components/utility/CssEditor';
+import CssEditor, { makeCssEditorProps } from './components/utility/CssEditor';
 import NodeTreeVisualizer from './components/utility/NodeTreeVisualizer';
 import Tabs from './components/controls/Tabs';
 import ResumeContextMenu from './components/controls/ResumeContextMenu';
@@ -550,66 +550,7 @@ class Resume extends React.Component<{}, ResumeState> {
             </div>
         </Tabs>
     }
-
-    makeCssEditorProps(cssNode: CssNode) {
-        const onUpdate = () => {
-            this.setState({
-                css: this.css,
-                rootCss: this.rootCss
-            });
-            this.shouldUpdateCss = true;
-        };
-
-        return {
-            addSelector: (path, name, selector) => {
-                const target = cssNode.findNode(path);
-                if (target) {
-                    target.add(name, {}, selector);
-                }
-                onUpdate();
-            },
-
-            updateName: (path, value) => {
-                const target = cssNode.findNode(path);
-                if (target) {
-                    target.name = value;
-                }
-                onUpdate();
-            },
-
-            updateProperty: (path, key, value) => {
-                cssNode.setProperty(path, key, value);
-                onUpdate();
-            },
-
-            updateDescription: (path, value) => {
-                const target = cssNode.findNode(path);
-                if (target) {
-                    target.description = value;
-                }
-                onUpdate();
-            },
-
-            updateSelector: (path, value) => {
-                const target = cssNode.findNode(path);
-                if (target) {
-                    target.selector = value;
-                }
-                onUpdate();
-            },
-
-            deleteKey: (path, key) => {
-                cssNode.deleteProperty(path, key);
-                onUpdate();
-            },
-
-            deleteNode: (path) => {
-                cssNode.delete(path);
-                onUpdate();
-            }
-        };
-    }
-
+    
     /** Gather all variable declarations in :root */
     makeCssEditorVarSuggestions(): Array<string> {
         let suggestions = new Array<string>();
@@ -625,6 +566,16 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     renderCssEditor() {
+        const cssUpdateCallback = () => {
+            this.setState({ css: this.css });
+            this.shouldUpdateCss = true;
+        }
+
+        const rootCssUpdateCallback = () => {
+            this.setState({ rootCss: this.rootCss });
+            this.shouldUpdateCss = true;
+        }
+
         if (this.selectedNode) {
             const rootNode = this.state.css.findNode(
                 ComponentTypes.cssName(this.selectedNode.type)) as CssNode;
@@ -635,16 +586,17 @@ class Resume extends React.Component<{}, ResumeState> {
                 specificCssEditor = <CssEditor
                     key={specificRoot.fullSelector}
                     cssNode={new ReadonlyCssNode(specificRoot)}
-                    {...this.makeCssEditorProps(this.css)} />
+                    {...makeCssEditorProps(this.css, cssUpdateCallback)} />
             }
 
             if (rootNode) {
                 return <>
                     {specificCssEditor}
                     <CssEditor
-                        {...this.makeCssEditorProps(this.css)}
                         key={rootNode.fullSelector}
-                        cssNode={new ReadonlyCssNode(rootNode)} />
+                        cssNode={new ReadonlyCssNode(rootNode)}
+                        {...makeCssEditorProps(this.css, cssUpdateCallback)}
+                    />
                 </>
             }
 
@@ -653,12 +605,13 @@ class Resume extends React.Component<{}, ResumeState> {
                 
         return <>
             <CssEditor
-                cssNode={new ReadonlyCssNode(this.state.rootCss)} autoCollapse={true} {...this.makeCssEditorProps(this.rootCss)} />
+                cssNode={new ReadonlyCssNode(this.state.rootCss)} autoCollapse={true}
+                {...makeCssEditorProps(this.rootCss, rootCssUpdateCallback)} />
             <CssEditor
                 cssNode={new ReadonlyCssNode(this.state.css)}
                 autoCollapse={true}
                 varSuggestions={this.makeCssEditorVarSuggestions()}
-                {...this.makeCssEditorProps(this.css)} />
+                {...makeCssEditorProps(this.css, cssUpdateCallback)} />
         </>
     }
     

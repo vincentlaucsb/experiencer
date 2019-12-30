@@ -1,4 +1,4 @@
-﻿import { ReadonlyCssNode } from "./CssTree";
+﻿import CssNode, { ReadonlyCssNode } from "./CssTree";
 import React from "react";
 import MappedTextFields, { ContainerProps } from "../controls/inputs/MappedTextFields";
 import TextField from "../controls/inputs/TextField";
@@ -6,9 +6,7 @@ import ReactDOM from "react-dom";
 import CssSuggestions from "./CssSuggestions";
 import CssEditorToolbar from "./CssEditorToolbar";
 
-export interface CssEditorProps {
-    autoCollapse?: boolean;
-    cssNode: ReadonlyCssNode;
+export interface CssUpdateProps {
     addSelector: (path: string[], name: string, selector: string) => void;
     updateName: (path: string[], value: string) => void;
     updateProperty: (path: string[], key: string, value: string) => void;
@@ -16,12 +14,64 @@ export interface CssEditorProps {
     updateSelector: (path: string[], selector: string) => void;
     deleteKey: (path: string[], key: string) => void;
     deleteNode: (path: string[]) => void;
+}
+
+export interface CssEditorProps extends CssUpdateProps {
+    autoCollapse?: boolean;
+    cssNode: ReadonlyCssNode;
     varSuggestions?: Array<string>;
 }
 
 export interface CssEditorState {
     highlight: boolean;
     isOpen: boolean;
+}
+
+/**
+ * Creates props for a CssEditor instance
+ * @param cssTreeRoot
+ */
+export function makeCssEditorProps(
+    cssTreeRoot: CssNode,
+    updateCallback: () => void
+): CssUpdateProps {
+    return {
+        addSelector: (path, name, selector) => {
+            cssTreeRoot.mustFindNode(path).add(
+                name, {}, selector);
+            updateCallback();
+        },
+
+        updateName: (path, value) => {
+            cssTreeRoot.mustFindNode(path).name = value;
+            updateCallback();
+        },
+
+        updateProperty: (path, key, value) => {
+            cssTreeRoot.setProperty(path, key, value);
+            updateCallback();
+        },
+
+        updateDescription: (path, value) => {
+            cssTreeRoot.mustFindNode(path).description = value;
+            updateCallback();
+        },
+
+        updateSelector: (path, value) => {
+            cssTreeRoot.mustFindNode(path).selector = value;
+            updateCallback();
+        },
+
+        deleteKey: (path, key) => {
+            cssTreeRoot.deleteProperty(path, key);
+            updateCallback();
+        },
+
+        deleteNode: (path) => {
+            cssTreeRoot.delete(path);
+            updateCallback();
+        }
+    };
 }
 
 export default class CssEditor extends React.Component<CssEditorProps, CssEditorState> {
@@ -34,11 +84,6 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         };
 
         this.mapContainer = this.mapContainer.bind(this);
-    }
-
-    /** A list of suggested CSS properties */
-    get cssProperties() {
-        return CssSuggestions.properties;
     }
 
     get description() {
@@ -154,6 +199,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     /** Render the set of CSS properties */
     renderProperties() {
         const cssProperties = this.props.cssNode.properties;
+        const cssSuggestions = CssSuggestions.properties;
         const genericValueSuggestions = this.props.varSuggestions || [];
 
         // 'initial', 'inherit', 'unset' apply to all CSS properties
@@ -165,9 +211,9 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
                 container={(props) => this.mapContainer(props)}
                 updateValue={this.props.updateProperty.bind(this, this.path)}
                 deleteKey={this.props.deleteKey.bind(this, this.path)}
-                keySuggestions={Array.from(this.cssProperties.keys())}
+                keySuggestions={Array.from(cssSuggestions.keys())}
                 genericValueSuggestions={genericValueSuggestions}
-                valueSuggestions={this.cssProperties}
+                valueSuggestions={cssSuggestions}
             />
         );
     }

@@ -1,9 +1,8 @@
 ﻿import React from "react";
 import { Button, Confirm } from "../controls/Buttons";
-import CssNode, { ReadonlyCssNode } from "./CssTree";
+import { ReadonlyCssNode } from "./CssTree";
 import Popover from "react-tiny-popover";
-import CssSelectorAdder from "./CssSelectorAdder";
-import { TrashIcon } from "../controls/InterfaceIcons";
+import { TrashIcon, AddIcon } from "../controls/InterfaceIcons";
 import ButtonGroup from "../controls/ButtonGroup";
 
 export interface CssEditorToolbarProps {
@@ -26,6 +25,7 @@ const pseudoElements = [
 
 export default function CssEditorToolbar(props: CssEditorToolbarProps) {
     let [pseudoMenuActive, setPseudoMenuActive] = React.useState(false);
+    const newSectionName = `${props.cssNode.name} Ruleset #${props.cssNode.children.length}`;
 
     // Don't show delete button for root nodes
     let deleteButton = (props.cssNode.isRoot) ?
@@ -51,7 +51,7 @@ export default function CssEditorToolbar(props: CssEditorToolbarProps) {
             })}
         </div>
     );
-    
+
     return (
         <ButtonGroup className="css-title-toolbar"
             onClick={(event: React.MouseEvent) => {
@@ -64,10 +64,9 @@ export default function CssEditorToolbar(props: CssEditorToolbarProps) {
                     setPseudoMenuActive(!pseudoMenuActive)
                 }>::</Button>
             </Popover>
-            <CssSelectorAdder
-                addSelector={(name, selector) => props.addSelector(name, selector)}
-                selector={props.cssNode.fullSelector}
-            />
+            <Button onClick={() => props.addSelector(newSectionName, "#some-id.some-class")}>
+                <AddIcon />
+            </Button>
             {deleteButton}
         </ButtonGroup>
     );

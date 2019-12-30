@@ -21,7 +21,7 @@ export interface CssEditorProps {
 
 export interface CssEditorState {
     editingDescription: boolean;
-    editingSelector: boolean;
+    editingName: boolean;
     highlight: boolean;
 }
 
@@ -31,7 +31,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
         this.state = {
             editingDescription: false,
-            editingSelector: false,
+            editingName: false,
             highlight: false
         };
 
@@ -41,6 +41,18 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     /** A list of suggested CSS properties */
     get cssProperties() {
         return CssSuggestions.properties;
+    }
+
+    get editButton() {
+        const icon = this.state.editingName ? <i className="icofont-ui-check" /> : 
+            <i className="icofont-ui-edit" />
+
+        return <button onClick={(event) => {
+            this.setState({ editingName: !this.state.editingName });
+            event.stopPropagation();
+        }}>
+            {icon}
+        </button>
     }
 
     get highlighter() {
@@ -71,7 +83,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
      */
     mapContainer(props: ContainerProps) {
         let selectorDisplay = <span onClick={(event) => event.stopPropagation()}><TextField
-            editBlocked={this.state.editingSelector}
+            editBlocked={this.state.editingName}
             value={this.props.root.selector || ""}
             displayValue={this.props.root.fullSelector}
             displayClassName="css-description"
@@ -171,6 +183,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
     renderDescription() {
         return <TextField
+            defaultText="No description provided"
             value={this.props.root.description || ""}
             displayClassName="css-description"
             onChange={(text) => {
@@ -181,9 +194,8 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
     render() {
         const trigger = <h2 className="css-title-heading">
-            <span className="css-title">
-                {this.props.root.name}
-            </span>
+            <span className="css-title">{this.props.root.name}</span>
+            {this.editButton}
             {this.highlighter}
             <CssEditorToolbar
                 root={this.props.root}

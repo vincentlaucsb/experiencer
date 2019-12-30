@@ -18,32 +18,25 @@ export function assuredCss() {
         ["margin-bottom", "var(--large-spacing)"],
         ["padding", "var(--edge-margin)"],
         ["padding-bottom", "var(--large-spacing)"],
-    ]);
-
-    header.add('Rich Text', {
+    ]).setProperties([["margin-right", "auto"]], 'Title Group'
+    ).add('Rich Text', {
         'text-align': 'right',
         'font-size': '10pt'
     }, '.rich-text');
 
-    header.add('Icon', {
+    /** Contact Information */
+    let contact = new CssNode("Contact Information", {
+        "grid-template-columns": "1fr 30px",
+        "grid-column-gap": "var(--small-spacing)",
+        "margin-left": "var(--spacing)",
+        "width": "auto",
+        "height": "auto",
+    }, '#contact, #social-media');
+    
+    contact.add('Icon', {
         'height': '24px',
         'vertical-align': 'middle'
     }, 'svg.icon, img.icon');
-
-    let contactLeft = new CssNode("#contact-left", {
-        "grid-template-columns": "1fr 30px",
-        "grid-column-gap": "var(--small-spacing)",
-        "width": "auto",
-        "height": "auto",
-        "margin-left": "auto"
-    });
-
-    let contactRight = new CssNode('#contact-right', {
-        "grid-template-columns": "1fr 30px",
-        "grid-column-gap": "var(--spacing)",
-        "width": "auto",
-        "height": "auto"
-    });
 
     /** Section */
     defaultCss.mustFindNode('Section').setProperties([
@@ -58,8 +51,7 @@ export function assuredCss() {
             ["color", "var(--accent)"]
         ], 'Title');
 
-    defaultCss.addNode(contactLeft);
-    defaultCss.addNode(contactRight);
+    defaultCss.addNode(contact);
     
     defaultCss.add('#main', {
         'padding-left': 'var(--edge-margin)',
@@ -94,9 +86,9 @@ export function assuredRootCss(): CssNode {
 }
 
 export function assuredNodes(): Array<BasicResumeNode> {
-    let contactLeft = {
+    let contact = {
         "type": "Grid",
-        "htmlId": "contact-left",
+        "htmlId": "contact",
         "children": [
             {
                 type: "Rich Text",
@@ -125,9 +117,9 @@ export function assuredNodes(): Array<BasicResumeNode> {
         ]
     }
 
-    let contactRight = {
+    let socialMedia = {
         "type": "Grid",
-        "htmlId": "contact-right",
+        "htmlId": "social-media",
         "children": [
             {
                 type: "Rich Text",
@@ -159,10 +151,7 @@ export function assuredNodes(): Array<BasicResumeNode> {
     let header = {
         "type": "Header",
         "value": "<p>Solid <strong>Programmer</strong></p>",
-        "children": [
-            contactLeft,
-            contactRight
-        ],
+        "children": [ contact, socialMedia ],
         "subtitle": "<p>Software Engineer</p>",
         "justifyContent": "flex-end",
         "distribution": "left-to-right"

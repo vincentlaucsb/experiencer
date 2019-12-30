@@ -50,7 +50,7 @@ export default class Icon extends ResumeNodeBase<IconProps> {
                 break;
         }
 
-        return <img className="icon" src={src} alt="Icon" style={{ height: "24px" }}
+        return <img className="icon" src={src} alt="Icon"
             {...this.selectTriggerProps}
         />
     }

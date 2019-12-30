@@ -85,7 +85,7 @@ export default class TextField extends React.Component<TextFieldProps, TextField
             </>
         }
 
-        let displayValue = props.displayValue || props.value || "";
+        let displayValue = props.displayValue || props.value || props.defaultText || "";
         if (displayValue.length > 0) {
             displayValue = props.displayProcessor ? props.displayProcessor(displayValue) : displayValue;
         }

@@ -7,6 +7,7 @@ import LinkedIn from "../icons/LI-In-Bug.png";
 import GitHubDark from "../icons/GitHub-Mark-120px-plus.png";
 import Phone from "../icons/feather/phone.svg";
 import { BasicResumeNode } from "./utility/NodeTree";
+import { selectTriggerProps } from "./Container";
 
 interface IconBase {
     icon?: 'email'
@@ -51,7 +52,7 @@ export default class Icon extends ResumeNodeBase<IconProps> {
         }
 
         return <img className="icon" src={src} alt="Icon"
-            {...this.selectTriggerProps}
+            {...selectTriggerProps(this.props)}
         />
     }
 }

@@ -69,27 +69,7 @@ export default class ResumeNodeBase<P
     get isSelectBlocked(): boolean {
         return this.props.isSelectBlocked(this.props.id);
     }
-
-    /** Returns hover/select trigger props */
-    get selectTriggerProps() {
-        return {
-            onClick: (event: React.MouseEvent) => {
-                // isSelectBlocked prevents us from selecting a parent
-                // node
-                if (!this.isSelected && !this.isSelectBlocked) {
-                    this.props.updateSelected(this.props.id);
-                    event.stopPropagation();
-                }
-            },
-            onMouseEnter: () => {
-                this.props.hoverOver(this.props.id);
-            },
-            onMouseLeave: () => {
-                this.props.hoverOut(this.props.id);
-            }
-        };
-    }
-
+    
     /** Returns props which make a text input responsive to clicks and keyboard 
      * events */
     get textFieldProps() {

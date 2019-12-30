@@ -1,5 +1,6 @@
 ﻿import ResumeNodeBase from "./ResumeNodeBase";
 import React from "react";
+import Container from "./Container";
 
 export default class Grid extends ResumeNodeBase {
     static readonly type = 'Grid';
@@ -26,9 +27,9 @@ export default class Grid extends ResumeNodeBase {
             This grid is empty. Click here to select it and add items.
             </span>  : <></>
 
-        return <div className={this.className} style={this.style} id={this.props.htmlId} {...this.selectTriggerProps}>
+        return <Container {...this.props} className={this.className} style={this.style}>
             {helperText}
             {this.props.children}
-        </div>
+        </Container>
     }
 }

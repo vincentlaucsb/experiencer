@@ -2,6 +2,7 @@
 import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import { ResumeNode, BasicResumeNode } from "./utility/NodeTree";
 import Column from "./Column";
+import Container from "./Container";
 
 interface RowBase {
     justifyContent?: string;
@@ -66,10 +67,9 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
 
     render() { 
         return (
-            <div className={this.className}
-                id={this.props.htmlId} style={this.style} {...this.selectTriggerProps}>
+            <Container {...this.props} className={this.className} style={this.style}>
                 {this.props.children}
-            </div>
+            </Container>
         );
     }
 }

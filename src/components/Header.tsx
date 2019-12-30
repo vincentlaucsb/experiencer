@@ -2,6 +2,7 @@
 import { RowProps, BasicRowProps } from "./Row";
 import ResumeNodeBase from "./ResumeNodeBase";
 import QuillEditor from "./controls/inputs/QuillEditor";
+import Container from "./Container";
 
 interface HeaderBase {
     distribution?: 'top-to-bottom' | 'left-to-right' | 'bottom-to-top' | 'right-to-left';
@@ -57,13 +58,15 @@ export default class Header extends ResumeNodeBase<HeaderProps> {
         }
         
         return (
-            <header className={this.className} id={this.props.htmlId} style={this.style} {...this.selectTriggerProps}>
+            <Container displayAs="header"
+                {...this.props}
+                className={this.className} style={this.style}>
                 <hgroup>
                     {value}
                     {subtitle}
                 </hgroup>
                 {this.props.children}
-            </header>
+            </Container>
         );
     }
 }

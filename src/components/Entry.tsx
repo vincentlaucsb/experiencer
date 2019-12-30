@@ -2,6 +2,7 @@
 import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import TextField from "./controls/inputs/TextField";
 import { BasicResumeNode } from "./utility/NodeTree";
+import Container from "./Container";
 
 interface EntryBase {
     title?: string[];
@@ -79,7 +80,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
     render() {
         /** hgroup onclick stops event from bubbling up to resume */
         return (
-            <div className={this.className} {...this.selectTriggerProps}>
+            <Container {...this.props} className={this.className}>
                 <hgroup onClick={(event) => {
                     if (this.isEditing) {
                         event.stopPropagation();
@@ -90,7 +91,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
                 </hgroup>
 
                 {this.props.children}
-            </div>
+            </Container>
         );
     }
 }

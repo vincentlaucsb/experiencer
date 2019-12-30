@@ -1,5 +1,6 @@
 ﻿import ResumeNodeBase from "./ResumeNodeBase";
 import React from "react";
+import Container from "./Container";
 
 export default class Column extends ResumeNodeBase {
     static readonly type = 'Column';
@@ -43,10 +44,11 @@ export default class Column extends ResumeNodeBase {
             helperText = <span>Column {this.position}: Click to select and add content</span>
         }
 
-        return <div {...this.selectTriggerProps} className={this.className} style={this.style}
-            id={this.props.htmlId}>
+        return <Container {...this.props}
+            className={this.className}
+            style={this.style}>
             {this.props.children}
             {helperText}
-        </div>
+        </Container>
     }
 }

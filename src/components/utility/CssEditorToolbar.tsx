@@ -28,7 +28,7 @@ export default function CssEditorToolbar(props: CssEditorToolbarProps) {
     let [pseudoMenuActive, setPseudoMenuActive] = React.useState(false);
 
     // Don't show delete button for root nodes
-    let deleteButton = (props.root !== props.root.treeRoot) ?
+    let deleteButton = (props.root === props.root.treeRoot) ?
         <></> : (
             <Confirm onConfirm={() => props.deleteNode()}>
                 <TrashIcon />

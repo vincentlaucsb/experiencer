@@ -582,6 +582,14 @@ class Resume extends React.Component<{}, ResumeState> {
                 onUpdate();
             },
 
+            updateSelector: (path, value) => {
+                const target = cssNode.findNode(path);
+                if (target) {
+                    target.selector = value;
+                }
+                onUpdate();
+            },
+
             deleteKey: (path, key) => {
                 cssNode.deleteProperty(path, key);
                 onUpdate();
@@ -616,14 +624,19 @@ class Resume extends React.Component<{}, ResumeState> {
             let specificCssEditor = <></>
             if (this.selectedNode.htmlId && this.state.css.findNode([`#${this.selectedNode.htmlId}`])) {
                 const specificRoot = this.state.css.findNode([`#${this.selectedNode.htmlId}`]) as CssNode;
-                specificCssEditor = <CssEditor key={specificRoot.fullSelector} root={specificRoot}
+                specificCssEditor = <CssEditor
+                    key={specificRoot.fullSelector}
+                    root={specificRoot}
                     {...this.makeCssEditorProps(this.css)} />
             }
 
             if (rootNode) {
                 return <>
                     {specificCssEditor}
-                    <CssEditor {...this.makeCssEditorProps(this.css)} key={rootNode.fullSelector} root={rootNode} />
+                    <CssEditor
+                        {...this.makeCssEditorProps(this.css)}
+                        key={rootNode.fullSelector}
+                        root={rootNode} />
                 </>
             }
 
@@ -631,8 +644,10 @@ class Resume extends React.Component<{}, ResumeState> {
         }
                 
         return <>
-            <CssEditor root={this.state.rootCss} autoCollapse={true} {...this.makeCssEditorProps(this.rootCss)} />
-            <CssEditor root={this.state.css}
+            <CssEditor
+                root={this.state.rootCss} autoCollapse={true} {...this.makeCssEditorProps(this.rootCss)} />
+            <CssEditor
+                root={this.state.css}
                 autoCollapse={true}
                 varSuggestions={this.makeCssEditorVarSuggestions()}
                 {...this.makeCssEditorProps(this.css)} />

@@ -5,6 +5,7 @@ interface TextFieldProps {
     label?: string;
     defaultText?: string;
     displayClassName?: string;
+    displayValue?: string;
     editBlocked?: boolean;
 
     /** A callback which modifies the display text */
@@ -84,9 +85,9 @@ export default class TextField extends React.Component<TextFieldProps, TextField
             </>
         }
 
-        let displayValue = props.value;
-        if (props.value && props.value.length > 0) {
-            displayValue = props.displayProcessor ? props.displayProcessor(props.value) : props.value;
+        let displayValue = props.displayValue || props.value || "";
+        if (displayValue.length > 0) {
+            displayValue = props.displayProcessor ? props.displayProcessor(displayValue) : displayValue;
         }
         else {
             displayValue = "Enter a value";

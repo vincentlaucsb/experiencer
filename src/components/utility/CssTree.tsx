@@ -51,6 +51,10 @@ export default class CssNode {
         return this._selector;
     }
 
+    set selector(newSelector: string) {
+        this._selector = newSelector;
+    }
+
     /** Get the root of the tree */
     get treeRoot() {
         let parent = this.parent;

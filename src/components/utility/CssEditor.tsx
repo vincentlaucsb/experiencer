@@ -13,6 +13,7 @@ export interface CssEditorProps {
     addSelector: (path: string[], name: string, selector: string) => void;
     updateData: (path: string[], key: string, value: string) => void;
     updateDescription: (path: string[], data: string) => void;
+    updateSelector: (path: string[], selector: string) => void;
     deleteKey: (path: string[], key: string) => void;
     deleteNode: (path: string[]) => void;
     varSuggestions?: Array<string>;
@@ -20,6 +21,7 @@ export interface CssEditorProps {
 
 export interface CssEditorState {
     editingDescription: boolean;
+    editingSelector: boolean;
     highlight: boolean;
 }
 
@@ -29,6 +31,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
         this.state = {
             editingDescription: false,
+            editingSelector: false,
             highlight: false
         };
 
@@ -66,10 +69,18 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
      * Contains the rows of a CSS ruleset
      * @param props
      */
-    mapContainer(selector: string, props: ContainerProps) {
+    mapContainer(props: ContainerProps) {
+        let selectorDisplay = <span onClick={(event) => event.stopPropagation()}><TextField
+            editBlocked={this.state.editingSelector}
+            value={this.props.root.selector || ""}
+            displayValue={this.props.root.fullSelector}
+            displayClassName="css-description"
+            onChange={(text) => this.props.updateSelector(this.path, text) }
+        /></span>
+
         return (
             <div className="css-ruleset" onClick={props.onClick}>
-                {selector} {"{"}
+                {selectorDisplay} {"{"}
                 <table className="css-ruleset-table">
                     <tbody>
                         {props.children}
@@ -132,7 +143,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         
         return (
             <MappedTextFields value={cssProperties}
-                container={(props) => this.mapContainer(this.props.root.fullSelector, props)}
+                container={(props) => this.mapContainer(props)}
                 updateValue={this.props.updateData.bind(this, this.path)}
                 deleteKey={this.props.deleteKey.bind(this, this.path)}
                 keySuggestions={Array.from(this.cssProperties.keys())}
@@ -151,6 +162,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
                 addSelector={this.props.addSelector}
                 updateData={this.props.updateData}
                 updateDescription={this.props.updateDescription}
+                updateSelector={this.props.updateSelector}
                 deleteKey={this.props.deleteKey}
                 deleteNode={this.props.deleteNode}
                 />

@@ -1,5 +1,4 @@
-﻿import { BasicResumeNode } from "../utility/NodeTree";
-import Grid from "../Grid";
+﻿import Grid from "../Grid";
 import Row from "../Row";
 import Column from "../Column";
 import Section from "../Section";
@@ -8,6 +7,7 @@ import RichText from "../RichText";
 import DescriptionList, { DescriptionListItem } from "../List";
 import Icon from "../Icon";
 import Header from "../Header";
+import { BasicResumeNode } from "../utility/Types";
 
 export interface NodeInformation {
     text: string;

@@ -1,9 +1,8 @@
-﻿import { ResumeNode } from "./NodeTree";
-import Entry, { BasicEntryProps } from "../Entry";
+﻿import Entry, { BasicEntryProps } from "../Entry";
 import React from "react";
 import Section from "../Section";
-import { IdType } from "./HoverTracker";
 import { arraysEqual } from "../Helpers";
+import { IdType, ResumeNode } from "./Types";
 
 export interface NodeTreeVisualizerProps {
     childNodes: Array<ResumeNode>;

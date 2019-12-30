@@ -1,14 +1,11 @@
 ﻿import React from "react";
 import { Button } from "./Buttons";
-import { Action, AddChild, NodeProperty } from "../ResumeNodeBase";
-import { IdType } from "../utility/HoverTracker";
 import PureMenu, { PureDropdown, PureMenuItem } from "./menus/PureMenu";
 import ResumeHotKeys from "./ResumeHotkeys";
 import { SelectedNodeActions } from "./SelectedNodeActions";
 import DescriptionList, { DescriptionListItem } from "../List";
 import HtmlIdAdder from "./HtmlIdAdder";
 import { assignIds } from "../Helpers";
-import { ResumeNode } from "../utility/NodeTree";
 import ComponentTypes, { NodeInformation } from "../schema/ComponentTypes";
 import toolbarOptions, { CustomToolbarOptions } from "../schema/ToolbarOptions";
 import Column from "../Column";
@@ -18,6 +15,8 @@ import Section from "../Section";
 import IconicMenuItem from "./menus/MenuItem";
 import { TrashIcon, ClipboardIcon, AddIcon } from "./InterfaceIcons";
 import EditingSection, { EditingSectionProps } from "./toolbar/EditingSection";
+import { Action, IdType, NodeProperty, ResumeNode } from "../utility/Types";
+import { AddChild } from "../ResumeNodeProps";
 
 type AddOptions = Array<NodeInformation>;
 

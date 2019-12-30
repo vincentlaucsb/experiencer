@@ -1,9 +1,9 @@
 ﻿import * as React from "react";
-import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import TextField from "./controls/inputs/TextField";
-import { BasicResumeNode } from "./utility/NodeTree";
 import Container from "./Container";
 import { process } from "./Helpers";
+import ResumeNodeProps from "./ResumeNodeProps";
+import { BasicResumeNode } from "./utility/Types";
 
 interface EntryBase {
     title?: string[];
@@ -16,7 +16,7 @@ interface EntryBase {
 export interface BasicEntryProps extends BasicResumeNode, EntryBase { };
 export interface EntryProps extends ResumeNodeProps, EntryBase { };
 
-export default class Entry extends ResumeNodeBase<EntryProps> {
+export default class Entry extends React.PureComponent<EntryProps> {
     static readonly type = 'Entry';
 
     /**

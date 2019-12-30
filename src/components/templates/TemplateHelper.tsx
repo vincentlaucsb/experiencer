@@ -1,5 +1,5 @@
 ﻿import RichText from "../RichText";
-import { BasicResumeNode } from "../utility/NodeTree";
+import { BasicResumeNode } from "../utility/Types";
 
 /**
     * Construct a bulleted list

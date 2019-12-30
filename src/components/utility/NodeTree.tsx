@@ -1,27 +1,5 @@
-﻿import { IdType } from "./HoverTracker";
-import { assignIds, deleteAt, moveUp, moveDown, deepCopy } from "../Helpers";
-
-/** The properties a node can be expected to have
- *  in a JSON representation
- *  
- *  This is a non-exclusive list... there may be others
- * */
-export interface BasicResumeNode {
-    childNodes?: Array<BasicResumeNode>;
-    classNames?: string;
-    htmlId?: string;
-    value?: string;
-
-    // TODO: Change to 'Row' | 'Column' | etc. ?
-    type: string;
-}
-
-export interface ResumeNode extends BasicResumeNode {
-    childNodes?: Array<ResumeNode>;
-
-    // UUIDs are assigned by the app and need not be saved
-    uuid: string;
-}
+﻿import { assignIds, deleteAt, moveUp, moveDown, deepCopy } from "../Helpers";
+import { IdType, ResumeNode } from "./Types";
 
 export default class ResumeNodeTree implements ResumeNode {
     childNodes = new Array<ResumeNode>();

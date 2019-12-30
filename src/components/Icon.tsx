@@ -1,13 +1,13 @@
-﻿import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
-import React from "react";
+﻿import React from "react";
 import MapPin from "../icons/feather/map-pin.svg";
 import Globe from "../icons/feather/globe.svg";
 import Email from "../icons/feather/mail.svg";
 import LinkedIn from "../icons/LI-In-Bug.png";
 import GitHubDark from "../icons/GitHub-Mark-120px-plus.png";
 import Phone from "../icons/feather/phone.svg";
-import { BasicResumeNode } from "./utility/NodeTree";
 import { selectTriggerProps } from "./Container";
+import ResumeNodeProps from "./ResumeNodeProps";
+import { BasicResumeNode } from "./utility/Types";
 
 interface IconBase {
     icon?: 'email'
@@ -21,7 +21,7 @@ interface IconBase {
 export interface BasicIconProps extends IconBase, BasicResumeNode {}
 export interface IconProps extends IconBase, ResumeNodeProps {}
 
-export default class Icon extends ResumeNodeBase<IconProps> {
+export default class Icon extends React.PureComponent<IconProps> {
     static readonly type = 'Icon';
 
     render() {

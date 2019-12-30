@@ -1,9 +1,9 @@
-﻿import ResumeNodeBase from "./ResumeNodeBase";
-import React from "react";
+﻿import React from "react";
 import Container from "./Container";
 import { isEmpty } from "./Helpers";
+import ResumeNodeProps from "./ResumeNodeProps";
 
-export default class Grid extends ResumeNodeBase {
+export default class Grid extends React.PureComponent<ResumeNodeProps> {
     static readonly type = 'Grid';
 
     get style() : React.CSSProperties {

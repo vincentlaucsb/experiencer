@@ -1,10 +1,10 @@
 import React from "react";
 import HotkeysHelp from "./HotkeysHelp";
 import HelpPage from "./HelpPage";
-import { Action } from "../ResumeNodeBase";
 import SavingHelp from "./SavingHelp";
 import StartHelp from "./StartHelp";
 import PureMenu, { PureMenuItem, PureMenuLink } from "../controls/menus/PureMenu";
+import { Action } from "../utility/Types";
 
 interface HelpProps {
     close: Action;

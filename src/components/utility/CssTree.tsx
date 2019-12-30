@@ -1,14 +1,6 @@
 ﻿import { isNullOrUndefined } from "util";
 import { deleteAt } from "../Helpers";
-
-/** Return a JSON serializable format of a CssNode and its descendents */
-export interface CssNodeDump {
-    children: Array<CssNodeDump>;
-    root?: CssNodeDump;
-    name: string;
-    selector: string;
-    properties: Array<[string, string]>;
-}
+import { CssNodeDump } from "./Types";
 
 export default class CssNode {
     /** A mapping of keys to CSS properties */

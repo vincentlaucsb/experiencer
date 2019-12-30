@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import { Action } from "../ResumeNodeBase";
+import { Action } from "../utility/Types";
 
 interface FileLoaderProps {
     close: Action;

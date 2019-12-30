@@ -1,7 +1,7 @@
 ﻿import React from "react";
-import { IdType } from "../utility/HoverTracker";
 import { ContextMenu, MenuItem } from "react-contextmenu";
-import ResumeNodeTree, { ResumeNode } from "../utility/NodeTree";
+import ResumeNodeTree from "../utility/NodeTree";
+import { IdType, ResumeNode } from "../utility/Types";
 
 export interface ResumeContextProps {
     currentId?: IdType;

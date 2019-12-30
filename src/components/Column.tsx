@@ -1,9 +1,9 @@
-﻿import ResumeNodeBase from "./ResumeNodeBase";
-import React from "react";
+﻿import React from "react";
 import Container from "./Container";
 import { isEmpty } from "./Helpers";
+import ResumeNodeProps from "./ResumeNodeProps";
 
-export default class Column extends ResumeNodeBase {
+export default class Column extends React.PureComponent<ResumeNodeProps> {
     static readonly type = 'Column';
 
     /** Get the index of this column */

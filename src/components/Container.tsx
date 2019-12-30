@@ -1,5 +1,5 @@
 ﻿import React from "react";
-import { IdType } from "./utility/HoverTracker";
+import { IdType } from "./utility/Types";
 
 interface SelectTriggerProps {
     id: IdType;

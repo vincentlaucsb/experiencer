@@ -1,7 +1,7 @@
 ﻿import { assignIds } from "../Helpers";
 import { randyMarshCss, randyMarsh, randyMarshRootCss } from "./RandyMarsh";
-import { ResumeSaveData } from "../controls/ResumeState";
 import { assuredNodes, assuredCss, assuredRootCss } from "./Assured";
+import { ResumeSaveData } from "../utility/Types";
 
 export default class ResumeTemplateProvider {
     static templates = {

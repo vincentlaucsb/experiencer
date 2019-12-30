@@ -1,9 +1,8 @@
 ﻿import Entry, { BasicEntryProps } from "../Entry";
-import { ResumeNode } from "../utility/NodeTree";
 import Row, { BasicRowProps } from "../Row";
-import { Action } from "../ResumeNodeBase";
 import Header from "../Header";
 import Icon from "../Icon";
+import { Action, ResumeNode } from "../utility/Types";
 
 export interface ToolbarOption {
     text: string;

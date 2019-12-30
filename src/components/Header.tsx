@@ -1,6 +1,5 @@
 ﻿import * as React from "react";
 import { RowProps, BasicRowProps } from "./Row";
-import ResumeNodeBase from "./ResumeNodeBase";
 import QuillEditor from "./controls/inputs/QuillEditor";
 import Container from "./Container";
 
@@ -13,7 +12,7 @@ interface HeaderBase {
 export interface BasicHeaderProps extends BasicRowProps, HeaderBase { };
 export interface HeaderProps extends RowProps, HeaderBase { };
 
-export default class Header extends ResumeNodeBase<HeaderProps> {
+export default class Header extends React.PureComponent<HeaderProps> {
     static readonly type: string = 'Header';
 
     get style(): React.CSSProperties {

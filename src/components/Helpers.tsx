@@ -1,6 +1,6 @@
 ﻿import uuid from 'uuid/v4';
-import { ResumeNode, BasicResumeNode } from './utility/NodeTree';
 import { isNullOrUndefined } from 'util';
+import { BasicResumeNode, ResumeNode } from './utility/Types';
 
 /**
  * Return a copy of an array with the i-th element removed

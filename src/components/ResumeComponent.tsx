@@ -5,12 +5,12 @@ import Entry from "./Entry";
 import DescriptionList, { DescriptionListItem } from "./List";
 import RichText from "./RichText";
 import Header from "./Header";
-import { ResumeNodeProps, ResumePassProps, NodeProperty } from "./ResumeNodeBase";
-import { IdType } from "./utility/HoverTracker";
+import ResumeNodeProps, { ResumePassProps } from "./ResumeNodeProps";
 import Row from "./Row";
 import Column from "./Column";
 import Grid from "./Grid";
 import Icon from "./Icon";
+import { IdType, NodeProperty } from "./utility/Types";
 
 export type EditorMode = 'normal'
     | 'landing'

@@ -1,8 +1,8 @@
 ﻿import * as React from "react";
-import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
-import { ResumeNode, BasicResumeNode } from "./utility/NodeTree";
 import Column from "./Column";
 import Container from "./Container";
+import ResumeNodeProps from "./ResumeNodeProps";
+import { BasicResumeNode, ResumeNode } from "./utility/Types";
 
 interface RowBase {
     justifyContent?: string;
@@ -12,7 +12,7 @@ interface RowBase {
 export interface BasicRowProps extends BasicResumeNode, RowBase { }
 export interface RowProps extends ResumeNodeProps, RowBase {}
 
-export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> {
+export default class Row extends React.PureComponent<RowProps> {
     static readonly type: string = 'Row';
 
     /** Returns true if ALL columns are empty */

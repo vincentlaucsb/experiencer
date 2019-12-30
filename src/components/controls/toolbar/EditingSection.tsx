@@ -1,8 +1,8 @@
 ﻿import { Button } from "../Buttons";
 import React from "react";
 import PureMenu from "../menus/PureMenu";
-import { Action } from "src/components/ResumeNodeBase";
 import { UndoIcon, RedoIcon, SaveIcon } from "../InterfaceIcons";
+import { Action } from "src/components/utility/Types";
 
 export interface EditingSectionProps {
     undo: Action;

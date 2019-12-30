@@ -1,4 +1,4 @@
-﻿import { Action } from "../ResumeNodeBase";
+﻿import { Action } from "../utility/Types";
 
 /** Things you can do with a selected node */
 export interface SelectedNodeActions {

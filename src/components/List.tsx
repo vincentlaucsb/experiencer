@@ -1,14 +1,14 @@
 ﻿import * as React from "react";
 import TextField from "./controls/inputs/TextField";
-import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import Container from "./Container";
 import { process } from "./Helpers";
+import ResumeNodeProps from "./ResumeNodeProps";
 
 interface DescriptionItemProps extends ResumeNodeProps {
     term?: string;
 }
 
-export class DescriptionListItem extends ResumeNodeBase<DescriptionItemProps> {
+export class DescriptionListItem extends React.PureComponent<DescriptionItemProps> {
     static readonly type = 'Description List Item';
     
     render() {
@@ -35,7 +35,7 @@ export class DescriptionListItem extends ResumeNodeBase<DescriptionItemProps> {
     }
 }
 
-export default class DescriptionList extends ResumeNodeBase {
+export default class DescriptionList extends React.PureComponent<ResumeNodeProps> {
     static readonly type = 'Description List';
 
     render() {

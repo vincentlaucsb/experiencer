@@ -1,10 +1,10 @@
-﻿import { BasicResumeNode } from "../utility/NodeTree";
-import { BasicHeaderProps } from "../Header";
+﻿import { BasicHeaderProps } from "../Header";
 import { BasicEntryProps } from "../Entry";
 import { makeList } from "./TemplateHelper";
 import { BasicIconProps } from "../Icon";
 import getDefaultCss, { getRootCss } from "./CssTemplates";
 import CssNode from "../utility/CssTree";
+import { BasicResumeNode } from "../utility/Types";
 
 export function assuredCss() {
     let defaultCss = getDefaultCss().setProperties([

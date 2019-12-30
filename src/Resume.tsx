@@ -9,17 +9,16 @@ import './fonts/icofont.min.css';
 
 import ResumeComponent, { EditorMode } from './components/ResumeComponent';
 import { assignIds, deepCopy, arraysEqual } from './components/Helpers';
-import { Action, NodeProperty } from './components/ResumeNodeBase';
 import ResumeTemplateProvider from './components/templates/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
 import Landing from './components/help/Landing';
 import TopNavBar from './components/controls/TopNavBar';
 import ResumeHotKeys from './components/controls/ResumeHotkeys';
 import Help from './components/help/Help';
-import HoverTracker, { IdType } from './components/utility/HoverTracker';
+import HoverTracker from './components/utility/HoverTracker';
 import TopEditingBar, { EditingBarProps } from './components/controls/TopEditingBar';
-import ResumeNodeTree, { ResumeNode, BasicResumeNode } from './components/utility/NodeTree';
-import CssNode, { ReadonlyCssNode, CssNodeDump } from './components/utility/CssTree';
+import ResumeNodeTree from './components/utility/NodeTree';
+import CssNode, { ReadonlyCssNode } from './components/utility/CssTree';
 import PureMenu, { PureMenuLink, PureMenuItem } from './components/controls/menus/PureMenu';
 import { Button } from './components/controls/Buttons';
 import { RenderIf } from './components/controls/HelperComponents';
@@ -30,12 +29,7 @@ import Tabs from './components/controls/Tabs';
 import ResumeContextMenu from './components/controls/ResumeContextMenu';
 import generateHtml from './components/utility/GenerateHtml';
 import ComponentTypes from './components/schema/ComponentTypes';
-
-export interface ResumeSaveData {
-    builtinCss: CssNodeDump;
-    rootCss: CssNodeDump;
-    childNodes: Array<ResumeNode>;
-}
+import { Action, IdType, NodeProperty, ResumeSaveData, ResumeNode, BasicResumeNode } from './components/utility/Types';
 
 export interface ResumeState {
     css: CssNode;

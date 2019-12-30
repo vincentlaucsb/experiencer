@@ -1,4 +1,4 @@
-﻿export type IdType = Array<number>;
+﻿import { IdType } from "./Types";
 
 /** Helper class for keeping track of elements we are hovering over
  *  and which are selectable

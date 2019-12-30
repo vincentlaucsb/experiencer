@@ -5,12 +5,12 @@ import Entry from "./Entry";
 import DescriptionList, { DescriptionListItem } from "./List";
 import RichText from "./RichText";
 import Header from "./Header";
-import ResumeNodeProps, { ResumePassProps } from "./ResumeNodeProps";
+import ResumeNodeProps, { ResumePassProps, SelectedNodeManagement } from "./ResumeNodeProps";
 import Row from "./Row";
 import Column from "./Column";
 import Grid from "./Grid";
 import Icon from "./Icon";
-import { IdType, NodeProperty } from "./utility/Types";
+import { IdType, NodeProperty, ResumeNode } from "./utility/Types";
 
 export type EditorMode = 'normal'
     | 'landing'
@@ -18,12 +18,13 @@ export type EditorMode = 'normal'
     | 'changingTemplate'
     | 'printing';
 
-interface ResumeComponentProps extends ResumePassProps {
+interface ResumeComponentProps extends ResumeNode {
     index: number;       // The n-th index of this node relative to its parent
     resumeIsEditing: boolean;
     numSiblings: number; // Number of siblings this node has
     parentId?: IdType;   // The id of the parent node
-    updateResumeData: (id: IdType, key: string, data: NodeProperty) => void;
+    updateResumeData: (id: IdType, key: string, data: NodeProperty) => void,
+    selectedNodeManagement: SelectedNodeManagement
 }
 
 /**
@@ -32,11 +33,13 @@ interface ResumeComponentProps extends ResumePassProps {
 export default function ResumeComponent(props: ResumeComponentProps) {
     const parentId = props.parentId;
     const index = props.index;
-    const isSelected = props.selectedUuid === props.uuid;
+    const isSelected = props.selectedNodeManagement.selectedUuid ===
+        props.uuid;
     const nodeId = parentId ? [...parentId, index] : [index];
 
     let newProps = {
         ...props,
+        ...props.selectedNodeManagement,
 
         // Compute properties
         updateData: (key, data) => props.updateResumeData(nodeId, key, data),
@@ -92,13 +95,9 @@ export default function ResumeComponent(props: ResumeComponentProps) {
                 const childProps = {
                     ...elem,
                     resumeIsEditing: props.resumeIsEditing,
-                    isSelected: props.selectedUuid === elem.uuid,
-                    isSelectBlocked: props.isSelectBlocked,
-                    hoverOver: props.hoverOver,
-                    hoverOut: props.hoverOut,
-                    updateSelected: props.updateSelected,
+                    selectedNodeManagement: props.selectedNodeManagement,
+                    isSelected: props.selectedNodeManagement.selectedUuid === elem.uuid,
                     updateResumeData: props.updateResumeData,
-                    selectedUuid: props.selectedUuid,
 
                     index: idx,
                     numSiblings: arr.length,

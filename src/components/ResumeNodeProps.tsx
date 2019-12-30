@@ -3,10 +3,9 @@
 export type ModifyChild = (id: IdType) => void;
 export type AddChild = ((id: IdType, node: ResumeNode) => void);
 
-/** Represents resume prop properties and methods passed
- *  from the top down
- * */
-export interface ResumePassProps extends ResumeNode {
+/** Methods and properties used by the top level component
+ *  for managing selection */
+export interface SelectedNodeManagement {
     hoverOver: (id: IdType) => void;
     hoverOut: (id: IdType) => void;
     isSelectBlocked: (id: IdType) => boolean;
@@ -15,7 +14,7 @@ export interface ResumePassProps extends ResumeNode {
 }
 
 /** Actual props which go into a resume component */
-export default interface ResumeNodeProps extends ResumePassProps {
+export default interface ResumeNodeProps extends ResumeNode, SelectedNodeManagement {
     id: IdType;   // Hierarchical ID based on the node's position in the resume; subject to change
     isEditing: boolean;
     isLast: boolean;

@@ -86,8 +86,8 @@ class Resume extends React.Component<{}, ResumeState> {
         this.redoChange = this.redoChange.bind(this);
         this.addCssClasses = this.addCssClasses.bind(this);
         this.addHtmlId = this.addHtmlId.bind(this);
-        this.addNestedChild = this.addNestedChild.bind(this);
-        this.updateNestedChild = this.updateNestedChild.bind(this);
+        this.addChild = this.addChild.bind(this);
+        this.updataData = this.updataData.bind(this);
 
         /** Templates and Styling **/
         this.renderSidebar = this.renderSidebar.bind(this);
@@ -153,9 +153,7 @@ class Resume extends React.Component<{}, ResumeState> {
             // Update the selected node
             updateSelected: (id?: IdType) => {
                 this.setState({ selectedNode: id });
-            },
-
-            unselect: this.unselect
+            }
         }
     }
 
@@ -300,19 +298,11 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     /**
-     * Add an immediate child
-     * @param node Node to be added
-     */
-    addChild<T extends BasicResumeNode>(node: T) {
-        this.updateNodes((nodes) => nodes.addChild(assignIds(node)));
-    }
-
-    /**
      * Add node as a child to the node identified by id
      * @param id   Hierarchical id pointing to some node
      * @param node Node to be added
      */
-    addNestedChild(id: IdType, node: ResumeNode) {
+    addChild(id: IdType, node: ResumeNode) {
         this.updateNodes((nodes) => nodes.addNestedChild(id, node));
     }
 
@@ -328,7 +318,7 @@ class Resume extends React.Component<{}, ResumeState> {
         }
     }
 
-    updateNestedChild(id: IdType, key: string, data: any) {
+    updataData(id: IdType, key: string, data: any) {
         this.updateNodes((nodes) => nodes.updateChild(id, key, data));
     }
 
@@ -397,7 +387,7 @@ class Resume extends React.Component<{}, ResumeState> {
         }
 
         // UUIDs will be added in the method below
-        this.addNestedChild(target, deepCopy(this.state.clipboard));
+        this.addChild(target, deepCopy(this.state.clipboard));
     }
     //#endregion
     
@@ -506,7 +496,7 @@ class Resume extends React.Component<{}, ResumeState> {
             addHtmlId: this.addHtmlId,
             addCssClasses: this.addCssClasses,
             updateNode: this.updateSelected,
-            addChild: this.addNestedChild,
+            addChild: this.addChild,
             moveUpEnabled: this.moveSelectedUpEnabled,
             moveDownEnabled: this.moveSelectedDownEnabled,
             unsavedChanges: this.state.unsavedChanges,
@@ -643,8 +633,8 @@ class Resume extends React.Component<{}, ResumeState> {
                         const props = {
                             ...elem,
                             mode: this.state.mode,
-                            updateResumeData: this.updateNestedChild,
-                            ...this.hoverProps,
+                            updateResumeData: this.updataData,
+                            selectedNodeManagement: this.hoverProps,
 
                             resumeIsEditing: this.state.isEditingSelected,
                             index: idx,

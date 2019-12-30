@@ -2,8 +2,7 @@
 import TextField from "./controls/inputs/TextField";
 import Container from "./Container";
 import { process } from "./Helpers";
-import ResumeNodeProps from "./ResumeNodeProps";
-import { BasicResumeNode } from "./utility/Types";
+import ResumeComponentProps, { BasicResumeNode } from "./utility/Types";
 
 interface EntryBase {
     title?: string[];
@@ -14,7 +13,7 @@ interface EntryBase {
 }
 
 export interface BasicEntryProps extends BasicResumeNode, EntryBase { };
-export interface EntryProps extends ResumeNodeProps, EntryBase { };
+export interface EntryProps extends ResumeComponentProps, EntryBase { };
 
 export default class Entry extends React.PureComponent<EntryProps> {
     static readonly type = 'Entry';

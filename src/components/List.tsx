@@ -2,9 +2,9 @@
 import TextField from "./controls/inputs/TextField";
 import Container from "./Container";
 import { process } from "./Helpers";
-import ResumeNodeProps from "./ResumeNodeProps";
+import ResumeComponentProps from "./utility/Types";
 
-interface DescriptionItemProps extends ResumeNodeProps {
+interface DescriptionItemProps extends ResumeComponentProps {
     term?: string;
 }
 
@@ -35,7 +35,7 @@ export class DescriptionListItem extends React.PureComponent<DescriptionItemProp
     }
 }
 
-export default class DescriptionList extends React.PureComponent<ResumeNodeProps> {
+export default class DescriptionList extends React.PureComponent<ResumeComponentProps> {
     static readonly type = 'Description List';
 
     render() {

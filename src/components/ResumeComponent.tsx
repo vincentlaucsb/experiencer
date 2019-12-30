@@ -5,20 +5,13 @@ import Entry from "./Entry";
 import DescriptionList, { DescriptionListItem } from "./List";
 import RichText from "./RichText";
 import Header from "./Header";
-import ResumeNodeProps, { ResumePassProps, SelectedNodeManagement } from "./ResumeNodeProps";
 import Row from "./Row";
 import Column from "./Column";
 import Grid from "./Grid";
 import Icon from "./Icon";
-import { IdType, NodeProperty, ResumeNode } from "./utility/Types";
+import ResumeComponentProps, { IdType, NodeProperty, ResumeNode, SelectedNodeManagement } from "./utility/Types";
 
-export type EditorMode = 'normal'
-    | 'landing'
-    | 'help'
-    | 'changingTemplate'
-    | 'printing';
-
-interface ResumeComponentProps extends ResumeNode {
+interface FactoryProps extends ResumeNode {
     index: number;       // The n-th index of this node relative to its parent
     resumeIsEditing: boolean;
     numSiblings: number; // Number of siblings this node has
@@ -30,7 +23,7 @@ interface ResumeComponentProps extends ResumeNode {
 /**
  * Factory for loading a resume node from a JavaScript object
  */
-export default function ResumeComponent(props: ResumeComponentProps) {
+export default function ResumeComponentFactory(props: FactoryProps) {
     const parentId = props.parentId;
     const index = props.index;
     const isSelected = props.selectedNodeManagement.selectedUuid ===
@@ -49,7 +42,7 @@ export default function ResumeComponent(props: ResumeComponentProps) {
         // Generate unique IDs for component
         id: nodeId,
         isLast: index === props.numSiblings - 1
-    } as ResumeNodeProps;
+    } as ResumeComponentProps;
 
     let Container: typeof React.Component;
     switch (props.type) {
@@ -106,7 +99,7 @@ export default function ResumeComponent(props: ResumeComponentProps) {
                     parentId: newProps.id
                 };
 
-                return <ResumeComponent key={uniqueId} {...childProps} />
+                return <ResumeComponentFactory key={uniqueId} {...childProps} />
             })
         }
 

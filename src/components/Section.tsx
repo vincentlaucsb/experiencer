@@ -2,10 +2,10 @@
 import TextField from "./controls/inputs/TextField";
 import Container from "./Container";
 import { process, isEmpty } from "./Helpers";
-import ResumeNodeProps from "./ResumeNodeProps";
+import ResumeComponentProps from "./utility/Types";
 
 /** Represents a section in a resume */
-export default class Section extends React.PureComponent<ResumeNodeProps> {
+export default class Section extends React.PureComponent<ResumeComponentProps> {
     static readonly type = 'Section';
     
     render() {

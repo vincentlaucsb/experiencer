@@ -1,15 +1,9 @@
 ﻿import React from "react";
-import { IdType } from "./utility/Types";
+import { IdType, SelectedNodeManagement } from "./utility/Types";
 
-interface SelectTriggerProps {
+interface SelectTriggerProps extends SelectedNodeManagement {
     id: IdType;
     uuid: string;
-    selectedUuid?: string;
-
-    hoverOver: (id: IdType) => void;
-    hoverOut: (id: IdType) => void;
-    isSelectBlocked: (id: IdType) => boolean;
-    updateSelected: (id: IdType) => void;
 }
 
 export interface ContainerProps extends SelectTriggerProps {

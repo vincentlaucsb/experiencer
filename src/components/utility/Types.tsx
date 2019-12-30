@@ -1,5 +1,10 @@
-﻿export type IdType = Array<number>;
+﻿// For simplicity, and to avoid problems, avoid all
+// imports in this file
+
+export type IdType = Array<number>;
 export type Action = (() => void);
+export type AddChild = ((id: IdType, node: ResumeNode) => void);
+export type ModifyChild = (id: IdType) => void;
 export type NodeProperty = string | string[] | boolean | number | number[];
 
 /** The properties a node can be expected to have
@@ -26,6 +31,12 @@ export interface CssNodeDump {
     properties: Array<[string, string]>;
 }
 
+export type EditorMode = 'normal'
+    | 'landing'
+    | 'help'
+    | 'changingTemplate'
+    | 'printing';
+
 export interface ResumeNode extends BasicResumeNode {
     childNodes?: Array<ResumeNode>;
 
@@ -37,4 +48,23 @@ export interface ResumeSaveData {
     builtinCss: CssNodeDump;
     rootCss: CssNodeDump;
     childNodes: Array<ResumeNode>;
+}
+
+/** Methods and properties used by the top level component
+ *  for managing selection */
+export interface SelectedNodeManagement {
+    hoverOver: (id: IdType) => void;
+    hoverOut: (id: IdType) => void;
+    isSelectBlocked: (id: IdType) => boolean;
+    updateSelected: (id?: IdType) => void;
+    selectedUuid?: string;
+}
+
+/** Used in creating React components over resume nodes */
+export default interface ResumeComponentProps extends ResumeNode, SelectedNodeManagement {
+    id: IdType;   // Hierarchical ID based on the node's position in the resume; subject to change
+    isEditing: boolean;
+    isLast: boolean;
+    isSelected: boolean;
+    updateData: (key: string, data: NodeProperty) => void;
 }

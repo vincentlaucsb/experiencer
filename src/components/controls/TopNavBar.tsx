@@ -1,12 +1,11 @@
 ﻿import React from "react";
 import FileLoader from "./FileLoader";
 import FileSaver from "./FileSaver";
-import { EditorMode } from "../ResumeComponent";
 import PureMenu, { PureMenuItem, PureMenuLink, PureDropdown } from "./menus/PureMenu";
 import IconicMenuItem from "./menus/MenuItem";
 import Modal from "./Modal";
 import GitHubLight from "../../icons/GitHub-Mark-Light-120px-plus.png";
-import { Action } from "../utility/Types";
+import { Action, EditorMode } from "../utility/Types";
 
 interface TopNavBarProps {
     isEditing: boolean;

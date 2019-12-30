@@ -7,7 +7,7 @@ import 'react-quill/dist/quill.snow.css';
 import './scss/index.scss';
 import './fonts/icofont.min.css';
 
-import ResumeComponent, { EditorMode } from './components/ResumeComponent';
+import ResumeComponentFactory from './components/ResumeComponent';
 import { assignIds, deepCopy, arraysEqual } from './components/Helpers';
 import ResumeTemplateProvider from './components/templates/ResumeTemplateProvider';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
@@ -29,7 +29,7 @@ import Tabs from './components/controls/Tabs';
 import ResumeContextMenu from './components/controls/ResumeContextMenu';
 import generateHtml from './components/utility/GenerateHtml';
 import ComponentTypes from './components/schema/ComponentTypes';
-import { Action, IdType, NodeProperty, ResumeSaveData, ResumeNode, BasicResumeNode } from './components/utility/Types';
+import { Action, IdType, NodeProperty, ResumeSaveData, ResumeNode, BasicResumeNode, EditorMode } from './components/utility/Types';
 
 export interface ResumeState {
     css: CssNode;
@@ -641,7 +641,7 @@ class Resume extends React.Component<{}, ResumeState> {
                             numSiblings: arr.length
                         };
 
-                    return <ResumeComponent key={uniqueId} {...props} />
+                    return <ResumeComponentFactory key={uniqueId} {...props} />
                     })}
                 </div>
             </ContextMenuTrigger>

@@ -2,9 +2,9 @@
 import * as Helpers from "./Helpers";
 import QuillEditor from "./controls/inputs/QuillEditor";
 import Container from "./Container";
-import ResumeNodeProps from "./ResumeNodeProps";
+import ResumeComponentProps from "./utility/Types";
 
-export default class RichText extends React.PureComponent<ResumeNodeProps> {    
+export default class RichText extends React.PureComponent<ResumeComponentProps> {    
     static readonly type = 'Rich Text';
     
     render() {

@@ -6,8 +6,7 @@ import LinkedIn from "../icons/LI-In-Bug.png";
 import GitHubDark from "../icons/GitHub-Mark-120px-plus.png";
 import Phone from "../icons/feather/phone.svg";
 import { selectTriggerProps } from "./Container";
-import ResumeNodeProps from "./ResumeNodeProps";
-import { BasicResumeNode } from "./utility/Types";
+import ResumeComponentProps, { BasicResumeNode } from "./utility/Types";
 
 interface IconBase {
     icon?: 'email'
@@ -19,7 +18,7 @@ interface IconBase {
 };
 
 export interface BasicIconProps extends IconBase, BasicResumeNode {}
-export interface IconProps extends IconBase, ResumeNodeProps {}
+export interface IconProps extends IconBase, ResumeComponentProps {}
 
 export default class Icon extends React.PureComponent<IconProps> {
     static readonly type = 'Icon';

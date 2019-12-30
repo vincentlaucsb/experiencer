@@ -15,8 +15,7 @@ import Section from "../Section";
 import IconicMenuItem from "./menus/MenuItem";
 import { TrashIcon, ClipboardIcon, AddIcon } from "./InterfaceIcons";
 import EditingSection, { EditingSectionProps } from "./toolbar/EditingSection";
-import { Action, IdType, NodeProperty, ResumeNode } from "../utility/Types";
-import { AddChild } from "../ResumeNodeProps";
+import { Action, IdType, NodeProperty, ResumeNode, AddChild } from "../utility/Types";
 
 type AddOptions = Array<NodeInformation>;
 

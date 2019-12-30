@@ -1,8 +1,7 @@
 ﻿import * as React from "react";
 import Column from "./Column";
 import Container from "./Container";
-import ResumeNodeProps from "./ResumeNodeProps";
-import { BasicResumeNode, ResumeNode } from "./utility/Types";
+import ResumeComponentProps, { BasicResumeNode, ResumeNode } from "./utility/Types";
 
 interface RowBase {
     justifyContent?: string;
@@ -10,7 +9,7 @@ interface RowBase {
 }
 
 export interface BasicRowProps extends BasicResumeNode, RowBase { }
-export interface RowProps extends ResumeNodeProps, RowBase {}
+export interface RowProps extends ResumeComponentProps, RowBase {}
 
 export default class Row extends React.PureComponent<RowProps> {
     static readonly type: string = 'Row';

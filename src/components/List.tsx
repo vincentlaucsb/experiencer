@@ -7,7 +7,7 @@ interface DescriptionItemProps extends ResumeNodeProps {
 }
 
 export class DescriptionListItem extends ResumeNodeBase<DescriptionItemProps> {
-    static readonly type = 'DescriptionListItem';
+    static readonly type = 'Description List Item';
 
     get className() {
         return super.className + " resume-definition";
@@ -38,7 +38,7 @@ export class DescriptionListItem extends ResumeNodeBase<DescriptionItemProps> {
 }
 
 export default class DescriptionList extends ResumeNodeBase {
-    static readonly type = 'DescriptionList';
+    static readonly type = 'Description List';
 
     render() {
         return <dl className={this.className} {...this.selectTriggerProps}>

@@ -1,5 +1,4 @@
 ﻿import * as React from "react";
-import { EditorMode } from "./ResumeComponent";
 import { process } from "./Helpers";
 import { IdType } from "./utility/HoverTracker";
 import ResumeComponent from "./ResumeComponent";
@@ -14,7 +13,6 @@ export type NodeProperty = string | string[] | boolean | number | number[];
  *  from the top down
  * */
 export interface ResumePassProps extends ResumeNode {
-    mode: EditorMode;
     hoverOver: (id: IdType) => void;
     hoverOut: (id: IdType) => void;
     isSelectBlocked: (id: IdType) => boolean;
@@ -26,9 +24,7 @@ export interface ResumeNodeProps extends ResumePassProps {
     id: IdType;   // Hierarchical ID based on the node's position in the resume; subject to change
     isEditing: boolean;
     isLast: boolean;
-
     selectedUuid?: string;
-    isHidden?: boolean;
 }
 
 // Represents a node that is part of the user's resume
@@ -122,7 +118,6 @@ export default class ResumeNodeBase<P
                     const uniqueId = elem.uuid;
                     const props = {
                         ...elem,
-                        mode: this.props.mode,
                         isEditing: this.props.isEditing,
                         isSelectBlocked: this.props.isSelectBlocked,
                         hoverOver: this.props.hoverOver,

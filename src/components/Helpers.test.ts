@@ -1,13 +1,14 @@
 ﻿import { assignIds, process, arraysEqual } from "./Helpers";
+import { BasicResumeNode } from "./utility/NodeTree";
 
 test('assignIDs Test', () => {
     const node = {
         type: 'FlexibleRow',
-        children: [
+        childNodes: [
             { type: 'FlexibleColumn' },
             { type: 'FlexibleColumn' }
         ]
-    };
+    } as BasicResumeNode;
 
     // Assign unique IDs
     assignIds(node);
@@ -17,14 +18,17 @@ test('assignIDs Test', () => {
     expect(topId).toBeDefined();
 
     // Test that IDs are unique
-    node.children.forEach(
-        (child) => {
-            expect(child['uuid']).not.toBe(topId);
-            expect(child['uuid']).toBeDefined();
-        }
-    );
+    expect(node.childNodes).toBeDefined();
+    if (node.childNodes) {
+        node.childNodes.forEach(
+            (child) => {
+                expect(child['uuid']).not.toBe(topId);
+                expect(child['uuid']).toBeDefined();
+            }
+        );
 
-    expect(node.children[0]['uuid']).not.toBe(node.children[1]['uuid']);
+        expect(node.childNodes[0]['uuid']).not.toBe(node.childNodes[1]['uuid']);
+    }
 });
 
 test('Helpers Test', () => {

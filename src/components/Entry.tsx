@@ -1,7 +1,6 @@
 ﻿import * as React from "react";
 import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import TextField from "./controls/inputs/TextField";
-import { pushArray } from "./Helpers";
 import { BasicResumeNode } from "./utility/NodeTree";
 
 interface EntryBase {

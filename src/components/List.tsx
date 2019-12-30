@@ -42,7 +42,7 @@ export default class DescriptionList extends ResumeNodeBase {
 
     render() {
         return <dl className={this.className} {...this.selectTriggerProps}>
-            {this.renderChildren()}
+            {this.props.children}
         </dl>
     }
 }

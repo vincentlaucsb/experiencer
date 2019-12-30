@@ -28,7 +28,7 @@ export default class Grid extends ResumeNodeBase {
 
         return <div className={this.className} style={this.style} id={this.props.htmlId} {...this.selectTriggerProps}>
             {helperText}
-            {this.renderChildren()}
+            {this.props.children}
         </div>
     }
 }

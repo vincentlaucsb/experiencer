@@ -18,13 +18,13 @@ export interface ResumePassProps extends ResumeNode {
     isSelectBlocked: (id: IdType) => boolean;
     updateData: (id: IdType, key: string, data: NodeProperty) => void;
     updateSelected: (id?: IdType) => void;
+    selectedUuid?: string;
 }
 
 export interface ResumeNodeProps extends ResumePassProps {
     id: IdType;   // Hierarchical ID based on the node's position in the resume; subject to change
     isEditing: boolean;
     isLast: boolean;
-    selectedUuid?: string;
 }
 
 // Represents a node that is part of the user's resume
@@ -109,34 +109,5 @@ export default class ResumeNodeBase<P
 
     updateData(key: string, data: NodeProperty) {
         this.props.updateData(this.props.id, key, data);
-    }
-    
-    renderChildren() {
-        const children = this.props.childNodes as Array<ResumeNode>;
-        if (children) {
-            return children.map((elem: ResumeNode, idx: number, arr: ResumeNode[]) => {
-                    const uniqueId = elem.uuid;
-                    const props = {
-                        ...elem,
-                        isEditing: this.props.isEditing,
-                        isSelectBlocked: this.props.isSelectBlocked,
-                        hoverOver: this.props.hoverOver,
-                        hoverOut: this.props.hoverOut,
-                        updateData: this.props.updateData,
-                        updateSelected: this.props.updateSelected,
-                        selectedUuid: this.props.selectedUuid,
-
-                        index: idx,
-                        numSiblings: arr.length,
-
-                        // Crucial for generating IDs so hover/select works properly
-                        parentId: this.props.id
-                    };
-
-                    return <ResumeComponent key={uniqueId} {...props} />
-                })
-        }
-        
-        return <React.Fragment />
     }
 }

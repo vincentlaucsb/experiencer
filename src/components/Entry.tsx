@@ -101,7 +101,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
                     <h4 className="subtitle">{this.getFields('subtitle')}</h4>
                 </hgroup>
 
-                {this.renderChildren()}
+                {this.props.children}
             </div>
         );
     }

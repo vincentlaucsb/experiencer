@@ -45,7 +45,7 @@ export default class Column extends ResumeNodeBase {
 
         return <div {...this.selectTriggerProps} className={this.className} style={this.style}
             id={this.props.htmlId}>
-            {this.renderChildren()}
+            {this.props.children}
             {helperText}
         </div>
     }

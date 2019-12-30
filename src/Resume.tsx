@@ -634,7 +634,7 @@ class Resume extends React.Component<{}, ResumeState> {
                 {...makeCssEditorProps(this.css, cssUpdateCallback)} />
         </>
     }
-    
+
     render() {
         const resume = <div id="resume-container">
             <ContextMenuTrigger id="resume-menu">

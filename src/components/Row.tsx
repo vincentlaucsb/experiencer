@@ -67,7 +67,7 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
         return (
             <div className={this.className}
                 id={this.props.htmlId} style={this.style} {...this.selectTriggerProps}>
-                {this.renderChildren()}
+                {this.props.children}
             </div>
         );
     }

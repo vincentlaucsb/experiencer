@@ -39,29 +39,73 @@ export default function ResumeComponent(props: ResumeComponentProps) {
         id: parentId ? [...parentId, index] : [index],
         isLast: index === props.numSiblings - 1
     } as ResumeNodeProps;
-    
+
+    let Container: typeof React.Component;
     switch (props.type) {
         case DescriptionList.type:
-            return <DescriptionList {...newProps} />;
+            Container = DescriptionList;
+            break;
         case DescriptionListItem.type:
-            return <DescriptionListItem {...newProps} />;
+            Container = DescriptionListItem;
+            break;
         case Grid.type:
-            return <Grid {...newProps} />;
+            Container = Grid;
+            break;
         case Column.type:
-            return <Column {...newProps} />;
+            Container = Column;
+            break;
         case Row.type:
-            return <Row {...newProps} />;
+            Container = Row;
+            break;
         case Header.type:
-            return <Header {...newProps} />
+            Container = Header;
+            break;
         case Section.type:
-            return <Section {...newProps} />;
+            Container = Section;
+            break;
         case Entry.type:
-            return <Entry {...newProps} />;
+            Container = Entry;
+            break;
         case RichText.type:
-            return <RichText {...newProps} />;
+            Container = RichText;
+            break;
         case Icon.type:
-            return <Icon {...newProps} />
+            Container = Icon;
+            break;
         default:
             return <React.Fragment></React.Fragment>
     }
+
+    if (Container) {
+        let children: React.ReactNode = <></>
+        if (props.childNodes) {
+            children = props.childNodes.map((elem, idx, arr) => {
+                const uniqueId = elem.uuid;
+                const childProps = {
+                    ...elem,
+                    isEditing: props.isEditing,
+                    isSelectBlocked: props.isSelectBlocked,
+                    hoverOver: props.hoverOver,
+                    hoverOut: props.hoverOut,
+                    updateData: props.updateData,
+                    updateSelected: props.updateSelected,
+                    selectedUuid: props.selectedUuid,
+
+                    index: idx,
+                    numSiblings: arr.length,
+
+                    // Crucial for generating IDs so hover/select works properly
+                    parentId: newProps.id
+                };
+
+                return <ResumeComponent key={uniqueId} {...childProps} />
+            })
+        }
+
+        return <Container {...newProps}>
+            {children}
+        </Container>
+    }
+
+    return <React.Fragment></React.Fragment>
 }

@@ -3,6 +3,7 @@ import PureMenu from "../controls/menus/PureMenu";
 import IconicMenuItem from "../controls/menus/MenuItem";
 import FileLoader from "../controls/FileLoader";
 import Modal from "../controls/Modal";
+import { Globals } from "../utility/Types";
 
 interface LandingProps {
     className?: string;
@@ -15,8 +16,7 @@ export default function Landing(props: LandingProps) {
     let [isOpen, setOpen] = React.useState(false);
     let modalContent = <FileLoader close={() => setOpen(false)} loadData={props.loadData} />
 
-    // TODO: Make key a global constant
-    const returnButton = (localStorage.getItem('experiencer')) ? <IconicMenuItem
+    const returnButton = (localStorage.getItem(Globals.localStorageKey)) ? <IconicMenuItem
         onClick={props.loadLocal} icon="hand-drawn-alt-left" label="Return to editing resume" /> :
         <></>
 
@@ -32,7 +32,7 @@ export default function Landing(props: LandingProps) {
                     editing your resume, a <strong>Help</strong> button with more information will appear (also in the top left).</p>
                 <PureMenu divProps={{ className: "landing-menu" }}>
                     {returnButton}
-                    <IconicMenuItem onClick={props.new} icon="paper" label="New" />
+                    <IconicMenuItem onClick={() => props.new()} icon="paper" label="New" />
                     <IconicMenuItem onClick={() => setOpen(true)} icon="folder-open" label="Load" />
                 </PureMenu>
             </div>

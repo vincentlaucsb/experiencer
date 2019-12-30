@@ -1,6 +1,10 @@
 ﻿// For simplicity, and to avoid problems, avoid all
 // imports in this file
 
+export class Globals {
+    static readonly localStorageKey = 'experiencer';
+}
+
 export type IdType = Array<number>;
 export type Action = (() => void);
 export type AddChild = ((id: IdType, node: ResumeNode) => void);

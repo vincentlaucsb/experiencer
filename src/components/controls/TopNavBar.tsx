@@ -7,7 +7,7 @@ import Modal from "./Modal";
 import GitHubLight from "../../icons/GitHub-Mark-Light-120px-plus.png";
 import { Action, EditorMode } from "../utility/Types";
 
-interface TopNavBarProps {
+export interface TopNavBarProps {
     isEditing: boolean;
     mode: EditorMode;
 
@@ -19,7 +19,7 @@ interface TopNavBarProps {
     print: Action;
 
     /** Sidebar Actions */
-    changeTemplate: Action;
+    new: Action;
     toggleLanding: Action;
     toggleHelp: Action;
 }
@@ -55,7 +55,7 @@ export default function TopNavBar(props: TopNavBarProps) {
                 <PureMenu id="top-menu" horizontal>
                     <PureDropdown content={<Link>File</Link>}
                         ulProps={{className: "icon-menu"}}>
-                        <IconicMenuItem icon="paper" onClick={props.changeTemplate} label="New" />
+                        <IconicMenuItem icon="paper" onClick={() => props.new()} label="New" />
                         <IconicMenuItem icon="folder-open" onClick={openLoader} label="Load" />
                         <IconicMenuItem disabled={!props.isEditing} onClick={props.saveLocal} label="Save" />
                         <IconicMenuItem disabled={!props.isEditing} icon="save" onClick={openSaver} label="Save As" />

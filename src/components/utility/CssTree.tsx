@@ -154,6 +154,10 @@ export default class CssNode {
         return rootNode;
     }
 
+    deepCopy(): CssNode {
+        return CssNode.load(this.dump());
+    }
+
     dump() : CssNodeDump {
         let data: CssNodeDump = {
             children: this.children.map((elem) => elem.dump()),

@@ -34,16 +34,6 @@ export default class ResumeNodeBase<P
         this.updateData = this.updateData.bind(this);
     }
 
-    /** Get the class name for the main container */
-    get className(): string {
-        let classes = new Array<string>();
-        if (this.isSelected) {
-            classes.push('resume-selected');
-        }
-
-        return classes.join(' ');
-    }
-
     /** Returns true if this node has no children */
     get isEmpty(): boolean {
         const children = this.props.childNodes as Array<object>;

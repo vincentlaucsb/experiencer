@@ -58,9 +58,7 @@ export default class Header extends ResumeNodeBase<HeaderProps> {
         }
         
         return (
-            <Container displayAs="header"
-                {...this.props}
-                className={this.className} style={this.style}>
+            <Container displayAs="header" {...this.props} style={this.style}>
                 <hgroup>
                     {value}
                     {subtitle}

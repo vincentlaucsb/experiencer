@@ -13,7 +13,7 @@ interface SelectTriggerProps {
 }
 
 export interface ContainerProps extends SelectTriggerProps {
-    children: React.ReactNode;
+    children?: React.ReactNode;
     className?: string;
     displayAs?: string;
     emptyText?: string; // TODO: Do something
@@ -48,14 +48,20 @@ export function selectTriggerProps(props: SelectTriggerProps) {
  */
 export default function Container(props: ContainerProps) {
     const displayAs = props.displayAs || "div";
+    const isSelected = props.selectedUuid === props.uuid;
+
+    let classes = [props.className];
+    if (isSelected) {
+        classes = classes.concat('resume-selected');
+    }
 
     let newProps = {
         children: props.children,
-        className: props.className,
+        className: classes.join(' '),
         style: props.style,
         id: props.htmlId,
         ...selectTriggerProps(props)
     }
-
+    
     return React.createElement(displayAs, newProps);
 }

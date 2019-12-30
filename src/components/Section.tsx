@@ -22,7 +22,7 @@ export default class Section extends ResumeNodeBase {
         }
 
         return (
-            <Container displayAs="section" {...this.props} className={this.className}>
+            <Container displayAs="section" {...this.props}>
                 <h2>{title}</h2>
                 <div className="content">
                     {this.props.children}

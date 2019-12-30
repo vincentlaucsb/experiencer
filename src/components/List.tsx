@@ -9,11 +9,7 @@ interface DescriptionItemProps extends ResumeNodeProps {
 
 export class DescriptionListItem extends ResumeNodeBase<DescriptionItemProps> {
     static readonly type = 'Description List Item';
-
-    get className() {
-        return super.className + " resume-definition";
-    }
-
+    
     render() {
         const term = <TextField
             label="Term"
@@ -31,7 +27,7 @@ export class DescriptionListItem extends ResumeNodeBase<DescriptionItemProps> {
             {...this.textFieldProps}
         />
 
-        return <Container {...this.props} className={this.className}>
+        return <Container {...this.props} className="resume-definition">
             <dt>{term}</dt>
             <dd>{value}</dd>
         </Container>
@@ -42,7 +38,7 @@ export default class DescriptionList extends ResumeNodeBase {
     static readonly type = 'Description List';
 
     render() {
-        return <Container displayAs="dl" {...this.props} className={this.className}>
+        return <Container displayAs="dl" {...this.props}>
             {this.props.children}
         </Container>
     }

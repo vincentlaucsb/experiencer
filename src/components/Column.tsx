@@ -11,9 +11,7 @@ export default class Column extends ResumeNodeBase {
     }
 
     get className(): string {
-        let classNames = ['column', super.className];
-        classNames.push('column-' + this.position);
-
+        let classNames = ['column', 'column-' + this.position];
         if (this.props.isLast) {
             classNames.push('column-last');
         }

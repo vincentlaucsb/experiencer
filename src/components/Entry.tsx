@@ -18,10 +18,6 @@ export interface EntryProps extends ResumeNodeProps, EntryBase { };
 export default class Entry extends ResumeNodeBase<EntryProps> {
     static readonly type = 'Entry';
 
-    get className() {
-        return ['entry', super.className].join(' ');
-    }
-
     /**
      * Generate the class name for the n-th field
      * @param index
@@ -80,7 +76,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
     render() {
         /** hgroup onclick stops event from bubbling up to resume */
         return (
-            <Container {...this.props} className={this.className}>
+            <Container {...this.props} className="entry">
                 <hgroup onClick={(event) => {
                     if (this.isEditing) {
                         event.stopPropagation();

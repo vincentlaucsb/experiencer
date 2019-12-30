@@ -15,11 +15,6 @@ export interface RowProps extends ResumeNodeProps, RowBase {}
 export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> {
     static readonly type: string = 'Row';
 
-    get className(): string {
-        let classNames = ['row', super.className];
-        return classNames.join(' ');
-    }
-
     /** Returns true if ALL columns are empty */
     get hasEmptyColumns(): boolean {
         const children = this.props.childNodes as Array<ResumeNode>;
@@ -67,7 +62,7 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
 
     render() { 
         return (
-            <Container {...this.props} className={this.className} style={this.style}>
+            <Container {...this.props} className="row" style={this.style}>
                 {this.props.children}
             </Container>
         );

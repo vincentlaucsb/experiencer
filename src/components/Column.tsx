@@ -1,6 +1,7 @@
 ﻿import ResumeNodeBase from "./ResumeNodeBase";
 import React from "react";
 import Container from "./Container";
+import { isEmpty } from "./Helpers";
 
 export default class Column extends ResumeNodeBase {
     static readonly type = 'Column';
@@ -38,7 +39,7 @@ export default class Column extends ResumeNodeBase {
     
     render() {
         let helperText = <></>;
-        if (this.isEmpty) { // && !this.isSelected) {
+        if (isEmpty(this.props.children)) {
             helperText = <span>Column {this.position}: Click to select and add content</span>
         }
 

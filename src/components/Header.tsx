@@ -47,13 +47,13 @@ export default class Header extends ResumeNodeBase<HeaderProps> {
             value = <QuillEditor
                 id={`${this.props.uuid}-title`}
                 value={this.props.value || ""}
-                onChange={(text) => this.updateData("value", text)}
+                onChange={(text) => this.props.updateData("value", text)}
             />
 
             subtitle = <QuillEditor
                 id={`${this.props.uuid}-subtitle`}
                 value={this.props.subtitle || ""}
-                onChange={(text) => this.updateData("subtitle", text)}
+                onChange={(text) => this.props.updateData("subtitle", text)}
             />
         }
         

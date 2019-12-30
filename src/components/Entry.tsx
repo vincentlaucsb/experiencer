@@ -3,6 +3,7 @@ import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import TextField from "./controls/inputs/TextField";
 import { BasicResumeNode } from "./utility/NodeTree";
 import Container from "./Container";
+import { process } from "./Helpers";
 
 interface EntryBase {
     title?: string[];
@@ -42,7 +43,7 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
 
             // Replace contents
             replTitle[index] = text;
-            this.updateData(key, replTitle);
+            this.props.updateData(key, replTitle);
         }
 
         const fields = this.props[key];
@@ -64,7 +65,8 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
                         onChange={(data: string) => updater(key, index, data)}
                         value={text || ""}
                         defaultText="Enter a value"
-                        {...this.textFieldProps} />
+                        displayProcessor={process}
+                    />
                     {lineBreak}
                 </React.Fragment>
             });

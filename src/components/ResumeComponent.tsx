@@ -5,7 +5,7 @@ import Entry from "./Entry";
 import DescriptionList, { DescriptionListItem } from "./List";
 import RichText from "./RichText";
 import Header from "./Header";
-import { ResumeNodeProps, ResumePassProps } from "./ResumeNodeBase";
+import { ResumeNodeProps, ResumePassProps, NodeProperty } from "./ResumeNodeBase";
 import { IdType } from "./utility/HoverTracker";
 import Row from "./Row";
 import Column from "./Column";
@@ -23,6 +23,7 @@ interface ResumeComponentProps extends ResumePassProps {
     resumeIsEditing: boolean;
     numSiblings: number; // Number of siblings this node has
     parentId?: IdType;   // The id of the parent node
+    updateResumeData: (id: IdType, key: string, data: NodeProperty) => void;
 }
 
 /**
@@ -32,15 +33,19 @@ export default function ResumeComponent(props: ResumeComponentProps) {
     const parentId = props.parentId;
     const index = props.index;
     const isSelected = props.selectedUuid === props.uuid;
+    const nodeId = parentId ? [...parentId, index] : [index];
 
     let newProps = {
         ...props,
 
-        // Generate unique IDs for component
-        id: parentId ? [...parentId, index] : [index],
+        // Compute properties
+        updateData: (key, data) => props.updateResumeData(nodeId, key, data),
         isEditing: props.resumeIsEditing && isSelected,
-        isLast: index === props.numSiblings - 1,
-        isSelected: isSelected
+        isSelected: isSelected,
+
+        // Generate unique IDs for component
+        id: nodeId,
+        isLast: index === props.numSiblings - 1
     } as ResumeNodeProps;
 
     let Container: typeof React.Component;
@@ -91,8 +96,8 @@ export default function ResumeComponent(props: ResumeComponentProps) {
                     isSelectBlocked: props.isSelectBlocked,
                     hoverOver: props.hoverOver,
                     hoverOut: props.hoverOut,
-                    updateData: props.updateData,
                     updateSelected: props.updateSelected,
+                    updateResumeData: props.updateResumeData,
                     selectedUuid: props.selectedUuid,
 
                     index: idx,

@@ -1,5 +1,6 @@
 ﻿import uuid from 'uuid/v4';
 import { ResumeNode, BasicResumeNode } from './utility/NodeTree';
+import { isNullOrUndefined } from 'util';
 
 /**
  * Return a copy of an array with the i-th element removed
@@ -65,6 +66,21 @@ export function arraysEqual<T>(left: Array<T>, right: Array<T>) {
     }
 
     return true;
+}
+
+/**
+ * Returns true if children are null or empty
+ * @param arr
+ */
+export function isEmpty<T>(children: Array<T> | {} | number | boolean | string | null | undefined) {
+    if (isNullOrUndefined(children)) {
+        return true;
+    }
+    else if (Array.isArray(children)) {
+        return children.length === 0;
+    }
+
+    return children > 0;
 }
 
 export function pushArray<T>(arr: Array<T>, data: T) {

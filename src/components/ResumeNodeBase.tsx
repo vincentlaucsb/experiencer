@@ -15,7 +15,6 @@ export interface ResumePassProps extends ResumeNode {
     hoverOver: (id: IdType) => void;
     hoverOut: (id: IdType) => void;
     isSelectBlocked: (id: IdType) => boolean;
-    updateData: (id: IdType, key: string, data: NodeProperty) => void;
     updateSelected: (id?: IdType) => void;
     selectedUuid?: string;
 }
@@ -26,6 +25,7 @@ export interface ResumeNodeProps extends ResumePassProps {
     isEditing: boolean;
     isLast: boolean;
     isSelected: boolean;
+    updateData: (key: string, data: NodeProperty) => void;
 }
 
 // Represents a node that is part of the user's resume
@@ -33,37 +33,5 @@ export default class ResumeNodeBase<P
     extends ResumeNodeProps=ResumeNodeProps> extends React.PureComponent<P> {
     constructor(props: P) {
         super(props);
-        this.updateData = this.updateData.bind(this);
-    }
-
-    /** Returns true if this node has no children */
-    get isEmpty(): boolean {
-        const children = this.props.childNodes as Array<object>;
-        if (children) {
-            return children.length === 0;
-        }
-
-        return true;
-    }
-    
-    /**
-     * Returns true if we are directly hovering over one of this node's children.
-     * The purpose of this is to avoid selecting multiple nodes at once.
-     */
-    get isSelectBlocked(): boolean {
-        return this.props.isSelectBlocked(this.props.id);
-    }
-    
-    /** Returns props which make a text input responsive to clicks and keyboard 
-     * events */
-    get textFieldProps() {
-        return {
-            displayProcessor: process,
-            isEditing: this.props.isEditing
-        };
-    }
-
-    updateData(key: string, data: NodeProperty) {
-        this.props.updateData(this.props.id, key, data);
     }
 }

@@ -2,6 +2,7 @@
 import TextField from "./controls/inputs/TextField";
 import ResumeNodeBase, { ResumeNodeProps } from "./ResumeNodeBase";
 import Container from "./Container";
+import { process } from "./Helpers";
 
 interface DescriptionItemProps extends ResumeNodeProps {
     term?: string;
@@ -13,18 +14,18 @@ export class DescriptionListItem extends ResumeNodeBase<DescriptionItemProps> {
     render() {
         const term = <TextField
             label="Term"
-            onChange={this.updateData.bind(this, "term")}
+            onChange={this.props.updateData.bind(this, "term")}
             value={this.props.term}
             defaultText="Enter a term"
-            {...this.textFieldProps}
+            displayProcessor={process}
         />
 
         const value = <TextField
             label="Value"
-            onChange={this.updateData.bind(this, "value")}
+            onChange={this.props.updateData.bind(this, "value")}
             value={this.props.value || ""}
             defaultText="Enter a value"
-            {...this.textFieldProps}
+            displayProcessor={process}
         />
 
         return <Container {...this.props} className="resume-definition">

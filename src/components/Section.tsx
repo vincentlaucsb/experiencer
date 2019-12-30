@@ -2,6 +2,7 @@
 import ResumeNodeBase from "./ResumeNodeBase";
 import TextField from "./controls/inputs/TextField";
 import Container from "./Container";
+import { process, isEmpty } from "./Helpers";
 
 /** Represents a section in a resume */
 export default class Section extends ResumeNodeBase {
@@ -9,15 +10,15 @@ export default class Section extends ResumeNodeBase {
     
     render() {
         const title = <TextField
-            onChange={this.updateData.bind(this, "value")}
+            onChange={this.props.updateData.bind(this, "value")}
             value={this.props.value || ''}
             label="Title"
             defaultText="Enter a title"
-            {...this.textFieldProps}
+            displayProcessor={process}
         />
 
         let helperText = <></>
-        if (this.isEmpty) {
+        if (isEmpty(this.props.children)) {
             helperText = <p>This section is empty. Click here to select it and add content.</p>
         }
 

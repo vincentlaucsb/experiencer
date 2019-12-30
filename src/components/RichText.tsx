@@ -17,7 +17,7 @@ export default class RichText extends ResumeNodeBase {
                     id={this.props.uuid}
                     value={this.props.value || ""}
                     htmlId={this.props.htmlId}
-                    onChange={(value) => this.props.updateData(this.props.id, "value", value)}
+                    onChange={(value) => this.props.updateData("value", value)}
                     />
                 </Container>
             );

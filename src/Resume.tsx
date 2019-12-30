@@ -649,7 +649,7 @@ class Resume extends React.Component<{}, ResumeState> {
                         const props = {
                             ...elem,
                             mode: this.state.mode,
-                            updateData: this.updateNestedChild,
+                            updateResumeData: this.updateNestedChild,
                             ...this.hoverProps,
 
                             resumeIsEditing: this.state.isEditingSelected,

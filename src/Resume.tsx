@@ -15,12 +15,11 @@ import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './co
 import Landing from './components/help/Landing';
 import TopNavBar from './components/controls/TopNavBar';
 import ResumeHotKeys from './components/controls/ResumeHotkeys';
-import ResumeState, { ResumeSaveData } from './components/controls/ResumeState';
 import Help from './components/help/Help';
 import HoverTracker, { IdType } from './components/utility/HoverTracker';
 import TopEditingBar, { EditingBarProps } from './components/controls/TopEditingBar';
 import ResumeNodeTree, { ResumeNode, BasicResumeNode } from './components/utility/NodeTree';
-import CssNode, { ReadonlyCssNode } from './components/utility/CssTree';
+import CssNode, { ReadonlyCssNode, CssNodeDump } from './components/utility/CssTree';
 import PureMenu, { PureMenuLink, PureMenuItem } from './components/controls/menus/PureMenu';
 import { Button } from './components/controls/Buttons';
 import { RenderIf } from './components/controls/HelperComponents';
@@ -31,6 +30,27 @@ import Tabs from './components/controls/Tabs';
 import ResumeContextMenu from './components/controls/ResumeContextMenu';
 import generateHtml from './components/utility/GenerateHtml';
 import ComponentTypes from './components/schema/ComponentTypes';
+
+export interface ResumeSaveData {
+    builtinCss: CssNodeDump;
+    rootCss: CssNodeDump;
+    childNodes: Array<ResumeNode>;
+}
+
+export interface ResumeState {
+    css: CssNode;
+    rootCss: CssNode;
+    childNodes: Array<ResumeNode>;
+    mode: EditorMode;
+    unsavedChanges: boolean;
+
+    activeTemplate?: string;
+    clipboard?: object;
+
+    isEditingSelected: boolean;
+    hoverNode?: IdType;
+    selectedNode?: IdType;
+}
 
 class Resume extends React.Component<{}, ResumeState> {
     hovering = new HoverTracker();
@@ -56,7 +76,7 @@ class Resume extends React.Component<{}, ResumeState> {
         this.state = {
             css: this.css,
             rootCss: this.rootCss,
-            children: [],
+            childNodes: [],
             isEditingSelected: false,
             mode: "landing",
             unsavedChanges: false
@@ -107,7 +127,7 @@ class Resume extends React.Component<{}, ResumeState> {
     get isEditing(): boolean {
         return this.state.mode === 'normal'
             || this.state.mode === 'help'
-            || (this.state.children.length > 0);
+            || (this.state.childNodes.length > 0);
     }
 
     get isPrinting(): boolean {
@@ -240,7 +260,7 @@ class Resume extends React.Component<{}, ResumeState> {
             this.css.addNode(root);
             this.setState({
                 css: this.css,
-                children: this.nodes.children
+                childNodes: this.nodes.childNodes
             });
         }
     }
@@ -249,16 +269,16 @@ class Resume extends React.Component<{}, ResumeState> {
         const currentNode = this.selectedNode as ResumeNode;
         if (currentNode) {
             currentNode.classNames = classes;
-            this.setState({ children: this.nodes.children });
+            this.setState({ childNodes: this.nodes.childNodes });
         }
     }
 
     updateNodes(callback: (nodes: ResumeNodeTree) => void) {
-        this.undo.push(deepCopy(this.state.children));
+        this.undo.push(deepCopy(this.state.childNodes));
         callback(this.nodes);
 
         this.setState({
-            children: this.nodes.children,
+            childNodes: this.nodes.childNodes,
             unsavedChanges: true
         });
     }
@@ -268,10 +288,10 @@ class Resume extends React.Component<{}, ResumeState> {
 
         // prev.length > 0 avoids undoing the initial template load
         if (prev && prev.length > 0) {
-            this.redo.push([...this.state.children]);
-            this.nodes.children = prev;
+            this.redo.push([...this.state.childNodes]);
+            this.nodes.childNodes = prev;
             this.setState({
-                children: prev,
+                childNodes: prev,
                 unsavedChanges: true
             });
         }
@@ -280,7 +300,7 @@ class Resume extends React.Component<{}, ResumeState> {
     redoChange() {
         const next = this.redo.pop();
         if (next) {
-            this.updateNodes((nodes) => nodes.children = next);
+            this.updateNodes((nodes) => nodes.childNodes = next);
             this.setState({ unsavedChanges: true });
         }
     }
@@ -402,7 +422,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
     loadData(data: object, mode: EditorMode = 'normal') {
         let savedData = data as ResumeSaveData;
-        this.updateNodes((nodes) => nodes.children = assignIds(savedData.children));
+        this.updateNodes((nodes) => nodes.childNodes = assignIds(savedData.childNodes));
         this.css = CssNode.load(savedData.builtinCss);
         this.rootCss = CssNode.load(savedData.rootCss);
 
@@ -431,7 +451,7 @@ class Resume extends React.Component<{}, ResumeState> {
 
     dump(): ResumeSaveData {
         return {
-            children: this.state.children,
+            childNodes: this.state.childNodes,
             builtinCss: this.css.dump(),
             rootCss: this.rootCss.dump()
         };
@@ -536,7 +556,7 @@ class Resume extends React.Component<{}, ResumeState> {
     renderSidebar() {
         let CssEditor = this.renderCssEditor;
         return <Tabs>
-            <NodeTreeVisualizer key="Tree" childNodes={this.state.children}
+            <NodeTreeVisualizer key="Tree" childNodes={this.state.childNodes}
                 selectNode={(id) => this.setState({ selectedNode: id })}
                 selectedNode={this.state.selectedNode}
             />
@@ -624,7 +644,7 @@ class Resume extends React.Component<{}, ResumeState> {
                     selectedNode: this.hovering.currentId })}>
                     <ResumeHotKeys {...this.resumeHotKeysProps} />
                 
-                    {this.state.children.map((elem, idx, arr) => {
+                    {this.state.childNodes.map((elem, idx, arr) => {
                         const uniqueId = elem.uuid;
                         const props = {
                             ...elem,

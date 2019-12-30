@@ -134,7 +134,7 @@ export default class ComponentTypes {
                     text: 'Description List',
                     node: {
                         type: DescriptionList.type,
-                        children: [
+                        childNodes: [
                             {
                                 type: DescriptionListItem.type
                             }
@@ -178,7 +178,7 @@ export default class ComponentTypes {
                     text: Row.type,
                     node: {
                         type: Row.type,
-                        children: [
+                        childNodes: [
                             { type: Column.type },
                             { type: Column.type }
                         ]

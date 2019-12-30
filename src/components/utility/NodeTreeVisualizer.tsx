@@ -46,8 +46,8 @@ export default class NodeTreeVisualizer extends React.PureComponent<NodeTreeVisu
         if (Array.isArray(root)) {
             childNodes = root;
         }
-        else if (root.children) {
-            childNodes = root.children;
+        else if (root.childNodes) {
+            childNodes = root.childNodes;
         }
 
         if (childNodes) {

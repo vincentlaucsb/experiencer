@@ -7,7 +7,7 @@ import { assignIds, deleteAt, moveUp, moveDown, deepCopy } from "../Helpers";
  *  This is a non-exclusive list... there may be others
  * */
 export interface BasicResumeNode {
-    children?: Array<BasicResumeNode>;
+    childNodes?: Array<BasicResumeNode>;
     classNames?: string;
     htmlId?: string;
     value?: string;
@@ -17,24 +17,24 @@ export interface BasicResumeNode {
 }
 
 export interface ResumeNode extends BasicResumeNode {
-    children?: Array<ResumeNode>;
+    childNodes?: Array<ResumeNode>;
 
     // UUIDs are assigned by the app and need not be saved
     uuid: string;
 }
 
 export default class ResumeNodeTree implements ResumeNode {
-    children = new Array<ResumeNode>();
+    childNodes = new Array<ResumeNode>();
     type = 'Resume';
     uuid = '';
     htmlId = '';
 
     constructor(children = new Array<ResumeNode>()) {
-        this.children = children;
+        this.childNodes = children;
     }
 
     traverse(id: IdType) {
-        let targetNode: ResumeNode = this.children[id[0]],
+        let targetNode: ResumeNode = this.childNodes[id[0]],
             parentNode: ResumeNode = this;
 
         for (let i = 1; i < id.length; i++) {
@@ -42,8 +42,8 @@ export default class ResumeNodeTree implements ResumeNode {
                 parentNode = targetNode;
             }
 
-            if (targetNode.children) {
-                targetNode = targetNode.children[id[i]];
+            if (targetNode.childNodes) {
+                targetNode = targetNode.childNodes[id[i]];
             }
             else {
                 throw new Error("Parent has no children");
@@ -72,7 +72,7 @@ export default class ResumeNodeTree implements ResumeNode {
      * @param node Node to be added
      */
     addChild(node: ResumeNode) {
-        this.children.push(node);
+        this.childNodes.push(node);
     }
 
     /**
@@ -82,18 +82,18 @@ export default class ResumeNodeTree implements ResumeNode {
      */
     addNestedChild(id: IdType, node: ResumeNode) {
         let targetNode = this.getNodeById(id);
-        if (!targetNode.children) {
-            targetNode.children = new Array<ResumeNode>();
+        if (!targetNode.childNodes) {
+            targetNode.childNodes = new Array<ResumeNode>();
         }
 
-        targetNode.children.push(assignIds(deepCopy(node)));
+        targetNode.childNodes.push(assignIds(deepCopy(node)));
     }
 
     deleteChild(id: IdType) {
         let parentNode = this.getParentOfId(id);
 
-        if (parentNode.children) {
-            deleteAt(parentNode.children, id[id.length - 1]);
+        if (parentNode.childNodes) {
+            deleteAt(parentNode.childNodes, id[id.length - 1]);
         }
     }
 
@@ -105,8 +105,8 @@ export default class ResumeNodeTree implements ResumeNode {
         let parentNode = this.getParentOfId(id);
         const position = id[id.length - 1];
 
-        if (parentNode.children) {
-            return position + 1 === parentNode.children.length;
+        if (parentNode.childNodes) {
+            return position + 1 === parentNode.childNodes.length;
         }
 
         throw new Error("Parent has no children");
@@ -119,8 +119,8 @@ export default class ResumeNodeTree implements ResumeNode {
     
     moveUp(id: IdType) {
         let parentNode = this.getParentOfId(id);
-        if (parentNode.children) {
-             moveUp(parentNode.children, id[id.length - 1]);
+        if (parentNode.childNodes) {
+             moveUp(parentNode.childNodes, id[id.length - 1]);
         }
         else {
             throw new Error("Parent has no children");
@@ -135,8 +135,8 @@ export default class ResumeNodeTree implements ResumeNode {
 
     moveDown(id: IdType) {
         let parentNode = this.getParentOfId(id);
-        if (parentNode.children) {
-            moveDown(parentNode.children, id[id.length - 1]);
+        if (parentNode.childNodes) {
+            moveDown(parentNode.childNodes, id[id.length - 1]);
         }
         else {
             throw new Error("Parent has no children");

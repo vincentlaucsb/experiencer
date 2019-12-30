@@ -21,11 +21,11 @@ export default class Row<P extends RowProps=RowProps> extends ResumeNodeBase<P> 
 
     /** Returns true if ALL columns are empty */
     get hasEmptyColumns(): boolean {
-        const children = this.props.children as Array<ResumeNode>;
+        const children = this.props.childNodes as Array<ResumeNode>;
         if (children) {
             for (let node of children) {
                 if (node.type === Column.type) {
-                    if (node.children && node.children.length > 0) {
+                    if (node.childNodes && node.childNodes.length > 0) {
                         return false;
                     }
                 }

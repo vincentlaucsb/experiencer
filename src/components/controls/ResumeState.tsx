@@ -6,13 +6,13 @@ import CssNode, { CssNodeDump } from "../utility/CssTree";
 export interface ResumeSaveData {
     builtinCss: CssNodeDump;
     rootCss: CssNodeDump;
-    children: Array<ResumeNode>;
+    childNodes: Array<ResumeNode>;
 }
 
 export default interface ResumeState {
     css: CssNode;
     rootCss: CssNode;
-    children: Array<ResumeNode>;
+    childNodes: Array<ResumeNode>;
     mode: EditorMode;
     unsavedChanges: boolean;
 

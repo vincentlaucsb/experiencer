@@ -105,76 +105,74 @@ export function randyMarshRootCss(): CssNode {
 }
 
 export function randyMarsh(): BasicResumeNode[] {
-    let experience = [
-        {
-            type: Grid.type,
-            children: [
-                {
-                    type: RichText.type,
-                    value: "2019 -- Present"
-                },
-                {
-                    "type": Entry.type,
-                    "title": ["Tegridy Farms"],
-                    "subtitle": ["Founder/CEO", "Somewhere in the boonies"],
-                    "children": [
-                        {
-                            "type": RichText.type,
-                            "value": "<ul><li>Pioneered farm-to-door delivery of fresh agricultural produce</li><li>Negotiated a multi-million dollar contract with the Chinese government</li></ul>"
-                        }
-                    ]
-                },
-                {
-                    type: RichText.type,
-                    value: "2010 -- 2019"
-                },
-                {
-                    "type": Entry.type,
-                    "title": ["United States Geological Survey"],
-                    "subtitle": ["Geologist", "South Park, CO"],
-                } as BasicEntryProps,
-                {
-                    type: RichText.type,
-                    value: "2014"
-                },
-                {
-                    "type": Entry.type,
-                    "title": ["Lorde"],
-                    "subtitle": ["Pop Star"],
-                    "children": [
-                        {
-                            "type": RichText.type,
-                            "value": "<ul><li>Released the Billboard #1 hit <em>Push (Feeling Good on A Wednesday)</em></li></ul>",
-                        }
-                    ]
-                }
-            ]
-        }
-    ];
-
-    let sideColumn = {
-        "type": Column.type,
-        "htmlId": "sidebar",
-        "children": [
+    let experience = {
+        type: Grid.type,
+        childNodes: [
             {
-                "type": RichText.type,
-                "htmlId": "headshot",
-                "value": headshot
+                type: RichText.type,
+                value: "2019 -- Present"
             },
             {
-                "type": Section.type,
-                "value": "Contact",
-                "children": [
+                type: Entry.type,
+                title: ["Tegridy Farms"],
+                subtitle: ["Founder/CEO", "Somewhere in the boonies"],
+                childNodes: [
                     {
-                        "type": RichText.type,
-                        "value": "<p>South Park, CO</p><p>@GettinRandy55</p>"
+                        type: RichText.type,
+                        value: "<ul><li>Pioneered farm-to-door delivery of fresh agricultural produce</li><li>Negotiated a multi-million dollar contract with the Chinese government</li></ul>"
+                    }
+                ]
+            },
+            {
+                type: RichText.type,
+                value: "2010 -- 2019"
+            },
+            {
+                type: Entry.type,
+                title: ["United States Geological Survey"],
+                subtitle: ["Geologist", "South Park, CO"],
+            } as BasicEntryProps,
+            {
+                type: RichText.type,
+                value: "2014"
+            },
+            {
+                type: Entry.type,
+                title: ["Lorde"],
+                subtitle: ["Pop Star"],
+                childNodes: [
+                    {
+                        type: RichText.type,
+                        value: "<ul><li>Released the Billboard #1 hit <em>Push (Feeling Good on A Wednesday)</em></li></ul>",
+                    }
+                ]
+            } as BasicEntryProps
+        ]
+    } as BasicResumeNode;
+
+    let sideColumn = {
+        type: Column.type,
+        htmlId: "sidebar",
+        childNodes: [
+            {
+                type: RichText.type,
+                htmlId: "headshot",
+                value: headshot
+            },
+            {
+                type: Section.type,
+                value: "Contact",
+                childNodes: [
+                    {
+                        type: RichText.type,
+                        value: "<p>South Park, CO</p><p>@GettinRandy55</p>"
                     }
                 ]
             } as BasicResumeNode,
             {
-                "type": Section.type,
-                "value": "Skills",
-                "children": [
+                type: Section.type,
+                value: "Skills",
+                childNodes: [
                     makeList([
                         'Advertising',
                         'Agriculture',
@@ -186,92 +184,92 @@ export function randyMarsh(): BasicResumeNode[] {
                 ]
             },
             {
-                "type": Section.type,
-                "value": "References",
-                "children": [
+                type: Section.type,
+                value: "References",
+                childNodes: [
                     {
-                        "type": RichText.type,
-                        "value": "<p><strong>Towelie</strong></p><p>Agricultural Inspector</p><p><br></p>"
+                        type: RichText.type,
+                        value: "<p><strong>Towelie</strong></p><p>Agricultural Inspector</p><p><br></p>"
                     }
                 ]
             } as BasicResumeNode,
             {
-                "type": RichText.type,
-                "value": "<p>Typeset entirely with HTML, CSS, and good old-fashioned<strong> TEGRIDY</strong></p>",
-                "htmlId": "tegridy"
+                type: RichText.type,
+                value: "<p>Typeset entirely with HTML, CSS, and good old-fashioned<strong> TEGRIDY</strong></p>",
+                htmlId: "tegridy"
             }
         ]
-    };
+    } as BasicResumeNode;
 
     let mainColumn = {
-        "type": Column.type,
-        "htmlId": "main-column",
-        "children": [
+        type: Column.type,
+        htmlId: "main-column",
+        childNodes: [
             {
-                "type": Header.type,
-                "value": "Randy Marsh",
+                type: Header.type,
+                value: "Randy Marsh",
                 "distribution": "top-to-bottom",
                 "justifyContent": "center",
-                "subtitle": "Geologist and Innovator",
-                "children": [],
+                subtitle: "Geologist and Innovator",
+                childNodes: [],
             } as BasicHeaderProps,
             {
-                "type": Section.type,
-                "value": "Experience",
-                "htmlId": "experience",
-                "children": experience,
+                type: Section.type,
+                value: "Experience",
+                htmlId: "experience",
+                childNodes: [ experience ],
             } as BasicResumeNode,
             {
-                "type": Section.type,
-                "value": "Education",
-                "children": [
+                type: Section.type,
+                value: "Education",
+                childNodes: [
                     {
                         type: Grid.type,
-                        children: [
+                        childNodes: [
                             {
                                 type: RichText.type,
                                 value: "1992"
                             },
                             {
-                                "type": Entry.type,
-                                "title": ["Some College"],
-                                "subtitle": ["Doctorate in Geology"]
+                                type: Entry.type,
+                                title: ["Some College"],
+                                subtitle: ["Doctorate in Geology"]
                             } as BasicEntryProps
                         ]
                     }
                 ]
             } as BasicResumeNode,
             {
-                "type": Section.type,
-                "value": "Awards and Recognition",
-                "children": [
+                type: Section.type,
+                value: "Awards and Recognition",
+                childNodes: [
                     {
-                        "type": Entry.type,
-                        "title": ["Nobel Prize"],
-                        "subtitle": ["Break Wind Theory"],
-                        "children": [
+                        type: Entry.type,
+                        title: ["Nobel Prize"],
+                        subtitle: ["Break Wind Theory"],
+                        childNodes: [
                             {
-                                "type": RichText.type,
-                                "value": "<p>Awarded the Nobel Prize for my work on the Break Wind theory of spontaneous combustion</p>"
+                                type: RichText.type,
+                                value: "<p>Awarded the Nobel Prize for my work on the Break Wind theory of spontaneous combustion</p>"
                             }
                         ]
                     } as BasicEntryProps,
                     {
-                        "type": Entry.type,
-                        "title": ["Emmy Award"],
-                        "subtitle": ["Outstanding Animated Program"],
-                        "children": [
+                        type: Entry.type,
+                        title: ["Emmy Award"],
+                        subtitle: ["Outstanding Animated Program"],
+                        childNodes: [
                             {
-                                "type": RichText.type,
-                                "value": "<p>Gifted an Emmy Award after passing a stool weighing well over 100 courics</p>"
+                                type: RichText.type,
+                                value: "<p>Gifted an Emmy Award after passing a stool weighing well over 100 courics</p>"
                             }
                         ]
                     }
                 ],
-                "htmlId": "awards"
+                htmlId: "awards"
             } as BasicResumeNode
         ]
-    };
+    } as BasicResumeNode;
 
     return [ sideColumn, mainColumn ];
 }

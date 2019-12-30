@@ -26,7 +26,7 @@ export default class Column extends ResumeNodeBase {
             flexDirection: 'column',
         };
 
-        if (!(this.props.children && this.props.children.length > 0)) {
+        if (!(this.props.childNodes && this.props.childNodes.length > 0)) {
             properties = {
                 ...properties,
                 minWidth: "100px",

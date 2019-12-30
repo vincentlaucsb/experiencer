@@ -89,7 +89,7 @@ export function assuredNodes(): Array<BasicResumeNode> {
     let contact = {
         "type": "Grid",
         "htmlId": "contact",
-        "children": [
+        childNodes: [
             {
                 type: "Rich Text",
                 value: "(123) 456-7890"
@@ -120,7 +120,7 @@ export function assuredNodes(): Array<BasicResumeNode> {
     let socialMedia = {
         "type": "Grid",
         "htmlId": "social-media",
-        "children": [
+        childNodes: [
             {
                 type: "Rich Text",
                 value: "My GitHub"
@@ -151,7 +151,7 @@ export function assuredNodes(): Array<BasicResumeNode> {
     let header = {
         "type": "Header",
         "value": "<p>Solid <strong>Programmer</strong></p>",
-        "children": [ contact, socialMedia ],
+        "childNodes": [ contact, socialMedia ],
         "subtitle": "<p>Software Engineer</p>",
         "justifyContent": "flex-end",
         "distribution": "left-to-right"
@@ -160,12 +160,12 @@ export function assuredNodes(): Array<BasicResumeNode> {
     let experience = {
         "type": "Section",
         "value": "Experience",
-        "children": [
+        "childNodes": [
             {
                 "type": "Entry",
                 "title": ["Some Startup"],
                 "subtitle": ["Software Engineer", "San Francisco, CA", "September 2016 -- Present"],
-                "children": [
+                "childNodes": [
                     makeList([
                         'Did things while looking at a computer monitor'
                     ])
@@ -176,11 +176,11 @@ export function assuredNodes(): Array<BasicResumeNode> {
 
     let projects = {
         "type": "Section",
-        "children": [
+        childNodes: [
             {
                 "type": "Entry",
                 "title": ["Roomba Ruler"],
-                "children": [
+                childNodes: [
                     makeList([
                         'Created an app which allows you to control a swarm of room-cleaning robots'
                     ])
@@ -189,7 +189,7 @@ export function assuredNodes(): Array<BasicResumeNode> {
             {
                 "type": "Entry",
                 "title": ["Creepy Santa"],
-                "children": [
+                childNodes: [
                     makeList([
                         "Created an app which allows you to view your crush's Amazon wish list"
                     ])
@@ -202,13 +202,13 @@ export function assuredNodes(): Array<BasicResumeNode> {
     let education = {
         "type": "Section",
         "value": "Education",
-        "children": [
+        childNodes: [
             {
                 "type": "Entry",
                 "title": ["Some College"],
                 "subtitle": ["BA Mathematics", "2018", "3.99 GPA"],
                 "subtitleBreaks": [1],
-                "children": []
+                "childNodes": []
             } as BasicEntryProps
         ]
     };
@@ -218,22 +218,22 @@ export function assuredNodes(): Array<BasicResumeNode> {
         {
             "type": "Grid",
             "htmlId": "main",
-            "children": [
+            childNodes: [
                 {
                     "type": "Column",
-                    "children": [
+                    childNodes: [
                         experience,
                         projects
                     ]
                 },
                 {
                     "type": "Column",
-                    "children": [
+                    childNodes: [
                         education,
                         {
                             "type": "Section",
                             "value": "Languages",
-                            "children": [makeList([
+                            childNodes: [makeList([
                                 "COBOL",
                                 "Pascal"
                             ])]

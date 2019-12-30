@@ -85,7 +85,7 @@ export function assignIds(nodeOrArray: BasicResumeNode | Array<BasicResumeNode>)
     }
 
     nodeOrArray['uuid'] = uuid();
-    let children = nodeOrArray.children as Array<ResumeNode>;
+    let children = nodeOrArray.childNodes as Array<ResumeNode>;
     if (children) {
         assignIdsToNodeArray(children);
     }
@@ -105,8 +105,8 @@ function assignIdsToNodeArray(children: Array<BasicResumeNode>) {
         nextItem.forEach((elem) => {
             elem['uuid'] = uuid();
 
-            if (elem.children) {
-                workQueue.push(elem.children);
+            if (elem.childNodes) {
+                workQueue.push(elem.childNodes);
             }
         });
     }

@@ -11,6 +11,10 @@ export interface EditingSectionProps {
     saveLocal: Action;
 }
 
+/**
+ * Return controls for save/undo/redo
+ * @param props
+ */
 export default function EditingSection(props: EditingSectionProps) {
     return (
         <div className="toolbar-section">

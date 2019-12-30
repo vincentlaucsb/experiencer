@@ -58,7 +58,7 @@ export default class ResumeNodeBase<P
 
     /** Returns true if this node has no children */
     get isEmpty(): boolean {
-        const children = this.props.children as Array<object>;
+        const children = this.props.childNodes as Array<object>;
         if (children) {
             return children.length === 0;
         }
@@ -116,7 +116,7 @@ export default class ResumeNodeBase<P
     }
     
     renderChildren() {
-        const children = this.props.children as Array<ResumeNode>;
+        const children = this.props.childNodes as Array<ResumeNode>;
         if (children) {
             return children.map((elem: ResumeNode, idx: number, arr: ResumeNode[]) => {
                     const uniqueId = elem.uuid;

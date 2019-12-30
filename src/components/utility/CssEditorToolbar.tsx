@@ -1,13 +1,13 @@
 ﻿import React from "react";
 import { Button, Confirm } from "../controls/Buttons";
-import CssNode from "./CssTree";
+import CssNode, { ReadonlyCssNode } from "./CssTree";
 import Popover from "react-tiny-popover";
 import CssSelectorAdder from "./CssSelectorAdder";
 import { TrashIcon } from "../controls/InterfaceIcons";
 import ButtonGroup from "../controls/ButtonGroup";
 
 export interface CssEditorToolbarProps {
-    root: CssNode;
+    cssNode: ReadonlyCssNode;
     addSelector: (name: string, selector: string) => void;
     deleteNode: () => void;
 }
@@ -28,7 +28,7 @@ export default function CssEditorToolbar(props: CssEditorToolbarProps) {
     let [pseudoMenuActive, setPseudoMenuActive] = React.useState(false);
 
     // Don't show delete button for root nodes
-    let deleteButton = (props.root === props.root.treeRoot) ?
+    let deleteButton = (props.cssNode.isRoot) ?
         <></> : (
             <Confirm onConfirm={() => props.deleteNode()}>
                 <TrashIcon />
@@ -38,7 +38,7 @@ export default function CssEditorToolbar(props: CssEditorToolbarProps) {
     let pseudoMenu = (
         <div className="pseudo-options">
             {pseudoElements.map((sel: string) => {
-                if (props.root.hasName(sel)) {
+                if (props.cssNode.hasName(sel)) {
                     return <></>
                 }
 
@@ -66,7 +66,7 @@ export default function CssEditorToolbar(props: CssEditorToolbarProps) {
             </Popover>
             <CssSelectorAdder
                 addSelector={(name, selector) => props.addSelector(name, selector)}
-                selector={props.root.fullSelector}
+                selector={props.cssNode.fullSelector}
             />
             {deleteButton}
         </ButtonGroup>

@@ -1,7 +1,6 @@
-﻿import CssNode from "./CssTree";
+﻿import { ReadonlyCssNode } from "./CssTree";
 import React from "react";
 import MappedTextFields, { ContainerProps } from "../controls/inputs/MappedTextFields";
-import Collapse from "../controls/Collapse";
 import TextField from "../controls/inputs/TextField";
 import ReactDOM from "react-dom";
 import CssSuggestions from "./CssSuggestions";
@@ -9,9 +8,10 @@ import CssEditorToolbar from "./CssEditorToolbar";
 
 export interface CssEditorProps {
     autoCollapse?: boolean;
-    root: CssNode;
+    cssNode: ReadonlyCssNode;
     addSelector: (path: string[], name: string, selector: string) => void;
-    updateData: (path: string[], key: string, value: string) => void;
+    updateName: (path: string[], value: string) => void;
+    updateProperty: (path: string[], key: string, value: string) => void;
     updateDescription: (path: string[], data: string) => void;
     updateSelector: (path: string[], selector: string) => void;
     deleteKey: (path: string[], key: string) => void;
@@ -20,9 +20,8 @@ export interface CssEditorProps {
 }
 
 export interface CssEditorState {
-    editingDescription: boolean;
-    editingName: boolean;
     highlight: boolean;
+    isOpen: boolean;
 }
 
 export default class CssEditor extends React.Component<CssEditorProps, CssEditorState> {
@@ -30,9 +29,8 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         super(props);
 
         this.state = {
-            editingDescription: false,
-            editingName: false,
-            highlight: false
+            highlight: false,
+            isOpen: false
         };
 
         this.mapContainer = this.mapContainer.bind(this);
@@ -43,16 +41,15 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         return CssSuggestions.properties;
     }
 
-    get editButton() {
-        const icon = this.state.editingName ? <i className="icofont-ui-check" /> : 
-            <i className="icofont-ui-edit" />
-
-        return <button onClick={(event) => {
-            this.setState({ editingName: !this.state.editingName });
-            event.stopPropagation();
-        }}>
-            {icon}
-        </button>
+    get description() {
+        return <TextField
+            defaultText="No description provided"
+            value={this.props.cssNode.description || ""}
+            displayClassName="css-description"
+            onChange={(text) => {
+                this.props.updateDescription(this.path, text);
+            }}
+        />
     }
 
     get highlighter() {
@@ -74,7 +71,18 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     }
 
     get path() {
-        return this.props.root.fullPath;
+        return this.props.cssNode.fullPath;
+    }
+
+    get sectionName() {
+        return <TextField
+            defaultText="Enter a section name"
+            value={this.props.cssNode.name}
+            displayClassName="css-title"
+            onChange={(text) => {
+                this.props.updateName(this.path, text);
+            }}
+        />
     }
     
     /**
@@ -83,9 +91,8 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
      */
     mapContainer(props: ContainerProps) {
         let selectorDisplay = <span onClick={(event) => event.stopPropagation()}><TextField
-            editBlocked={this.state.editingName}
-            value={this.props.root.selector || ""}
-            displayValue={this.props.root.fullSelector}
+            value={this.props.cssNode.selector || ""}
+            displayValue={this.props.cssNode.fullSelector}
             displayClassName="css-description"
             onChange={(text) => this.props.updateSelector(this.path, text) }
         /></span>
@@ -105,7 +112,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
     /** Highlight all DOM nodes matching the current selector */
     renderHighlightBoxes() {
-        let selector = this.props.root.fullSelector;
+        let selector = this.props.cssNode.fullSelector;
         try {
             const hits = document.querySelectorAll(selector);
             const root = document.getElementById("resume");
@@ -146,7 +153,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
     /** Render the set of CSS properties */
     renderProperties() {
-        const cssProperties = this.props.root.properties;
+        const cssProperties = this.props.cssNode.properties;
         const genericValueSuggestions = this.props.varSuggestions || [];
 
         // 'initial', 'inherit', 'unset' apply to all CSS properties
@@ -156,7 +163,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         return (
             <MappedTextFields value={cssProperties}
                 container={(props) => this.mapContainer(props)}
-                updateValue={this.props.updateData.bind(this, this.path)}
+                updateValue={this.props.updateProperty.bind(this, this.path)}
                 deleteKey={this.props.deleteKey.bind(this, this.path)}
                 keySuggestions={Array.from(this.cssProperties.keys())}
                 genericValueSuggestions={genericValueSuggestions}
@@ -166,13 +173,14 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     }
 
     renderChildren() {
-        return this.props.root.children.map((css: CssNode) => {
+        return this.props.cssNode.children.map((css) => {
             return <CssEditor
                 key={css.fullPath.join('-')}
-                root={css}
+                cssNode={css}
                 autoCollapse={this.props.autoCollapse}
                 addSelector={this.props.addSelector}
-                updateData={this.props.updateData}
+                updateName={this.props.updateName}
+                updateProperty={this.props.updateProperty}
                 updateDescription={this.props.updateDescription}
                 updateSelector={this.props.updateSelector}
                 deleteKey={this.props.deleteKey}
@@ -181,41 +189,36 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         });
     }
 
-    renderDescription() {
-        return <TextField
-            defaultText="No description provided"
-            value={this.props.root.description || ""}
-            displayClassName="css-description"
-            onChange={(text) => {
-                this.props.updateDescription(this.path, text);
-            }}
-        />
-    }
-
     render() {
-        const trigger = <h2 className="css-title-heading">
-            <span className="css-title">{this.props.root.name}</span>
-            {this.editButton}
+        const caret = this.state.isOpen ? <i className="icofont-caret-up" /> :
+            <i className="icofont-caret-down" />
+
+        const heading = <h2 className="css-title-heading">
+            <span onClick={() => this.setState({ isOpen: !this.state.isOpen })}>
+                {caret}
+            </span>
+            {this.sectionName}
             {this.highlighter}
             <CssEditorToolbar
-                root={this.props.root}
+                cssNode={this.props.cssNode}
                 addSelector={(name, selector) => this.props.addSelector(this.path, name, selector)}
                 deleteNode={() => this.props.deleteNode(this.path)}
             />
         </h2>
+
+        const content = this.state.isOpen ? <div className="css-category-content">
+            {this.description}
+            {this.renderProperties()}
+            {this.renderChildren()}
+        </div> : <></>
 
         const isOpen = (this.path.length !== 1) || !this.props.autoCollapse;
 
         return (
             <section className={`css-category no-print css-category-${this.path.length}`}>
                 {this.renderHighlightBoxes()}
-                <Collapse trigger={trigger} isOpen={isOpen}>
-                    <div className="css-category-content">
-                        {this.renderDescription()}
-                        {this.renderProperties()}
-                        {this.renderChildren()}
-                    </div>
-                </Collapse>
+                {heading}
+                {content}
             </section>
         );
     }

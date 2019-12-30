@@ -43,8 +43,16 @@ export default class CssNode {
         this._selector = selector || name;
     }
 
+    get isRoot() {
+        return isNullOrUndefined(this.parent);
+    }
+
     get name() {
         return this._name;
+    }
+
+    set name(newName: string) {
+        this._name = newName;
     }
 
     get selector() {
@@ -336,5 +344,51 @@ export default class CssNode {
         }
 
         return this;
+    }
+}
+
+/** A non-modifiable CSS node */
+export class ReadonlyCssNode {
+    private node: CssNode;
+
+    constructor(node: CssNode) {
+        this.node = node;
+    }
+
+    get children() {
+        return this.node.children.map((node) =>
+            new ReadonlyCssNode(node));
+    }
+
+    get description() {
+        return this.node.description;
+    }
+
+    get fullPath(): string[] {
+        return this.node.fullPath;
+    }
+
+    get fullSelector(): string {
+        return this.node.fullSelector;
+    }
+
+    get isRoot(): boolean {
+        return this.node.isRoot;
+    }
+
+    get name(): string {
+        return this.node.name;
+    }
+
+    get properties(): Map<string, string> {
+        return this.node.properties;
+    }
+
+    get selector(): string {
+        return this.node.selector;
+    }
+
+    hasName(name: string) {
+        return this.node.hasName(name);
     }
 }

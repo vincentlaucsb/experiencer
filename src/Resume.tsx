@@ -20,7 +20,7 @@ import Help from './components/help/Help';
 import HoverTracker, { IdType } from './components/utility/HoverTracker';
 import TopEditingBar, { EditingBarProps } from './components/controls/TopEditingBar';
 import ResumeNodeTree, { ResumeNode, BasicResumeNode } from './components/utility/NodeTree';
-import CssNode from './components/utility/CssTree';
+import CssNode, { ReadonlyCssNode } from './components/utility/CssTree';
 import PureMenu, { PureMenuLink, PureMenuItem } from './components/controls/menus/PureMenu';
 import { Button } from './components/controls/Buttons';
 import { RenderIf } from './components/controls/HelperComponents';
@@ -569,7 +569,15 @@ class Resume extends React.Component<{}, ResumeState> {
                 onUpdate();
             },
 
-            updateData: (path, key, value) => {
+            updateName: (path, value) => {
+                const target = cssNode.findNode(path);
+                if (target) {
+                    target.name = value;
+                }
+                onUpdate();
+            },
+
+            updateProperty: (path, key, value) => {
                 cssNode.setProperty(path, key, value);
                 onUpdate();
             },
@@ -626,7 +634,7 @@ class Resume extends React.Component<{}, ResumeState> {
                 const specificRoot = this.state.css.findNode([`#${this.selectedNode.htmlId}`]) as CssNode;
                 specificCssEditor = <CssEditor
                     key={specificRoot.fullSelector}
-                    root={specificRoot}
+                    cssNode={new ReadonlyCssNode(specificRoot)}
                     {...this.makeCssEditorProps(this.css)} />
             }
 
@@ -636,7 +644,7 @@ class Resume extends React.Component<{}, ResumeState> {
                     <CssEditor
                         {...this.makeCssEditorProps(this.css)}
                         key={rootNode.fullSelector}
-                        root={rootNode} />
+                        cssNode={new ReadonlyCssNode(rootNode)} />
                 </>
             }
 
@@ -645,9 +653,9 @@ class Resume extends React.Component<{}, ResumeState> {
                 
         return <>
             <CssEditor
-                root={this.state.rootCss} autoCollapse={true} {...this.makeCssEditorProps(this.rootCss)} />
+                cssNode={new ReadonlyCssNode(this.state.rootCss)} autoCollapse={true} {...this.makeCssEditorProps(this.rootCss)} />
             <CssEditor
-                root={this.state.css}
+                cssNode={new ReadonlyCssNode(this.state.css)}
                 autoCollapse={true}
                 varSuggestions={this.makeCssEditorVarSuggestions()}
                 {...this.makeCssEditorProps(this.css)} />

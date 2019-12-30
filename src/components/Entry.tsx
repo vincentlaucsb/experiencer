@@ -16,15 +16,6 @@ export interface BasicEntryProps extends BasicResumeNode, EntryBase { };
 export interface EntryProps extends ResumeNodeProps, EntryBase { };
 
 export default class Entry extends ResumeNodeBase<EntryProps> {
-    constructor(props) {
-        super(props);
-
-        this.addTitleField = this.addTitleField.bind(this);
-        this.addSubtitleField = this.addSubtitleField.bind(this);
-        this.removeTitleField = this.removeTitleField.bind(this);
-        this.removeSubtitleField = this.removeSubtitleField.bind(this);
-    }    
-
     static readonly type = 'Entry';
 
     get className() {
@@ -46,22 +37,6 @@ export default class Entry extends ResumeNodeBase<EntryProps> {
     set subtitle(data: Array<string>) {
         this.updateData('subtitle', data);
     }
-
-    addTitleField() {
-        this.title = pushArray(this.title, "");
-    }
-
-    addSubtitleField() {
-        this.subtitle = pushArray(this.subtitle, "");
-    }
-
-    removeTitleField() {
-        this.title = this.title.slice(0, this.title.length - 1);
-    }
-
-   removeSubtitleField() {
-        this.subtitle = this.subtitle.slice(0, this.subtitle.length - 1);
-   }
 
     getFields(key: 'title' | 'subtitle') {
         const updater = (key: 'title' | 'subtitle', index: number, text: string) => {

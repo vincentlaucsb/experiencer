@@ -2,6 +2,10 @@
 import { ResumeNode } from "./Types";
 import { deepCopy } from "../Helpers";
 
+/** A wrapper around ResumeNodeTree which allows it 
+ *  to notify one subscriber of updates and keep
+ *  track of its history
+ */
 export default class ObservableResumeNodeTree {
     private past = new Array<Array<ResumeNode>>();
     private future = new Array<Array<ResumeNode>>();
@@ -38,10 +42,12 @@ export default class ObservableResumeNodeTree {
         this.broadcast();
     }
 
+    /** True if we can undo changes */
     get isUndoable() {
         return this.past.length > 0;
     }
 
+    /** True if we can redo changes */
     get isRedoable() {
         return this.future.length > 0;
     }
@@ -57,7 +63,15 @@ export default class ObservableResumeNodeTree {
         this.nodes.deleteChild(id);
         this.broadcast();
     }
-     
+
+    /**
+     * Returns a direct reference to a node
+     * 
+     * Warning: Does not cause any updates to be issued
+     *          to subscriber
+     *          
+     * @param id
+     */
     getNodeById(id) {
         return this.nodes.getNodeById(id);
     }

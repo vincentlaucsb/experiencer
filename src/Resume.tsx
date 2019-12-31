@@ -31,6 +31,14 @@ import ComponentTypes from './components/schema/ComponentTypes';
 import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode, Globals } from './components/utility/Types';
 import ObservableResumeNodeTree from './components/utility/ObservableResumeNodeTree';
 
+/** These props are only used for testing */
+export interface ResumeProps {
+    mode?: EditorMode;
+    nodes?: Array<ResumeNode>;
+    css?: CssNode;
+    rootCss?: CssNode;
+}
+
 export interface ResumeState {
     css: CssNode;
     rootCss: CssNode;
@@ -45,27 +53,31 @@ export interface ResumeState {
     selectedNode?: IdType;
 }
 
-class Resume extends React.Component<{}, ResumeState> {
-    hovering = new HoverTracker();
-    nodes = new ObservableResumeNodeTree();
-    css = new CssNode("Resume CSS", {}, "#resume");
-    rootCss = new CssNode(":root", {}, ":root");
-    style = document.createElement("style");
-    resumeRef = React.createRef<HTMLDivElement>();
+class Resume extends React.Component<ResumeProps, ResumeState> {
+    private hovering = new HoverTracker();
+    private nodes = new ObservableResumeNodeTree();
+    private css: CssNode;
+    private rootCss: CssNode;
+    private style = document.createElement("style");
+    private resumeRef = React.createRef<HTMLDivElement>();
 
-    constructor(props) {
+    constructor(props: ResumeProps) {
         super(props);
 
         // Custom CSS
         const head = document.getElementsByTagName("head")[0];
         head.appendChild(this.style);
 
+        this.css = props.css || new CssNode("Resume CSS", {}, "#resume");
+        this.rootCss = props.rootCss || new CssNode(":root", {}, ":root");
+        this.nodes.childNodes = props.nodes || [];
+        
         this.state = {
             css: this.css,
             rootCss: this.rootCss,
-            childNodes: [],
+            childNodes: props.nodes || [],
             isEditingSelected: false,
-            mode: "landing",
+            mode: props.mode || "landing",
             unsavedChanges: false
         };
 
@@ -97,8 +109,7 @@ class Resume extends React.Component<{}, ResumeState> {
     /** Returns true if we are actively editing a resume */
     get isEditing(): boolean {
         return this.state.mode === 'normal'
-            || this.state.mode === 'help'
-            || (this.state.childNodes.length > 0);
+            || this.state.mode === 'help';
     }
 
     get isPrinting(): boolean {
@@ -106,7 +117,7 @@ class Resume extends React.Component<{}, ResumeState> {
     }
 
     /** Return props related to hover/select functionality */
-    get selectedNodeProps() {
+    private get selectedNodeProps() {
         return {
             // Add an ID to the set of nodes we are hovering over
             hoverOver: (id: IdType) => {
@@ -159,7 +170,7 @@ class Resume extends React.Component<{}, ResumeState> {
      * Handles clicks on the resume
      * @param event
      */
-    handleClick(event: React.MouseEvent) {
+    private handleClick(event: React.MouseEvent) {
         if (this.state.mode === 'changingTemplate') {
             this.toggleMode();
         } else {
@@ -184,7 +195,7 @@ class Resume extends React.Component<{}, ResumeState> {
         this.loadData(template, 'changingTemplate');
     };
 
-    renderTemplateChanger() {
+    private renderTemplateChanger() {
         const templateNames = Object.keys(ResumeTemplates.templates);
         return (
             <>
@@ -234,7 +245,7 @@ class Resume extends React.Component<{}, ResumeState> {
      * Respond to ObservableResumeNodeTree's updates
      * @param nodes
      */
-    onNodeUpdate(nodes: ResumeNodeTree) {
+    private onNodeUpdate(nodes: ResumeNodeTree) {
         this.setState({
             childNodes: nodes.childNodes,
             unsavedChanges: true
@@ -381,7 +392,7 @@ class Resume extends React.Component<{}, ResumeState> {
     //#endregion
 
     //#region Helper Component Props
-    get selectedNodeActions() : SelectedNodeActions {
+    private get selectedNodeActions() : SelectedNodeActions {
         return {
             ...this.clipboardProps,
             ...this.moveSelectedProps,
@@ -389,7 +400,7 @@ class Resume extends React.Component<{}, ResumeState> {
         }
     }
 
-    get topMenuProps(): TopNavBarProps {
+    private get topMenuProps(): TopNavBarProps {
         let props = {
             exportHtml: this.exportHtml,
             isEditing: this.isEditing,
@@ -406,7 +417,7 @@ class Resume extends React.Component<{}, ResumeState> {
         return props;
     }
 
-    get editingBarProps() : EditingBarProps {
+    private get editingBarProps() : EditingBarProps {
         return {
             ...this.undoRedoProps,
             ...this.selectedNodeActions,
@@ -422,7 +433,7 @@ class Resume extends React.Component<{}, ResumeState> {
         }
     }
 
-    get resumeHotKeysProps() {
+    private get resumeHotKeysProps() {
         return {
             ...this.selectedNodeActions,
             ...this.undoRedoProps,
@@ -452,7 +463,7 @@ class Resume extends React.Component<{}, ResumeState> {
     }
     //#endregion
 
-    renderSidebar() {
+    private renderSidebar() {
         let CssEditor = this.renderCssEditor;
         return <Tabs>
             <NodeTreeVisualizer key="Tree" childNodes={this.state.childNodes}
@@ -483,7 +494,7 @@ class Resume extends React.Component<{}, ResumeState> {
         return suggestions;
     }
 
-    renderCssEditor() {
+    private renderCssEditor() {
         const cssUpdateCallback = () => this.setState({ css: this.css.deepCopy() });
         const rootCssUpdateCallback = () => this.setState({ rootCss: this.rootCss.deepCopy() });
 

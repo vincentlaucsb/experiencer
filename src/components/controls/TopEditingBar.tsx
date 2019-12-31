@@ -100,7 +100,7 @@ function ClipboardMenu(props: EditingBarProps) {
             content={<Button><ClipboardIcon /></Button>}
             ulProps={{ className: "icon-menu" }}>
             {menuItems.map((value) =>
-                <IconicMenuItem
+                <IconicMenuItem key={value.label}
                     icon={value.icon}
                     shortcut={value.shortcut}
                     label={value.label}

@@ -57,7 +57,7 @@ export default class ObservableResumeNodeTree {
         this.nodes.deleteChild(id);
         this.broadcast();
     }
-
+     
     getNodeById(id) {
         return this.nodes.getNodeById(id);
     }

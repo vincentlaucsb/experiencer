@@ -2,10 +2,11 @@
 import { ContextMenu, MenuItem } from "react-contextmenu";
 import ResumeNodeTree from "../utility/NodeTree";
 import { IdType, ResumeNode } from "../utility/Types";
+import ObservableResumeNodeTree from "../utility/NodeTreeObserver";
 
 export interface ResumeContextProps {
     currentId?: IdType;
-    nodes: ResumeNodeTree;
+    nodes: ObservableResumeNodeTree;
     selectNode: (id: IdType) => void;
 }
 

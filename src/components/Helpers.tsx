@@ -132,7 +132,7 @@ function assignIdsToNodeArray(children: Array<BasicResumeNode>) {
  * Return a deep copy of a JavaScript object
  * @param obj Object to be copied
  */
-export function deepCopy(obj: any) {
+export function deepCopy<T>(obj: T): T{
     return JSON.parse(JSON.stringify(obj));
 }
 

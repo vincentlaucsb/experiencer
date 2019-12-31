@@ -2,7 +2,7 @@
 import { PureMenuItem } from "./PureMenu";
 
 export interface IconicMenuItemProps {
-    onClick: (event?: React.MouseEvent) => void;
+    onClick?: (event?: React.MouseEvent) => void;
     icon?: string;
     shortcut?: string;
     label: string;
@@ -23,7 +23,7 @@ export default function IconicMenuItem(props: IconicMenuItemProps) {
         itemClasses.push('no-icon');
     }
 
-    if (props.disabled) {
+    if (props.disabled || !props.onClick) {
         itemClasses.push('disabled');
         onClick = undefined;
     }

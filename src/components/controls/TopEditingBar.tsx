@@ -62,12 +62,9 @@ export interface EditingBarProps extends SelectedNodeActions, EditingSectionProp
     selectedNode?: ResumeNode,
     addHtmlId: (htmlId: string) => void;
     addCssClasses: (classes: string) => void;
-    updateNode: (key: string, value: NodeProperty) => void;
 
     addChild: AddChild;
-    moveUpEnabled: boolean;
-    moveDownEnabled: boolean;
-    updateSelected: (key: string, data: any) => void;
+    updateSelected: (key: string, data: NodeProperty) => void;
     unselect: Action;
 }
 
@@ -176,7 +173,7 @@ export default function TopEditingBar(props: EditingBarProps) {
     const id = props.selectedNodeId;
     if (id && props.selectedNode) {
         const type = props.selectedNode.type;
-        const customOptions = toolbarOptions(props.selectedNode, props.updateNode);
+        const customOptions = toolbarOptions(props.selectedNode, props.updateSelected);
         let moveUpText = <i className="icofont-rounded-up" />;
         let moveDownText = <i className="icofont-rounded-down" />;
 
@@ -216,8 +213,8 @@ export default function TopEditingBar(props: EditingBarProps) {
                 </div>
                 <div className="toolbar-section">
                     <PureMenu horizontal>
-                        <Item onClick={() => props.moveUp()} disabled={!props.moveUpEnabled}>{moveUpText}</Item>
-                        <Item onClick={() => props.moveDown()} disabled={!props.moveDownEnabled}>{moveDownText}</Item>
+                        <Item onClick={props.moveUp} disabled={!props.moveUp}>{moveUpText}</Item>
+                        <Item onClick={props.moveDown} disabled={!props.moveDown}>{moveDownText}</Item>
                     </PureMenu>
                     <span className="label">Move</span>
                 </div>

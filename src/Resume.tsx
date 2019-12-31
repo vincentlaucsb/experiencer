@@ -39,7 +39,7 @@ export interface ResumeState {
     unsavedChanges: boolean;
 
     activeTemplate?: string;
-    clipboard?: object;
+    clipboard?: ResumeNode;
     hoverNode?: IdType;
     isEditingSelected: boolean;
     selectedNode?: IdType;
@@ -62,8 +62,6 @@ class Resume extends React.Component<{}, ResumeState> {
         this.style.innerHTML = "";
         head.appendChild(this.style);
 
-        this.nodes.subscribe(this.onNodeUpdate.bind(this));
-
         this.state = {
             css: this.css,
             rootCss: this.rootCss,
@@ -72,7 +70,8 @@ class Resume extends React.Component<{}, ResumeState> {
             mode: "landing",
             unsavedChanges: false
         };
-        
+
+        this.nodes.subscribe(this.onNodeUpdate.bind(this));
         this.handleClick = this.handleClick.bind(this);
         this.print = this.print.bind(this);
         this.toggleMode = this.toggleMode.bind(this);
@@ -83,8 +82,6 @@ class Resume extends React.Component<{}, ResumeState> {
         this.addChild = this.addChild.bind(this);
         this.updateData = this.updateData.bind(this);
         this.deleteSelected = this.deleteSelected.bind(this);
-        this.moveSelectedUp = this.moveSelectedUp.bind(this);
-        this.moveSelectedDown = this.moveSelectedDown.bind(this);
         this.updateSelected = this.updateSelected.bind(this);
 
         /** Templates and Styling **/
@@ -97,11 +94,6 @@ class Resume extends React.Component<{}, ResumeState> {
         this.loadData = this.loadData.bind(this);
         this.saveLocal = this.saveLocal.bind(this);
         this.saveFile = this.saveFile.bind(this);
-
-        /** Cut & Paste */
-        this.copyClipboard = this.copyClipboard.bind(this);
-        this.cutClipboard = this.cutClipboard.bind(this);
-        this.pasteClipboard = this.pasteClipboard.bind(this);
     }
 
     /** Returns true if we are actively editing a resume */
@@ -113,13 +105,6 @@ class Resume extends React.Component<{}, ResumeState> {
 
     get isPrinting(): boolean {
         return this.state.mode === 'printing';
-    }
-
-    get undoRedoProps() {
-        return {
-            undo: this.nodes.isUndoable ? this.nodes.undo : undefined,
-            redo: this.nodes.isRedoable ? this.nodes.redo : undefined
-        };
     }
 
     /** Return props related to hover/select functionality */
@@ -288,58 +273,56 @@ class Resume extends React.Component<{}, ResumeState> {
         }
     }
 
-    get moveSelectedUpEnabled() {
-        const id = this.state.selectedNode as IdType;
-        return id && id[id.length - 1] > 0;
+    get undoRedoProps() {
+        return {
+            undo: this.nodes.isUndoable ? this.nodes.undo : undefined,
+            redo: this.nodes.isRedoable ? this.nodes.redo : undefined
+        };
     }
 
-    moveSelectedUp() {
+    get moveSelectedProps() {
         const id = this.state.selectedNode as IdType;
-        if (this.moveSelectedUpEnabled) {
-            this.setState({selectedNode: this.nodes.moveUp(id)});
-        }
-    }
+        const moveSelectedDownEnabled = id && !this.nodes.isLastSibling(id);
+        const moveSelectedUpEnabled = id && id[id.length - 1] > 0;
 
-    get moveSelectedDownEnabled() {
-        const id = this.state.selectedNode as IdType;
-        return id && !this.nodes.isLastSibling(id);
-    }
-
-    moveSelectedDown() {
-        const id = this.state.selectedNode as IdType;
-        if (this.moveSelectedDownEnabled) {
-            this.setState({ selectedNode: this.nodes.moveDown(id) });
-        }
+        return {
+            moveUp: moveSelectedUpEnabled ?
+                () => this.setState({ selectedNode: this.nodes.moveUp(id) }) :
+                undefined,
+            moveDown: moveSelectedDownEnabled ?
+                () => this.setState({ selectedNode: this.nodes.moveDown(id) }) :
+                undefined
+        };
     }
     //#endregion
 
     //#region Clipboard
     /** Copy the currently selected node */
-    copyClipboard() {
-        if (this.selectedNode) {
-            this.setState({ clipboard: deepCopy(this.selectedNode) });
-        }
-    }
+    get clipboardProps() {
+        const copyClipboard = () => {
+            if (this.selectedNode) {
+                this.setState({ clipboard: deepCopy(this.selectedNode) });
+            }
+        };
 
-    cutClipboard() {
-        // Implement as Copy + Delete
-        if (this.selectedNode) {
-            this.copyClipboard();
-            this.deleteSelected();
-        }
-    }
+        return {
+            copyClipboard: copyClipboard,
+            cutClipboard: () => {
+                if (this.selectedNode) {
+                    copyClipboard();
+                    this.deleteSelected();
+                }
+            },
+            pasteClipboard: this.state.clipboard as ResumeNode ? () => {
+                // Default target: root
+                let target: IdType = [];
+                if (this.state.selectedNode) {
+                    target = this.state.selectedNode;
 
-    /** Paste whatever is currently in the clipboard */
-    pasteClipboard() {
-        // Default target: root
-        let target: IdType = [];
-        if (this.state.selectedNode) {
-            target = this.state.selectedNode;
-        }
-
-        // UUIDs will be added in the method below
-        if (this.state.clipboard as ResumeNode) {
-            this.addChild(target, deepCopy(this.state.clipboard as ResumeNode));
+                    // UUIDs will be added in the method below
+                    this.addChild(target, deepCopy(this.state.clipboard as ResumeNode));
+                }
+            } : undefined
         }
     }
     //#endregion
@@ -398,25 +381,17 @@ class Resume extends React.Component<{}, ResumeState> {
 
     // Save data to an external file
     saveFile(filename: string) {
-        var blob = new Blob([JSON.stringify(this.dump())],
-            {
-                type: "text/plain;charset=utf-8"
-            }
-        );
-
-        saveAs(blob, filename);
+        saveAs(new Blob([JSON.stringify(this.dump())],
+            { type: "text/plain;charset=utf-8" }), filename);
     }
     //#endregion
 
     //#region Helper Component Props
     get selectedNodeActions() : SelectedNodeActions {
         return {
-            copyClipboard: this.copyClipboard,
-            cutClipboard: this.cutClipboard,
+            ...this.clipboardProps,
+            ...this.moveSelectedProps,
             delete: this.deleteSelected,
-            moveUp: this.moveSelectedUp,
-            moveDown: this.moveSelectedDown,
-            pasteClipboard: this.pasteClipboard
         }
     }
 
@@ -445,10 +420,7 @@ class Resume extends React.Component<{}, ResumeState> {
             selectedNode: this.selectedNode,
             addHtmlId: this.addHtmlId,
             addCssClasses: this.addCssClasses,
-            updateNode: this.updateSelected,
             addChild: this.addChild,
-            moveUpEnabled: this.moveSelectedUpEnabled,
-            moveDownEnabled: this.moveSelectedDownEnabled,
             unsavedChanges: this.state.unsavedChanges,
             unselect: () => this.setState({ selectedNode: undefined }),
             updateSelected: this.updateSelected,

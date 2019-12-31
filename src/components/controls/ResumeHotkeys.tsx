@@ -77,7 +77,9 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
             },
 
             PASTE_SELECTED: (event) => {
-                this.props.pasteClipboard();
+                if (this.props.pasteClipboard) {
+                    this.props.pasteClipboard();
+                }
             },
 
             ESCAPE: (event) => {

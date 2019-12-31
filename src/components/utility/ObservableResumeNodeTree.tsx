@@ -10,12 +10,19 @@ export default class ObservableResumeNodeTree {
 
     constructor() {
         this.nodes = new ResumeNodeTree();
+        this.undo = this.undo.bind(this);
+        this.redo = this.redo.bind(this);
     }
 
     private broadcast() {
         if (this.subscriber) {
             this.subscriber(this.nodes);
         }
+    }
+
+    private updatePast() {
+        this.past.push(deepCopy(this.childNodes));
+        this.future = new Array<Array<ResumeNode>>();
     }
 
     subscribe(func: (nodes: ResumeNodeTree) => void) {
@@ -40,13 +47,13 @@ export default class ObservableResumeNodeTree {
     }
 
     addNestedChild(id, node) {
-        this.past.push(deepCopy(this.childNodes));
+        this.updatePast();
         this.nodes.addNestedChild(id, node);
         this.broadcast();
     }
 
     deleteChild(id) {
-        this.past.push(deepCopy(this.childNodes));
+        this.updatePast();
         this.nodes.deleteChild(id);
         this.broadcast();
     }
@@ -62,7 +69,7 @@ export default class ObservableResumeNodeTree {
     undo() {
         const prev = this.past.pop();
         if (prev) {
-            this.future.push(deepCopy(prev));
+            this.future.push(deepCopy(this.childNodes));
             this.nodes.childNodes = prev;
             this.broadcast();
         }
@@ -71,26 +78,27 @@ export default class ObservableResumeNodeTree {
     redo() {
         const next = this.future.pop();
         if (next) {
+            this.past.push(deepCopy(this.childNodes));
             this.nodes.childNodes = next;
             this.broadcast();
         }
     }
 
     updateChild(id, key, data) {
-        this.past.push(deepCopy(this.childNodes));
+        this.updatePast();
         this.nodes.updateChild(id, key, data);
         this.broadcast();
     }
 
     moveUp(id) {
-        this.past.push(deepCopy(this.childNodes));
+        this.updatePast();
         const newId = this.nodes.moveUp(id);
         this.broadcast();
         return newId;
     }
 
     moveDown(id) {
-        this.past.push(deepCopy(this.childNodes));
+        this.updatePast();
         const newId = this.nodes.moveDown(id);
         this.broadcast();
         return newId;

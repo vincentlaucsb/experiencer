@@ -5,9 +5,9 @@ import { UndoIcon, RedoIcon, SaveIcon } from "../InterfaceIcons";
 import { Action } from "src/components/utility/Types";
 
 export interface EditingSectionProps {
-    undo: Action;
+    undo?: Action;
     unsavedChanges: boolean;
-    redo: Action;
+    redo?: Action;
     saveLocal: Action;
 }
 
@@ -20,10 +20,10 @@ export default function EditingSection(props: EditingSectionProps) {
         <div className="toolbar-section">
             <PureMenu horizontal>
                 <Button disabled={!props.unsavedChanges} onClick={props.saveLocal}><SaveIcon /></Button>
-                <Button onClick={props.undo}>
+                <Button onClick={props.undo} disabled={!props.undo}>
                     <UndoIcon />
                 </Button>
-                <Button onClick={props.redo}>
+                <Button onClick={props.redo} disabled={!props.redo}>
                     <RedoIcon />
                 </Button>
             </PureMenu>

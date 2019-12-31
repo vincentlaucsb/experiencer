@@ -7,8 +7,8 @@ export interface ResumeHotKeysProps extends SelectedNodeActions {
     /** Editor Modes */
     togglePrintMode: Action;
     reset: Action;
-    undo: Action;
-    redo: Action;
+    undo?: Action;
+    redo?: Action;
 };
 
 export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
@@ -85,11 +85,15 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
             },
 
             UNDO: (event) => {
-                this.props.undo();
+                if (this.props.undo) {
+                    this.props.undo();
+                }
             },
 
             REDO: (event) => {
-                this.props.redo();
+                if (this.props.redo) {
+                    this.props.redo();
+                }
             },
 
             DELETE_SELECTED: (event) => {

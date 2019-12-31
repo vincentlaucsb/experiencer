@@ -17,9 +17,11 @@ export interface CssUpdateProps {
 }
 
 export interface CssEditorProps extends CssUpdateProps {
-    autoCollapse?: boolean;
     cssNode: ReadonlyCssNode;
     varSuggestions?: Array<string>;
+
+    /** Whether or not the section is open initially */
+    isOpen?: boolean;
 }
 
 export interface CssEditorState {
@@ -80,7 +82,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
         this.state = {
             highlight: false,
-            isOpen: false
+            isOpen: props.isOpen || false
         };
 
         this.mapContainer = this.mapContainer.bind(this);
@@ -120,7 +122,12 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     }
 
     get sectionName() {
+        /** If section is expanded, then clicking on the title should allow
+         *  the user the edit it. Otherwise, clicking the title should
+         *  expand the section.
+         */
         return <TextField
+            static={!this.state.isOpen}
             defaultText="Enter a section name"
             value={this.props.cssNode.name}
             displayClassName="css-title"
@@ -223,7 +230,6 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
             return <CssEditor
                 key={css.fullPath.join('-')}
                 cssNode={css}
-                autoCollapse={this.props.autoCollapse}
                 addSelector={this.props.addSelector}
                 updateName={this.props.updateName}
                 updateProperty={this.props.updateProperty}
@@ -238,9 +244,9 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     render() {
         const caret = this.state.isOpen ? <i className="icofont-caret-up" /> :
             <i className="icofont-caret-down" />
-
-        const heading = <h2 className="css-title-heading">
-            <span onClick={() => this.setState({ isOpen: !this.state.isOpen })}>
+        
+        const heading = <h2 className="css-title-heading" onClick={() => this.setState({ isOpen: !this.state.isOpen })}>
+            <span className="css-title-trigger" onClick={() => this.setState({ isOpen: !this.state.isOpen })}>
                 {caret}
             </span>
             {this.sectionName}
@@ -257,9 +263,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
             {this.renderProperties()}
             {this.renderChildren()}
         </div> : <></>
-
-        const isOpen = (this.path.length !== 1) || !this.props.autoCollapse;
-
+        
         return (
             <section className={`css-category no-print css-category-${this.path.length}`}>
                 {this.renderHighlightBoxes()}

@@ -1,4 +1,4 @@
-﻿import React from "react";
+﻿import React, { MouseEvent } from "react";
 
 interface TextFieldProps {
     value?: string;
@@ -6,7 +6,7 @@ interface TextFieldProps {
     defaultText?: string;
     displayClassName?: string;
     displayValue?: string;
-    editBlocked?: boolean;
+    static?: boolean;
 
     /** A callback which modifies the display text */
     displayProcessor?: (text?: string) => string;
@@ -33,7 +33,7 @@ export default class TextField extends React.Component<TextFieldProps, TextField
     /** Update parent when appropriate */
     componentDidUpdate(prevProps: TextFieldProps) {
         /** Top level node gave us new data */
-        if (this.props.editBlocked && this.state.isEditing) {
+        if (this.props.static && this.state.isEditing) {
             this.setState({ isEditing: false });
         }
 
@@ -95,7 +95,13 @@ export default class TextField extends React.Component<TextFieldProps, TextField
 
         return (
             <span
-                onClick={() => this.setState({ isEditing: true })}
+                onClick={(event: MouseEvent) => {
+                    if (!this.props.static) {
+                        this.setState({ isEditing: true });
+                        event.stopPropagation();
+                    }
+                }}
+
                 className={props.displayClassName}>{displayValue}</span>
         );
     }

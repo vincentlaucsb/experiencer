@@ -60,7 +60,7 @@ export default class Entry extends React.PureComponent<EntryProps> {
                 return <React.Fragment key={index}>
                     <TextField
                         displayClassName={this.getFieldClassName(index, arr)}
-                        editBlocked={!this.props.isSelected}
+                        static={!this.props.isSelected}
                         onChange={(data: string) => updater(key, index, data)}
                         value={text || ""}
                         defaultText="Enter a value"

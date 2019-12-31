@@ -1,5 +1,5 @@
 ﻿import ResumeNodeTree from "./NodeTree";
-import { ResumeNode } from "./Types";
+import { ResumeNode, IdType } from "./Types";
 import { deepCopy } from "../Helpers";
 
 /** A wrapper around ResumeNodeTree which allows it 
@@ -52,13 +52,13 @@ export default class ObservableResumeNodeTree {
         return this.future.length > 0;
     }
 
-    addNestedChild(id, node) {
+    addNestedChild(id: IdType, node) {
         this.updatePast();
         this.nodes.addNestedChild(id, node);
         this.broadcast();
     }
 
-    deleteChild(id) {
+    deleteChild(id: IdType) {
         this.updatePast();
         this.nodes.deleteChild(id);
         this.broadcast();
@@ -72,11 +72,11 @@ export default class ObservableResumeNodeTree {
      *          
      * @param id
      */
-    getNodeById(id) {
+    getNodeById(id: IdType) {
         return this.nodes.getNodeById(id);
     }
 
-    isLastSibling(id) {
+    isLastSibling(id: IdType) {
         return this.nodes.isLastSibling(id);
     }
 

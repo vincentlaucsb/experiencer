@@ -98,7 +98,6 @@ export default class TextField extends React.Component<TextFieldProps, TextField
                 onClick={(event: MouseEvent) => {
                     if (!this.props.static) {
                         this.setState({ isEditing: true });
-                        event.stopPropagation();
                     }
                 }}
 

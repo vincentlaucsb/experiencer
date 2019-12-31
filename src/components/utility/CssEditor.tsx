@@ -126,7 +126,12 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
          *  the user the edit it. Otherwise, clicking the title should
          *  expand the section.
          */
-        return <TextField
+        return <span onClick={(event) => {
+            if (this.state.isOpen) {
+                event.stopPropagation();
+            }
+        }}>
+        <TextField
             static={!this.state.isOpen}
             defaultText="Enter a section name"
             value={this.props.cssNode.name}
@@ -134,7 +139,8 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
             onChange={(text) => {
                 this.props.updateName(this.path, text);
             }}
-        />
+            />
+        </span>
     }
     
     /**
@@ -246,9 +252,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
             <i className="icofont-caret-down" />
         
         const heading = <h2 className="css-title-heading" onClick={() => this.setState({ isOpen: !this.state.isOpen })}>
-            <span className="css-title-trigger" onClick={() => this.setState({ isOpen: !this.state.isOpen })}>
-                {caret}
-            </span>
+            <span className="css-title-trigger">{caret}</span>
             {this.sectionName}
             {this.highlighter}
             <CssEditorToolbar

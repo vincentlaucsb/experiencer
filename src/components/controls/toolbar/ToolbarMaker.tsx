@@ -4,11 +4,13 @@ import PureMenu, { PureDropdown, PureMenuItem } from "../menus/PureMenu";
 
 export interface ToolbarItemData {
     action?: (event?: React.MouseEvent) => void;
-    items?: Array<ToolbarItemData>;
     icon?: string;
     text?: string;
     content?: React.ReactElement;
     shortcut?: string;
+
+    items?: Array<ToolbarItemData>;
+    iconMenu?: boolean;
 };
 
 export type ToolbarSection = Array<ToolbarItemData>;
@@ -19,19 +21,40 @@ export interface ToolbarMakerProps {
     data: ToolbarData;
 }
 
-function ToolbarItem(props: ToolbarItemData) {
-    let className = "";
-    if (props.text && props.icon) {
-        className = "button-text";
+function ToolbarButton(props: ToolbarItemData) {
+    let icon = <></>;
+    if (props.icon) {
+        icon = <i className={`icofont-${props.icon}`} />
     }
 
+    return (
+        <PureMenuItem onClick={props.action}>
+            <Button
+                disabled={!props.action && !props.items}>
+                {icon}
+                {props.text}
+                {props.shortcut}
+            </Button>
+        </PureMenuItem>
+    );
+}
+
+/**
+ * Factory function for rendering toolbar item
+ * @param props
+ */
+function ToolbarItem(props: ToolbarItemData) {
     if (props.content) {
         return <>{props.content}</>
     }
 
     if (props.items) {
         return (
-            <PureDropdown content={props.text || props.icon}>
+            <PureDropdown
+                content={<ToolbarButton {...props} />}
+                ulProps={{
+                    className: props.iconMenu ? "icon-menu" : ""
+                }}>
                 {props.items.map((value) =>
                     <ToolbarItem {...value} />
                 )}
@@ -39,17 +62,7 @@ function ToolbarItem(props: ToolbarItemData) {
         );
     }
 
-    return (
-        <PureMenuItem>
-            <Button
-                className={className}
-                onClick={props.action}
-                disabled={!props.action}>
-                <i className={props.icon} />
-                {props.text}
-            </Button>
-        </PureMenuItem>
-    );
+    return <ToolbarButton {...props} />
 }
 
 export default function ToolbarMaker(props: ToolbarMakerProps) {

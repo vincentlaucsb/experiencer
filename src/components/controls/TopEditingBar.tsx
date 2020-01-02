@@ -53,15 +53,15 @@ export default function TopEditingBar(props: EditingBarProps) {
     let editingSection: ToolbarSection = [
         {
             action: props.saveLocal,
-            icon: "icofont-save"
+            icon: "save"
         },
         {
             action: props.undo,
-            icon: "icofont-undo"
+            icon: "undo"
         },
         {
             action: props.redo,
-            icon: "icofont-redo"
+            icon: "redo"
         }
     ];
 

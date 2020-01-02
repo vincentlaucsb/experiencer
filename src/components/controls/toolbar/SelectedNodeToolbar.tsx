@@ -5,14 +5,10 @@ import { DescriptionListItem } from "src/components/List";
 import React from "react";
 import { AddChild, IdType } from "src/components/utility/Types";
 import Column from "src/components/Column";
-import PureMenu, { PureMenuItem, PureDropdown } from "../menus/PureMenu";
 import HtmlIdAdder from "../HtmlIdAdder";
-import { Button } from "../Buttons";
 import { assignIds } from "src/components/Helpers";
 import ResumeHotKeys from "../ResumeHotkeys";
 import { ToolbarSection, ToolbarItemData } from "./ToolbarMaker";
-
-type AddOptions = Array<NodeInformation>;
 
 interface AddOptionProps {
     options: string | Array<string>;
@@ -35,6 +31,7 @@ function AddOption(data: AddOptionProps): ToolbarItemData {
 
         return {
             text: "Insert",
+            iconMenu: true,
             items: options.map((nodeType: string) => {
                 const info = nodeInfo(nodeType);
                 const node: NodeInformation = nodeInfo(nodeType);
@@ -54,7 +51,6 @@ function AddOption(data: AddOptionProps): ToolbarItemData {
         text: `Add ${node.text}`
     }
 }
-
 
 function ClipboardMenu(data: EditingBarProps): ToolbarSection {
     /**
@@ -95,8 +91,8 @@ export default function SelectedNodeToolbar(props: EditingBarSubProps) {
     const id = props.selectedNodeId;
     if (id && props.selectedNode) {
         const type = props.selectedNode.type;
-        let moveUpText = "icofont-rounded-up";
-        let moveDownText = "icofont-rounded-down";
+        let moveUpText = "rounded-up";
+        let moveDownText = "rounded-down";
 
         // If we are selecting a child of a container type,
         // give the option of adding another child to the parent
@@ -111,8 +107,8 @@ export default function SelectedNodeToolbar(props: EditingBarSubProps) {
         }
 
         if (type === Column.type) {
-            moveUpText = "icofont-rounded-left";
-            moveDownText = "icofont-rounded-right";
+            moveUpText = "rounded-left";
+            moveDownText = "rounded-right";
         }
         
         return new Map<string, ToolbarSection>([
@@ -124,7 +120,7 @@ export default function SelectedNodeToolbar(props: EditingBarSubProps) {
                 }),
                 {
                     action: props.delete,
-                    icon: 'icofont-ui-delete'
+                    icon: 'ui-delete'
                 },
                 {
                     action: props.unselect,

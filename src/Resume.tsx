@@ -428,7 +428,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             addChild: this.addChild,
             unselect: () => this.setState({ selectedNode: undefined }),
             updateSelected: this.updateSelected,
-            saveLocal: this.saveLocal
+            saveLocal: this.state.unsavedChanges ? this.saveLocal : undefined
         }
     }
 

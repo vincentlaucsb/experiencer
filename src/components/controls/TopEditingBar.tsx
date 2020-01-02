@@ -10,7 +10,7 @@ import SelectedNodeToolbar from "./toolbar/SelectedNodeToolbar";
 import ToolbarMaker, { ToolbarSection } from "./toolbar/ToolbarMaker";
 
 interface EditingSectionProps {
-    saveLocal: Action;
+    saveLocal?: Action;
     undo?: Action;
     redo?: Action;
 }
@@ -78,26 +78,48 @@ export default class TopEditingBar extends React.Component<EditingBarProps, Edit
     updateResizer() {
         const container = this.toolbarRef.current;
         if (container) {
-            if ((container.scrollWidth > container.clientWidth) ||
-                window.innerWidth < this.state.overflowWidth) {
-                if (this.state.overflowWidth < 0) {
-                    this.setState({ overflowWidth: container.scrollWidth });
-                }
-                
-                this.setState({ isOverflowing: true });
+            // Get width of parent container
+            // Note: Since container.parentElement is almost always defined
+            //       the fallback only exists so TypeScript doesn't yell at us
+            const parentWidth = container.parentElement ?
+                container.parentElement.clientWidth : window.innerWidth;
+
+            // Case 1: Editing bar is overflowing
+            // Case 2: Editing bar has been shrunk, but parent container
+            //         isn't large enough for editing bar to fully expand
+            const isOverflowing = (container.scrollWidth > container.clientWidth)
+                || (parentWidth < this.state.overflowWidth);
+
+            // This sets the breakpoint at which the editing bar should
+            // collapse
+            if (this.state.overflowWidth < 0 && isOverflowing) {
+                this.setState({ overflowWidth: container.scrollWidth });
             }
-            else {
-                this.setState({ isOverflowing: false });
-            }
+
+            this.setState({ isOverflowing: isOverflowing });
         }
     };
 
     render() {
         const props = this.props;
+        const id = props.selectedNodeId;
 
         let data = new Map<string, ToolbarSection>([
             ["Editing", this.editingSection],
-            ["Resume Components", [
+        ]);
+
+        if (id && props.selectedNode) {
+            let selectedNodeOptions = SelectedNodeToolbar({
+                ...props,
+                isOverflowing: this.state.isOverflowing
+            });
+
+            selectedNodeOptions.forEach((value, key) => {
+                data.set(key, value);
+            });
+        }
+        else {
+            data.set("Resume Components", [
                 {
                     action: () => props.addChild([], assignIds({ type: Section.type })),
                     icon: "book-mark",
@@ -113,21 +135,7 @@ export default class TopEditingBar extends React.Component<EditingBarProps, Edit
                     icon: "table",
                     text: "Add Grid"
                 }
-            ]]
-        ]);
-
-        const id = props.selectedNodeId;
-        if (id && props.selectedNode) {
-            data.delete("Resume Components");
-
-            let selectedNodeOptions = SelectedNodeToolbar({
-                ...props,
-                isOverflowing: this.state.isOverflowing
-            });
-
-            selectedNodeOptions.forEach((value, key) => {
-                data.set(key, value);
-            });
+            ]);
         }
 
         let children = <ToolbarMaker data={data} isOverflowing={this.state.isOverflowing} />;

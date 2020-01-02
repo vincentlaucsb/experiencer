@@ -426,7 +426,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             addHtmlId: this.addHtmlId,
             addCssClasses: this.addCssClasses,
             addChild: this.addChild,
-            unsavedChanges: this.state.unsavedChanges,
             unselect: () => this.setState({ selectedNode: undefined }),
             updateSelected: this.updateSelected,
             saveLocal: this.saveLocal

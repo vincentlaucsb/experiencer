@@ -95,12 +95,12 @@ header#app-header {
             border-right: 1px dotted $light-accent;
             align-items: center;
 
-            .label {
+            .toolbar-label {
                 color: $light-accent;
                 font-size: 0.8em;
             }
 
-            .label:hover {
+            .toolbar-label:hover {
                 cursor: default;
             }
         }

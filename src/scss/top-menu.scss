@@ -1,65 +1,5 @@
 ﻿@import "variables";
 
-button.toolbar-button-has-text {
-    i {
-        display: inline-block;
-        width: 30px;
-    }
-}
-
-/** || Toolbar Dropdowns */
-ul.pure-menu-children {
-    box-shadow: transparentize($dark-shade, 0.5) 2px 2px 5px;
-
-    li.pure-menu-item {
-        background: $dark-shade;
-        color: $light-shade;
-        padding: 0;
-
-        button.toolbar-button {
-            display: grid;
-            align-items: center;
-            /** icon, label, shortcut (if applicable) */
-            grid-template-columns: 30px 1fr 0.5fr;
-            text-align: left;
-            width: 100%;
-
-            i {
-                color: $light-accent;
-            }
-
-            /** Give buttons in menus the same styling as links */
-            .toolbar-button-text {
-                border: none;
-                grid-column-start: 2;
-                text-decoration: none;
-                white-space: nowrap;
-            }
-
-            .toolbar-button-shortcut {
-                margin-left: $spacing * 2;
-            }
-        }
-    }
-
-    li.pure-menu-item:hover {
-        background: $dark-accent;
-
-        i {
-            color: lighten($light-accent, 25%);
-        }
-    }
-
-    li.pure-menu-item.disabled {
-        color: transparentize($light-shade, 0.5);
-        cursor: default;
-    }
-
-    li.pure-menu-item.disabled:hover {
-        background: $dark-shade;
-    }
-}
-
 /** || Header */
 header#app-header {
     $header-background: $main;
@@ -75,86 +15,67 @@ header#app-header {
         background: $dark-accent;
     }
 
-    div#brand, div#toolbar {
+    #brand, #toolbar {
         @extend %flex-row;
         align-content: center;
     }
-    /** || Top Editing Bar */
-    div#toolbar {
-        border-top: 1px solid $light-accent;
-        color: $light-shade;
 
-        div.toolbar-section {
-            @extend %flex-col;
-            border-right: 1px solid transparentize($light-accent, 0.5);
-            align-items: center;
-            padding: $spacing * 0.5;
+    .pure-button {
+        background: inherit;
+        color: inherit;
+    }
 
-            .toolbar-label {
-                color: $light-accent;
-                font-size: 0.8em;
-            }
+    .pure-button:hover {
+        background: $dark-accent;
+    }
+}
 
-            .toolbar-label:hover {
-                cursor: default;
-            }
+/** || Top Editing Bar */
+div#toolbar {
+    border-top: 1px solid $light-accent;
+    color: $light-shade;
+
+    div.toolbar-section {
+        @extend %flex-col;
+        border-right: 1px solid transparentize($light-accent, 0.5);
+        align-items: center;
+        padding: $edge-horizontal-spacing;
+
+        .toolbar-label {
+            color: $light-accent;
+            font-size: 0.8em;
         }
 
-        div.toolbar-section:last-child {
-            border-right: none;
-        }
-
-        .pure-button {
-            background: inherit;
-            color: inherit;
-
-            svg {
-                margin-right: $spacing * 0.25;
-            }
-        }
-
-        button.pure-button:hover {
-            background: $dark-accent;
-        }
-
-        button.button-text i {
-            margin-right: $spacing/2;
+        .toolbar-label:hover {
+            cursor: default;
         }
     }
-    /** || Top Nav Bar */
-    div#brand {
-        padding-left: $spacing * 0.5;
-        padding-right: $spacing * 0.5;
-        align-items: center;
 
-        h1 {
-            margin: $spacing;
-            font-size: 20pt;
-            cursor: pointer;
-        }
+    div.toolbar-section:last-child {
+        border-right: none;
+    }
+}
+/** || Top Nav Bar */
+div#brand {
+    padding: 0 $edge-horizontal-spacing;
+    align-items: center;
 
-        .pure-menu-horizontal {
-            margin-left: $spacing * 2;
-            display: flex;
-            flex-direction: column;
-            align-self: center;
-        }
+    h1 {
+        margin: $spacing;
+        font-size: 20pt;
+        cursor: pointer;
+    }
 
-        .pure-menu-selected {
-            a {
-                color: $light-shade;
-                font-weight: bold;
-            }
-        }
+    .pure-menu-horizontal {
+        margin-left: $spacing * 2;
+        display: flex;
+        flex-direction: column;
+        align-self: center;
+    }
 
-        .pure-menu-link:hover {
-            background: $dark-accent;
-            color: $light-shade;
-        }
-        // GitHub Icon
-        .github-mark {
-            color: $light-accent;
-            width: 32px;
-        }
+    // GitHub Icon
+    .github-mark {
+        color: $light-accent;
+        width: 32px;
     }
 }

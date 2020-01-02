@@ -6,6 +6,7 @@ import IconicMenuItem from "./menus/MenuItem";
 import Modal from "./Modal";
 import GitHubLight from "../../icons/GitHub-Mark-Light-120px-plus.png";
 import { Action, EditorMode } from "../utility/Types";
+import { Button } from "./Buttons";
 
 export interface TopNavBarProps {
     isEditing: boolean;
@@ -53,7 +54,7 @@ export default function TopNavBar(props: TopNavBarProps) {
             <div id="brand">
                 <h1 onClick={props.toggleLanding}>Experiencer</h1>
                 <PureMenu id="top-menu" horizontal>
-                    <PureDropdown trigger={<Link>File</Link>}>
+                    <PureDropdown trigger={<Button>File</Button>}>
                         <IconicMenuItem icon="paper" onClick={() => props.new()} text="New" />
                         <IconicMenuItem icon="folder-open" onClick={openLoader} text="Load" />
                         <IconicMenuItem disabled={!props.isEditing} onClick={props.saveLocal} text="Save" />
@@ -62,7 +63,7 @@ export default function TopNavBar(props: TopNavBarProps) {
                         <IconicMenuItem disabled={!props.isEditing} icon="printer" onClick={props.print} text="Print" />
                     </PureDropdown>
                     <Item onClick={props.toggleHelp}>
-                        <Link>Help</Link>
+                        <Button>Help</Button>
                     </Item>
                 </PureMenu>
                 <div>

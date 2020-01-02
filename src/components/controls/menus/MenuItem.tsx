@@ -35,7 +35,7 @@ export default function IconicMenuItem(props: IconicMenuItemProps) {
         : <></>
     
     return (
-        <PureMenuItem onClick={props.onClick}>
+        <PureMenuItem className="toolbar-item" onClick={props.onClick}>
             <Button className={btnClsNames.join(' ')}>
                 {icon}
                 {text}

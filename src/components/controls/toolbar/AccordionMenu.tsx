@@ -12,7 +12,7 @@ export default function AccordionMenu(props: AccordionMenuProps) {
     if (props.collapse) {
         return (
             <PureMenu>
-                <PureDropdown content={
+                <PureDropdown trigger={
                     <PureMenuItem><Button>{props.label}</Button></PureMenuItem>
                 }>
                     {props.children}

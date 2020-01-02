@@ -63,7 +63,7 @@ export function PureMenuLink(props: { children: any }) {
 }
 
 interface PureDropdownProps extends PureMenuItemProps {
-    content: any;
+    trigger: any;
     hover?: boolean;
     ulProps?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLUListElement>, HTMLUListElement>;
 }
@@ -105,7 +105,7 @@ export function PureDropdown(props: PureDropdownProps) {
             {...props}
             onClick={toggler}
             classNames={classes}>
-            {props.content}
+            {props.trigger}
             <ul {...newUlProps}>
                 {props.children}
             </ul>

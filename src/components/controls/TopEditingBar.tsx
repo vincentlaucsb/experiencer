@@ -70,17 +70,17 @@ export default function TopEditingBar(props: EditingBarProps) {
         ["Resume Components", [
             {
                 action: () => props.addChild([], assignIds({ type: Section.type })),
-                icon: "icofont-book-mark",
+                icon: "book-mark",
                 text: "Add Section"
             },
             {
                 action: () => props.addChild([], assignIds(ComponentTypes.defaultValue(Row.type).node)),
-                icon: "icofont-swoosh-right",
+                icon: "swoosh-right",
                 text: "Add Rows & Columns"
             },
             {
                 action: () => props.addChild([], assignIds(ComponentTypes.defaultValue(Grid.type).node)),
-                icon: "icofont-table",
+                icon: "table",
                 text: "Add Grid"
             }
         ]]
@@ -100,7 +100,6 @@ export default function TopEditingBar(props: EditingBarProps) {
         });
     }
 
-    let children = <ToolbarMaker data={data} />;
-
+    let children = <ToolbarMaker data={data} isOverflowing={isOverflowing} />;
     return <div ref={toolbarRef} id="toolbar">{children}</div>
 }

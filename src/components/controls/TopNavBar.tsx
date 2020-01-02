@@ -53,7 +53,7 @@ export default function TopNavBar(props: TopNavBarProps) {
             <div id="brand">
                 <h1 onClick={props.toggleLanding}>Experiencer</h1>
                 <PureMenu id="top-menu" horizontal>
-                    <PureDropdown content={<Link>File</Link>}
+                    <PureDropdown trigger={<Link>File</Link>}
                         ulProps={{className: "icon-menu"}}>
                         <IconicMenuItem icon="paper" onClick={() => props.new()} label="New" />
                         <IconicMenuItem icon="folder-open" onClick={openLoader} label="Load" />

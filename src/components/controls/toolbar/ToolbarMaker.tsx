@@ -8,6 +8,7 @@ export interface ToolbarItemData {
     icon?: string;
     text?: string;
     content?: React.ReactElement;
+    shortcut?: string;
 };
 
 export type ToolbarSection = Array<ToolbarItemData>;
@@ -32,11 +33,7 @@ function ToolbarItem(props: ToolbarItemData) {
         return (
             <PureDropdown content={props.text || props.icon}>
                 {props.items.map((value) =>
-                    <PureMenuItem>
-                        <Button>
-                            {value.icon} {value.text}
-                        </Button>
-                    </PureMenuItem>
+                    <ToolbarItem {...value} />
                 )}
             </PureDropdown>
         );

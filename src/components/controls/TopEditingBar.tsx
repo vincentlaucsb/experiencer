@@ -1,15 +1,13 @@
 ﻿import React from "react";
-import { Button } from "./Buttons";
-import PureMenu, { PureDropdown, PureMenuItem } from "./menus/PureMenu";
 import { SelectedNodeActions } from "./SelectedNodeActions";
 import { assignIds } from "../Helpers";
-import ComponentTypes, { NodeInformation } from "../schema/ComponentTypes";
+import ComponentTypes from "../schema/ComponentTypes";
 import Grid from "../Grid";
 import Row from "../Row";
 import Section from "../Section";
 import { Action, IdType, NodeProperty, ResumeNode, AddChild } from "../utility/Types";
 import SelectedNodeToolbar from "./toolbar/SelectedNodeToolbar";
-import ToolbarMaker, { ToolbarData, ToolbarSection } from "./toolbar/ToolbarMaker";
+import ToolbarMaker, { ToolbarSection } from "./toolbar/ToolbarMaker";
 
 interface EditingSectionProps {
     saveLocal: Action;

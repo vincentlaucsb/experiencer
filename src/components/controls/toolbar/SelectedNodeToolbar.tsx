@@ -1,19 +1,16 @@
 ﻿import { EditingBarProps } from "../TopEditingBar";
 import toolbarOptions from "src/components/schema/ToolbarOptions";
 import ComponentTypes, { NodeInformation } from "src/components/schema/ComponentTypes";
-import DescriptionList, { DescriptionListItem } from "src/components/List";
+import { DescriptionListItem } from "src/components/List";
 import React from "react";
 import { AddChild, IdType } from "src/components/utility/Types";
 import Column from "src/components/Column";
 import PureMenu, { PureMenuItem, PureDropdown } from "../menus/PureMenu";
 import HtmlIdAdder from "../HtmlIdAdder";
 import { Button } from "../Buttons";
-import IconicMenuItem from "../menus/MenuItem";
-import { AddIcon, ClipboardIcon, TrashIcon } from "../InterfaceIcons";
 import { assignIds } from "src/components/Helpers";
 import ResumeHotKeys from "../ResumeHotkeys";
-import AccordionMenu from "./AccordionMenu";
-import { ToolbarSection } from "./ToolbarMaker";
+import { ToolbarSection, ToolbarItemData } from "./ToolbarMaker";
 
 type AddOptions = Array<NodeInformation>;
 
@@ -27,36 +24,39 @@ interface AddOptionProps {
  * Return the button or menu for adding children to a node
  * @param options
  */
-function AddOption(props: AddOptionProps) {
-    const options = props.options;
+function AddOption(data: AddOptionProps): ToolbarItemData {
+    const options = data.options;
     const nodeInfo = (type: string) => ComponentTypes.defaultValue(type);
 
     if (Array.isArray(options)) {
         if (options.length === 0) {
-            return <></>
+            return {};
         }
 
-        let optionsDetail: AddOptions = options.map((nodeType: string) => nodeInfo(nodeType));
-        return <PureDropdown
-            content={<Button className="button-text"><AddIcon />Insert</Button>}
-            ulProps={{ className: "icon-menu" }}
-        >
-            {optionsDetail.map((opt) =>
-                <IconicMenuItem key={opt.text} icon={opt.icon} label={opt.text} onClick={() => props.addChild(props.id, assignIds(opt.node))} />
-            )}
-        </PureDropdown>
+        return {
+            text: "Insert",
+            items: options.map((nodeType: string) => {
+                const info = nodeInfo(nodeType);
+                const node: NodeInformation = nodeInfo(nodeType);
+
+                return {
+                    icon: info.icon,
+                    text: info.text,
+                    action: () => data.addChild(data.id, assignIds(node.node))
+                } as ToolbarItemData
+            })
+        }
     }
 
-    const node: NodeInformation = nodeInfo(options as string);
-    return (
-        <Button onClick={() => props.addChild(props.id, assignIds(node.node))}>
-            Add {node.text}
-        </Button>
-    );
+    const node: NodeInformation = nodeInfo(data.options as string);
+    return {
+        action: () => data.addChild(data.id, assignIds(node.node)),
+        text: `Add ${node.text}`
+    }
 }
 
 
-function ClipboardMenu(props: EditingBarProps) {
+function ClipboardMenu(data: EditingBarProps): ToolbarSection {
     /**
      * Get the keyboard shortcut associated with key
      * @param key Resume hotkey key
@@ -65,37 +65,26 @@ function ClipboardMenu(props: EditingBarProps) {
         return ResumeHotKeys.keyMap[key]['sequence'];
     }
 
-    let menuItems = [
+    return [
         {
-            label: 'Cut',
+            text: 'Cut',
             icon: "ui-cut",
-            action: props.cutClipboard, shortcut: getShortcut('CUT_SELECTED')
+            action: data.cutClipboard,
+            shortcut: getShortcut('CUT_SELECTED')
         },
         {
-            label: 'Copy',
+            text: 'Copy',
             icon: "ui-copy",
-            action: props.copyClipboard, shortcut: getShortcut('COPY_SELECTED')
+            action: data.copyClipboard,
+            shortcut: getShortcut('COPY_SELECTED')
         },
         {
-            label: 'Paste',
+            text: 'Paste',
             icon: "ui-clip-board",
-            action: props.pasteClipboard, shortcut: getShortcut('PASTE_SELECTED')
+            action: data.pasteClipboard,
+            shortcut: getShortcut('PASTE_SELECTED')
         }
     ];
-
-    return (
-        <PureDropdown
-            content={<Button><ClipboardIcon /></Button>}
-            ulProps={{ className: "icon-menu" }}>
-            {menuItems.map((value) =>
-                <IconicMenuItem key={value.label}
-                    icon={value.icon}
-                    shortcut={value.shortcut}
-                    label={value.label}
-                    onClick={value.action} />
-            )}
-        </PureDropdown>
-    );
 }
 
 interface EditingBarSubProps extends EditingBarProps {
@@ -103,10 +92,6 @@ interface EditingBarSubProps extends EditingBarProps {
 }
 
 export default function SelectedNodeToolbar(props: EditingBarSubProps) {
-    const Item = (props: any) => <PureMenuItem onClick={props.onClick}>
-        <Button disabled={props.disabled}>{props.children}</Button>
-    </PureMenuItem>
-
     const id = props.selectedNodeId;
     if (id && props.selectedNode) {
         const type = props.selectedNode.type;
@@ -122,23 +107,21 @@ export default function SelectedNodeToolbar(props: EditingBarSubProps) {
 
         if (type === DescriptionListItem.type) {
             const parentId = id.slice(0, id.length - 1);
-            parentOptions = <AddOption id={parentId} addChild={
-                props.addChild as AddChild
-            } options={ComponentTypes.childTypes(DescriptionList.type)} />
+            parentOptions = <></>
         }
 
         if (type === Column.type) {
             moveUpText = "icofont-rounded-left";
             moveDownText = "icofont-rounded-right";
         }
-
-        let nodeOptions = <div className="toolbar-section">
-            <AddOption id={id} addChild={props.addChild as AddChild} options={childTypes} />
-            <ClipboardMenu {...props} />
-        </div>
-
+        
         return new Map<string, ToolbarSection>([
             [`Current Node (${props.selectedNode.type})`, [
+                AddOption({
+                    id: id,
+                    addChild: props.addChild,
+                    options: childTypes
+                }),
                 {
                     action: props.delete,
                     icon: 'icofont-ui-delete'
@@ -146,6 +129,10 @@ export default function SelectedNodeToolbar(props: EditingBarSubProps) {
                 {
                     action: props.unselect,
                     text: 'Unselect'
+                },
+                {
+                    text: "Clipboard",
+                    items: ClipboardMenu(props),
                 },
                 ...toolbarOptions(props.selectedNode, props.updateSelected)
             ]],

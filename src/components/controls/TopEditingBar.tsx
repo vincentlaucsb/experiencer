@@ -47,6 +47,23 @@ export default class TopEditingBar extends React.Component<EditingBarProps, Edit
         this.updateResizer = this.updateResizer.bind(this);
     }
 
+    get editingSection(): ToolbarSection {
+        return [
+            {
+                action: this.props.saveLocal,
+                icon: "save"
+            },
+            {
+                action: this.props.undo,
+                icon: "undo"
+            },
+            {
+                action: this.props.redo,
+                icon: "redo"
+            }
+        ];
+    }
+
     componentDidMount() {
         window.addEventListener("resize", this.updateResizer);
 
@@ -78,23 +95,8 @@ export default class TopEditingBar extends React.Component<EditingBarProps, Edit
     render() {
         const props = this.props;
 
-        let editingSection: ToolbarSection = [
-            {
-                action: props.saveLocal,
-                icon: "save"
-            },
-            {
-                action: props.undo,
-                icon: "undo"
-            },
-            {
-                action: props.redo,
-                icon: "redo"
-            }
-        ];
-
         let data = new Map<string, ToolbarSection>([
-            ["Editing", editingSection],
+            ["Editing", this.editingSection],
             ["Resume Components", [
                 {
                     action: () => props.addChild([], assignIds({ type: Section.type })),

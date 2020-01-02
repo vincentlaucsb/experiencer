@@ -127,7 +127,7 @@ export default function ToolbarMaker(props: ToolbarMakerProps) {
         return (
             <PureMenu horizontal>
                 {Array.from(props.data).map(([key, items]) =>
-                    <OverflowMenu text={key} items={items} />
+                    <OverflowMenu key={key} text={key} items={items} />
                 )}
             </PureMenu>
         );
@@ -136,10 +136,10 @@ export default function ToolbarMaker(props: ToolbarMakerProps) {
     return <React.Fragment>
         {Array.from(props.data).map(([key, items]) => {
             return (
-                <div className="toolbar-section">
+                <div className="toolbar-section" key={key}>
                     <PureMenu horizontal>
-                        {items.map((item) =>
-                           <ToolbarItem {...item} />
+                        {items.map((item: ToolbarItemData, index: number) =>
+                            <ToolbarItem key={index} {...item} />
                         )}
                     </PureMenu>
                     <span className="toolbar-label">

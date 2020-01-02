@@ -29,10 +29,6 @@ export interface EditingBarProps extends SelectedNodeActions, EditingSectionProp
 }
 
 export default function TopEditingBar(props: EditingBarProps) {
-    const Item = (props: any) => <PureMenuItem onClick={props.onClick}>
-        <Button disabled={props.disabled}>{props.children}</Button>
-    </PureMenuItem>
-
     let toolbarRef = React.createRef<HTMLDivElement>();
     let [isOverflowing, setOverflowing] = React.useState(false);
 
@@ -77,23 +73,25 @@ export default function TopEditingBar(props: EditingBarProps) {
             {
                 action: () => props.addChild([], assignIds({ type: Section.type })),
                 icon: "icofont-book-mark",
-                label: "Add Section"
+                text: "Add Section"
             },
             {
                 action: () => props.addChild([], assignIds(ComponentTypes.defaultValue(Row.type).node)),
                 icon: "icofont-swoosh-right",
-                label: "Add Rows & Columns"
+                text: "Add Rows & Columns"
             },
             {
                 action: () => props.addChild([], assignIds(ComponentTypes.defaultValue(Grid.type).node)),
                 icon: "icofont-table",
-                label: "Add Grid"
+                text: "Add Grid"
             }
         ]]
     ]);
 
     const id = props.selectedNodeId;
     if (id && props.selectedNode) {
+        data.delete("Resume Components");
+
         let selectedNodeOptions = SelectedNodeToolbar({
             ...props,
             isOverflowing: isOverflowing

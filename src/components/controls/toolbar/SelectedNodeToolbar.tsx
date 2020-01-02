@@ -1,5 +1,5 @@
 ﻿import { EditingBarProps } from "../TopEditingBar";
-import toolbarOptions, { CustomToolbarOptions } from "src/components/schema/ToolbarOptions";
+import toolbarOptions from "src/components/schema/ToolbarOptions";
 import ComponentTypes, { NodeInformation } from "src/components/schema/ComponentTypes";
 import DescriptionList, { DescriptionListItem } from "src/components/List";
 import React from "react";
@@ -98,35 +98,6 @@ function ClipboardMenu(props: EditingBarProps) {
     );
 }
 
-/**
- * Subcomponent of TopEditingBar which returns the custom editing options for a node
- * @param props
- */
-export function CustomOptions(props: { options: CustomToolbarOptions }) {
-    const DropdownItem = (props: any) => {
-        return <PureMenuItem onClick={props.onClick}>
-            {props.children}
-        </PureMenuItem>
-    }
-
-    return <>
-        {props.options.map((item) => {
-            if (item.action) {
-                return <Button key={item.text} onClick={item.action}>{item.text}</Button>
-            }
-            else if (item.actions) {
-                return <PureDropdown key={item.text} content={<Button>{item.text}</Button>}>
-                    {item.actions.map((item) =>
-                        <DropdownItem key={item.text} onClick={item.action}>{item.text}</DropdownItem>
-                    )}
-                </PureDropdown>
-            }
-
-            return <></>
-        })}
-    </>
-}
-
 interface EditingBarSubProps extends EditingBarProps {
     isOverflowing: boolean;
 }
@@ -164,7 +135,6 @@ export default function SelectedNodeToolbar(props: EditingBarSubProps) {
         let nodeOptions = <div className="toolbar-section">
             <AddOption id={id} addChild={props.addChild as AddChild} options={childTypes} />
             <ClipboardMenu {...props} />
-            <Button onClick={props.unselect}>Unselect</Button>
         </div>
 
         return new Map<string, ToolbarSection>([
@@ -175,7 +145,7 @@ export default function SelectedNodeToolbar(props: EditingBarSubProps) {
                 },
                 {
                     action: props.unselect,
-                    label: 'Unselect'
+                    text: 'Unselect'
                 },
                 ...toolbarOptions(props.selectedNode, props.updateSelected)
             ]],

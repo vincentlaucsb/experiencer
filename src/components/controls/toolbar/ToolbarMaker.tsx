@@ -1,6 +1,7 @@
 ﻿import React, { ReactElement } from "react";
 import { Button } from "../Buttons";
 import PureMenu, { PureDropdown, PureMenuItem } from "../menus/PureMenu";
+import IconicMenuItem from "../menus/MenuItem";
 
 export interface ToolbarItemData {
     action?: (() => void) | ((event: React.MouseEvent) => void);
@@ -10,27 +11,20 @@ export interface ToolbarItemData {
     shortcut?: string;
 
     items?: Array<ToolbarItemData>;
-    iconMenu?: boolean;
 };
 
 export type ToolbarSection = Array<ToolbarItemData>;
 export type ToolbarData = Map<string, ToolbarSection>;
 
 function ToolbarButton(props: ToolbarItemData) {
-    let icon = <></>;
-    if (props.icon) {
-        icon = <i className={`icofont-${props.icon}`} />
-    }
-
     return (
-        <PureMenuItem onClick={props.action}>
-            <Button
-                disabled={!props.action && !props.items}>
-                {icon}
-                {props.text}
-                {props.shortcut}
-            </Button>
-        </PureMenuItem>
+        <IconicMenuItem
+            disabled={!props.action && !props.items}
+            onClick={props.action}
+            icon={props.icon}
+            shortcut={props.shortcut}
+            text={props.text}
+        />
     );
 }
 
@@ -50,10 +44,7 @@ function ToolbarItem(props: ToolbarItemProps) {
     if (props.items) {
         return (
             <PureDropdown
-                trigger={<ToolbarButton {...props} />}
-                ulProps={{
-                    className: props.iconMenu ? "icon-menu" : ""
-                }}>
+                trigger={<ToolbarButton {...props} />}>
                 {props.items.map((value) =>
                     <ToolbarItem {...value} />
                 )}

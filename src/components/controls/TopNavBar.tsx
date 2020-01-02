@@ -53,14 +53,13 @@ export default function TopNavBar(props: TopNavBarProps) {
             <div id="brand">
                 <h1 onClick={props.toggleLanding}>Experiencer</h1>
                 <PureMenu id="top-menu" horizontal>
-                    <PureDropdown trigger={<Link>File</Link>}
-                        ulProps={{className: "icon-menu"}}>
-                        <IconicMenuItem icon="paper" onClick={() => props.new()} label="New" />
-                        <IconicMenuItem icon="folder-open" onClick={openLoader} label="Load" />
-                        <IconicMenuItem disabled={!props.isEditing} onClick={props.saveLocal} label="Save" />
-                        <IconicMenuItem disabled={!props.isEditing} icon="save" onClick={openSaver} label="Save As" />
-                        <IconicMenuItem disabled={!props.isEditing} icon="file-html5" onClick={props.exportHtml} label="Export to HTML/CSS" />
-                        <IconicMenuItem disabled={!props.isEditing} icon="printer" onClick={props.print} label="Print" />
+                    <PureDropdown trigger={<Link>File</Link>}>
+                        <IconicMenuItem icon="paper" onClick={() => props.new()} text="New" />
+                        <IconicMenuItem icon="folder-open" onClick={openLoader} text="Load" />
+                        <IconicMenuItem disabled={!props.isEditing} onClick={props.saveLocal} text="Save" />
+                        <IconicMenuItem disabled={!props.isEditing} icon="save" onClick={openSaver} text="Save As" />
+                        <IconicMenuItem disabled={!props.isEditing} icon="file-html5" onClick={props.exportHtml} text="Export to HTML/CSS" />
+                        <IconicMenuItem disabled={!props.isEditing} icon="printer" onClick={props.print} text="Print" />
                     </PureDropdown>
                     <Item onClick={props.toggleHelp}>
                         <Link>Help</Link>

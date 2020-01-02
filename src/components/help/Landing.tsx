@@ -17,7 +17,7 @@ export default function Landing(props: LandingProps) {
     let modalContent = <FileLoader close={() => setOpen(false)} loadData={props.loadData} />
 
     const returnButton = (localStorage.getItem(Globals.localStorageKey)) ? <IconicMenuItem
-        onClick={props.loadLocal} icon="hand-drawn-alt-left" label="Return to editing resume" /> :
+        onClick={props.loadLocal} icon="hand-drawn-alt-left" text="Return to editing resume" /> :
         <></>
 
     return (
@@ -32,8 +32,8 @@ export default function Landing(props: LandingProps) {
                     editing your resume, a <strong>Help</strong> button with more information will appear (also in the top left).</p>
                 <PureMenu divProps={{ className: "landing-menu" }}>
                     {returnButton}
-                    <IconicMenuItem onClick={() => props.new()} icon="paper" label="New" />
-                    <IconicMenuItem onClick={() => setOpen(true)} icon="folder-open" label="Load" />
+                    <IconicMenuItem onClick={() => props.new()} icon="paper" text="New" />
+                    <IconicMenuItem onClick={() => setOpen(true)} icon="folder-open" text="Load" />
                 </PureMenu>
             </div>
         </>

@@ -31,7 +31,7 @@ function AddOption(data: AddOptionProps): ToolbarItemData {
 
         return {
             text: "Insert",
-            iconMenu: true,
+            icon: "ui-add",
             items: options.map((nodeType: string) => {
                 const info = nodeInfo(nodeType);
                 const node: NodeInformation = nodeInfo(nodeType);
@@ -123,14 +123,14 @@ export default function SelectedNodeToolbar(props: EditingBarSubProps) {
                     icon: 'ui-delete'
                 },
                 {
-                    action: props.unselect,
-                    text: 'Unselect'
-                },
-                {
-                    text: "Clipboard",
+                    icon: 'clip-board',
                     items: ClipboardMenu(props),
                 },
-                ...toolbarOptions(props.selectedNode, props.updateSelected)
+                ...toolbarOptions(props.selectedNode, props.updateSelected),
+                {
+                    action: props.unselect,
+                    text: 'Unselect'
+                }
             ]],
             ["Move", [
                 {

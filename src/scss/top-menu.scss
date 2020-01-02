@@ -1,5 +1,12 @@
 ﻿@import "variables";
 
+button.toolbar-button-has-text {
+    i {
+        display: inline-block;
+        width: 30px;
+    }
+}
+
 /** || Toolbar Dropdowns */
 ul.pure-menu-children {
     box-shadow: transparentize($dark-shade, 0.5) 2px 2px 5px;
@@ -7,9 +14,32 @@ ul.pure-menu-children {
     li.pure-menu-item {
         background: $dark-shade;
         color: $light-shade;
-        align-items: center;
-        padding: .5em 1em;
-        cursor: pointer;
+        padding: 0;
+
+        button.toolbar-button {
+            display: grid;
+            align-items: center;
+            /** icon, label, shortcut (if applicable) */
+            grid-template-columns: 30px 1fr 0.5fr;
+            text-align: left;
+            width: 100%;
+
+            i {
+                color: $light-accent;
+            }
+
+            /** Give buttons in menus the same styling as links */
+            .toolbar-button-text {
+                border: none;
+                grid-column-start: 2;
+                text-decoration: none;
+                white-space: nowrap;
+            }
+
+            .toolbar-button-shortcut {
+                margin-left: $spacing * 2;
+            }
+        }
     }
 
     li.pure-menu-item:hover {
@@ -27,40 +57,6 @@ ul.pure-menu-children {
 
     li.pure-menu-item.disabled:hover {
         background: $dark-shade;
-    }
-}
-
-ul.pure-menu-children.icon-menu {
-    li.pure-menu-item {
-        display: block grid;
-        /** icon, label, shortcut (if applicable) */
-        grid-template-columns: 30px 1fr 0.5fr;
-
-        > i {
-            color: $light-accent;
-        }
-        /** Give buttons in menus the same styling as links */
-        > span.menu-item-label {
-            background: inherit;
-            border: none;
-            text-decoration: none;
-            white-space: nowrap;
-        }
-
-        > span.shortcut {
-            margin-left: $spacing * 2;
-        }
-    }
-
-    li.pure-menu-item.no-icon {
-        /** Shift items right one column */
-        > span.menu-item-label {
-            grid-column-start: 2;
-        }
-
-        > span.shortcut {
-            grid-column-start: 3;
-        }
     }
 }
 
@@ -83,17 +79,16 @@ header#app-header {
         @extend %flex-row;
         align-content: center;
     }
-
     /** || Top Editing Bar */
     div#toolbar {
         border-top: 1px solid $light-accent;
         color: $light-shade;
-        padding: $spacing * 0.5;
 
         div.toolbar-section {
             @extend %flex-col;
-            border-right: 1px dotted $light-accent;
+            border-right: 1px solid transparentize($light-accent, 0.5);
             align-items: center;
+            padding: $spacing * 0.5;
 
             .toolbar-label {
                 color: $light-accent;
@@ -109,9 +104,9 @@ header#app-header {
             border-right: none;
         }
 
-        button.pure-button {
-            background: $header-background;
-            color: $light-shade;
+        .pure-button {
+            background: inherit;
+            color: inherit;
 
             svg {
                 margin-right: $spacing * 0.25;
@@ -126,7 +121,6 @@ header#app-header {
             margin-right: $spacing/2;
         }
     }
-
     /** || Top Nav Bar */
     div#brand {
         padding-left: $spacing * 0.5;

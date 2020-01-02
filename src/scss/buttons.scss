@@ -14,6 +14,12 @@ button.toolbar-button-has-text {
 }
 
 /** || Toolbar Dropdowns */
+li.pure-menu-has-children > button::after {
+    content: "\25BE";
+    font-size: small;
+    padding-left: 0.5em;
+}
+
 ul.pure-menu-children {
     box-shadow: transparentize($dark-shade, 0.5) 2px 2px 5px;
 

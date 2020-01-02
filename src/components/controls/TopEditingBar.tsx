@@ -26,80 +26,109 @@ export interface EditingBarProps extends SelectedNodeActions, EditingSectionProp
     unselect: Action;
 }
 
-export default function TopEditingBar(props: EditingBarProps) {
-    let toolbarRef = React.createRef<HTMLDivElement>();
-    let [isOverflowing, setOverflowing] = React.useState(false);
+interface EditingBarState {
+    isOverflowing: boolean;
+    overflowWidth: number;
+}
 
-    // The breakpoint at which toolbar begins to overflow
-    let [overflowWidth, setOverflowWidth] = React.useState(-1);
+export default class TopEditingBar extends React.Component<EditingBarProps, EditingBarState> {
+    toolbarRef = React.createRef<HTMLDivElement>();
 
-    const updateResizer = (event) => {
-        if (toolbarRef.current) {
-            if ((toolbarRef.current.scrollWidth > toolbarRef.current.clientWidth) ||
-                window.innerWidth < overflowWidth) {
-                if (overflowWidth < 0) {
-                    setOverflowWidth(toolbarRef.current.scrollWidth);
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            isOverflowing: false,
+
+            // The breakpoint at which toolbar begins to overflow
+            overflowWidth: -1
+        };
+
+        this.updateResizer = this.updateResizer.bind(this);
+    }
+
+    componentDidMount() {
+        window.addEventListener("resize", this.updateResizer);
+
+        // Perform initial resize
+        this.updateResizer();
+    }
+
+    /**
+     * Resize the toolbar on resize
+     * @param event
+     */
+    updateResizer() {
+        const container = this.toolbarRef.current;
+        if (container) {
+            if ((container.scrollWidth > container.clientWidth) ||
+                window.innerWidth < this.state.overflowWidth) {
+                if (this.state.overflowWidth < 0) {
+                    this.setState({ overflowWidth: container.scrollWidth });
                 }
-                setOverflowing(true);
+                
+                this.setState({ isOverflowing: true });
             }
             else {
-                setOverflowing(false);
+                this.setState({ isOverflowing: false });
             }
         }
     };
 
-    window.addEventListener("resize", updateResizer);
+    render() {
+        const props = this.props;
 
-    let editingSection: ToolbarSection = [
-        {
-            action: props.saveLocal,
-            icon: "save"
-        },
-        {
-            action: props.undo,
-            icon: "undo"
-        },
-        {
-            action: props.redo,
-            icon: "redo"
-        }
-    ];
-
-    let data = new Map<string, ToolbarSection>([
-        ["Editing", editingSection],
-        ["Resume Components", [
+        let editingSection: ToolbarSection = [
             {
-                action: () => props.addChild([], assignIds({ type: Section.type })),
-                icon: "book-mark",
-                text: "Add Section"
+                action: props.saveLocal,
+                icon: "save"
             },
             {
-                action: () => props.addChild([], assignIds(ComponentTypes.defaultValue(Row.type).node)),
-                icon: "swoosh-right",
-                text: "Add Rows & Columns"
+                action: props.undo,
+                icon: "undo"
             },
             {
-                action: () => props.addChild([], assignIds(ComponentTypes.defaultValue(Grid.type).node)),
-                icon: "table",
-                text: "Add Grid"
+                action: props.redo,
+                icon: "redo"
             }
-        ]]
-    ]);
+        ];
 
-    const id = props.selectedNodeId;
-    if (id && props.selectedNode) {
-        data.delete("Resume Components");
+        let data = new Map<string, ToolbarSection>([
+            ["Editing", editingSection],
+            ["Resume Components", [
+                {
+                    action: () => props.addChild([], assignIds({ type: Section.type })),
+                    icon: "book-mark",
+                    text: "Add Section"
+                },
+                {
+                    action: () => props.addChild([], assignIds(ComponentTypes.defaultValue(Row.type).node)),
+                    icon: "swoosh-right",
+                    text: "Add Rows & Columns"
+                },
+                {
+                    action: () => props.addChild([], assignIds(ComponentTypes.defaultValue(Grid.type).node)),
+                    icon: "table",
+                    text: "Add Grid"
+                }
+            ]]
+        ]);
 
-        let selectedNodeOptions = SelectedNodeToolbar({
-            ...props,
-            isOverflowing: isOverflowing
-        });
+        const id = props.selectedNodeId;
+        if (id && props.selectedNode) {
+            data.delete("Resume Components");
 
-        selectedNodeOptions.forEach((value, key) => {
-            data.set(key, value);
-        });
+            let selectedNodeOptions = SelectedNodeToolbar({
+                ...props,
+                isOverflowing: this.state.isOverflowing
+            });
+
+            selectedNodeOptions.forEach((value, key) => {
+                data.set(key, value);
+            });
+        }
+
+        let children = <ToolbarMaker data={data} isOverflowing={this.state.isOverflowing} />;
+        return <div ref={this.toolbarRef} id="toolbar">{children}</div>
     }
-
-    let children = <ToolbarMaker data={data} isOverflowing={isOverflowing} />;
-    return <div ref={toolbarRef} id="toolbar">{children}</div>
 }

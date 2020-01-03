@@ -55,6 +55,17 @@ div#toolbar {
         border-right: none;
     }
 }
+
+div#toolbar.toolbar-collapsed > .pure-menu > .pure-menu-list {
+    @extend %flex-row;
+    flex-wrap: wrap;
+
+    // Make items expand to take up all space
+    .pure-menu-item {
+        flex-grow: 2;
+    }
+}
+
 /** || Top Nav Bar */
 div#brand {
     padding: 0 $edge-horizontal-spacing;

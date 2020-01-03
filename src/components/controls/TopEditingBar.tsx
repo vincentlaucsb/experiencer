@@ -150,6 +150,7 @@ export default class TopEditingBar extends React.Component<EditingBarProps, Edit
         }
 
         let children = <ToolbarMaker data={data} isOverflowing={this.state.isOverflowing} />;
-        return <div ref={this.toolbarRef} id="toolbar">{children}</div>
+        const className = this.state.isOverflowing ? "toolbar-collapsed" : "";
+        return <div ref={this.toolbarRef} id="toolbar" className={className}>{children}</div>
     }
 }

@@ -54,12 +54,14 @@ function ToolbarItem(props: ToolbarItemProps) {
         return <>{props.content}</>
     }
 
+    const className = props.text ? "toolbar-button-has-text" : "toolbar-button";
     const icon = props.icon ? <i className={`icofont-${props.icon}`} /> : <></>
     const text = props.text && !props.condensedButton ? props.text : "";
+
     if (props.items) {
         return (
             <PureDropdown
-                trigger={<Button className="toolbar-button">{icon} {text}</Button>}>
+                trigger={<Button className={className}>{icon} {text}</Button>}>
                 {props.items.map((value) =>
                     <ToolbarItem {...value} />
                 )}
@@ -122,8 +124,9 @@ function OverflowMenu(props: OverflowMenuProps) {
         }
     }
 
+    const className = props.text ? "toolbar-button-has-text" : "toolbar-button";
     const icon = props.icon ? <i className={`icofont-${props.icon}`} /> : <></>
-    return <PureDropdown trigger={<Button className="toolbar-button">{icon} {props.text}</Button>}>
+    return <PureDropdown trigger={<Button className={className}>{icon} {props.text}</Button>}>
         {children}
     </PureDropdown>
 }

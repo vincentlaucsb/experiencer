@@ -1,15 +1,17 @@
 ﻿@import "variables";
 
+/** || Toolbar Buttons */
 button.toolbar-button {
     background: inherit;
     color: inherit;
     text-align: left;
 }
 
+/** Toolbar buttons that are not part of a dropdown */
 button.toolbar-button-has-text {
     i {
         display: inline-block;
-        width: 30px;
+        margin-right: $spacing/2;
     }
 }
 
@@ -33,7 +35,7 @@ ul.pure-menu-children {
             align-items: center;
             /** icon, label, shortcut (if applicable) */
             grid-template-columns: 30px 1fr 0.5fr;
-            width: 100%;
+            width: 100%;    
 
             i {
                 color: $light-accent;

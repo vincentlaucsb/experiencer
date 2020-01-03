@@ -94,18 +94,9 @@ export default function SelectedNodeToolbar(props: EditingBarSubProps) {
         let moveUpText = "rounded-up";
         let moveDownText = "rounded-down";
 
-        // If we are selecting a child of a container type,
-        // give the option of adding another child to the parent
         const childTypes = ComponentTypes.childTypes(type);
-        let parentOptions = <></>
-
         const htmlId = props.selectedNode.htmlId ? `#${props.selectedNode.htmlId}` : 'CSS';
-
-        if (type === DescriptionListItem.type) {
-            const parentId = id.slice(0, id.length - 1);
-            parentOptions = <></>
-        }
-
+        
         if (type === Column.type) {
             moveUpText = "rounded-left";
             moveDownText = "rounded-right";

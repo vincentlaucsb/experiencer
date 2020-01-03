@@ -7,7 +7,7 @@ import Row from "../Row";
 import Section from "../Section";
 import { Action, IdType, NodeProperty, ResumeNode, AddChild } from "../utility/Types";
 import SelectedNodeToolbar from "./toolbar/SelectedNodeToolbar";
-import ToolbarMaker, { ToolbarSection } from "./toolbar/ToolbarMaker";
+import ToolbarMaker, { ToolbarSection, ToolbarItemData } from "./toolbar/ToolbarMaker";
 
 interface EditingSectionProps {
     saveLocal?: Action;
@@ -47,19 +47,25 @@ export default class TopEditingBar extends React.Component<EditingBarProps, Edit
         this.updateResizer = this.updateResizer.bind(this);
     }
 
-    get editingSection(): ToolbarSection {
+    get editingSection(): ToolbarItemData[] {
         return [
             {
                 action: this.props.saveLocal,
-                icon: "save"
+                icon: "save",
+                text: "Save",
+                condensedButton: true
             },
             {
                 action: this.props.undo,
-                icon: "undo"
+                icon: "undo",
+                text: "Undo",
+                condensedButton: true
             },
             {
                 action: this.props.redo,
-                icon: "redo"
+                icon: "redo",
+                text: "Redo",
+                condensedButton: true
             }
         ];
     }
@@ -105,7 +111,10 @@ export default class TopEditingBar extends React.Component<EditingBarProps, Edit
         const id = props.selectedNodeId;
 
         let data = new Map<string, ToolbarSection>([
-            ["Editing", this.editingSection],
+            ["Editing", {
+                icon: 'ui-edit',
+                items: this.editingSection
+            }],
         ]);
 
         if (id && props.selectedNode) {
@@ -119,23 +128,25 @@ export default class TopEditingBar extends React.Component<EditingBarProps, Edit
             });
         }
         else {
-            data.set("Resume Components", [
-                {
-                    action: () => props.addChild([], assignIds({ type: Section.type })),
-                    icon: "book-mark",
-                    text: "Add Section"
-                },
-                {
-                    action: () => props.addChild([], assignIds(ComponentTypes.defaultValue(Row.type).node)),
-                    icon: "swoosh-right",
-                    text: "Add Rows & Columns"
-                },
-                {
-                    action: () => props.addChild([], assignIds(ComponentTypes.defaultValue(Grid.type).node)),
-                    icon: "table",
-                    text: "Add Grid"
-                }
-            ]);
+            data.set("Resume Components", {
+                items: [
+                    {
+                        action: () => props.addChild([], assignIds({ type: Section.type })),
+                        icon: "book-mark",
+                        text: "Add Section"
+                    },
+                    {
+                        action: () => props.addChild([], assignIds(ComponentTypes.defaultValue(Row.type).node)),
+                        icon: "swoosh-right",
+                        text: "Add Rows & Columns"
+                    },
+                    {
+                        action: () => props.addChild([], assignIds(ComponentTypes.defaultValue(Grid.type).node)),
+                        icon: "table",
+                        text: "Add Grid"
+                    }
+                ]
+            });
         }
 
         let children = <ToolbarMaker data={data} isOverflowing={this.state.isOverflowing} />;

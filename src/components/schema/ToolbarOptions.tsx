@@ -3,7 +3,7 @@ import Row, { BasicRowProps } from "../Row";
 import Header from "../Header";
 import Icon from "../Icon";
 import { ResumeNode, NodeProperty } from "../utility/Types";
-import { ToolbarSection } from "../controls/toolbar/ToolbarMaker";
+import { ToolbarSection, ToolbarItemData } from "../controls/toolbar/ToolbarMaker";
 
 /**
  * Retrieves custom toolbar options for a node
@@ -14,7 +14,7 @@ import { ToolbarSection } from "../controls/toolbar/ToolbarMaker";
 export default function toolbarOptions(
     node: ResumeNode,
     updateNode: (key: string, value: NodeProperty) => void):
-    ToolbarSection
+    ToolbarItemData[]
 {
     const addLineBreak = (node: BasicEntryProps) => {
         if (node.subtitle) {

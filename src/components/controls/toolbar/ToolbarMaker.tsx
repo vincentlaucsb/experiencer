@@ -16,7 +16,11 @@ export interface ToolbarItemData {
     items?: Array<ToolbarItemData>;
 };
 
-export type ToolbarSection = Array<ToolbarItemData>;
+export interface ToolbarSection {
+    icon?: string;
+    items: Array<ToolbarItemData>;
+}
+
 export type ToolbarData = Map<string, ToolbarSection>;
 
 function ToolbarButton(props: ToolbarItemData) {
@@ -65,6 +69,7 @@ function ToolbarItem(props: ToolbarItemProps) {
 }
 
 interface OverflowMenuProps {
+    icon?: string;
     text: string;
     items: ToolbarItemData[];
 }
@@ -115,7 +120,8 @@ function OverflowMenu(props: OverflowMenuProps) {
         }
     }
 
-    return <PureDropdown trigger={<Button>{props.text}</Button>}>
+    let icon = props.icon ? <i className={`icofont-${props.icon}`} /> : <></>;
+    return <PureDropdown trigger={<Button>{icon} {props.text}</Button>}>
         {children}
     </PureDropdown>
 }
@@ -129,19 +135,19 @@ export default function ToolbarMaker(props: ToolbarMakerProps) {
     if (props.isOverflowing) {
         return (
             <PureMenu horizontal>
-                {Array.from(props.data).map(([key, items]) =>
-                    <OverflowMenu key={key} text={key} items={items} />
+                {Array.from(props.data).map(([key, section]) =>
+                    <OverflowMenu key={key} text={key} icon={section.icon} items={section.items} />
                 )}
             </PureMenu>
         );
     }
 
     return <React.Fragment>
-        {Array.from(props.data).map(([key, items]) => {
+        {Array.from(props.data).map(([key, section]) => {
             return (
                 <div className="toolbar-section" key={key}>
                     <PureMenu horizontal>
-                        {items.map((item: ToolbarItemData, index: number) =>
+                        {section.items.map((item: ToolbarItemData, index: number) =>
                             <ToolbarItem key={index} {...item} />
                         )}
                     </PureMenu>

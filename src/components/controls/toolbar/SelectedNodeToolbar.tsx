@@ -20,7 +20,7 @@ interface AddOptionProps {
  * Return the button or menu for adding children to a node
  * @param options
  */
-function AddOption(data: AddOptionProps): ToolbarItemData {
+function addOptions(data: AddOptionProps): ToolbarItemData {
     const options = data.options;
     const nodeInfo = (type: string) => ComponentTypes.defaultValue(type);
 
@@ -52,7 +52,7 @@ function AddOption(data: AddOptionProps): ToolbarItemData {
     }
 }
 
-function ClipboardMenu(data: EditingBarProps): ToolbarSection {
+function ClipboardMenu(data: EditingBarProps): ToolbarItemData[] {
     /**
      * Get the keyboard shortcut associated with key
      * @param key Resume hotkey key
@@ -99,7 +99,7 @@ export default function SelectedNodeToolbar(props: EditingBarSubProps) {
         const childTypes = ComponentTypes.childTypes(type);
         let parentOptions = <></>
 
-        const htmlId = props.selectedNode.htmlId ? `#${props.selectedNode.htmlId}` : '';
+        const htmlId = props.selectedNode.htmlId ? `#${props.selectedNode.htmlId}` : 'CSS';
 
         if (type === DescriptionListItem.type) {
             const parentId = id.slice(0, id.length - 1);
@@ -110,56 +110,65 @@ export default function SelectedNodeToolbar(props: EditingBarSubProps) {
             moveUpText = "rounded-left";
             moveDownText = "rounded-right";
         }
-        
+
         return new Map<string, ToolbarSection>([
-            [`Current Node (${props.selectedNode.type})`, [
-                AddOption({
-                    id: id,
-                    addChild: props.addChild,
-                    options: childTypes
-                }),
-                {
-                    action: props.delete,
-                    icon: 'ui-delete',
-                    text: 'Delete',
-                    condensedButton: true
-                },
-                {
-                    icon: 'clip-board',
-                    text: 'Clipboard',
-                    condensedButton: true,
-                    items: ClipboardMenu(props),
-                },
-                ...toolbarOptions(props.selectedNode, props.updateSelected),
-                {
-                    action: props.unselect,
-                    text: 'Unselect'
-                }
-            ]],
-            ["Move", [
-                {
-                    action: props.moveUp,
-                    icon: moveUpText,
-                    text: 'Move Up',
-                    condensedButton: true
-                },
-                {
-                    action: props.moveDown,
-                    icon: moveDownText,
-                    text: 'Move Down',
-                    condensedButton: true
-                }
-            ]],
-            [htmlId, [
-                {
-                    content: <HtmlIdAdder
-                        key={props.selectedNode.uuid}
-                        htmlId={props.selectedNode.htmlId}
-                        cssClasses={props.selectedNode.classNames}
-                        addHtmlId={props.addHtmlId}
-                        addCssClasses={props.addCssClasses} />
-                }
-            ]]
+            [`Current Node (${props.selectedNode.type})`, {
+                icon: "gear",
+                items: [
+                    addOptions({
+                        id: id,
+                        addChild: props.addChild,
+                        options: childTypes
+                    }),
+                    {
+                        action: props.delete,
+                        icon: 'ui-delete',
+                        text: 'Delete',
+                        condensedButton: true
+                    },
+                    {
+                        icon: 'clip-board',
+                        text: 'Clipboard',
+                        condensedButton: true,
+                        items: ClipboardMenu(props),
+                    },
+                    ...toolbarOptions(props.selectedNode, props.updateSelected),
+                    {
+                        action: props.unselect,
+                        text: 'Unselect'
+                    }
+                ]
+            }],
+            ["Move", {
+                icon: "drag2",
+                items: [
+                    {
+                        action: props.moveUp,
+                        icon: moveUpText,
+                        text: 'Move Up',
+                        condensedButton: true
+                    },
+                    {
+                        action: props.moveDown,
+                        icon: moveDownText,
+                        text: 'Move Down',
+                        condensedButton: true
+                    }
+                ]
+            }],
+            [htmlId, {
+                icon: "ui-tag",
+                items: [
+                    {
+                        content: <HtmlIdAdder
+                            key={props.selectedNode.uuid}
+                            htmlId={props.selectedNode.htmlId}
+                            cssClasses={props.selectedNode.classNames}
+                            addHtmlId={props.addHtmlId}
+                            addCssClasses={props.addCssClasses} />
+                    }
+                ]
+            }]
         ]);
     }
 

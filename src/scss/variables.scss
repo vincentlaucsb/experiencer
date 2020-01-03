@@ -3,6 +3,7 @@ $monospace: 'Source Code Pro', monospace;
 
 $light-spacing: 2px;
 $spacing: 1rem;
+$edge-horizontal-spacing: $spacing * 0.5;
 
 $porcelain: #ecf2f2;
 $lynch: #6a869a;
@@ -15,7 +16,6 @@ $light-accent: $lynch;
 $main: $oxford-blue;
 $dark-accent: $san-marino;
 $dark-shade: $baltic-sea;
-
 
 %flex-row {
     display: flex;

@@ -1,6 +1,7 @@
 ﻿import * as React from "react";
 import Popover from 'react-tiny-popover';
 import { Button } from "./Buttons";
+import IconicMenuItem from "./menus/MenuItem";
 
 interface htmlIdAdderProps {
     htmlId?: string;
@@ -82,12 +83,11 @@ export default function HtmlIdAdder(props: htmlIdAdderProps) {
             isOpen={isOpen}
             position="bottom"
             content={expanded}>
-            <Button
-                className="button-text"
-                onClick={() => setOpen(!isOpen)}>
-                <i className="icofont-ui-tag" />
-                Add ID/Classes
-            </Button>
+            <IconicMenuItem
+                icon="ui-tag"
+                onClick={() => setOpen(!isOpen)}
+                text="Add ID/Classes"
+            />
         </Popover>
     );
 }

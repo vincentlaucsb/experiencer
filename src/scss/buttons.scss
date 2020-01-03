@@ -1,0 +1,64 @@
+﻿@import "variables";
+
+/** || Toolbar Buttons */
+button.toolbar-button {
+    background: inherit;
+    color: inherit;
+    text-align: left;
+}
+
+/** Toolbar buttons that are not part of a dropdown */
+button.toolbar-button-has-text {
+    i {
+        display: inline-block;
+        margin-right: $spacing/2;
+    }
+}
+
+/** || Toolbar Dropdowns */
+li.pure-menu-has-children > button::after {
+    content: "\25BE";
+    font-size: small;
+    padding-left: 0.5em;
+}
+
+ul.pure-menu-children {
+    box-shadow: transparentize($dark-shade, 0.5) 2px 2px 5px;
+
+    li.pure-menu-item {
+        background: $dark-shade;
+        color: $light-shade;
+        padding: 0;
+
+        button.toolbar-button {
+            display: grid;
+            align-items: center;
+            /** icon, label, shortcut (if applicable) */
+            grid-template-columns: 30px 1fr 0.5fr;
+            width: 100%;
+
+            i {
+                color: $light-accent;
+            }
+            /** Give buttons in menus the same styling as links */
+            .toolbar-button-text {
+                border: none;
+                grid-column-start: 2;
+                text-decoration: none;
+                white-space: nowrap;
+            }
+
+            .toolbar-button-shortcut {
+                margin-left: $spacing * 2;
+            }
+        }
+
+        button:hover {
+            background: $dark-accent;
+
+            i {
+                color: lighten($light-accent, 25%);
+            }
+        }
+    }
+}

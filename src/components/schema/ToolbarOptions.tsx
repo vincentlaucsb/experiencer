@@ -2,16 +2,8 @@
 import Row, { BasicRowProps } from "../Row";
 import Header from "../Header";
 import Icon from "../Icon";
-import { Action, ResumeNode } from "../utility/Types";
-
-export interface ToolbarOption {
-    text: string;
-    icon?: string;
-    action?: Action;
-    actions?: Array<ToolbarOption>;
-}
-
-export type CustomToolbarOptions = Array<ToolbarOption>;
+import { ResumeNode, NodeProperty } from "../utility/Types";
+import { ToolbarSection, ToolbarItemData } from "../controls/toolbar/ToolbarMaker";
 
 /**
  * Retrieves custom toolbar options for a node
@@ -21,8 +13,8 @@ export type CustomToolbarOptions = Array<ToolbarOption>;
  */
 export default function toolbarOptions(
     node: ResumeNode,
-    updateNode: (key: string, value: boolean | string | string[] | number | number[]) => void):
-    CustomToolbarOptions
+    updateNode: (key: string, value: NodeProperty) => void):
+    ToolbarItemData[]
 {
     const addLineBreak = (node: BasicEntryProps) => {
         if (node.subtitle) {
@@ -65,7 +57,7 @@ export default function toolbarOptions(
     const justifyContent = (option: string) => updateNode('justifyContent', option);
     const justifyContentOptions = {
         text: 'Justify Content',
-        actions: [
+        items: [
             {
                 text: 'Space between',
                 action: () => justifyContent('space-between')
@@ -98,7 +90,7 @@ export default function toolbarOptions(
             return [
                 {
                     text: 'Title Options',
-                    actions: [
+                    items: [
                         {
                             text: 'Add title field',
                             action: () =>
@@ -132,7 +124,7 @@ export default function toolbarOptions(
             return [
                 {
                     text: `Distribute Items`,
-                    actions: [
+                    items: [
                         {
                             text: 'Top-to-Bottom',
                             action: () => distribute('top-to-bottom')

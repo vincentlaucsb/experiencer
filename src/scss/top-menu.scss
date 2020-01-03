@@ -1,69 +1,5 @@
 ﻿@import "variables";
 
-/** || Toolbar Dropdowns */
-ul.pure-menu-children {
-    box-shadow: transparentize($dark-shade, 0.5) 2px 2px 5px;
-
-    li.pure-menu-item {
-        background: $dark-shade;
-        color: $light-shade;
-        align-items: center;
-        padding: .5em 1em;
-        cursor: pointer;
-    }
-
-    li.pure-menu-item:hover {
-        background: $dark-accent;
-
-        i {
-            color: lighten($light-accent, 25%);
-        }
-    }
-
-    li.pure-menu-item.disabled {
-        color: transparentize($light-shade, 0.5);
-        cursor: default;
-    }
-
-    li.pure-menu-item.disabled:hover {
-        background: $dark-shade;
-    }
-}
-
-ul.pure-menu-children.icon-menu {
-    li.pure-menu-item {
-        display: block grid;
-        /** icon, label, shortcut (if applicable) */
-        grid-template-columns: 30px 1fr 0.5fr;
-
-        > i {
-            color: $light-accent;
-        }
-        /** Give buttons in menus the same styling as links */
-        > span.menu-item-label {
-            background: inherit;
-            border: none;
-            text-decoration: none;
-            white-space: nowrap;
-        }
-
-        > span.shortcut {
-            margin-left: $spacing * 2;
-        }
-    }
-
-    li.pure-menu-item.no-icon {
-        /** Shift items right one column */
-        > span.menu-item-label {
-            grid-column-start: 2;
-        }
-
-        > span.shortcut {
-            grid-column-start: 3;
-        }
-    }
-}
-
 /** || Header */
 header#app-header {
     $header-background: $main;
@@ -79,88 +15,100 @@ header#app-header {
         background: $dark-accent;
     }
 
-    div#brand, div#toolbar {
+    #brand, #toolbar {
         @extend %flex-row;
         align-content: center;
     }
 
-    /** || Top Editing Bar */
-    div#toolbar {
-        border-top: 1px solid $light-accent;
-        color: $light-shade;
-        padding: $spacing * 0.5;
+    .pure-button {
+        background: inherit;
+        color: inherit;
+    }
 
-        div.toolbar-section {
-            @extend %flex-col;
-            border-right: 1px dotted $light-accent;
-            align-items: center;
+    .pure-button:hover {
+        background: $dark-accent;
+    }
+}
 
-            .label {
-                color: $light-accent;
-                font-size: 0.8em;
-            }
+/** || Top Editing Bar */
+div#toolbar {
+    border-top: 1px solid $light-accent;
+    color: $light-shade;
 
-            .label:hover {
-                cursor: default;
-            }
+    div.toolbar-section {
+        @extend %flex-col;
+        border-right: 1px solid transparentize($light-accent, 0.5);
+        align-items: center;
+        padding: $edge-horizontal-spacing;
+
+        .toolbar-label {
+            color: $light-accent;
+            font-size: 0.8em;
         }
 
-        div.toolbar-section:last-child {
-            border-right: none;
-        }
-
-        button.pure-button {
-            background: $header-background;
-            color: $light-shade;
-
-            svg {
-                margin-right: $spacing * 0.25;
-            }
-        }
-
-        button.pure-button:hover {
-            background: $dark-accent;
-        }
-
-        button.button-text i {
-            margin-right: $spacing/2;
+        .toolbar-label:hover {
+            cursor: default;
         }
     }
 
-    /** || Top Nav Bar */
-    div#brand {
-        padding-left: $spacing * 0.5;
-        padding-right: $spacing * 0.5;
+    div.toolbar-section:last-child {
+        border-right: none;
+    }
+}
+
+/** || Top Editing Bar: Collapsed */
+div#toolbar.toolbar-collapsed > .pure-menu > .pure-menu-list {
+    @extend %flex-row;
+    flex-wrap: wrap;
+
+    /** || Subsection Headings */
+    .toolbar-collapsed-section h3 {
+        @extend %flex-row;
         align-items: center;
+        border-bottom: 1px solid $light-accent;
+        margin: 0;
 
-        h1 {
-            margin: $spacing;
-            font-size: 20pt;
-            cursor: pointer;
-        }
-
-        .pure-menu-horizontal {
-            margin-left: $spacing * 2;
-            display: flex;
-            flex-direction: column;
-            align-self: center;
+        button, span {
+            padding: 0.5em 1em;
         }
 
-        .pure-menu-selected {
-            a {
-                color: $light-shade;
-                font-weight: bold;
-            }
+        button {
+            padding-right: 0;
         }
 
-        .pure-menu-link:hover {
-            background: $dark-accent;
-            color: $light-shade;
+        button::after {
+            content: "";
+            margin-left: 1em;
+            border-right: 1px solid transparentize($light-accent, 0.25);
         }
-        // GitHub Icon
-        .github-mark {
-            color: $light-accent;
-            width: 32px;
+
+        button:hover::after {
+            border: none;
+            border-right: 1px solid $dark-accent;
         }
+    }
+}
+
+/** || Top Nav Bar */
+div#brand {
+    padding: 0 $edge-horizontal-spacing;
+    align-items: center;
+
+    h1 {
+        margin: $spacing;
+        font-size: 20pt;
+        cursor: pointer;
+    }
+
+    .pure-menu-horizontal {
+        margin-left: $spacing * 2;
+        display: flex;
+        flex-direction: column;
+        align-self: center;
+    }
+    // GitHub Icon
+    .github-mark {
+        color: $light-accent;
+        width: 32px;
     }
 }

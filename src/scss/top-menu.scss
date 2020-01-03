@@ -56,9 +56,37 @@ div#toolbar {
     }
 }
 
+/** || Top Editing Bar: Collapsed */
 div#toolbar.toolbar-collapsed > .pure-menu > .pure-menu-list {
     @extend %flex-row;
     flex-wrap: wrap;
+
+    /** || Subsection Headings */
+    .toolbar-collapsed-section h3 {
+        @extend %flex-row;
+        align-items: center;
+        border-bottom: 1px solid $light-accent;
+        margin: 0;
+
+        button, span {
+            padding: 0.5em 1em;
+        }
+
+        button {
+            padding-right: 0;
+        }
+
+        button::after {
+            content: "";
+            margin-left: 1em;
+            border-right: 1px solid transparentize($light-accent, 0.25);
+        }
+
+        button:hover::after {
+            border: none;
+            border-right: 1px solid $dark-accent;
+        }
+    }
 }
 
 /** || Top Nav Bar */
@@ -78,7 +106,6 @@ div#brand {
         flex-direction: column;
         align-self: center;
     }
-
     // GitHub Icon
     .github-mark {
         color: $light-accent;

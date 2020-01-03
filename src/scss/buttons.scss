@@ -35,7 +35,7 @@ ul.pure-menu-children {
             align-items: center;
             /** icon, label, shortcut (if applicable) */
             grid-template-columns: 30px 1fr 0.5fr;
-            width: 100%;    
+            width: 100%;
 
             i {
                 color: $light-accent;
@@ -52,22 +52,13 @@ ul.pure-menu-children {
                 margin-left: $spacing * 2;
             }
         }
-    }
 
-    li.pure-menu-item:hover {
-        background: $dark-accent;
+        button:hover {
+            background: $dark-accent;
 
-        i {
-            color: lighten($light-accent, 25%);
+            i {
+                color: lighten($light-accent, 25%);
+            }
         }
-    }
-
-    li.pure-menu-item.disabled {
-        color: transparentize($light-shade, 0.5);
-        cursor: default;
-    }
-
-    li.pure-menu-item.disabled:hover {
-        background: $dark-shade;
     }
 }

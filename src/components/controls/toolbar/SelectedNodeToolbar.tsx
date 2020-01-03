@@ -1,7 +1,6 @@
 ﻿import { EditingBarProps } from "../TopEditingBar";
 import toolbarOptions from "src/components/schema/ToolbarOptions";
 import ComponentTypes, { NodeInformation } from "src/components/schema/ComponentTypes";
-import { DescriptionListItem } from "src/components/List";
 import React from "react";
 import { AddChild, IdType } from "src/components/utility/Types";
 import Column from "src/components/Column";

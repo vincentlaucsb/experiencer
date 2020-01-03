@@ -3,27 +3,32 @@ import { Button } from "../Buttons";
 import PureMenu, { PureDropdown, PureMenuItem } from "../menus/PureMenu";
 import IconicMenuItem from "../menus/MenuItem";
 
-export interface ToolbarItemData {
+export interface BasicToolbarItemData {
+    icon?: string;
+    items?: Array<ToolbarItemData>;
+    text?: string;
+}
+
+export interface ToolbarItemData extends BasicToolbarItemData {
     action?: (() => void) | ((event: React.MouseEvent) => void);
 
     /** Whether or not text should be hidden when displayed on toolbar */
     condensedButton?: boolean;
-    icon?: string;
-    text?: string;
+    
     content?: React.ReactElement;
     shortcut?: string;
-
-    items?: Array<ToolbarItemData>;
 };
 
 export interface ToolbarSection {
+    /** Icon that appears on collapsed toolbar */
     icon?: string;
+
     items: Array<ToolbarItemData>;
 }
 
 export type ToolbarData = Map<string, ToolbarSection>;
 
-function ToolbarButton(props: ToolbarItemData) {
+function ToolbarItem(props: ToolbarItemData) {
     const text = props.condensedButton ? undefined : props.text;
 
     return (
@@ -37,15 +42,11 @@ function ToolbarButton(props: ToolbarItemData) {
     );
 }
 
-interface ToolbarItemProps extends ToolbarItemData {
-    // isOverflowing?: boolean;
-}
-
 /**
- * Factory function for rendering toolbar item
+ * Factory function for rendering toolbar items
  * @param props
  */
-function ToolbarItem(props: ToolbarItemProps) {
+function ToolbarItemFactory(props: ToolbarItemData) {
     if (Object.keys(props).length === 0) {
         return <></>
     }
@@ -63,70 +64,70 @@ function ToolbarItem(props: ToolbarItemProps) {
             <PureDropdown
                 trigger={<Button className={className}>{icon} {text}</Button>}>
                 {props.items.map((value) =>
-                    <ToolbarItem {...value} />
+                    <ToolbarItemFactory {...value} />
                 )}
             </PureDropdown>
         );
     }
 
-    return <ToolbarButton {...props} />
+    return <ToolbarItem {...props} />
 }
 
-interface OverflowMenuProps {
-    icon?: string;
-    text: string;
+interface SectionDropdownProps extends BasicToolbarItemData {
     items: ToolbarItemData[];
-}
-
-interface OverflowItemProps extends ToolbarItemProps {
-    index: number;
+    text: string;
 }
 
 // TODO: Refactor
-function OverflowMenu(props: OverflowMenuProps) {
+/**
+ * Toolbar section dropdown menu that appears when menu is overflowing
+ * @param props
+ */
+function SectionDropdown(props: SectionDropdownProps) {
     let [activeIndex, setActive] = React.useState(-1);
-
-    const OverflowItem = (props: OverflowItemProps) => {
-        if (props.items) {
-            return <ToolbarButton {...props} action={
-                (event: React.MouseEvent) => {
-                    setActive(props.index);
-                    event.stopPropagation();
-                }}
-                condensedButton={false}
-            />
-        }
-
-        return <ToolbarItem {...props} condensedButton={false} />
-    }
-
-    let children = <React.Fragment>
-        {props.items.map((item, index: number) =>
-            <OverflowItem {...item} index={index} />)}
-    </React.Fragment>    
     
-    if (activeIndex >= 0) {
-        if (props.items && props.items[activeIndex] && props.items[activeIndex].items) {
-            const items = props.items[activeIndex].items;
-            if (items) {
-                children = <React.Fragment>
-                    <PureMenuItem>
-                        <Button onClick={(event) => {
-                            setActive(-1);
-                            event.stopPropagation();
-                        }}>Back</Button>
-                    </PureMenuItem>
-                    {items.map((item, index: number) =>
-                        <ToolbarButton {...item} condensedButton={false} />
-                    )}
-                </React.Fragment>
+    // Default children
+    let children = <React.Fragment>
+        {props.items.map((item, index: number) => {
+            // If item contains a group of actions, then turn it 
+            // into a trigger that when clicked, replaces the entire
+            // dropdown's contents with its own buttons
+            if (props.items) {
+                return <ToolbarItem {...item} action={
+                    (event: React.MouseEvent) => {
+                        setActive(index);
+                        event.stopPropagation();
+                    }}
+                    condensedButton={false}
+                />
             }
+
+            return <ToolbarItem {...props} condensedButton={false} />
+        })}
+    </React.Fragment>    
+
+    // Children when a specific subsection is active
+    if (activeIndex >= 0) {
+        const items = props.items[activeIndex].items;
+        if (items) {
+            children = <React.Fragment>
+                <PureMenuItem onClick={(event) => event.stopPropagation()}>
+                    <h3>
+                        <Button onClick={() => setActive(-1)}><i className="icofont-rounded-left" /></Button>
+                        <span>{props.items[activeIndex].text}</span>
+                    </h3>
+                </PureMenuItem>
+                {items.map((item, index: number) =>
+                    <ToolbarItem key={index} {...item} condensedButton={false} />
+                )}
+            </React.Fragment>
         }
     }
 
     const className = props.text ? "toolbar-button-has-text" : "toolbar-button";
     const icon = props.icon ? <i className={`icofont-${props.icon}`} /> : <></>
-    return <PureDropdown trigger={<Button className={className}>{icon} {props.text}</Button>}>
+    return <PureDropdown ulProps={{ className: "toolbar-collapsed-section" }}
+        trigger={<Button className={className}>{icon} {props.text}</Button>}>
         {children}
     </PureDropdown>
 }
@@ -137,28 +138,28 @@ export interface ToolbarMakerProps {
 }
 
 export default function ToolbarMaker(props: ToolbarMakerProps) {
+    // Collapsed form
     if (props.isOverflowing) {
         return (
             <PureMenu horizontal>
                 {Array.from(props.data).map(([key, section]) =>
-                    <OverflowMenu key={key} text={key} icon={section.icon} items={section.items} />
+                    <SectionDropdown key={key} text={key} icon={section.icon} items={section.items} />
                 )}
             </PureMenu>
         );
     }
 
+    // Default representation
     return <React.Fragment>
         {Array.from(props.data).map(([key, section]) => {
             return (
                 <div className="toolbar-section" key={key}>
                     <PureMenu horizontal>
                         {section.items.map((item: ToolbarItemData, index: number) =>
-                            <ToolbarItem key={index} {...item} />
+                            <ToolbarItemFactory key={index} {...item} />
                         )}
                     </PureMenu>
-                    <span className="toolbar-label">
-                        {key}
-                    </span>
+                    <span className="toolbar-label">{key}</span>
                 </div>
             );
         })}

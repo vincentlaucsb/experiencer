@@ -1,10 +1,13 @@
-﻿import React, { ReactElement } from "react";
+﻿import React from "react";
 import { Button } from "../Buttons";
 import PureMenu, { PureDropdown, PureMenuItem } from "../menus/PureMenu";
 import IconicMenuItem from "../menus/MenuItem";
 
 export interface ToolbarItemData {
     action?: (() => void) | ((event: React.MouseEvent) => void);
+
+    /** Whether or not text should be hidden when displayed on toolbar */
+    condensedButton?: boolean;
     icon?: string;
     text?: string;
     content?: React.ReactElement;
@@ -17,13 +20,15 @@ export type ToolbarSection = Array<ToolbarItemData>;
 export type ToolbarData = Map<string, ToolbarSection>;
 
 function ToolbarButton(props: ToolbarItemData) {
+    const text = props.condensedButton ? undefined : props.text;
+
     return (
         <IconicMenuItem
             disabled={!props.action && !props.items}
             onClick={props.action}
             icon={props.icon}
             shortcut={props.shortcut}
-            text={props.text}
+            text={text}
         />
     );
 }
@@ -37,6 +42,10 @@ interface ToolbarItemProps extends ToolbarItemData {
  * @param props
  */
 function ToolbarItem(props: ToolbarItemProps) {
+    if (Object.keys(props).length === 0) {
+        return <></>
+    }
+
     if (props.content) {
         return <>{props.content}</>
     }
@@ -64,6 +73,7 @@ interface OverflowItemProps extends ToolbarItemProps {
     index: number;
 }
 
+// TODO: Refactor
 function OverflowMenu(props: OverflowMenuProps) {
     let [activeIndex, setActive] = React.useState(-1);
 
@@ -73,10 +83,12 @@ function OverflowMenu(props: OverflowMenuProps) {
                 (event: React.MouseEvent) => {
                     setActive(props.index);
                     event.stopPropagation();
-                }} />
+                }}
+                condensedButton={false}
+            />
         }
 
-        return <ToolbarItem {...props} />
+        return <ToolbarItem {...props} condensedButton={false} />
     }
 
     let children = <React.Fragment>
@@ -96,7 +108,7 @@ function OverflowMenu(props: OverflowMenuProps) {
                         }}>Back</Button>
                     </PureMenuItem>
                     {items.map((item, index: number) =>
-                        <ToolbarButton {...item} />
+                        <ToolbarButton {...item} condensedButton={false} />
                     )}
                 </React.Fragment>
             }

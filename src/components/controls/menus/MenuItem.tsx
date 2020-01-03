@@ -16,13 +16,15 @@ export default function IconicMenuItem(props: IconicMenuItemProps) {
     let icon = <></>
     let text = <></>
     let onClick: any = props.onClick;
+    let disabled = false;
 
     if (props.icon) {
         icon = <i className={`icofont-${props.icon}`} />
     }
 
-    if (!props.onClick || props.disabled) {
-        btnClsNames.push('disabled');
+    // If props.disabled is explictly set to false, then do not disable
+    if ((!props.onClick || props.disabled) && props.disabled !== false) {
+        disabled = true;
         onClick = undefined;
     }
 
@@ -36,7 +38,7 @@ export default function IconicMenuItem(props: IconicMenuItemProps) {
     
     return (
         <PureMenuItem className="toolbar-item" onClick={props.onClick}>
-            <Button className={btnClsNames.join(' ')}>
+            <Button className={btnClsNames.join(' ')} disabled={disabled}>
                 {icon}
                 {text}
                 {shortcut}

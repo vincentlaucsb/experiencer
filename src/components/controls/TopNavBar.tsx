@@ -29,7 +29,6 @@ export interface TopNavBarProps {
 export default function TopNavBar(props: TopNavBarProps) {
     let [isOpen, setOpen] = React.useState(false);
     const Item = PureMenuItem;
-    const Link = PureMenuLink;
 
     let [modalContent, setModal] = React.useState(<></>);
     let [title, setTitle] = React.useState("");

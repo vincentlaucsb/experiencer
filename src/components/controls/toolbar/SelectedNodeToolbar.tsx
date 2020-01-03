@@ -120,10 +120,14 @@ export default function SelectedNodeToolbar(props: EditingBarSubProps) {
                 }),
                 {
                     action: props.delete,
-                    icon: 'ui-delete'
+                    icon: 'ui-delete',
+                    text: 'Delete',
+                    condensedButton: true
                 },
                 {
                     icon: 'clip-board',
+                    text: 'Clipboard',
+                    condensedButton: true,
                     items: ClipboardMenu(props),
                 },
                 ...toolbarOptions(props.selectedNode, props.updateSelected),
@@ -135,11 +139,15 @@ export default function SelectedNodeToolbar(props: EditingBarSubProps) {
             ["Move", [
                 {
                     action: props.moveUp,
-                    icon: moveUpText
+                    icon: moveUpText,
+                    text: 'Move Up',
+                    condensedButton: true
                 },
                 {
                     action: props.moveDown,
-                    icon: moveDownText
+                    icon: moveDownText,
+                    text: 'Move Down',
+                    condensedButton: true
                 }
             ]],
             [htmlId, [

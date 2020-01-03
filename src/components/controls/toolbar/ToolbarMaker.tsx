@@ -47,12 +47,12 @@ function ToolbarItem(props: ToolbarItemData) {
  * @param props
  */
 function ToolbarItemFactory(props: ToolbarItemData) {
-    if (Object.keys(props).length === 0) {
-        return <></>
-    }
-
     if (props.content) {
         return <>{props.content}</>
+    }
+
+    if (!props.icon && !props.text) {
+        return <></>
     }
 
     const className = props.text ? "toolbar-button-has-text" : "toolbar-button";
@@ -78,7 +78,6 @@ interface SectionDropdownProps extends BasicToolbarItemData {
     text: string;
 }
 
-// TODO: Refactor
 /**
  * Toolbar section dropdown menu that appears when menu is overflowing
  * @param props
@@ -86,13 +85,29 @@ interface SectionDropdownProps extends BasicToolbarItemData {
 function SectionDropdown(props: SectionDropdownProps) {
     let [activeIndex, setActive] = React.useState(-1);
     
-    // Default children
-    let children = <React.Fragment>
-        {props.items.map((item, index: number) => {
+    let items = props.items;
+    let heading = <></>
+    if (activeIndex >= 0) {
+        items = props.items[activeIndex].items as ToolbarItemData[]
+        heading = <PureMenuItem onClick={(event) => event.stopPropagation()}>
+            <h3>
+                <Button onClick={() => setActive(-1)}><i className="icofont-rounded-left" /></Button>
+                <span>{props.items[activeIndex].text}</span>
+            </h3>
+        </PureMenuItem>
+    }
+
+    const className = props.text ? "toolbar-button-has-text" : "toolbar-button";
+    const icon = props.icon ? <i className={`icofont-${props.icon}`} /> : <></>
+    return <PureDropdown
+        ulProps={{ className: "toolbar-collapsed-section" }}
+        trigger={<Button className={className}>{icon} {props.text}</Button>}>
+        {heading}
+        {items.map((item, index: number) => {
             // If item contains a group of actions, then turn it 
             // into a trigger that when clicked, replaces the entire
             // dropdown's contents with its own buttons
-            if (props.items) {
+            if (item.items) {
                 return <ToolbarItem {...item} action={
                     (event: React.MouseEvent) => {
                         setActive(index);
@@ -102,44 +117,25 @@ function SectionDropdown(props: SectionDropdownProps) {
                 />
             }
 
-            return <ToolbarItem {...props} condensedButton={false} />
+            return <ToolbarItemFactory {...item} condensedButton={false} />
         })}
-    </React.Fragment>    
-
-    // Children when a specific subsection is active
-    if (activeIndex >= 0) {
-        const items = props.items[activeIndex].items;
-        if (items) {
-            children = <React.Fragment>
-                <PureMenuItem onClick={(event) => event.stopPropagation()}>
-                    <h3>
-                        <Button onClick={() => setActive(-1)}><i className="icofont-rounded-left" /></Button>
-                        <span>{props.items[activeIndex].text}</span>
-                    </h3>
-                </PureMenuItem>
-                {items.map((item, index: number) =>
-                    <ToolbarItem key={index} {...item} condensedButton={false} />
-                )}
-            </React.Fragment>
-        }
-    }
-
-    const className = props.text ? "toolbar-button-has-text" : "toolbar-button";
-    const icon = props.icon ? <i className={`icofont-${props.icon}`} /> : <></>
-    return <PureDropdown ulProps={{ className: "toolbar-collapsed-section" }}
-        trigger={<Button className={className}>{icon} {props.text}</Button>}>
-        {children}
     </PureDropdown>
 }
 
-export interface ToolbarMakerProps {
+export interface ToolbarProps {
     data: ToolbarData;
-    isOverflowing: boolean;
+
+    /** Determines whether or not to use compact form */
+    collapse: boolean;
 }
 
-export default function ToolbarMaker(props: ToolbarMakerProps) {
+/**
+ * Generate a toolbar described by JavaScript objects
+ * @param props
+ */
+export default function Toolbar(props: ToolbarProps) {
     // Collapsed form
-    if (props.isOverflowing) {
+    if (props.collapse) {
         return (
             <PureMenu horizontal>
                 {Array.from(props.data).map(([key, section]) =>

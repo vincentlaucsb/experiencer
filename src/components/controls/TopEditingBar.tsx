@@ -7,7 +7,7 @@ import Row from "../Row";
 import Section from "../Section";
 import { Action, IdType, NodeProperty, ResumeNode, AddChild } from "../utility/Types";
 import SelectedNodeToolbar from "./toolbar/SelectedNodeToolbar";
-import ToolbarMaker, { ToolbarSection, ToolbarItemData } from "./toolbar/ToolbarMaker";
+import Toolbar, { ToolbarSection, ToolbarItemData } from "./toolbar/ToolbarMaker";
 
 interface EditingSectionProps {
     saveLocal?: Action;
@@ -75,6 +75,15 @@ export default class TopEditingBar extends React.Component<EditingBarProps, Edit
 
         // Perform initial resize
         this.updateResizer();
+    }
+
+    componentDidUpdate(prevProps: EditingBarProps) {
+        // When the selected node changes, so does the toolbar
+        // which means we need to update the overflow widths
+        if (prevProps.selectedNodeId !== this.props.selectedNodeId) {
+            this.setState({ overflowWidth: -1 });
+            this.updateResizer();
+        }
     }
 
     /**
@@ -149,7 +158,7 @@ export default class TopEditingBar extends React.Component<EditingBarProps, Edit
             });
         }
 
-        let children = <ToolbarMaker data={data} isOverflowing={this.state.isOverflowing} />;
+        let children = <Toolbar data={data} collapse={this.state.isOverflowing} />;
         const className = this.state.isOverflowing ? "toolbar-collapsed" : "";
         return <div ref={this.toolbarRef} id="toolbar" className={className}>{children}</div>
     }

@@ -11,9 +11,13 @@ header#app-header, header#app-header * {
     z-index: $header-z;
 
     /** Dropdown menus */
-    #top-menu, #top-menu *,
-    button.toolbar-button, button.toolbar-button {
+    #top-menu, button.toolbar-button {
         z-index: $header-z + 1;
+    }
+
+    /** Active dropdown menu */
+    li.pure-menu-active {
+        z-index: $header-z + 2;
     }
 
     /** Don't want label obscuring dropdown menus */

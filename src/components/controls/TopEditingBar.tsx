@@ -31,6 +31,7 @@ interface EditingBarState {
     overflowWidth: number;
 }
 
+/** A responsive top editing bar */
 export default class TopEditingBar extends React.Component<EditingBarProps, EditingBarState> {
     toolbarRef = React.createRef<HTMLDivElement>();
 
@@ -45,6 +46,11 @@ export default class TopEditingBar extends React.Component<EditingBarProps, Edit
         };
 
         this.updateResizer = this.updateResizer.bind(this);
+    }
+
+    /** Screen width at which toolbar should shrink regardless of anything */
+    get clipWidth() {
+        return 800;
     }
 
     get editingSection(): ToolbarItemData[] {
@@ -102,8 +108,10 @@ export default class TopEditingBar extends React.Component<EditingBarProps, Edit
             // Case 1: Editing bar is overflowing
             // Case 2: Editing bar has been shrunk, but parent container
             //         isn't large enough for editing bar to fully expand
+            // Case 3: Screen width is smaller than a certain breakpoint
             const isOverflowing = (container.scrollWidth > container.clientWidth)
-                || (parentWidth < this.state.overflowWidth);
+                || (parentWidth < this.state.overflowWidth)
+                || (window.innerWidth < this.clipWidth);
 
             // This sets the breakpoint at which the editing bar should
             // collapse

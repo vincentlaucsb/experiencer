@@ -94,6 +94,17 @@ div.button-tooltip {
     }
 }
 
+@media screen and (max-width: 800px) {
+    #brand h1 {
+        font-size: large;
+        margin: 0;
+    }
+
+    .Resizer.vertical, .Pane.vertical.Pane2 {
+        display: none;
+    }
+}
+
 @media screen and (min-width: calc(8.5in + 250px)) {
     #main-grid {
         display: grid;

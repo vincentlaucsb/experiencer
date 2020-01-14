@@ -34,6 +34,7 @@ header#app-header {
 div#toolbar {
     border-top: 1px solid $light-accent;
     color: $light-shade;
+    overflow: auto;
 
     div.toolbar-section {
         @extend %flex-col;
@@ -90,7 +91,7 @@ div#toolbar.toolbar-collapsed > .pure-menu > .pure-menu-list {
 }
 
 /** || Top Nav Bar */
-div#brand {
+#brand {
     padding: 0 $edge-horizontal-spacing;
     align-items: center;
 
@@ -108,6 +109,7 @@ div#brand {
     }
     // GitHub Icon
     .github-mark {
+        vertical-align: middle;
         color: $light-accent;
         width: 32px;
     }

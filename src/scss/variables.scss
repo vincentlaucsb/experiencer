@@ -17,6 +17,10 @@ $main: $oxford-blue;
 $dark-accent: $san-marino;
 $dark-shade: $baltic-sea;
 
+/* || Screen Sizes */
+$screen-small: 500px;
+$screen-medium: 800px;
+
 %flex-row {
     display: flex;
     flex-direction: row;

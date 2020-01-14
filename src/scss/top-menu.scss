@@ -6,9 +6,6 @@ header#app-header {
 
     background: $header-background;
     color: $light-shade;
-    /** Keep toolbar at top */
-    position: sticky;
-    top: 0;
     margin-bottom: $spacing;
 
     .pure-menu-active, .pure-menu-active:focus {

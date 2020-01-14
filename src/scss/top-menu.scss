@@ -34,7 +34,6 @@ header#app-header {
 div#toolbar {
     border-top: 1px solid $light-accent;
     color: $light-shade;
-    overflow: auto;
 
     div.toolbar-section {
         @extend %flex-col;

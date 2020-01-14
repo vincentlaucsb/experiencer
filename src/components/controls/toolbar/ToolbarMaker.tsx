@@ -63,8 +63,8 @@ function ToolbarItemFactory(props: ToolbarItemData) {
         return (
             <PureDropdown
                 trigger={<Button className={className}>{icon} {text}</Button>}>
-                {props.items.map((value) =>
-                    <ToolbarItemFactory {...value} />
+                {props.items.map((value, index) =>
+                    <ToolbarItemFactory key={index} {...value} />
                 )}
             </PureDropdown>
         );

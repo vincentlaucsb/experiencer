@@ -24,8 +24,10 @@ $header-z: 1000;
     }
 }
 
-div.ReactModalPortal, div.ReactModalPortal * {
-    z-index: $header-z + 2;
+.ReactModalPortal {
+    &, * {
+        z-index: $header-z + 2;
+    }
 }
 
 /** || Main Pane */
@@ -48,8 +50,8 @@ div.ReactModalPortal, div.ReactModalPortal * {
 }
 
 /** || Popovers */
-.resume-popover, .resume-popover *,
-.css-selector-adder, .css-selector-adder *,
-.pseudo-options-container, .pseudo-options-container * {
-    z-index: $header-z + 2;
+.resume-popover, .css-selector-adder, .pseudo-options-container {
+    &, * {
+        z-index: $header-z + 2;
+    }
 }

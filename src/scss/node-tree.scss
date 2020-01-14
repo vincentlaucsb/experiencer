@@ -1,6 +1,6 @@
 ﻿@import "variables";
 
-ul.node-tree {
+.node-tree {
     padding-left: $spacing;
 
     ul {
@@ -14,7 +14,7 @@ ul.node-tree {
         padding: $spacing/8 0;
     }
 
-    li.tree-item-selected {
+    .tree-item-selected {
         background: transparentize($light-accent, 0.5);
 
         > span {
@@ -22,14 +22,13 @@ ul.node-tree {
         }
     }
 
-    span.tree-item-section {
+    .tree-item-section {
         font-weight: bold;
     }
-
     /** Italic font for types that don't have their own
         text headers or values
      */
-    span.tree-item-Column, span.tree-item-Grid {
+    .tree-item-Column, .tree-item-Grid {
         font-style: italic;
     }
 }

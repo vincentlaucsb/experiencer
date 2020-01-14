@@ -20,10 +20,12 @@ body {
     margin: 0;
 }
 
-#resume-container {
-    width: 8.5in;
-    margin-left: auto;
-    margin-right: auto;
+#root {
+    display: flex;
+    box-sizing: border-box;
+    flex-flow: column;
+    width: 100%;
+    height: 100vh;
 }
 
 /* Resizer */
@@ -42,33 +44,35 @@ button img {
     margin-right: 2px;
 }
 
-div.button-tooltip {
-    border-radius: 3px;
-    background: rgba(15, 15, 15, 1);
-    color: rgba(240, 240, 240, 1);
-    padding: 5px;
-}
+/** || Layouts */
+#main-grid {
+    display: flex;
+    flex: 1;
+    height: 100%;
+    overflow: auto;
 
-/** Helper Classes */
-.cursor-pointer {
-    cursor: pointer;
-}
+    // Column Gap for flexbox is only supported in FF
+    // column-gap: $spacing;
 
-#resume {
-    background: #ffffff;
-}
-
-@media screen {
-    #resume-container {
-        width: 8.5in;
+    /** Grid Children */
+    > * {
+        max-width: 100%;
+        overflow: auto;
+        margin-right: $spacing;
     }
 
-    #resume {
-        border: 1px solid #dddddd;
-        min-height: 11in;
-        margin-bottom: $spacing;
-        margin-left: auto;
-        margin-right: auto;
+    > *:first-child {
+        // Take up all available free space
+        flex-grow: 1;
+    }
+    /** || Sidebar */
+    > *:last-child {
+        // Never shrink
+        flex-shrink: 0;
+    }
+
+    @media (max-width: $screen-small) {
+        flex-direction: column;
     }
 }
 
@@ -84,19 +88,25 @@ div.button-tooltip {
 }
 
 @media screen {
-    #main-grid {
-        display: block;
-
-        > div {
-            margin-left: auto;
-            margin-right: auto;
-        }
+    #resume {
+        background: #ffffff;
+        width: 8.5in;
+        min-height: 11in;
+        box-sizing: border-box;
+        border: 1px solid #dddddd;
+        margin-bottom: $spacing;
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 
-@media screen and (min-width: calc(8.5in + 250px)) {
-    #main-grid {
-        display: grid;
-        grid-template-columns: 80% 20%;
+@media screen and (max-width: $screen-medium) {
+    #brand h1 {
+        font-size: large;
+        margin: 0;
+    }
+
+    .Resizer.vertical, .Pane.vertical.Pane2 {
+        display: none;
     }
 }

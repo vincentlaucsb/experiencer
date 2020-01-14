@@ -15,10 +15,10 @@ div[class*='ReactModal__Content'] {
             background: inherit;
             margin-left: auto;
             padding: 0;
-        }
 
-        .modal-close:hover {
-            color: $light-accent;
+            &:hover {
+                color: $light-accent;
+            }
         }
     }
 

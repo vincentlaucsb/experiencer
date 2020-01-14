@@ -65,12 +65,10 @@ export default function TopNavBar(props: TopNavBarProps) {
                         <Button>Help</Button>
                     </Item>
                 </PureMenu>
-                <div>
-                    <a href="https://github.com/vincentlaucsb/experiencer">
-                        <img className="github-mark" src={GitHubLight} alt="GitHub" />
-                    </a>
-                </div>
-                </div>
-            </>
+                <a href="https://github.com/vincentlaucsb/experiencer">
+                    <img className="github-mark" src={GitHubLight} alt="GitHub" />
+                </a>
+            </div>
+        </>
     );
 }

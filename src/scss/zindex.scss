@@ -1,53 +1,57 @@
-﻿@import "variables";
-
-/** Overlap control */
-#resume, #resume * {
-    z-index: 0;
-}
+﻿/** Overlap Control */
+@import "variables";
 
 $header-z: 1000;
 
-header#app-header, header#app-header * {
-    z-index: $header-z;
+#app-header {
+    &, * {
+        z-index: $header-z;
+    }
 
     /** Dropdown menus */
-    #top-menu, button.toolbar-button {
+    #top-menu, .toolbar-button {
         z-index: $header-z + 1;
     }
 
     /** Active dropdown menu */
-    li.pure-menu-active {
+    .pure-menu-active {
         z-index: $header-z + 2;
     }
 
     /** Don't want label obscuring dropdown menus */
-    span.toolbar-label {
+    .toolbar-label {
         z-index: $header-z - 1;
     }
 }
 
-div.ReactModalPortal, div.ReactModalPortal * {
-    z-index: $header-z + 2;
+.ReactModalPortal {
+    &, * {
+        z-index: $header-z + 2;
+    }
 }
 
-Vertical.div.Pane1, Vertical.div.Pane1 * {
-    z-index: 1;
+/** || Main Pane */
+.vertical.Pane1 {
+    &, * {
+        z-index: 0;
+    }
 
     .resume-hl-box {
         background: transparentize($dark-accent, 0.75);
-        z-index: 2;
+        z-index: 1;
     }
 }
 
 /** || Sidebar */
-div.Pane2, div.Pane2 * {
-    z-index: 2;
-    
+.vertical.Pane2 {
+    &, * {
+        z-index: 1;
+    }
 }
 
 /** || Popovers */
-.resume-popover, .resume-popover *,
-.css-selector-adder, .css-selector-adder *,
-.pseudo-options-container, .pseudo-options-container * {
-    z-index: $header-z + 2;
+.resume-popover, .css-selector-adder, .pseudo-options-container {
+    &, * {
+        z-index: $header-z + 2;
+    }
 }

@@ -12,9 +12,10 @@ nav.react-contextmenu {
 
     div.react-contextmenu-item {
         padding: $spacing/4 $spacing;
-    }
 
-    div.react-contextmenu-item:hover {
-        background: $dark-accent;
+        &:hover {
+            background: $dark-accent;
+            color: $light-shade;
+        }
     }
 }

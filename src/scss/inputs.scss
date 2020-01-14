@@ -5,9 +5,9 @@
         background: inherit;
         border: 0;
         border-bottom: 1px solid $light-accent;
-    }
 
-    input:hover {
-        border-bottom-color: $dark-shade;
+        &:hover {
+            border-bottom-color: $dark-shade;
+        }
     }
 }

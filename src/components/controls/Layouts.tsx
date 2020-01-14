@@ -8,7 +8,7 @@ interface DefaultLayoutProps {
 
 interface SidebarLayoutProps extends DefaultLayoutProps {
     isPrinting?: boolean;
-    sideBar: JSX.Element;
+    sidebar: JSX.Element;
 }
 
 export function DefaultLayout(props: DefaultLayoutProps) {
@@ -26,12 +26,8 @@ export function StaticSidebarLayout(props: SidebarLayoutProps) {
     return <React.Fragment>
         {props.topNav}
         <div id="main-grid">
-            <div id="resume-container">
-                {props.main}
-            </div>
-            <div>
-                {props.sideBar}
-            </div>
+            {props.main}
+            {props.sidebar}
         </div>
     </React.Fragment>
 }
@@ -46,7 +42,7 @@ export function ResizableSidebarLayout(props: SidebarLayoutProps) {
             pane1Style={{ height: "100%", overflow: "auto" }}
             pane2Style={{ overflow: "auto" }}>
             {props.main}
-            {props.sideBar}
+            {props.sidebar}
         </SplitPane>
     </SplitPane>
 }

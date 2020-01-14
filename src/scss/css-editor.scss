@@ -39,7 +39,6 @@ section.css-category * {
 section.css-category {
     font-size: 11pt;
     margin: $spacing 0;
-
     /** || Heading */
     h2.css-title-heading {
         margin: 0.3em 0;
@@ -72,23 +71,21 @@ section.css-category {
 
         text-align: right;
     }
-
     /** || Highlighting Button */
     button.hl {
         background: inherit;
         border: none;
         color: $light-accent;
-    }
 
-    button.hl:hover, button.hl.hl-active {
-        color: $dark-shade;
+        &:hover, &.hl-active {
+            color: $dark-shade;
+        }
     }
 
     /* || Rulesets */
     span.css-description {
         margin-top: $spacing;
     }
-
     /* || Property Lists */
     div.css-ruleset {
         font-family: $monospace;

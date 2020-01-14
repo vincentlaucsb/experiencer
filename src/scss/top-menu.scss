@@ -6,9 +6,6 @@ header#app-header {
 
     background: $header-background;
     color: $light-shade;
-    /** Keep toolbar at top */
-    position: sticky;
-    top: 0;
     margin-bottom: $spacing;
 
     .pure-menu-active, .pure-menu-active:focus {
@@ -23,10 +20,10 @@ header#app-header {
     .pure-button {
         background: inherit;
         color: inherit;
-    }
 
-    .pure-button:hover {
-        background: $dark-accent;
+        &:hover {
+            background: $dark-accent;
+        }
     }
 }
 
@@ -44,15 +41,12 @@ div#toolbar {
         .toolbar-label {
             color: $light-accent;
             font-size: 0.8em;
-        }
-
-        .toolbar-label:hover {
             cursor: default;
         }
-    }
 
-    div.toolbar-section:last-child {
-        border-right: none;
+        &:last-child {
+            border-right: none;
+        }
     }
 }
 
@@ -60,7 +54,6 @@ div#toolbar {
 div#toolbar.toolbar-collapsed > .pure-menu > .pure-menu-list {
     @extend %flex-row;
     flex-wrap: wrap;
-
     /** || Subsection Headings */
     .toolbar-collapsed-section h3 {
         @extend %flex-row;
@@ -74,23 +67,23 @@ div#toolbar.toolbar-collapsed > .pure-menu > .pure-menu-list {
 
         button {
             padding-right: 0;
-        }
 
-        button::after {
-            content: "";
-            margin-left: 1em;
-            border-right: 1px solid transparentize($light-accent, 0.25);
-        }
+            &::after {
+                content: "";
+                margin-left: 1em;
+                border-right: 1px solid transparentize($light-accent, 0.25);
+            }
 
-        button:hover::after {
-            border: none;
-            border-right: 1px solid $dark-accent;
+            &:hover::after {
+                border: none;
+                border-right: 1px solid $dark-accent;
+            }
         }
     }
 }
 
 /** || Top Nav Bar */
-div#brand {
+#brand {
     padding: 0 $edge-horizontal-spacing;
     align-items: center;
 
@@ -108,6 +101,7 @@ div#brand {
     }
     // GitHub Icon
     .github-mark {
+        vertical-align: middle;
         color: $light-accent;
         width: 32px;
     }

@@ -198,7 +198,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     private renderTemplateChanger() {
         const templateNames = Object.keys(ResumeTemplates.templates);
         return (
-            <>
+            <div id="template-selector">
                 <PureMenu>
                     {templateNames.map((key: string) =>
                         <PureMenuItem key={key} onClick={() => this.loadTemplate(key)}>
@@ -207,7 +207,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                     )}
                 </PureMenu>
                 <Button onClick={() => this.toggleMode()}>Use this Template</Button>
-            </>
+            </div>
         );
     }
     //#endregion
@@ -582,13 +582,13 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                 return <ResizableSidebarLayout
                     topNav={editingTop}
                     main={resume}
-                    sideBar={<Help close={() => this.toggleMode()} />}
+                    sidebar={<Help close={() => this.toggleMode()} />}
                 />
             case 'changingTemplate':
                 return <StaticSidebarLayout
                     topNav={editingTop}
                     main={resume}
-                    sideBar={this.renderTemplateChanger()}
+                    sidebar={this.renderTemplateChanger()}
                 />
             case 'landing':
                 return <DefaultLayout
@@ -606,7 +606,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                     topNav={editingTop}
                     main={resume}
                     isPrinting={this.isPrinting}
-                    sideBar={this.renderSidebar()}
+                    sidebar={this.renderSidebar()}
             />
         }
     }

@@ -23,21 +23,38 @@ export default class NodeTreeVisualizer extends React.PureComponent<NodeTreeVisu
      * @param node
      */
     represent(node: ResumeNode) {
+        let classNames = ["tree-item"];
+        let htmlId = node.htmlId ? `#${node.htmlId}` : "";
+        let cssClasses = node.classNames ? node.classNames.split(' ').map(
+            (name) => `.${name}`).join('') : "";
+
+        let text = node.type;
+        
+
         switch (node.type) {
             case Entry.type:
                 const entryNode = node as BasicEntryProps;
+                classNames.push("tree-item-entry");
+
                 if (entryNode.title) {
-                    return <span className="tree-item-entry">
-                        {entryNode.title[0]}
-                    </span>
+                    text = entryNode.title[0];
                 }
 
-                return node.type;
+                break;
             case Section.type:
-                return <span className="tree-item-section">{node.value}</span>
+                classNames.push("tree-item-section");
+                text = node.value || node.type;
+                break;
             default:
-                return <span className={`tree-item-${node.type}`}>{node.type}</span>;
+                classNames.push(`tree-item-${node.type}`);
+                text = node.type;
         }
+
+        return (
+            <span className={classNames.join(' ')}>{text}
+                <span className="tree-item-selector">{htmlId}{cssClasses}</span>
+            </span>
+        );
     };
 
     treeMapper(root: Array<ResumeNode> | ResumeNode, id?: IdType) {

@@ -25,6 +25,14 @@
     .tree-item-section {
         font-weight: bold;
     }
+
+    .tree-item-selector {
+        padding-left: $spacing/2;
+        font-style: initial;
+        font-weight: initial;
+        color: lighten($dark-shade, 50%);
+    }
+
     /** Italic font for types that don't have their own
         text headers or values
      */

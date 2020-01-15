@@ -160,8 +160,8 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
      * Update stylesheets
      * @param prevProps
      */
-    componentDidUpdate(_prevProps, prevState) {
-        if (this.state.css !== prevState.css) {
+    componentDidUpdate(_prevProps, prevState: ResumeState) {
+        if (this.state.css !== prevState.css || this.state.rootCss !== prevState.css) {
             this.style.innerHTML = this.stylesheet;
         }
     }

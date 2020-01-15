@@ -2,6 +2,8 @@
 import { ContextMenu, MenuItem } from "react-contextmenu";
 import { IdType, ResumeNode } from "../utility/Types";
 import ObservableResumeNodeTree from "../utility/ObservableResumeNodeTree";
+import Entry, { EntryProps, BasicEntryProps } from "../Entry";
+import Section from "../Section";
 
 export interface ResumeContextProps {
     currentId?: IdType;
@@ -10,12 +12,6 @@ export interface ResumeContextProps {
 }
 
 export default class ResumeContextMenu extends React.Component<ResumeContextProps> {
-    get currentNode(): ResumeNode | undefined {
-        if (this.props.currentId) {
-            return this.props.nodes.getNodeById(this.props.currentId);
-        }
-    }
-
     hoveringMenu(currentNode?: IdType) {
         if (currentNode) {
             let menuItems = Array<IdType>();
@@ -27,11 +23,8 @@ export default class ResumeContextMenu extends React.Component<ResumeContextProp
             }
             
             return <>
-                {menuItems.map((value) => {
-                    return <MenuItem key={value.join('-')}
-                        onClick={() => this.props.selectNode(value)}>
-                        Select {this.props.nodes.getNodeById(value).type}
-                    </MenuItem>
+                {menuItems.map((id) => {
+                    return this.selectOption(id);
                 })}
             </>
         }
@@ -39,15 +32,32 @@ export default class ResumeContextMenu extends React.Component<ResumeContextProp
         return <></>
     }
 
-    render() {
-        let menu = <></>
-        if (this.props.currentId) {
-            menu = this.hoveringMenu([...this.props.currentId]);
+    selectOption(id: IdType) {
+        const node = this.props.nodes.getNodeById(id) as ResumeNode;
+        let text = "";
+
+        switch (node.type) {
+            case Section.type:
+                text = `${node.type}: ${node.value}`
+                break
+            default:
+                text = node.type
         }
 
+        return <MenuItem key={node.uuid}
+            onClick={() => this.props.selectNode(id)}>
+            Select {text}
+        </MenuItem>
+    }
+
+    render() {
         let header = <></>
-        if (this.currentNode) {
-            header = <h3>{this.currentNode.type}</h3>
+        let menu = <></>
+        if (this.props.currentId) {
+            const currentNode = this.props.nodes.getNodeById(this.props.currentId);
+
+            menu = this.hoveringMenu([...this.props.currentId]);
+            header = <h3>{currentNode.type}</h3>
         }
 
         return (

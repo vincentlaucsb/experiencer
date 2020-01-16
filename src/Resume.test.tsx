@@ -13,23 +13,7 @@ import CssNode from "./components/utility/CssTree";
  * @param prev Node to be unselected
  */
 function selectNode(next: HTMLElement, prev?: HTMLElement) {
-    if (prev) {
-        // Mouse out of the previous node so Resume no 
-        // longer thinks we are hovering over it
-        fireEvent.mouseLeave(prev, {
-            bubbles: true,
-            cancelable: true
-        });
-    }
-
-    // Mouse over the target so HoverTracker recognizes it
-    // as a legitimate target for selection
-    fireEvent.mouseEnter(next, {
-        bubbles: true,
-        cancelable: true
-    });
-
-    // Select it
+    // Select target node
     fireEvent.click(next, {
         bubbles: true,
         cancelable: true,

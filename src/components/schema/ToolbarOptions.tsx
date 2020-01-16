@@ -27,6 +27,14 @@ export default function toolbarOptions(
         return [];
     }
 
+    const removeLineBreak = (node: BasicEntryProps) => {
+        if (node.subtitleBreaks) {
+            return node.subtitleBreaks.slice(0, node.subtitleBreaks.length - 1);
+        }
+
+        return [];
+    };
+
     const addTitleField = (node: BasicEntryProps) => {
         let arr = node.title || [];
         arr.push('');
@@ -38,23 +46,7 @@ export default function toolbarOptions(
         arr.push('');
         return arr;
     }
-
-    const removeTitleField = (node: BasicEntryProps) => {
-        if (node.title) {
-            return node.title.slice(0, node.title.length - 1);
-        }
-
-        return [];
-    };
-
-    const removeSubtitleField = (node: BasicEntryProps) => {
-        if (node.subtitle) {
-            return node.subtitle.slice(0, node.subtitle.length - 1);
-        }
-
-        return [];
-    };
-
+    
     const justifyContent = (option: string) => updateNode('justifyContent', option);
     const justifyContentOptions = {
         text: 'Justify Content',
@@ -122,12 +114,8 @@ export default function toolbarOptions(
                                 updateNode('subtitleBreaks', addLineBreak(node))
                         },
                         {
-                            text: 'Remove title field (from right)',
-                            action: () => updateNode('title', removeTitleField(node)),
-                        },
-                        {
-                            text: 'Remove subtitle field (from right)',
-                            action: () => updateNode('subtitle', removeSubtitleField(node))
+                            text: 'Remove subtitle line break (from right)',
+                            action: () => updateNode('subtitleBreaks', removeLineBreak(node)),
                         }
                     ]
                 }

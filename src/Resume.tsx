@@ -498,10 +498,18 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         const rootCssUpdateCallback = () => this.setState({ rootCss: this.rootCss.deepCopy() });
 
         if (this.selectedNode) {
+            let generalCssEditor = <></>
+            let specificCssEditor = <></>
+
             const rootNode = this.state.css.findNode(
                 ComponentTypes.cssName(this.selectedNode.type)) as CssNode;
+            if (rootNode) {
+                generalCssEditor = <CssEditor cssNode={new ReadonlyCssNode(rootNode)}
+                    isOpen={true}
+                    {...makeCssEditorProps(this.css, cssUpdateCallback)}
+                />
+            }
 
-            let specificCssEditor = <></>
             if (this.selectedNode.htmlId && this.state.css.findNode([`#${this.selectedNode.htmlId}`])) {
                 const specificRoot = this.state.css.findNode([`#${this.selectedNode.htmlId}`]) as CssNode;
                 specificCssEditor = <CssEditor cssNode={new ReadonlyCssNode(specificRoot)}
@@ -509,19 +517,12 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                     {...makeCssEditorProps(this.css, cssUpdateCallback)} />
             }
 
-            if (rootNode) {
-                return <>
-                    {specificCssEditor}
-                    <CssEditor cssNode={new ReadonlyCssNode(rootNode)}
-                        isOpen={true}
-                        {...makeCssEditorProps(this.css, cssUpdateCallback)}
-                    />
-                </>
-            }
-
-            return <></>
+            return <>
+                {specificCssEditor}
+                {generalCssEditor}
+            </>
         }
-                
+ 
         return <>
             <CssEditor
                 cssNode={new ReadonlyCssNode(this.state.rootCss)}

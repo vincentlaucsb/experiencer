@@ -4,6 +4,7 @@ import { IdType, SelectedNodeManagement } from "./utility/Types";
 interface SelectTriggerProps extends SelectedNodeManagement {
     id: IdType;
     uuid: string;
+    isEditing: boolean;
 }
 
 export interface ContainerProps extends SelectTriggerProps {
@@ -13,25 +14,24 @@ export interface ContainerProps extends SelectTriggerProps {
     emptyText?: string; // TODO: Do something
     htmlId?: string;
     style?: React.CSSProperties;
+    isEditing: boolean;
 }
 
 export function selectTriggerProps(props: SelectTriggerProps) {
-    const isSelected = props.selectedUuid === props.uuid;
-
     return {
-        onClick: (event: React.MouseEvent) => {
-            // isSelectBlocked prevents us from selecting a parent
-            // node
-            if (!isSelected && !props.isSelectBlocked(props.id)) {
-                props.updateSelected(props.id);
+        onClick: () => {
+            props.clicked(props.id);
+        },
+
+        onContextMenu: (event: React.MouseEvent) => {
+            if (props.isEditing) {
+                // If editing, use default context menu
+                // so user can use browser's spellcheck, etc.
                 event.stopPropagation();
             }
-        },
-        onMouseEnter: () => {
-            props.hoverOver(props.id);
-        },
-        onMouseLeave: () => {
-            props.hoverOut(props.id);
+            else {
+                props.clicked(props.id);
+            }
         }
     };
 }

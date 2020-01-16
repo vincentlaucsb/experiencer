@@ -1,8 +1,9 @@
 ﻿@import "variables";
 
-nav.react-contextmenu {
+.react-contextmenu {
     background: $light-shade;
     border: 1px solid $light-accent;
+    cursor: default;
     font-size: 10pt;
 
     h3 {
@@ -10,7 +11,8 @@ nav.react-contextmenu {
         padding: $spacing/4 $spacing;
     }
 
-    div.react-contextmenu-item {
+    .react-contextmenu-item {
+        cursor: pointer;
         padding: $spacing/4 $spacing;
 
         &:hover {

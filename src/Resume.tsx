@@ -15,7 +15,6 @@ import Landing from './components/help/Landing';
 import TopNavBar, { TopNavBarProps } from './components/controls/TopNavBar';
 import ResumeHotKeys from './components/controls/ResumeHotkeys';
 import Help from './components/help/Help';
-import HoverTracker from './components/utility/HoverTracker';
 import TopEditingBar, { EditingBarProps } from './components/controls/TopEditingBar';
 import ResumeNodeTree from './components/utility/NodeTree';
 import CssNode, { ReadonlyCssNode } from './components/utility/CssTree';
@@ -54,7 +53,9 @@ export interface ResumeState {
 }
 
 class Resume extends React.Component<ResumeProps, ResumeState> {
-    private hovering = new HoverTracker();
+    /** Stores IDs of nodes that were targeted by a single click */
+    private clicked = new Array<IdType>();
+
     private nodes = new ObservableResumeNodeTree();
     private css: CssNode;
     private rootCss: CssNode;
@@ -119,29 +120,11 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     /** Return props related to hover/select functionality */
     private get selectedNodeProps() {
         return {
-            // Add an ID to the set of nodes we are hovering over
-            hoverOver: (id: IdType) => {
-                this.hovering.hoverOver(id);
-                this.setState({ hoverNode: id });
-            },
+            // Update list of clicked nodes
+            clicked: (id: IdType) => { this.clicked.push(id) },
 
-            // Remove an ID from the set of nodes we are hovering over
-            hoverOut: (id: IdType) => {
-                this.hovering.hoverOut();
-                this.setState({ hoverNode: id });
-            },
-            
-            // Determines if a node is selectable or not
-            isSelectBlocked: (id: IdType) => {
-                return !arraysEqual(id, this.hovering.currentId);
-            },
-
+            // The UUID of the currently selected node
             selectedUuid: this.selectedNode ? this.selectedNode.uuid : undefined,
-
-            // Update the selected node
-            updateSelected: (id?: IdType) => {
-                this.setState({ selectedNode: id });
-            }
         }
     }
 
@@ -160,9 +143,15 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
      * Update stylesheets
      * @param prevProps
      */
-    componentDidUpdate(_prevProps, prevState) {
-        if (this.state.css !== prevState.css) {
+    componentDidUpdate(_prevProps, prevState: ResumeState) {
+        if (this.state.css !== prevState.css || this.state.rootCss !== prevState.css) {
             this.style.innerHTML = this.stylesheet;
+        }
+
+        // Reset "editing selected" when selected node changes
+        if (this.state.selectedNode !== prevState.selectedNode &&
+            this.state.isEditingSelected) {
+            this.setState({ isEditingSelected: false });
         }
     }
 
@@ -170,12 +159,24 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
      * Handles clicks on the resume
      * @param event
      */
-    private handleClick(event: React.MouseEvent) {
-        if (this.state.mode === 'changingTemplate') {
-            this.toggleMode();
-        } else {
-            /** Edit the clicked element */
+    private handleClick() {
+        // We want to select the node with the longest ID, i.e.
+        // the deepest node that was clicked
+        let selectedNode: IdType = [];
+        this.clicked.forEach((id) => {
+            if (id.length > selectedNode.length) {
+                selectedNode = id;
+            }
+        });
+
+        // Reset list of clicked nodes
+        this.clicked = new Array<IdType>();
+
+        if (arraysEqual(selectedNode, this.state.selectedNode)) {
             this.setState({ isEditingSelected: true });
+        }
+        else {
+            this.setState({ selectedNode: selectedNode });
         }
     }
     
@@ -265,7 +266,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         const id = this.state.selectedNode as IdType;
         if (id) {
             this.nodes.deleteChild(id);
-            this.hovering.hoverOut();
             this.setState({ selectedNode: undefined });
         }
     }
@@ -498,10 +498,18 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         const rootCssUpdateCallback = () => this.setState({ rootCss: this.rootCss.deepCopy() });
 
         if (this.selectedNode) {
+            let generalCssEditor = <></>
+            let specificCssEditor = <></>
+
             const rootNode = this.state.css.findNode(
                 ComponentTypes.cssName(this.selectedNode.type)) as CssNode;
+            if (rootNode) {
+                generalCssEditor = <CssEditor cssNode={new ReadonlyCssNode(rootNode)}
+                    isOpen={true}
+                    {...makeCssEditorProps(this.css, cssUpdateCallback)}
+                />
+            }
 
-            let specificCssEditor = <></>
             if (this.selectedNode.htmlId && this.state.css.findNode([`#${this.selectedNode.htmlId}`])) {
                 const specificRoot = this.state.css.findNode([`#${this.selectedNode.htmlId}`]) as CssNode;
                 specificCssEditor = <CssEditor cssNode={new ReadonlyCssNode(specificRoot)}
@@ -509,19 +517,12 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                     {...makeCssEditorProps(this.css, cssUpdateCallback)} />
             }
 
-            if (rootNode) {
-                return <>
-                    {specificCssEditor}
-                    <CssEditor cssNode={new ReadonlyCssNode(rootNode)}
-                        isOpen={true}
-                        {...makeCssEditorProps(this.css, cssUpdateCallback)}
-                    />
-                </>
-            }
-
-            return <></>
+            return <>
+                {specificCssEditor}
+                {generalCssEditor}
+            </>
         }
-                
+ 
         return <>
             <CssEditor
                 cssNode={new ReadonlyCssNode(this.state.rootCss)}
@@ -540,26 +541,26 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             <ContextMenuTrigger id="resume-menu">
                 <div id="resume" ref={this.resumeRef}
                     onClick={this.handleClick}
-                    onContextMenu={() => this.setState({
-                    selectedNode: this.hovering.currentId })}>
-                    <ResumeHotKeys {...this.resumeHotKeysProps} />
+                    onContextMenu={this.handleClick}
+                >
+                <ResumeHotKeys {...this.resumeHotKeysProps} />
                 
-                    {this.state.childNodes.map((elem, idx, arr) => {
-                        const uniqueId = elem.uuid;
-                        const props = {
-                            ...elem,
-                            mode: this.state.mode,
-                            updateResumeData: this.updateData,
-                            resumeIsEditing: this.state.isEditingSelected,
-                            selectedNodeManagement: this.selectedNodeProps,
+                {this.state.childNodes.map((elem, idx, arr) => {
+                    const uniqueId = elem.uuid;
+                    const props = {
+                        ...elem,
+                        mode: this.state.mode,
+                        updateResumeData: this.updateData,
+                        resumeIsEditing: this.state.isEditingSelected,
+                        selectedNodeManagement: this.selectedNodeProps,
 
-                            index: idx,
-                            numSiblings: arr.length
-                        };
+                        index: idx,
+                        numSiblings: arr.length
+                    };
 
-                    return <ResumeComponentFactory key={uniqueId} {...props} />
+                return <ResumeComponentFactory key={uniqueId} {...props} />
                     })}
-                </div>
+            </div>
             </ContextMenuTrigger>
 
             <ResumeContextMenu

@@ -7,13 +7,13 @@ import CssNode from "../utility/CssTree";
 import { BasicResumeNode } from "../utility/Types";
 
 export function assuredCss() {
-    let defaultCss = getDefaultCss().setProperties([
+    let css = getDefaultCss().setProperties([
         ["font-family", "var(--sans-serif)"],
         ["font-size", "11pt"]
     ]);
 
     /** Header */
-    const header = defaultCss.mustFindNode("Header").setProperties([
+    const header = css.mustFindNode("Header").setProperties([
         ["background", "#eeeeee"],
         ["margin-bottom", "var(--large-spacing)"],
         ["padding", "var(--edge-margin)"],
@@ -25,13 +25,13 @@ export function assuredCss() {
     }, '.rich-text');
 
     /** Contact Information */
-    let contact = new CssNode("Contact Information", {
+    let contact = css.add("Contact Information", {
         "grid-template-columns": "1fr 30px",
         "grid-column-gap": "var(--small-spacing)",
         "margin-left": "var(--spacing)",
         "width": "auto",
         "height": "auto",
-    }, '#contact, #social-media');
+    }, "#contact, #social-media");
     
     contact.add('Icon', {
         'height': '24px',
@@ -39,7 +39,7 @@ export function assuredCss() {
     }, 'svg.icon, img.icon');
 
     /** Section */
-    defaultCss.mustFindNode('Section').setProperties([
+    css.mustFindNode('Section').setProperties([
         ['margin-bottom', 'var(--x-large-spacing)']]
         ).setProperties([
             ['padding-top', 'var(--small-spacing)']
@@ -51,21 +51,20 @@ export function assuredCss() {
             ["color", "var(--accent)"]
         ], 'Title');
 
-    defaultCss.addNode(contact);
-    
-    defaultCss.add('#main', {
+    /** Grid */
+    css.add('#main', {
         'padding-left': 'var(--edge-margin)',
         'padding-right': 'var(--edge-margin)',
         'grid-template-columns': '1fr 180px',
         'grid-column-gap': 'var(--large-spacing)'
     });
 
-    const sidebar = defaultCss.add('#sidebar', {});
+    const sidebar = css.add('#sidebar', {});
     sidebar.add('Last Subtitle Field', {
         'margin-left': '0'
     }, 'div.entry > hgroup > h4 span.field-last');
 
-    const subtitleFields = defaultCss.findNode(["Entry", "Title Block", "Subtitle"]);
+    const subtitleFields = css.findNode(["Entry", "Title Block", "Subtitle"]);
     if (subtitleFields) {
         subtitleFields.mustFindNode("Middle Fields").add(":before", {
             content: '"|"',
@@ -78,14 +77,14 @@ export function assuredCss() {
         ], "Last Field");
     }
 
-    return defaultCss;
+    return css;
 }
 
 export function assuredRootCss(): CssNode {
     return getRootCss().updateProperties([['--accent', '#315eaa']]);
 }
 
-export function assuredNodes(): Array<BasicResumeNode> {
+export function assuredHeader() {
     let contact = {
         "type": "Grid",
         "htmlId": "contact",
@@ -148,15 +147,18 @@ export function assuredNodes(): Array<BasicResumeNode> {
         ]
     }
 
-    let header = {
+    return {
         "type": "Header",
         "value": "<p>Solid <strong>Programmer</strong></p>",
-        "childNodes": [ contact, socialMedia ],
+        "childNodes": [contact, socialMedia],
         "subtitle": "<p>Software Engineer</p>",
         "justifyContent": "flex-end",
         "distribution": "left-to-right"
     } as BasicHeaderProps;
 
+}
+
+export function assuredNodes(): Array<BasicResumeNode> {
     let experience = {
         "type": "Section",
         "value": "Experience",
@@ -213,8 +215,8 @@ export function assuredNodes(): Array<BasicResumeNode> {
         ]
     };
 
-    let data = [
-        header,
+    return [
+        assuredHeader(),
         {
             "type": "Grid",
             "htmlId": "main",
@@ -243,7 +245,5 @@ export function assuredNodes(): Array<BasicResumeNode> {
                 }
             ]
         }
-    ]
-
-    return data;
+    ];
 }

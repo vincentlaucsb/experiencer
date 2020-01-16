@@ -57,10 +57,7 @@ export interface ResumeSaveData {
 /** Methods and properties used by the top level component
  *  for managing selection */
 export interface SelectedNodeManagement {
-    hoverOver: (id: IdType) => void;
-    hoverOut: (id: IdType) => void;
-    isSelectBlocked: (id: IdType) => boolean;
-    updateSelected: (id?: IdType) => void;
+    clicked: (id: IdType) => void;
     selectedUuid?: string;
 }
 

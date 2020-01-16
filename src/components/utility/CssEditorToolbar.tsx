@@ -23,6 +23,10 @@ const pseudoElements = [
     ':only-of-type'
 ];
 
+/**
+ * Right-hand toolbar for CSS editor sections
+ * @param props
+ */
 export default function CssEditorToolbar(props: CssEditorToolbarProps) {
     let [pseudoMenuActive, setPseudoMenuActive] = React.useState(false);
     const newSectionName = `${props.cssNode.name} Ruleset #${props.cssNode.children.length}`;

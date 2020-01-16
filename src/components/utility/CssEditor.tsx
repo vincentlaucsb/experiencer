@@ -99,10 +99,16 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         />
     }
 
+    /** Create a button that highlights all items matching a selector */
     get highlighter() {
         let className = "hl";
         if (this.state.highlight) {
             className += " hl-active";
+        }
+
+        // Nobody needs to highlight ":root"
+        if (this.props.cssNode.fullSelector === ":root") {
+            return <></>
         }
 
         return (

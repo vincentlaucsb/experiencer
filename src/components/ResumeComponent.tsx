@@ -10,6 +10,7 @@ import Column from "./Column";
 import Grid from "./Grid";
 import Icon from "./Icon";
 import ResumeComponentProps, { IdType, NodeProperty, ResumeNode, SelectedNodeManagement } from "./utility/Types";
+import Divider from "./Divider";
 
 interface FactoryProps extends ResumeNode {
     index: number;       // The n-th index of this node relative to its parent
@@ -52,6 +53,8 @@ export default function ResumeComponentFactory(props: FactoryProps) {
         case DescriptionListItem.type:
             Container = DescriptionListItem;
             break;
+        case Divider.type:
+            Container = Divider;
         case Grid.type:
             Container = Grid;
             break;

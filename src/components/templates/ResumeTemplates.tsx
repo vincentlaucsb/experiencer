@@ -2,12 +2,19 @@
 import { randyMarshCss, randyMarsh, randyMarshRootCss } from "./RandyMarsh";
 import { assuredNodes, assuredCss, assuredRootCss } from "./Assured";
 import { ResumeSaveData } from "../utility/Types";
+import { assuredCoverLetterNodes } from "./AssuredCoveredLetter";
 
 export default class ResumeTemplates {
     static templates = {
         "Assured": {
             builtinCss: assuredCss().dump(),
             childNodes: assignIds(assuredNodes()),
+            rootCss: assuredRootCss().dump()
+        } as ResumeSaveData,
+
+        "Assured: Cover Letter": {
+            builtinCss: assuredCss().dump(),
+            childNodes: assignIds(assuredCoverLetterNodes()),
             rootCss: assuredRootCss().dump()
         } as ResumeSaveData,
 

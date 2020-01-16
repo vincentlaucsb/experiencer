@@ -85,7 +85,7 @@ export function assuredRootCss(): CssNode {
     return getRootCss().updateProperties([['--accent', '#315eaa']]);
 }
 
-export function assuredNodes(): Array<BasicResumeNode> {
+export function assuredHeader() {
     let contact = {
         "type": "Grid",
         "htmlId": "contact",
@@ -148,15 +148,18 @@ export function assuredNodes(): Array<BasicResumeNode> {
         ]
     }
 
-    let header = {
+    return {
         "type": "Header",
         "value": "<p>Solid <strong>Programmer</strong></p>",
-        "childNodes": [ contact, socialMedia ],
+        "childNodes": [contact, socialMedia],
         "subtitle": "<p>Software Engineer</p>",
         "justifyContent": "flex-end",
         "distribution": "left-to-right"
     } as BasicHeaderProps;
 
+}
+
+export function assuredNodes(): Array<BasicResumeNode> {
     let experience = {
         "type": "Section",
         "value": "Experience",
@@ -213,8 +216,8 @@ export function assuredNodes(): Array<BasicResumeNode> {
         ]
     };
 
-    let data = [
-        header,
+    return [
+        assuredHeader(),
         {
             "type": "Grid",
             "htmlId": "main",
@@ -243,7 +246,5 @@ export function assuredNodes(): Array<BasicResumeNode> {
                 }
             ]
         }
-    ]
-
-    return data;
+    ];
 }

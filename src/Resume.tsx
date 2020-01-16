@@ -15,7 +15,6 @@ import Landing from './components/help/Landing';
 import TopNavBar, { TopNavBarProps } from './components/controls/TopNavBar';
 import ResumeHotKeys from './components/controls/ResumeHotkeys';
 import Help from './components/help/Help';
-import HoverTracker from './components/utility/HoverTracker';
 import TopEditingBar, { EditingBarProps } from './components/controls/TopEditingBar';
 import ResumeNodeTree from './components/utility/NodeTree';
 import CssNode, { ReadonlyCssNode } from './components/utility/CssTree';
@@ -54,7 +53,9 @@ export interface ResumeState {
 }
 
 class Resume extends React.Component<ResumeProps, ResumeState> {
-    private hovering = new HoverTracker();
+    private clicked = new Array<IdType>();
+    private rightClicked = new Array<IdType>();
+
     private nodes = new ObservableResumeNodeTree();
     private css: CssNode;
     private rootCss: CssNode;
@@ -83,6 +84,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
 
         this.nodes.subscribe(this.onNodeUpdate.bind(this));
         this.handleClick = this.handleClick.bind(this);
+        this.handleRightClick = this.handleRightClick.bind(this);
         this.print = this.print.bind(this);
         this.toggleMode = this.toggleMode.bind(this);
 
@@ -119,29 +121,16 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     /** Return props related to hover/select functionality */
     private get selectedNodeProps() {
         return {
-            // Add an ID to the set of nodes we are hovering over
-            hoverOver: (id: IdType) => {
-                this.hovering.hoverOver(id);
-                this.setState({ hoverNode: id });
+            clicked: (id: IdType) => {
+                this.clicked.push(id);
             },
 
-            // Remove an ID from the set of nodes we are hovering over
-            hoverOut: (id: IdType) => {
-                this.hovering.hoverOut();
-                this.setState({ hoverNode: id });
-            },
-            
-            // Determines if a node is selectable or not
-            isSelectBlocked: (id: IdType) => {
-                return !arraysEqual(id, this.hovering.currentId);
+            rightClicked: (id: IdType) => {
+                this.rightClicked.push(id);
             },
 
+            // The UUID of the currently selected node
             selectedUuid: this.selectedNode ? this.selectedNode.uuid : undefined,
-
-            // Update the selected node
-            updateSelected: (id?: IdType) => {
-                this.setState({ selectedNode: id });
-            }
         }
     }
 
@@ -164,6 +153,12 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         if (this.state.css !== prevState.css || this.state.rootCss !== prevState.css) {
             this.style.innerHTML = this.stylesheet;
         }
+
+        // Reset "editing selected" when selected node changes
+        if (this.state.selectedNode !== prevState.selectedNode &&
+            this.state.isEditingSelected) {
+            this.setState({ isEditingSelected: false });
+        }
     }
 
     /**
@@ -171,12 +166,33 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
      * @param event
      */
     private handleClick(event: React.MouseEvent) {
-        if (this.state.mode === 'changingTemplate') {
-            this.toggleMode();
-        } else {
-            /** Edit the clicked element */
+        let selectedNode: IdType = [];
+        this.clicked.forEach((id) => {
+            if (id.length > selectedNode.length) {
+                selectedNode = id;
+            }
+        });
+
+        this.clicked = new Array<IdType>();
+
+        if (arraysEqual(selectedNode, this.state.selectedNode)) {
             this.setState({ isEditingSelected: true });
         }
+        else {
+            this.setState({ selectedNode: selectedNode });
+        }
+    }
+
+    private handleRightClick(event) {
+        let selectedNode: IdType = [];
+        this.rightClicked.forEach((id) => {
+            if (id.length > selectedNode.length) {
+                selectedNode = id;
+            }
+        });
+
+        this.rightClicked = new Array<IdType>();
+        this.setState({ selectedNode: selectedNode });
     }
     
     /**
@@ -265,7 +281,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         const id = this.state.selectedNode as IdType;
         if (id) {
             this.nodes.deleteChild(id);
-            this.hovering.hoverOut();
             this.setState({ selectedNode: undefined });
         }
     }
@@ -541,26 +556,26 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             <ContextMenuTrigger id="resume-menu">
                 <div id="resume" ref={this.resumeRef}
                     onClick={this.handleClick}
-                    onContextMenu={() => this.setState({
-                    selectedNode: this.hovering.currentId })}>
-                    <ResumeHotKeys {...this.resumeHotKeysProps} />
+                    onContextMenu={this.handleRightClick}
+                >
+                <ResumeHotKeys {...this.resumeHotKeysProps} />
                 
-                    {this.state.childNodes.map((elem, idx, arr) => {
-                        const uniqueId = elem.uuid;
-                        const props = {
-                            ...elem,
-                            mode: this.state.mode,
-                            updateResumeData: this.updateData,
-                            resumeIsEditing: this.state.isEditingSelected,
-                            selectedNodeManagement: this.selectedNodeProps,
+                {this.state.childNodes.map((elem, idx, arr) => {
+                    const uniqueId = elem.uuid;
+                    const props = {
+                        ...elem,
+                        mode: this.state.mode,
+                        updateResumeData: this.updateData,
+                        resumeIsEditing: this.state.isEditingSelected,
+                        selectedNodeManagement: this.selectedNodeProps,
 
-                            index: idx,
-                            numSiblings: arr.length
-                        };
+                        index: idx,
+                        numSiblings: arr.length
+                    };
 
-                    return <ResumeComponentFactory key={uniqueId} {...props} />
+                return <ResumeComponentFactory key={uniqueId} {...props} />
                     })}
-                </div>
+            </div>
             </ContextMenuTrigger>
 
             <ResumeContextMenu

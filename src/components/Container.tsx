@@ -1,9 +1,11 @@
 ﻿import React from "react";
 import { IdType, SelectedNodeManagement } from "./utility/Types";
+import { ContextMenuTrigger } from "react-contextmenu";
 
 interface SelectTriggerProps extends SelectedNodeManagement {
     id: IdType;
     uuid: string;
+    isEditing: boolean;
 }
 
 export interface ContainerProps extends SelectTriggerProps {
@@ -13,6 +15,7 @@ export interface ContainerProps extends SelectTriggerProps {
     emptyText?: string; // TODO: Do something
     htmlId?: string;
     style?: React.CSSProperties;
+    isEditing: boolean;
 }
 
 export function selectTriggerProps(props: SelectTriggerProps) {
@@ -20,18 +23,11 @@ export function selectTriggerProps(props: SelectTriggerProps) {
 
     return {
         onClick: (event: React.MouseEvent) => {
-            // isSelectBlocked prevents us from selecting a parent
-            // node
-            if (!isSelected && !props.isSelectBlocked(props.id)) {
-                props.updateSelected(props.id);
-                event.stopPropagation();
-            }
+            props.clicked(props.id);
         },
-        onMouseEnter: () => {
-            props.hoverOver(props.id);
-        },
-        onMouseLeave: () => {
-            props.hoverOut(props.id);
+
+        onContextMenu: (event) => {
+            props.rightClicked(props.id);
         }
     };
 }

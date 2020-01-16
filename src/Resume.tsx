@@ -53,8 +53,8 @@ export interface ResumeState {
 }
 
 class Resume extends React.Component<ResumeProps, ResumeState> {
+    /** Stores IDs of nodes that were targeted by a single click */
     private clicked = new Array<IdType>();
-    private rightClicked = new Array<IdType>();
 
     private nodes = new ObservableResumeNodeTree();
     private css: CssNode;
@@ -84,7 +84,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
 
         this.nodes.subscribe(this.onNodeUpdate.bind(this));
         this.handleClick = this.handleClick.bind(this);
-        this.handleRightClick = this.handleRightClick.bind(this);
         this.print = this.print.bind(this);
         this.toggleMode = this.toggleMode.bind(this);
 
@@ -121,13 +120,8 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     /** Return props related to hover/select functionality */
     private get selectedNodeProps() {
         return {
-            clicked: (id: IdType) => {
-                this.clicked.push(id);
-            },
-
-            rightClicked: (id: IdType) => {
-                this.rightClicked.push(id);
-            },
+            // Update list of clicked nodes
+            clicked: (id: IdType) => { this.clicked.push(id) },
 
             // The UUID of the currently selected node
             selectedUuid: this.selectedNode ? this.selectedNode.uuid : undefined,
@@ -165,7 +159,9 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
      * Handles clicks on the resume
      * @param event
      */
-    private handleClick(event: React.MouseEvent) {
+    private handleClick() {
+        // We want to select the node with the longest ID, i.e.
+        // the deepest node that was clicked
         let selectedNode: IdType = [];
         this.clicked.forEach((id) => {
             if (id.length > selectedNode.length) {
@@ -173,6 +169,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             }
         });
 
+        // Reset list of clicked nodes
         this.clicked = new Array<IdType>();
 
         if (arraysEqual(selectedNode, this.state.selectedNode)) {
@@ -181,18 +178,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         else {
             this.setState({ selectedNode: selectedNode });
         }
-    }
-
-    private handleRightClick(event) {
-        let selectedNode: IdType = [];
-        this.rightClicked.forEach((id) => {
-            if (id.length > selectedNode.length) {
-                selectedNode = id;
-            }
-        });
-
-        this.rightClicked = new Array<IdType>();
-        this.setState({ selectedNode: selectedNode });
     }
     
     /**
@@ -556,7 +541,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             <ContextMenuTrigger id="resume-menu">
                 <div id="resume" ref={this.resumeRef}
                     onClick={this.handleClick}
-                    onContextMenu={this.handleRightClick}
+                    onContextMenu={this.handleClick}
                 >
                 <ResumeHotKeys {...this.resumeHotKeysProps} />
                 

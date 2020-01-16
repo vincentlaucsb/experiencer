@@ -58,7 +58,6 @@ export interface ResumeSaveData {
  *  for managing selection */
 export interface SelectedNodeManagement {
     clicked: (id: IdType) => void;
-    rightClicked: (id: IdType) => void;
     selectedUuid?: string;
 }
 

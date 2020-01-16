@@ -1,6 +1,5 @@
 ﻿import React from "react";
 import { IdType, SelectedNodeManagement } from "./utility/Types";
-import { ContextMenuTrigger } from "react-contextmenu";
 
 interface SelectTriggerProps extends SelectedNodeManagement {
     id: IdType;
@@ -19,15 +18,20 @@ export interface ContainerProps extends SelectTriggerProps {
 }
 
 export function selectTriggerProps(props: SelectTriggerProps) {
-    const isSelected = props.selectedUuid === props.uuid;
-
     return {
-        onClick: (event: React.MouseEvent) => {
+        onClick: () => {
             props.clicked(props.id);
         },
 
-        onContextMenu: (event) => {
-            props.rightClicked(props.id);
+        onContextMenu: (event: React.MouseEvent) => {
+            if (props.isEditing) {
+                // If editing, use default context menu
+                // so user can use browser's spellcheck, etc.
+                event.stopPropagation();
+            }
+            else {
+                props.clicked(props.id);
+            }
         }
     };
 }

@@ -157,9 +157,9 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
 
     /**
      * Handles clicks on the resume
-     * @param event
+     * @param rightClick Whether or not the click was a right click
      */
-    private handleClick() {
+    private handleClick(rightClick = false) {
         // We want to select the node with the longest ID, i.e.
         // the deepest node that was clicked
         let selectedNode: IdType = [];
@@ -172,7 +172,8 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         // Reset list of clicked nodes
         this.clicked = new Array<IdType>();
 
-        if (arraysEqual(selectedNode, this.state.selectedNode)) {
+        if (!rightClick && arraysEqual(selectedNode, this.state.selectedNode)) {
+            // Double click on a node ==> edit the node
             this.setState({ isEditingSelected: true });
         }
         else {
@@ -540,8 +541,8 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         const resume = <div id="resume-container">
             <ContextMenuTrigger id="resume-menu">
                 <div id="resume" ref={this.resumeRef}
-                    onClick={this.handleClick}
-                    onContextMenu={this.handleClick}
+                    onClick={() => this.handleClick()}
+                    onContextMenu={() => this.handleClick(true)}
                 >
                 <ResumeHotKeys {...this.resumeHotKeysProps} />
                 

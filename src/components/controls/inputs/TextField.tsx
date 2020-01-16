@@ -1,4 +1,5 @@
 ﻿import React, { MouseEvent } from "react";
+import { isNullOrUndefined } from "util";
 
 interface TextFieldProps {
     value?: string;
@@ -7,6 +8,9 @@ interface TextFieldProps {
     displayClassName?: string;
     displayValue?: string;
     static?: boolean;
+
+    // Callback to delete the text field
+    delete?: () => void;
 
     /** A callback which modifies the display text */
     displayProcessor?: (text?: string) => string;
@@ -30,6 +34,22 @@ export default class TextField extends React.Component<TextFieldProps, TextField
         this.onKeyDown = this.onKeyDown.bind(this);
     }
 
+    get deleteButton() {
+        const deleter = this.props.delete as () => void;
+        if (deleter) {
+            return (
+                <button
+                    onClick={(event: React.MouseEvent) => {
+                        deleter();
+                        event.stopPropagation();
+                    }}
+                ><i className="icofont-ui-delete" /></button>
+            );
+        }
+
+        return <></>
+    }
+
     /** Update parent when appropriate */
     componentDidUpdate(prevProps: TextFieldProps) {
         /** Top level node gave us new data */
@@ -43,7 +63,8 @@ export default class TextField extends React.Component<TextFieldProps, TextField
                 this.setState({
                     value: this.props.value || ""
                 });
-            } else if (this.state.value !== this.props.value) {
+            } else if (this.state.value &&
+                this.state.value !== this.props.value) {
                 // Update parent
                 this.props.onChange(this.state.value);
             }
@@ -73,16 +94,23 @@ export default class TextField extends React.Component<TextFieldProps, TextField
         }
 
         if (this.state.isEditing) {
-            return <>
+            return <span
+                onBlur={(event: React.FocusEvent) => {
+                    // Avoid triggering event if delete button
+                    //w as clicked
+                    if (isNullOrUndefined(event.relatedTarget)) {
+                        this.setState({ isEditing: false });
+                    }
+                }}>
                 {label}
                 <input
                     autoFocus
                     onChange={(event) => this.setState({ value: event.target.value })}
-                    onBlur={() => this.setState({ isEditing: false })}
                     onKeyDown={this.onKeyDown}
                     value={this.state.value}
                 />
-            </>
+                {this.deleteButton}
+            </span>
         }
 
         let displayValue = props.displayValue || props.value || props.defaultText || "";

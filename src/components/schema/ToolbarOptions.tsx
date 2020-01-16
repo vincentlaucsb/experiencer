@@ -4,6 +4,7 @@ import Header from "../Header";
 import Icon from "../Icon";
 import { ResumeNode, NodeProperty } from "../utility/Types";
 import { ToolbarSection, ToolbarItemData } from "../controls/toolbar/ToolbarMaker";
+import { DescriptionListItem, BasicDescriptionItemProps } from "../List";
 
 /**
  * Retrieves custom toolbar options for a node
@@ -86,6 +87,20 @@ export default function toolbarOptions(
     };
 
     switch (node.type) {
+        case DescriptionListItem.type:
+            const addDefinition = (node: BasicDescriptionItemProps) => {
+                let arr = node.definitions || [];
+                arr.push('');
+                return arr;
+            }
+
+            return [
+                {
+                    text: 'Add Definition',
+                    action: () => updateNode('definitions', addDefinition(node))
+                }
+            ];
+
         case Entry.type:
             return [
                 {

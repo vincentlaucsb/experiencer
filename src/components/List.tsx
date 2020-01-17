@@ -1,36 +1,67 @@
 ﻿import * as React from "react";
 import TextField from "./controls/inputs/TextField";
 import Container from "./Container";
-import { process } from "./Helpers";
-import ResumeComponentProps from "./utility/Types";
+import { process, deleteAt } from "./Helpers";
+import ResumeComponentProps, { BasicResumeNode } from "./utility/Types";
 
-interface DescriptionItemProps extends ResumeComponentProps {
+interface DescriptionItemBase {
     term?: string;
+    definitions?: string[];
 }
+
+export interface BasicDescriptionItemProps extends BasicResumeNode, DescriptionItemBase { };
+interface DescriptionItemProps extends DescriptionItemBase, ResumeComponentProps { }
 
 export class DescriptionListItem extends React.PureComponent<DescriptionItemProps> {
     static readonly type = 'Description List Item';
     
+    getDefinitions() {
+        const deleteField = (index: number) => {
+            console.log("Deleter called");
+            this.props.updateData('definitions',
+                deleteAt(this.props.definitions || [], index)
+            );
+        };
+
+        const updater = (index: number, text: string) => {
+            let replDefs = this.props.definitions || [];
+
+            // Replace contents
+            replDefs[index] = text;
+            this.props.updateData('definitions', replDefs);
+        }
+
+        const fields = this.props.definitions;
+        if (fields) {
+            return fields.map((text: string, index: number, arr: string[]) => {
+                return <dd key={`${index}/${arr.length}`}>
+                    <TextField
+                        delete={() => deleteField(index)}
+                        static={!this.props.isSelected}
+                        onChange={(data: string) => updater(index, data)}
+                        value={text || ""}
+                        defaultText="Enter a value"
+                        displayProcessors={[process]}
+                    />
+                </dd>
+            });
+        }
+
+        return <></>
+    }
+
     render() {
         const term = <TextField
             label="Term"
             onChange={this.props.updateData.bind(this, "term")}
-            value={this.props.term}
+            value={this.props.value}
             defaultText="Enter a term"
-            displayProcessor={process}
-        />
-
-        const value = <TextField
-            label="Value"
-            onChange={this.props.updateData.bind(this, "value")}
-            value={this.props.value || ""}
-            defaultText="Enter a value"
-            displayProcessor={process}
+            displayProcessors={[process]}
         />
 
         return <Container {...this.props} className="resume-definition">
             <dt>{term}</dt>
-            <dd>{value}</dd>
+            {this.getDefinitions()}
         </Container>
     }
 }

@@ -4,7 +4,7 @@ import Column from "../Column";
 import Section from "../Section";
 import Entry, { BasicEntryProps } from "../Entry";
 import RichText from "../RichText";
-import DescriptionList, { DescriptionListItem } from "../List";
+import DescriptionList, { DescriptionListItem, BasicDescriptionItemProps } from "../List";
 import Icon from "../Icon";
 import Header from "../Header";
 import { BasicResumeNode } from "../utility/Types";
@@ -49,6 +49,9 @@ export default class ComponentTypes {
                 ]
             case DescriptionList.type:
                 return DescriptionListItem.type;
+            case DescriptionListItem.type:
+            case RichText.type:
+                return [];
             case Entry.type:
                 return [
                     AliasTypes.BulletedList,
@@ -63,8 +66,6 @@ export default class ComponentTypes {
                     DescriptionList.type,
                     Grid.type
                 ];
-            case RichText.type:
-                return [];
             case Section.type:
                 return [
                     Section.type,
@@ -136,8 +137,9 @@ export default class ComponentTypes {
                         type: DescriptionList.type,
                         childNodes: [
                             {
-                                type: DescriptionListItem.type
-                            }
+                                type: DescriptionListItem.type,
+                                definitions: ['']
+                            } as BasicDescriptionItemProps
                         ]
                     },
                     icon: 'sub-listing'

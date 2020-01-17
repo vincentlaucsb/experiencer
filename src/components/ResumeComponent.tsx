@@ -55,6 +55,7 @@ export default function ResumeComponentFactory(props: FactoryProps) {
             break;
         case Divider.type:
             Container = Divider;
+            break;
         case Grid.type:
             Container = Grid;
             break;

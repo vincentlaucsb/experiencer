@@ -1,7 +1,7 @@
 ﻿import * as React from "react";
 import TextField from "./controls/inputs/TextField";
 import Container from "./Container";
-import { process } from "./Helpers";
+import { process, deleteAt, toUrl } from "./Helpers";
 import ResumeComponentProps, { BasicResumeNode } from "./utility/Types";
 
 interface EntryBase {
@@ -37,6 +37,11 @@ export default class Entry extends React.PureComponent<EntryProps> {
     }
 
     getFields(key: 'title' | 'subtitle') {
+        const deleter = (key: 'title' | 'subtitle', index: number) => {
+            let arr = this.props[key] || [];
+            this.props.updateData(key, deleteAt(arr, index));
+        }
+
         const updater = (key: 'title' | 'subtitle', index: number, text: string) => {
             let replTitle = this.props[key] || [];
 
@@ -57,14 +62,15 @@ export default class Entry extends React.PureComponent<EntryProps> {
                     }}/>
                 }
 
-                return <React.Fragment key={index}>
+                return <React.Fragment key={`${index}/${arr.length}`}>
                     <TextField
+                        delete={() => deleter(key, index)}
                         displayClassName={this.getFieldClassName(index, arr)}
                         static={!this.props.isSelected}
                         onChange={(data: string) => updater(key, index, data)}
                         value={text || ""}
                         defaultText="Enter a value"
-                        displayProcessor={process}
+                        displayProcessors={[process, toUrl]}
                     />
                     {lineBreak}
                 </React.Fragment>

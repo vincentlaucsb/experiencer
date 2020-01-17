@@ -39,7 +39,7 @@ export class DescriptionListItem extends React.PureComponent<DescriptionItemProp
                         delete={() => deleteField(index)}
                         static={!this.props.isSelected}
                         onChange={(data: string) => updater(index, data)}
-                        value={text || ""}
+                        value={text}
                         defaultText="Enter a value"
                         displayProcessors={[process]}
                     />
@@ -53,7 +53,7 @@ export class DescriptionListItem extends React.PureComponent<DescriptionItemProp
     render() {
         const term = <TextField
             label="Term"
-            onChange={this.props.updateData.bind(this, "term")}
+            onChange={this.props.updateData.bind(this, "value")}
             value={this.props.value}
             defaultText="Enter a term"
             displayProcessors={[process]}

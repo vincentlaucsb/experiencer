@@ -542,8 +542,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             <ContextMenuTrigger id="resume-menu">
                 <div id="resume" ref={this.resumeRef}
                     onClick={() => this.handleClick()}
-                    onContextMenu={() => this.handleClick(true)}
-                >
+                    onContextMenu={() => this.handleClick(true)}>
                 <ResumeHotKeys {...this.resumeHotKeysProps} />
                 
                 {this.state.childNodes.map((elem, idx, arr) => {

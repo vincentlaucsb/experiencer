@@ -145,6 +145,7 @@ export default class CssNode {
     static load(data: CssNodeDump): CssNode {
         let rootNode = new CssNode(data.name, {}, data.selector);
         rootNode.properties = new Map<string, string>(data.properties);
+        rootNode.description = data.description;
 
         // Load children
         for (let node of data.children) {
@@ -162,6 +163,7 @@ export default class CssNode {
         let data: CssNodeDump = {
             children: this.children.map((elem) => elem.dump()),
             name: this.name,
+            description: this.description,
             properties: Array.from(this.properties.entries()),
             selector: this.selector
         }

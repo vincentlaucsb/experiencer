@@ -41,7 +41,7 @@ export class DescriptionListItem extends React.PureComponent<DescriptionItemProp
                         onChange={(data: string) => updater(index, data)}
                         value={text || ""}
                         defaultText="Enter a value"
-                        displayProcessor={process}
+                        displayProcessors={[process]}
                     />
                 </dd>
             });
@@ -56,7 +56,7 @@ export class DescriptionListItem extends React.PureComponent<DescriptionItemProp
             onChange={this.props.updateData.bind(this, "term")}
             value={this.props.value}
             defaultText="Enter a term"
-            displayProcessor={process}
+            displayProcessors={[process]}
         />
 
         return <Container {...this.props} className="resume-definition">

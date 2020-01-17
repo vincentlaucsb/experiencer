@@ -144,11 +144,28 @@ export function deepCopy<T>(obj: T): T{
  * Perform helpful text processing
  * @param text Text to be processed
  */
-// TODO: Convert URLs to anchors
 export function process(text?: string) {
     if (text) {
         // Replace '--' with en dash and '---' with em dash
         return text.replace(/---/g, '\u2014').replace(/--/g, '\u2013');
+    }
+
+    return "";
+}
+
+/**
+ * Convert URLs to <a href="" />
+ * @param text
+ */
+export function toUrl(text?: string) {
+    if (text) {
+        var expression = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
+        const regex = new RegExp(expression);
+        if (text.match(regex)) {
+            return `<a href="${text}">${text}</a>`;
+        }
+
+        return text;
     }
 
     return "";

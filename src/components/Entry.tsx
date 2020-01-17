@@ -1,7 +1,7 @@
 ﻿import * as React from "react";
 import TextField from "./controls/inputs/TextField";
 import Container from "./Container";
-import { process, deleteAt } from "./Helpers";
+import { process, deleteAt, toUrl } from "./Helpers";
 import ResumeComponentProps, { BasicResumeNode } from "./utility/Types";
 
 interface EntryBase {
@@ -70,7 +70,7 @@ export default class Entry extends React.PureComponent<EntryProps> {
                         onChange={(data: string) => updater(key, index, data)}
                         value={text || ""}
                         defaultText="Enter a value"
-                        displayProcessor={process}
+                        displayProcessors={[process, toUrl]}
                     />
                     {lineBreak}
                 </React.Fragment>

@@ -9,11 +9,11 @@ interface TextFieldProps {
     displayValue?: string;
     static?: boolean;
 
-    // Callback to delete the text field
+    /** Callback to delete the text field */
     delete?: () => void;
 
     /** A callback which modifies the display text */
-    displayProcessor?: (text?: string) => string;
+    displayProcessors?: ((text?: string) => string)[];
     onChange: (text: string) => void;
 }
 
@@ -115,7 +115,11 @@ export default class TextField extends React.Component<TextFieldProps, TextField
 
         let displayValue = props.displayValue || props.value || props.defaultText || "";
         if (displayValue.length > 0) {
-            displayValue = props.displayProcessor ? props.displayProcessor(displayValue) : displayValue;
+            if (props.displayProcessors) {
+                props.displayProcessors.forEach((fn) => {
+                    displayValue = fn(displayValue);
+                }); 
+            }
         }
         else {
             displayValue = "Enter a value";
@@ -129,7 +133,9 @@ export default class TextField extends React.Component<TextFieldProps, TextField
                     }
                 }}
 
-                className={props.displayClassName}>{displayValue}</span>
+                className={props.displayClassName}
+                dangerouslySetInnerHTML={{ __html: displayValue }}
+            />
         );
     }
 }

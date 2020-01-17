@@ -14,7 +14,7 @@ export default class Section extends React.PureComponent<ResumeComponentProps> {
             value={this.props.value || ''}
             label="Title"
             defaultText="Enter a title"
-            displayProcessor={process}
+            displayProcessors={[process]}
         />
 
         let helperText = <></>

@@ -1,9 +1,9 @@
 ﻿import React from "react";
-import PureMenu from "../controls/menus/PureMenu";
-import IconicMenuItem from "../controls/menus/MenuItem";
+import PureMenu, { PureMenuItem } from "../controls/menus/PureMenu";
 import FileLoader from "../controls/FileLoader";
 import Modal from "../controls/Modal";
-import { Globals } from "../utility/Types";
+import { Globals, Action } from "../utility/Types";
+import { Button } from "../controls/Buttons";
 
 interface LandingProps {
     className?: string;
@@ -12,13 +12,27 @@ interface LandingProps {
     new: () => void;
 }
 
+function MenuItem (props: {
+    children: React.ReactNode;
+    icon: string;
+    onClick: Action;
+}) {
+    return <PureMenuItem>
+        <Button onClick={props.onClick}>
+            <i className={`icofont-${props.icon}`} />
+            {props.children}
+        </Button>
+    </PureMenuItem>
+};
+
 export default function Landing(props: LandingProps) {
     let [isOpen, setOpen] = React.useState(false);
     let modalContent = <FileLoader close={() => setOpen(false)} loadData={props.loadData} />
 
-    const returnButton = (localStorage.getItem(Globals.localStorageKey)) ? <IconicMenuItem
-        onClick={props.loadLocal} icon="hand-drawn-alt-left" text="Return to editing resume" /> :
-        <></>
+    const returnButton = (localStorage.getItem(Globals.localStorageKey)) ?
+        <MenuItem onClick={props.loadLocal} icon="hand-drawn-alt-left">
+            Return to editing resume
+        </MenuItem> : <></>
 
     return (
         <>
@@ -32,8 +46,8 @@ export default function Landing(props: LandingProps) {
                     editing your resume, a <strong>Help</strong> button with more information will appear (also in the top left).</p>
                 <PureMenu divProps={{ className: "landing-menu" }}>
                     {returnButton}
-                    <IconicMenuItem onClick={() => props.new()} icon="paper" text="New" />
-                    <IconicMenuItem onClick={() => setOpen(true)} icon="folder-open" text="Load" />
+                    <MenuItem onClick={() => props.new()} icon="paper">New</MenuItem>
+                    <MenuItem onClick={() => setOpen(true)} icon="folder-open">Load</MenuItem>
                 </PureMenu>
             </div>
         </>

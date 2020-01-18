@@ -1,35 +1,39 @@
 ﻿@import "variables";
 
 #landing {
-    max-width: 50em;
+    max-width: 75ch;
     padding: 0 $edge-horizontal-spacing;
     margin-left: auto;
     margin-right: auto;
 }
 
 .landing-menu {
-    .pure-menu-item.toolbar-item {
+    .pure-menu-item {
         padding: 0;
 
-        .toolbar-button {
-            display: grid;
-            grid-template-columns: 40px 1fr;
-            grid-column-gap: $spacing;
+        /** || Adjacent Menu Items */
+        + .pure-menu-item {
+            margin-top: $spacing/2;
+        }
+
+        /** || Buttons */
+        .pure-button {
+            display: flex;
             align-items: center;
-            margin: $spacing/2;
+            background: inherit;
             padding: $spacing/2;
             font-size: large;
             width: 100%;
-            text-align: left;
 
             &:hover {
                 background: lighten($light-accent, 20%);
             }
         }
 
-        i {
+        i[class*="icofont"] {
             font-size: 40px;
             color: $main;
+            margin-right: $spacing;
         }
     }
 }

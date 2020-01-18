@@ -1,12 +1,12 @@
 ﻿import React from "react";
 import FileLoader from "./FileLoader";
 import FileSaver from "./FileSaver";
-import PureMenu, { PureMenuItem, PureMenuLink, PureDropdown } from "./menus/PureMenu";
-import IconicMenuItem from "./menus/MenuItem";
+import PureMenu, { PureMenuItem, PureDropdown } from "./menus/PureMenu";
 import Modal from "./Modal";
 import GitHubLight from "../../icons/GitHub-Mark-Light-120px-plus.png";
 import { Action, EditorMode } from "../utility/Types";
 import { Button } from "./Buttons";
+import ToolbarButton, { ToolbarButtonProps } from "./toolbar/ToolbarButton";
 
 export interface TopNavBarProps {
     isEditing: boolean;
@@ -29,6 +29,11 @@ export interface TopNavBarProps {
 export default function TopNavBar(props: TopNavBarProps) {
     let [isOpen, setOpen] = React.useState(false);
     const Item = PureMenuItem;
+    const IconicItem = (props: ToolbarButtonProps) => (
+        <PureMenuItem>
+            <ToolbarButton {...props} dropdownChild={true} />
+        </PureMenuItem>
+    );
 
     let [modalContent, setModal] = React.useState(<></>);
     let [title, setTitle] = React.useState("");
@@ -53,13 +58,13 @@ export default function TopNavBar(props: TopNavBarProps) {
             <div id="brand">
                 <h1 onClick={props.toggleLanding}>Experiencer</h1>
                 <PureMenu id="top-menu" horizontal>
-                    <PureDropdown trigger={<Button>File</Button>}>
-                        <IconicMenuItem icon="paper" onClick={() => props.new()} text="New" />
-                        <IconicMenuItem icon="folder-open" onClick={openLoader} text="Load" />
-                        <IconicMenuItem disabled={!props.isEditing} onClick={props.saveLocal} text="Save" />
-                        <IconicMenuItem disabled={!props.isEditing} icon="save" onClick={openSaver} text="Save As" />
-                        <IconicMenuItem disabled={!props.isEditing} icon="file-html5" onClick={props.exportHtml} text="Export to HTML/CSS" />
-                        <IconicMenuItem disabled={!props.isEditing} icon="printer" onClick={props.print} text="Print" />
+                    <PureDropdown className="toolbar-dropdown" trigger={<Button>File</Button>}>
+                        <IconicItem icon="paper" action={() => props.new()} text="New" />
+                        <IconicItem icon="folder-open" action={openLoader} text="Load" />
+                        <IconicItem disabled={!props.isEditing} action={props.saveLocal} text="Save" />
+                        <IconicItem disabled={!props.isEditing} icon="save" action={openSaver} text="Save As" />
+                        <IconicItem disabled={!props.isEditing} icon="file-html5" action={props.exportHtml} text="Export to HTML/CSS" />
+                        <IconicItem disabled={!props.isEditing} icon="printer" action={props.print} text="Print" />
                     </PureDropdown>
                     <Item onClick={props.toggleHelp}>
                         <Button>Help</Button>

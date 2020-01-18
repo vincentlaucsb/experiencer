@@ -6,11 +6,12 @@ import Grid from "../Grid";
 import Row from "../Row";
 import Section from "../Section";
 import { Action, IdType, NodeProperty, ResumeNode, AddChild } from "../utility/Types";
-import Toolbar, { ToolbarSection, ToolbarItemData } from "./toolbar/ToolbarMaker";
+import Toolbar, { ToolbarSection } from "./toolbar/ToolbarMaker";
 import Column from "../Column";
 import toolbarOptions from "../schema/ToolbarOptions";
 import HtmlIdAdder from "./HtmlIdAdder";
 import ResumeHotKeys from "./ResumeHotkeys";
+import { ToolbarItemData } from "./toolbar/ToolbarButton";
 
 interface AddOptionProps {
     options: string | Array<string>;

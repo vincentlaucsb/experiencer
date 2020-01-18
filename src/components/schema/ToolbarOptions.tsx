@@ -3,8 +3,9 @@ import Row, { BasicRowProps } from "../Row";
 import Header from "../Header";
 import Icon from "../Icon";
 import { ResumeNode, NodeProperty } from "../utility/Types";
-import { ToolbarSection, ToolbarItemData } from "../controls/toolbar/ToolbarMaker";
+import { ToolbarSection } from "../controls/toolbar/ToolbarMaker";
 import { DescriptionListItem, BasicDescriptionItemProps } from "../List";
+import { ToolbarItemData } from "../controls/toolbar/ToolbarButton";
 
 /**
  * Retrieves custom toolbar options for a node

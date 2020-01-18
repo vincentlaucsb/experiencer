@@ -8,25 +8,86 @@ header#app-header {
     color: $light-shade;
     margin-bottom: $spacing;
 
-    .pure-menu-active, .pure-menu-active:focus {
-        background: $dark-accent;
-    }
-
     #brand, #toolbar {
         @extend %flex-row;
         align-content: center;
+    }
+
+    .pure-menu-active {
+        &, :focus {
+            background: $dark-accent;
+        }
     }
 
     .pure-button {
         background: inherit;
         color: inherit;
 
+        > i[class*="icofont"] + .button-text {
+            margin-left: $spacing / 2;
+        }
+
         &:hover {
             background: $dark-accent;
         }
     }
-}
+    /** || Toolbar Dropdowns */
+    .pure-menu-has-children {
+        /** || Caret */
+        > button::after {
+            content: "\25BE";
+            font-size: small;
+            padding-left: $spacing / 2;
+        }
 
+        /** || Dropdown Items */
+        .pure-menu-children {
+            box-shadow: transparentize($dark-shade, 0.5) 2px 2px 5px;
+
+            .pure-menu-item {
+                background: $dark-shade;
+                color: $light-shade;
+                padding: 0;
+            }
+
+            .pure-button {
+                width: 100%;
+
+                div {
+                    /** Workaround due to a Chrome bug where <button> elements can't be 
+                        grid containers
+
+                        See: https://github.com/rachelandrew/gridbugs#10-some-html-elements-cant-be-grid-containers
+                    */
+                    display: grid;
+                    text-align: left;
+                    align-items: center;
+                    /** icon, label, shortcut (if applicable) */
+                    grid-template-columns: 16px 1fr 0.5fr;
+                    grid-column-gap: $spacing;
+                    width: 100%;
+
+                    .button-text {
+                        grid-column-start: 2;
+                        white-space: nowrap;
+                    }
+                }
+
+                i[class*="icofont"] {
+                    color: $light-accent;
+                }
+
+                &:hover {
+                    background: $dark-accent;
+
+                    i[class*="icofont"] {
+                        color: lighten($light-accent, 25%);
+                    }
+                }
+            }
+        }
+    }
+}
 /** || Top Editing Bar */
 div#toolbar {
     border-top: 1px solid $light-accent;
@@ -61,11 +122,12 @@ div#toolbar.toolbar-collapsed > .pure-menu > .pure-menu-list {
         border-bottom: 1px solid $light-accent;
         margin: 0;
 
-        button, span {
+        .pure-button.back-button , span {
             padding: 0.5em 1em;
         }
 
-        button {
+        .pure-button.back-button {
+            width: auto;
             padding-right: 0;
 
             &::after {

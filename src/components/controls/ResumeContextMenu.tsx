@@ -56,8 +56,10 @@ export default class ResumeContextMenu extends React.Component<ResumeContextProp
         if (this.props.currentId) {
             const currentNode = this.props.nodes.getNodeById(this.props.currentId);
 
-            menu = this.hoveringMenu([...this.props.currentId]);
-            header = <h3>{currentNode.type}</h3>
+            if (currentNode) {
+                menu = this.hoveringMenu([...this.props.currentId]);
+                header = <h3>{currentNode.type}</h3>
+            }
         }
 
         return (

@@ -1,7 +1,7 @@
 ﻿import * as React from "react";
 import TextField from "./controls/inputs/TextField";
 import Container from "./Container";
-import { process, deleteAt } from "./Helpers";
+import { process, deleteAt, moveUp } from "./Helpers";
 import ResumeComponentProps, { BasicResumeNode } from "./utility/Types";
 
 interface DescriptionItemBase {
@@ -16,8 +16,13 @@ export class DescriptionListItem extends React.PureComponent<DescriptionItemProp
     static readonly type = 'Description List Item';
     
     getDefinitions() {
+        const moveFieldUp = (index: number) => {
+            this.props.updateData('definitions',
+                moveUp(this.props.definitions || [], index)
+            );
+        }
+
         const deleteField = (index: number) => {
-            console.log("Deleter called");
             this.props.updateData('definitions',
                 deleteAt(this.props.definitions || [], index)
             );
@@ -36,6 +41,7 @@ export class DescriptionListItem extends React.PureComponent<DescriptionItemProp
             return fields.map((text: string, index: number, arr: string[]) => {
                 return <dd key={`${index}/${arr.length}`}>
                     <TextField
+                        moveUp={() => moveFieldUp(index)}
                         delete={() => deleteField(index)}
                         static={!this.props.isSelected}
                         onChange={(data: string) => updater(index, data)}

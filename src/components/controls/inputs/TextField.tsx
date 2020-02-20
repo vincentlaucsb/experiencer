@@ -9,7 +9,9 @@ interface TextFieldProps {
     displayValue?: string;
     static?: boolean;
 
-    /** Callback to delete the text field */
+    /** Callback to modify the text field */
+    moveUp?: () => void;
+    moveDown?: () => void;
     delete?: () => void;
 
     /** A callback which modifies the display text */
@@ -34,10 +36,38 @@ export default class TextField extends React.Component<TextFieldProps, TextField
         this.onKeyDown = this.onKeyDown.bind(this);
     }
 
-    get deleteButton() {
+    get editControls() {
+        const moveUp = this.props.moveUp as () => void;
+        const moveDown = this.props.moveDown as () => void;
         const deleter = this.props.delete as () => void;
+        let moveUpButton = <></>
+        let moveDownButton = <></>
+        let deleteButton = <></>
+
+        if (moveUp) {
+            moveUpButton = (
+                <button
+                    onClick={(event: React.MouseEvent) => {
+                        moveUp();
+                        event.stopPropagation();
+                    }}
+                ><i className="icofont-arrow-up" /></button>
+            );
+        }
+
+        if (moveDown) {
+            moveDownButton = (
+                <button
+                    onClick={(event: React.MouseEvent) => {
+                        moveDown();
+                        event.stopPropagation();
+                    }}
+                ><i className="icofont-arrow-down" /></button>
+            );
+        }
+
         if (deleter) {
-            return (
+            deleteButton = (
                 <button
                     onClick={(event: React.MouseEvent) => {
                         deleter();
@@ -47,7 +77,11 @@ export default class TextField extends React.Component<TextFieldProps, TextField
             );
         }
 
-        return <></>
+        return <>
+            {moveUpButton}
+            {moveDownButton}
+            {deleteButton}
+        </>
     }
 
     /** Update parent when appropriate */
@@ -109,12 +143,13 @@ export default class TextField extends React.Component<TextFieldProps, TextField
                     onKeyDown={this.onKeyDown}
                     value={this.state.value}
                 />
-                {this.deleteButton}
+                {this.editControls}
             </span>
         }
 
         let displayValue = props.displayValue || props.value || props.defaultText || "";
         if (displayValue.length > 0) {
+            // Apply processing functions to the display value, if applicable
             if (props.displayProcessors) {
                 props.displayProcessors.forEach((fn) => {
                     displayValue = fn(displayValue);

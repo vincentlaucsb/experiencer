@@ -32,9 +32,8 @@ $header-z: 1000;
 }
 
 /** || Main Pane */
+$main-pane-z: $default-z + 1;
 .vertical.Pane1 {
-    $main-pane-z: $default-z + 1;
-
     &, * {
         // Main pane items should be able to display over sidebar items
         z-index: $main-pane-z;
@@ -61,6 +60,10 @@ $header-z: 1000;
 }
 
 /** || Popovers */
+.options-popover {
+    z-index: $main-pane-z + 1;
+}
+
 .resume-popover, .css-selector-adder, .pseudo-options-container {
     &, * {
         z-index: $header-z + 2;

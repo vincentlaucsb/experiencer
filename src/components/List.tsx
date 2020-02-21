@@ -17,16 +17,8 @@ interface DescriptionItemState {
     activeIndex: number;
 }
 
-export class DescriptionListItem extends React.Component<DescriptionItemProps, DescriptionItemState> {
+export class DescriptionListItem extends React.PureComponent<DescriptionItemProps, DescriptionItemState> {
     static readonly type = 'Description List Item';
-
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            activeIndex: -1
-        };
-    }
 
     getDefinitions() {
         const moveFieldUp = (index: number) => {
@@ -58,42 +50,30 @@ export class DescriptionListItem extends React.Component<DescriptionItemProps, D
         const fields = this.props.definitions;
         if (fields) {
             return fields.map((text: string, index: number, arr: string[]) => {
-                return <dd key={`${index}/${arr.length}`}
-                    onMouseEnter={() => this.setState({ activeIndex: index })}
-                    onMouseLeave={() => this.setState({ activeIndex: -1 })}>
-                    <Popover
-                        containerClassName="options-popover"
-                        isOpen={this.state.activeIndex === index}
-                        position={['right', 'left']}
-                        content={<div>
-                            <button
-                                onClick={(event: React.MouseEvent) => {
-                                    moveFieldUp(index);
-                                    event.stopPropagation();
-                                }}
-                            ><i className="icofont-arrow-up" /></button>
-                            <button
-                                onClick={(event: React.MouseEvent) => {
-                                    moveFieldDown(index);
-                                    event.stopPropagation();
-                                }}
-                            ><i className="icofont-arrow-down" /></button>
-                            <button
-                                onClick={(event: React.MouseEvent) => {
-                                    deleteField(index);
-                                    event.stopPropagation();
-                                }}
-                            ><i className="icofont-ui-delete" /></button>
-                        </div>}
-                    >
-                        <TextField
-                            static={!this.props.isSelected}
-                            onChange={(data: string) => updater(index, data)}
-                            value={text}
-                            defaultText="Enter a value"
-                            displayProcessors={[process]}
-                            />
-                    </Popover>
+                const definitionOptions = [
+                    {
+                        text: 'Delete',
+                        action: () => deleteField(index)
+                    },
+                    {
+                        text: 'Move Up',
+                        action: () => moveFieldUp(index)
+                    },
+                    {
+                        text: 'Move Down',
+                        action: () => moveFieldDown(index)
+                    }
+                ];
+
+                return <dd key={`${index}/${arr.length}`}>
+                    <TextField
+                        static={!this.props.isSelected}
+                        onChange={(data: string) => updater(index, data)}
+                        value={text}
+                        defaultText="Enter a value"
+                        contextMenuOptions={definitionOptions}
+                        displayProcessors={[process]}
+                    />
                 </dd>
             });
         }

@@ -2,7 +2,6 @@
 import { ContextMenu, MenuItem } from "react-contextmenu";
 import { IdType, ResumeNode } from "../utility/Types";
 import ObservableResumeNodeTree from "../utility/ObservableResumeNodeTree";
-import Entry, { EntryProps, BasicEntryProps } from "../Entry";
 import Section from "../Section";
 
 export interface ResumeContextProps {

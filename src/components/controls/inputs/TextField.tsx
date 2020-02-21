@@ -1,5 +1,13 @@
 ﻿import React, { MouseEvent } from "react";
+import uuid from 'uuid/v4';
+import parse from 'html-react-parser';
 import { isNullOrUndefined } from "util";
+import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
+
+interface ContextMenuOption {
+    text: string;
+    action: () => void;
+}
 
 interface TextFieldProps {
     value?: string;
@@ -9,9 +17,8 @@ interface TextFieldProps {
     displayValue?: string;
     static?: boolean;
 
-    /** Callback to delete the text field */
-    delete?: () => void;
-
+    contextMenuOptions?: Array<ContextMenuOption>;
+    
     /** A callback which modifies the display text */
     displayProcessors?: ((text?: string) => string)[];
     onChange: (text: string) => void;
@@ -40,16 +47,6 @@ export default class TextField extends React.Component<TextFieldProps, TextField
             return (
                 <button
                     onClick={(event: React.MouseEvent) => {
-                        deleter();
-                        event.stopPropagation();
-                    }}
-                ><i className="icofont-ui-delete" /></button>
-            );
-        }
-
-        return <></>
-    }
-
     /** Update parent when appropriate */
     componentDidUpdate(prevProps: TextFieldProps) {
         /** Top level node gave us new data */
@@ -109,7 +106,6 @@ export default class TextField extends React.Component<TextFieldProps, TextField
                     onKeyDown={this.onKeyDown}
                     value={this.state.value}
                 />
-                {this.deleteButton}
             </span>
         }
 
@@ -125,14 +121,44 @@ export default class TextField extends React.Component<TextFieldProps, TextField
             displayValue = "Enter a value";
         }
 
-        return (
-            <span
-                onClick={(event: MouseEvent) => {
-                    if (!this.props.static) {
-                        this.setState({ isEditing: true });
-                    }
-                }}
+        const contextMenuOptions = this.props.contextMenuOptions as Array<ContextMenuOption>;
+        if (contextMenuOptions) {
+            const _contextMenuOptions = contextMenuOptions.map((option) => {
+                return (
+                    <MenuItem onClick={option.action}>{option.text}</MenuItem>
+                )
+            });
 
+            const menuId = uuid();
+            return (
+                <>
+                    <ContextMenu id={menuId}>
+                        <h3>Text Field</h3>
+                        <MenuItem onClick={() => this.setState({ isEditing: true })}>Edit</MenuItem>
+                        {_contextMenuOptions}
+                    </ContextMenu>
+                    <ContextMenuTrigger
+                        attributes={{
+                            onClick: (event: MouseEvent) => {
+                                if (!this.props.static) {
+                                    this.setState({ isEditing: true });
+                                }
+                            },
+                            className: props.displayClassName,
+                        }}
+                        id={menuId} renderTag="span">
+                        {parse(displayValue)}
+                    </ContextMenuTrigger>
+                </>
+            );
+        }
+
+        return (
+            <span onClick={(event: MouseEvent) => {
+                if (!this.props.static) {
+                    this.setState({ isEditing: true });
+                }
+            }}
                 className={props.displayClassName}
                 dangerouslySetInnerHTML={{ __html: displayValue }}
             />

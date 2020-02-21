@@ -10,6 +10,7 @@
     "babel-cli": "^6.26.0",
     "babel-preset-react-app": "^9.0.2",
     "file-saver": "^2.0.2",
+    "html-react-parser": "^0.10.1",
     "purecss": "^1.0.1",
     "react": "^16.11.0",
     "react-contextmenu": "^2.13.0",

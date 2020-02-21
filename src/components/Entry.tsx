@@ -62,15 +62,22 @@ export default class Entry extends React.PureComponent<EntryProps> {
                     }}/>
                 }
 
+                const textFieldOptions = [
+                    {
+                        text: 'Delete',
+                        action: () => deleter(key, index)
+                    }
+                ];
+
                 return <React.Fragment key={`${index}/${arr.length}`}>
                     <TextField
-                        delete={() => deleter(key, index)}
                         displayClassName={this.getFieldClassName(index, arr)}
                         static={!this.props.isSelected}
                         onChange={(data: string) => updater(key, index, data)}
                         value={text || ""}
                         defaultText="Enter a value"
                         displayProcessors={[process, toUrl]}
+                        contextMenuOptions={textFieldOptions}
                     />
                     {lineBreak}
                 </React.Fragment>

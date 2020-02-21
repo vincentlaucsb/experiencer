@@ -3,6 +3,9 @@ import uuid from 'uuid/v4';
 import parse from 'html-react-parser';
 import { isNullOrUndefined } from "util";
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
+import ReactDOM from "react-dom";
+
+import { createContainer } from "../../Helpers";
 
 interface ContextMenuOption {
     text: string;
@@ -116,6 +119,7 @@ export default class TextField extends React.Component<TextFieldProps, TextField
         }
 
         const contextMenuOptions = this.props.contextMenuOptions as Array<ContextMenuOption>;
+        const contextMenuContainer = createContainer("context-menu-container");
         if (contextMenuOptions) {
             const _contextMenuOptions = contextMenuOptions.map((option) => {
                 return (
@@ -126,11 +130,11 @@ export default class TextField extends React.Component<TextFieldProps, TextField
             const menuId = uuid();
             return (
                 <>
-                    <ContextMenu id={menuId}>
+                    {ReactDOM.createPortal(<ContextMenu id={menuId}>
                         <h3>Text Field</h3>
                         <MenuItem onClick={() => this.setState({ isEditing: true })}>Edit</MenuItem>
                         {_contextMenuOptions}
-                    </ContextMenu>
+                    </ContextMenu>, contextMenuContainer)}
                     <ContextMenuTrigger
                         attributes={{
                             onClick: (event: MouseEvent) => {

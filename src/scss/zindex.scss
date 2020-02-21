@@ -59,11 +59,14 @@ $main-pane-z: $default-z + 1;
     }
 }
 
-/** || Popovers */
-.options-popover {
-    z-index: $main-pane-z + 1;
+/** || Context Menu */
+#context-menu-container {
+    &, * {
+        z-index: $main-pane-z + 1;
+    }
 }
 
+/** || Popovers */
 .resume-popover, .css-selector-adder, .pseudo-options-container {
     &, * {
         z-index: $header-z + 2;

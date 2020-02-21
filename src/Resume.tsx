@@ -538,8 +538,8 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     }
 
     render() {
-        const resume = <div id="resume-container">
-            <ContextMenuTrigger id="resume-menu">
+        const resume = <ContextMenuTrigger attributes={{ id: "resume-container" }}
+            id="resume-menu">
                 <div id="resume" ref={this.resumeRef}
                     onClick={() => this.handleClick()}
                     onContextMenu={() => this.handleClick(true)}>
@@ -558,17 +558,16 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                         numSiblings: arr.length
                     };
 
-                return <ResumeComponentFactory key={uniqueId} {...props} />
-                    })}
-            </div>
-            </ContextMenuTrigger>
+                    return <ResumeComponentFactory key={uniqueId} {...props} />
+                })}
+                </div>
 
             <ResumeContextMenu
                 nodes={this.nodes}
                 currentId={this.state.selectedNode}
-                selectNode={(id) => this.setState({selectedNode: id})}
+                selectNode={(id) => this.setState({ selectedNode: id })}
             />
-        </div>
+        </ContextMenuTrigger>
         
         const editingTop = this.isPrinting ? <></> : (
             <header id="app-header" className="no-print">

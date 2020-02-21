@@ -37,7 +37,7 @@ export class DescriptionListItem extends React.Component<DescriptionItemProps, D
 
         const moveFieldDown = (index: number) => {
             this.props.updateData('definitions',
-                moveUp(this.props.definitions || [], index)
+                moveDown(this.props.definitions || [], index)
             );
         };
 

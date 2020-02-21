@@ -3,6 +3,7 @@ import { ContextMenu, MenuItem } from "react-contextmenu";
 import { IdType, ResumeNode } from "../utility/Types";
 import ObservableResumeNodeTree from "../utility/ObservableResumeNodeTree";
 import Section from "../Section";
+import contextMenuOptions from "../schema/ContextMenuOptions";
 
 export interface ResumeContextProps {
     currentId?: IdType;
@@ -52,8 +53,16 @@ export default class ResumeContextMenu extends React.Component<ResumeContextProp
     render() {
         let header = <></>
         let menu = <></>
+        let customOptions: React.ReactNode = <></>
+
         if (this.props.currentId) {
             const currentNode = this.props.nodes.getNodeById(this.props.currentId);
+            const rawCustomOptions = contextMenuOptions(currentNode, (key, value) => { });
+            if (rawCustomOptions) {
+                customOptions = rawCustomOptions.map((option) => {
+                    return <MenuItem>{option.text}</MenuItem>
+                });
+            }
 
             if (currentNode) {
                 menu = this.hoveringMenu([...this.props.currentId]);
@@ -65,6 +74,7 @@ export default class ResumeContextMenu extends React.Component<ResumeContextProp
             <ContextMenu id="resume-menu">
                 {header}
                 {menu}
+                {customOptions}
             </ContextMenu>
         );
     }

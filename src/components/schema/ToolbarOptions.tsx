@@ -3,7 +3,6 @@ import Row, { BasicRowProps } from "../Row";
 import Header from "../Header";
 import Icon from "../Icon";
 import { ResumeNode, NodeProperty } from "../utility/Types";
-import { ToolbarSection } from "../controls/toolbar/ToolbarMaker";
 import { DescriptionListItem, BasicDescriptionItemProps } from "../List";
 import { ToolbarItemData } from "../controls/toolbar/ToolbarButton";
 

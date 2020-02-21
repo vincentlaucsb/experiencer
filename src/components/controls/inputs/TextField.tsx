@@ -118,48 +118,35 @@ export default class TextField extends React.Component<TextFieldProps, TextField
             displayValue = "Enter a value";
         }
 
-        const contextMenuOptions = this.props.contextMenuOptions as Array<ContextMenuOption>;
         const contextMenuContainer = createContainer("context-menu-container");
-        if (contextMenuOptions) {
-            const _contextMenuOptions = contextMenuOptions.map((option) => {
-                return (
-                    <MenuItem onClick={option.action}>{option.text}</MenuItem>
-                )
-            });
-
-            const menuId = uuid();
+        const contextMenuOptions = this.props.contextMenuOptions ?
+            this.props.contextMenuOptions.map((option) => {
             return (
-                <>
-                    {ReactDOM.createPortal(<ContextMenu id={menuId}>
-                        <h3>Text Field</h3>
-                        <MenuItem onClick={() => this.setState({ isEditing: true })}>Edit</MenuItem>
-                        {_contextMenuOptions}
-                    </ContextMenu>, contextMenuContainer)}
-                    <ContextMenuTrigger
-                        attributes={{
-                            onClick: (event: MouseEvent) => {
-                                if (!this.props.static) {
-                                    this.setState({ isEditing: true });
-                                }
-                            },
-                            className: props.displayClassName,
-                        }}
-                        id={menuId} renderTag="span">
-                        {parse(displayValue)}
-                    </ContextMenuTrigger>
-                </>
-            );
-        }
+                <MenuItem onClick={option.action}>{option.text}</MenuItem>
+            )
+        }) : <></>;
 
+        const menuId = uuid();
         return (
-            <span onClick={(event: MouseEvent) => {
-                if (!this.props.static) {
-                    this.setState({ isEditing: true });
-                }
-            }}
-                className={props.displayClassName}
-                dangerouslySetInnerHTML={{ __html: displayValue }}
-            />
+            <>
+                {ReactDOM.createPortal(<ContextMenu id={menuId}>
+                    <h3>Text Field</h3>
+                    <MenuItem onClick={() => this.setState({ isEditing: true })}>Edit</MenuItem>
+                    {contextMenuOptions}
+                </ContextMenu>, contextMenuContainer)}
+                <ContextMenuTrigger
+                    attributes={{
+                        onClick: (event: MouseEvent) => {
+                            if (!this.props.static) {
+                                this.setState({ isEditing: true });
+                            }
+                        },
+                        className: props.displayClassName,
+                    }}
+                    id={menuId} renderTag="span">
+                    {parse(displayValue)}
+                </ContextMenuTrigger>
+            </>
         );
     }
 }

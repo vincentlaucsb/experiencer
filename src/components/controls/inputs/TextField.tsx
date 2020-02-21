@@ -41,12 +41,6 @@ export default class TextField extends React.Component<TextFieldProps, TextField
         this.onKeyDown = this.onKeyDown.bind(this);
     }
 
-    get deleteButton() {
-        const deleter = this.props.delete as () => void;
-        if (deleter) {
-            return (
-                <button
-                    onClick={(event: React.MouseEvent) => {
     /** Update parent when appropriate */
     componentDidUpdate(prevProps: TextFieldProps) {
         /** Top level node gave us new data */

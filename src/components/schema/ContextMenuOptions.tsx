@@ -18,14 +18,6 @@ export default function contextMenuOptions(
     ContextMenuOption[]
 {
     switch (node.type) {
-        case RichText.type:
-            return [
-                {
-                    text: 'Edit',
-                    action: () => updateNode('isEditing', true)
-                }
-            ];
-
         default:
             return [];
     }

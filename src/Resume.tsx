@@ -565,6 +565,8 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             <ResumeContextMenu
                 nodes={this.nodes}
                 currentId={this.state.selectedNode}
+                editSelected={() => this.setState({ isEditingSelected: true })}
+                updateSelected={this.updateSelected}
                 selectNode={(id) => this.setState({ selectedNode: id })}
             />
         </ContextMenuTrigger>

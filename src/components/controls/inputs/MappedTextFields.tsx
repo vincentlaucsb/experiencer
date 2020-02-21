@@ -25,7 +25,9 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
     }
 
     get deleter() {
-        return (this.props.delete) ? <button onClick={this.props.delete}>Delete</button> :
+        return (this.props.delete) ? <button onClick={this.props.delete}>
+            <i className="icofont-ui-delete" />
+        </button> :
             <></>
     }
 

@@ -71,6 +71,11 @@ section.css-category {
 
         text-align: right;
     }
+
+    input {
+        padding: $light-spacing;
+    }
+
     /** || Highlighting Button */
     button.hl {
         background: inherit;

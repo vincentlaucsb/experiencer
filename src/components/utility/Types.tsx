@@ -58,6 +58,7 @@ export interface ResumeSaveData {
 /** Methods and properties used by the top level component
  *  for managing selection */
 export interface SelectedNodeManagement {
+    /** Handler for a node being clicked */
     clicked: (id: IdType) => void;
     selectedUuid?: string;
 }

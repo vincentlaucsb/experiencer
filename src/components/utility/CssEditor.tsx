@@ -157,8 +157,9 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     }
 
     updateResizer() {
-        console.log("Window resized");
-        this.forceUpdate();
+        requestAnimationFrame(() => {
+            this.forceUpdate();
+        });
     }
     
     /**

@@ -91,7 +91,7 @@ export default class TextField extends React.Component<TextFieldProps, TextField
             return <span
                 onBlur={(event: React.FocusEvent) => {
                     // Avoid triggering event if delete button
-                    //w as clicked
+                    // was clicked
                     if (isNullOrUndefined(event.relatedTarget)) {
                         this.setState({ isEditing: false });
                     }

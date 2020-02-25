@@ -86,6 +86,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         };
 
         this.mapContainer = this.mapContainer.bind(this);
+        this.updateResizer = this.updateResizer.bind(this);
     }
 
     get description() {
@@ -147,6 +148,17 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
             }}
             />
         </span>
+    }
+
+    componentDidUpdate() {
+        // TODO: Clean up the way the main pane is found
+        document.querySelectorAll(".Pane.vertical.Pane1")[0].addEventListener("scroll", this.updateResizer);
+        window.addEventListener("resize", this.updateResizer);
+    }
+
+    updateResizer() {
+        console.log("Window resized");
+        this.forceUpdate();
     }
     
     /**

@@ -154,6 +154,8 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         // TODO: Clean up the way the main pane is found
         document.querySelectorAll(".Pane.vertical.Pane1")[0].addEventListener("scroll", this.updateResizer);
         window.addEventListener("resize", this.updateResizer);
+
+        // TODO: Unregister the event handler
     }
 
     updateResizer() {

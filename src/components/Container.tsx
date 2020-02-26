@@ -8,7 +8,7 @@ interface SelectTriggerProps extends SelectedNodeManagement {
     isEditing: boolean;
 }
 
-export interface ContainerProps extends SelectedNodeManagement {
+export interface ContainerProps {
     id: IdType;
     uuid: string;
 
@@ -23,7 +23,7 @@ export interface ContainerProps extends SelectedNodeManagement {
 export function selectTriggerProps(props: SelectTriggerProps) {
     return {
         onClick: () => {
-            props.clicked(props.id);
+            props.updateClicked(props.id);
         },
 
         onContextMenu: (event: React.MouseEvent) => {
@@ -33,7 +33,7 @@ export function selectTriggerProps(props: SelectTriggerProps) {
                 event.stopPropagation();
             }
             else {
-                props.clicked(props.id);
+                props.updateClicked(props.id);
             }
         }
     };
@@ -61,6 +61,7 @@ export default function Container(props: ContainerProps) {
                     style: props.style,
                     id: props.htmlId,
                     ...selectTriggerProps({
+                        updateClicked: value.updateClicked,
                         isEditing: value.isEditingSelected,
                         ...props
                     })

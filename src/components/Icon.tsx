@@ -56,6 +56,7 @@ export default class Icon extends React.PureComponent<IconProps> {
 
         return <img className="icon" src={src} alt="Icon"
             {...selectTriggerProps({
+                updateClicked: this.context.updateClicked,
                 isEditing: isEditing,
                 ...this.props
             })}

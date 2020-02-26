@@ -122,14 +122,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         return this.state.mode === 'printing';
     }
 
-    /** Return props related to hover/select functionality */
-    private get selectedNodeProps() {
-        return {
-            // Update list of clicked nodes
-            clicked: (id: IdType) => { this.clicked.push(id) }
-        }
-    }
-
     /** Retrieve the selected node **/
     get selectedNode() {
         return this.state.selectedNode ?
@@ -554,7 +546,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                             mode: this.state.mode,
                             updateResumeData: this.updateData,
                             resumeIsEditing: this.state.isEditingSelected,
-                            selectedNodeManagement: this.selectedNodeProps,
 
                             index: idx,
                             numSiblings: arr.length
@@ -564,6 +555,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                             <ResumeContext.Provider value={{
                                 isEditingSelected: this.state.isEditingSelected,
                                 selectedUuid: this.selectedNode ? this.selectedNode.uuid : undefined,
+                                updateClicked: (id: IdType) => { this.clicked.push(id) }
                             }}>
                                 <ResumeComponentFactory key={uniqueId} {...props} />
                             </ResumeContext.Provider>

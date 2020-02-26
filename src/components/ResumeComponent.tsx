@@ -16,8 +16,7 @@ interface FactoryProps extends ResumeNode {
     index: number;       // The n-th index of this node relative to its parent
     numSiblings: number; // Number of siblings this node has
     parentId?: IdType;   // The id of the parent node
-    updateResumeData: (id: IdType, key: string, data: NodeProperty) => void,
-    selectedNodeManagement: SelectedNodeManagement
+    updateResumeData: (id: IdType, key: string, data: NodeProperty) => void
 }
 
 /**
@@ -30,7 +29,6 @@ export default function ResumeComponentFactory(props: FactoryProps) {
 
     let newProps = {
         ...props,
-        ...props.selectedNodeManagement,
 
         // Compute properties
         updateData: (key, data) => props.updateResumeData(nodeId, key, data),
@@ -86,7 +84,6 @@ export default function ResumeComponentFactory(props: FactoryProps) {
                 const uniqueId = elem.uuid;
                 const childProps = {
                     ...elem,
-                    selectedNodeManagement: props.selectedNodeManagement,
                     updateResumeData: props.updateResumeData,
 
                     index: idx,

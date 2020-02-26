@@ -1,5 +1,6 @@
 ﻿import React from "react";
 import { IdType, SelectedNodeManagement } from "./utility/Types";
+import ResumeContext from "src/ResumeContext";
 
 interface SelectTriggerProps extends SelectedNodeManagement {
     id: IdType;
@@ -57,5 +58,13 @@ export default function Container(props: ContainerProps) {
         ...selectTriggerProps(props)
     }
     
-    return React.createElement(displayAs, newProps);
+    return (
+        <ResumeContext.Consumer>
+            {(value) => (
+                <>
+                    {React.createElement(displayAs, newProps)}
+                </>
+            )}
+        </ResumeContext.Consumer>
+    );
 }

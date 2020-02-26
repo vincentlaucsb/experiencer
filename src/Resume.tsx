@@ -29,6 +29,7 @@ import generateHtml from './components/utility/GenerateHtml';
 import ComponentTypes from './components/schema/ComponentTypes';
 import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode, Globals } from './components/utility/Types';
 import ObservableResumeNodeTree from './components/utility/ObservableResumeNodeTree';
+import ResumeContext from './ResumeContext';
 
 /** These props are only used for testing */
 export interface ResumeProps {
@@ -538,28 +539,34 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     }
 
     render() {
-        const resume = <ContextMenuTrigger attributes={{ id: "resume-container" }}
+        const resume = (
+            <ContextMenuTrigger attributes={{ id: "resume-container" }}
             id="resume-menu">
                 <div id="resume" ref={this.resumeRef}
                     onClick={() => this.handleClick()}
                     onContextMenu={() => this.handleClick(true)}>
-                <ResumeHotKeys {...this.resumeHotKeysProps} />
-                
-                {this.state.childNodes.map((elem, idx, arr) => {
-                    const uniqueId = elem.uuid;
-                    const props = {
-                        ...elem,
-                        mode: this.state.mode,
-                        updateResumeData: this.updateData,
-                        resumeIsEditing: this.state.isEditingSelected,
-                        selectedNodeManagement: this.selectedNodeProps,
+                    <ResumeHotKeys {...this.resumeHotKeysProps} />
+                    {this.state.childNodes.map((elem, idx, arr) => {
+                        const uniqueId = elem.uuid;
+                        const props = {
+                            ...elem,
+                            mode: this.state.mode,
+                            updateResumeData: this.updateData,
+                            resumeIsEditing: this.state.isEditingSelected,
+                            selectedNodeManagement: this.selectedNodeProps,
 
-                        index: idx,
-                        numSiblings: arr.length
-                    };
+                            index: idx,
+                            numSiblings: arr.length
+                        };
 
-                    return <ResumeComponentFactory key={uniqueId} {...props} />
-                })}
+                        return (
+                            <ResumeContext.Provider value={{
+                                test: "asdfghjkl"
+                            }}>
+                                <ResumeComponentFactory key={uniqueId} {...props} />
+                            </ResumeContext.Provider>
+                        );
+                    })}
                 </div>
 
             <ResumeContextMenu
@@ -570,6 +577,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                 selectNode={(id) => this.setState({ selectedNode: id })}
             />
         </ContextMenuTrigger>
+        );
         
         const editingTop = this.isPrinting ? <></> : (
             <header id="app-header" className="no-print">

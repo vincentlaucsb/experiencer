@@ -3,7 +3,7 @@ import * as Helpers from "./Helpers";
 import QuillEditor from "./controls/inputs/QuillEditor";
 import Container from "./Container";
 import ResumeComponentProps from "./utility/Types";
-import ResumeContext from "src/ResumeContext";
+import ResumeContext from "./ResumeContext";
 
 export default class RichText extends React.PureComponent<ResumeComponentProps> {    
     static contextType = ResumeContext;

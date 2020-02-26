@@ -29,7 +29,7 @@ import generateHtml from './components/utility/GenerateHtml';
 import ComponentTypes from './components/schema/ComponentTypes';
 import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode, Globals } from './components/utility/Types';
 import ObservableResumeNodeTree from './components/utility/ObservableResumeNodeTree';
-import ResumeContext from './ResumeContext';
+import ResumeContext from './components/ResumeContext';
 
 /** These props are only used for testing */
 export interface ResumeProps {
@@ -543,10 +543,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                         const uniqueId = elem.uuid;
                         const props = {
                             ...elem,
-                            mode: this.state.mode,
                             updateResumeData: this.updateData,
-                            resumeIsEditing: this.state.isEditingSelected,
-
                             index: idx,
                             numSiblings: arr.length
                         };

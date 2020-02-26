@@ -1,11 +1,12 @@
 ﻿import React from "react";
-import { IdType, SelectedNodeManagement } from "./utility/Types";
-import ResumeContext from "src/ResumeContext";
+import { IdType } from "./utility/Types";
+import ResumeContext from "./ResumeContext";
 
-interface SelectTriggerProps extends SelectedNodeManagement {
+interface SelectTriggerProps {
     id: IdType;
     uuid: string;
     isEditing: boolean;
+    updateClicked: (id: IdType) => void;
 }
 
 export interface ContainerProps {

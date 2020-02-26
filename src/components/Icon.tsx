@@ -7,8 +7,7 @@ import GitHubDark from "../icons/GitHub-Mark-120px-plus.png";
 import Phone from "../icons/feather/phone.svg";
 import ResumeComponentProps, { BasicResumeNode } from "./utility/Types";
 import { selectTriggerProps } from "./Container";
-import ResumeComponentFactory from "./ResumeComponent";
-import ResumeContext from "src/ResumeContext";
+import ResumeContext from "./ResumeContext";
 
 interface IconBase {
     icon?: 'email'

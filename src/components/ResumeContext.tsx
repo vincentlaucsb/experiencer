@@ -1,5 +1,5 @@
 ﻿import React from "react";
-import { IdType } from "./components/utility/Types";
+import { IdType } from "./utility/Types";
 
 interface IResumeContext {
     isEditingSelected: boolean;

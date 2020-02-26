@@ -55,13 +55,6 @@ export interface ResumeSaveData {
     childNodes: Array<ResumeNode>;
 }
 
-/** Methods and properties used by the top level component
- *  for managing selection */
-export interface SelectedNodeManagement {
-    /** Handler for a node being clicked */
-    updateClicked: (id: IdType) => void;
-}
-
 /** Used in creating React components over resume nodes */
 export default interface ResumeComponentProps extends ResumeNode {
     id: IdType;   // Hierarchical ID based on the node's position in the resume; subject to change

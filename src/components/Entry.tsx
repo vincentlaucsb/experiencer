@@ -3,7 +3,7 @@ import TextField from "./controls/inputs/TextField";
 import Container from "./Container";
 import { process, deleteAt, toUrl } from "./Helpers";
 import ResumeComponentProps, { BasicResumeNode } from "./utility/Types";
-import ResumeContext from "src/ResumeContext";
+import ResumeContext from "./ResumeContext";
 
 interface EntryBase {
     title?: string[];

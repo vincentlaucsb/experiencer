@@ -3,8 +3,7 @@ import TextField from "./controls/inputs/TextField";
 import Container from "./Container";
 import { process, deleteAt, moveUp, moveDown } from "./Helpers";
 import ResumeComponentProps, { BasicResumeNode } from "./utility/Types";
-import Popover from "react-tiny-popover";
-import ResumeContext from "src/ResumeContext";
+import ResumeContext from "./ResumeContext";
 
 interface DescriptionItemBase {
     term?: string;

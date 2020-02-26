@@ -9,7 +9,7 @@ import Row from "./Row";
 import Column from "./Column";
 import Grid from "./Grid";
 import Icon from "./Icon";
-import ResumeComponentProps, { IdType, NodeProperty, ResumeNode, SelectedNodeManagement } from "./utility/Types";
+import ResumeComponentProps, { IdType, NodeProperty, ResumeNode } from "./utility/Types";
 import Divider from "./Divider";
 
 interface FactoryProps extends ResumeNode {

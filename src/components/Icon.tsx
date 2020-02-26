@@ -6,7 +6,7 @@ import LinkedIn from "../icons/LI-In-Bug.png";
 import GitHubDark from "../icons/GitHub-Mark-120px-plus.png";
 import Phone from "../icons/feather/phone.svg";
 import ResumeComponentProps, { BasicResumeNode } from "./utility/Types";
-import { selectTriggerProps } from "./Container";
+import Container, { selectTriggerProps } from "./Container";
 import ResumeContext from "./ResumeContext";
 
 interface IconBase {
@@ -53,12 +53,14 @@ export default class Icon extends React.PureComponent<IconProps> {
                 break;
         }
 
-        return <img className="icon" src={src} alt="Icon"
-            {...selectTriggerProps({
-                updateClicked: this.context.updateClicked,
-                isEditing: isEditing,
-                ...this.props
-            })}
+        return <Container displayAs="img"
+            className="icon"
+            attributes={{
+                alt: "Icon",
+                src: src
+            }}
+
+            {...this.props}
         />
     }
 }

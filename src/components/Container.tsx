@@ -2,7 +2,6 @@
 import { IdType } from "./utility/Types";
 import ResumeContext from "./ResumeContext";
 import { createContainer } from "./Helpers";
-import ReactDOM from "react-dom";
 
 interface SelectTriggerProps {
     id: IdType;
@@ -15,6 +14,7 @@ export interface ContainerProps {
     id: IdType;
     uuid: string;
 
+    attributes?: Object;
     children?: React.ReactNode;
     className?: string;
     displayAs?: string;
@@ -61,7 +61,6 @@ export default function Container(props: ContainerProps) {
                 }
 
                 const newProps = {
-                    children: props.children,
                     className: classes.join(' '),
                     style: props.style,
                     id: props.htmlId,
@@ -70,7 +69,12 @@ export default function Container(props: ContainerProps) {
                         isEditing: value.isEditingSelected,
                         ...props
                     }),
-                    ref: ref
+                    ref: ref,
+                    ...props.attributes
+                }
+
+                if (displayAs !== "img") {
+                    newProps['children'] = props.children;
                 }
 
                 return (

@@ -5,6 +5,8 @@ interface IResumeContext {
     isEditingSelected: boolean;
     selectedUuid?: string;
     updateSelectedRef: (ref: React.RefObject<any>) => void;
+
+    /** Tell parent we have been clicked */
     updateClicked: (id: IdType) => void;
 }
 

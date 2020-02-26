@@ -1,20 +1,14 @@
 ﻿import React from "react";
 import { IdType } from "./utility/Types";
 import ResumeContext from "./ResumeContext";
-import { createContainer } from "./Helpers";
-
-interface SelectTriggerProps {
-    id: IdType;
-    uuid: string;
-    isEditing: boolean;
-    updateClicked: (id: IdType) => void;
-}
 
 export interface ContainerProps {
     id: IdType;
     uuid: string;
 
+    /** Any other HTML attributes that should be set */
     attributes?: Object;
+
     children?: React.ReactNode;
     className?: string;
     displayAs?: string;
@@ -23,32 +17,12 @@ export interface ContainerProps {
     style?: React.CSSProperties;
 }
 
-export function selectTriggerProps(props: SelectTriggerProps) {
-    return {
-        onClick: () => {
-            props.updateClicked(props.id);
-        },
-
-        onContextMenu: (event: React.MouseEvent) => {
-            if (props.isEditing) {
-                // If editing, use default context menu
-                // so user can use browser's spellcheck, etc.
-                event.stopPropagation();
-            }
-            else {
-                props.updateClicked(props.id);
-            }
-        }
-    };
-}
-
 /**
  * Generic parent-level container for resume components
  * @param props
  */
 export default function Container(props: ContainerProps) {
     const displayAs = props.displayAs || "div";
-    const highlightContainer = createContainer("hl-box-container");
     let classes = [props.className];
     let ref = React.createRef();
 
@@ -60,17 +34,31 @@ export default function Container(props: ContainerProps) {
                     value.updateSelectedRef(ref);
                 }
 
+                /** Props for managing selection and focus */
+                const selectTriggerProps = {
+                    onClick: () => {
+                        value.updateClicked(props.id);
+                    },
+
+                    onContextMenu: (event: React.MouseEvent) => {
+                        if (value.isEditingSelected) {
+                            // If editing, use default context menu
+                            // so user can use browser's spellcheck, etc.
+                            event.stopPropagation();
+                        }
+                        else {
+                            value.updateClicked(props.id);
+                        }
+                    }
+                }
+
                 const newProps = {
+                    ...props.attributes,
                     className: classes.join(' '),
                     style: props.style,
                     id: props.htmlId,
-                    ...selectTriggerProps({
-                        updateClicked: value.updateClicked,
-                        isEditing: value.isEditingSelected,
-                        ...props
-                    }),
                     ref: ref,
-                    ...props.attributes
+                    ...selectTriggerProps
                 }
 
                 if (displayAs !== "img") {

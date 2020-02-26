@@ -1,7 +1,15 @@
 ﻿import React from "react";
 
-const ResumeContext = React.createContext({
-    test: "asdf"
-});
+interface IResumeContext {
+    isEditingSelected: boolean;
+    selectedUuid?: string;
+}
+
+const defaultResumeContext: IResumeContext = {
+    isEditingSelected: false,
+    selectedUuid: undefined
+}
+
+const ResumeContext = React.createContext(defaultResumeContext);
 
 export default ResumeContext;

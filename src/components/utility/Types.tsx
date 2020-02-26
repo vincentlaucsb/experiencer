@@ -60,14 +60,11 @@ export interface ResumeSaveData {
 export interface SelectedNodeManagement {
     /** Handler for a node being clicked */
     clicked: (id: IdType) => void;
-    selectedUuid?: string;
 }
 
 /** Used in creating React components over resume nodes */
 export default interface ResumeComponentProps extends ResumeNode, SelectedNodeManagement {
     id: IdType;   // Hierarchical ID based on the node's position in the resume; subject to change
-    isEditing: boolean;
     isLast: boolean;
-    isSelected: boolean;
     updateData: (key: string, data: NodeProperty) => void;
 }

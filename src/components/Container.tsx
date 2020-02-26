@@ -8,14 +8,16 @@ interface SelectTriggerProps extends SelectedNodeManagement {
     isEditing: boolean;
 }
 
-export interface ContainerProps extends SelectTriggerProps {
+export interface ContainerProps extends SelectedNodeManagement {
+    id: IdType;
+    uuid: string;
+
     children?: React.ReactNode;
     className?: string;
     displayAs?: string;
     emptyText?: string; // TODO: Do something
     htmlId?: string;
     style?: React.CSSProperties;
-    isEditing: boolean;
 }
 
 export function selectTriggerProps(props: SelectTriggerProps) {
@@ -43,28 +45,34 @@ export function selectTriggerProps(props: SelectTriggerProps) {
  */
 export default function Container(props: ContainerProps) {
     const displayAs = props.displayAs || "div";
-    const isSelected = props.selectedUuid === props.uuid;
-
     let classes = [props.className];
-    if (isSelected) {
-        classes = classes.concat('resume-selected');
-    }
-
-    let newProps = {
-        children: props.children,
-        className: classes.join(' '),
-        style: props.style,
-        id: props.htmlId,
-        ...selectTriggerProps(props)
-    }
     
     return (
         <ResumeContext.Consumer>
-            {(value) => (
-                <>
-                    {React.createElement(displayAs, newProps)}
-                </>
-            )}
+            {(value) => {
+                const isSelected = value.selectedUuid === props.uuid;
+                if (isSelected) {
+                    classes = classes.concat('resume-selected');
+                }
+
+                const newProps = {
+                    children: props.children,
+                    className: classes.join(' '),
+                    style: props.style,
+                    id: props.htmlId,
+                    ...selectTriggerProps({
+                        isEditing: value.isEditingSelected,
+                        ...props
+                    })
+                }
+
+                return (
+                    <>
+                        {React.createElement(displayAs, newProps)}
+                    </>
+                )
+
+            }}
         </ResumeContext.Consumer>
     );
 }

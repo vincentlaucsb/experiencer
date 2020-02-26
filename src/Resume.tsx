@@ -48,7 +48,11 @@ export interface ResumeState {
 
     activeTemplate?: string;
     clipboard?: ResumeNode;
+
+    // TODO: Remove???
     hoverNode?: IdType;
+
+    /** Are we editing the currently selected node */
     isEditingSelected: boolean;
     selectedNode?: IdType;
 }
@@ -122,10 +126,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     private get selectedNodeProps() {
         return {
             // Update list of clicked nodes
-            clicked: (id: IdType) => { this.clicked.push(id) },
-
-            // The UUID of the currently selected node
-            selectedUuid: this.selectedNode ? this.selectedNode.uuid : undefined,
+            clicked: (id: IdType) => { this.clicked.push(id) }
         }
     }
 
@@ -561,7 +562,8 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
 
                         return (
                             <ResumeContext.Provider value={{
-                                test: "asdfghjkl"
+                                isEditingSelected: this.state.isEditingSelected,
+                                selectedUuid: this.selectedNode ? this.selectedNode.uuid : undefined,
                             }}>
                                 <ResumeComponentFactory key={uniqueId} {...props} />
                             </ResumeContext.Provider>

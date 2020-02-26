@@ -14,7 +14,6 @@ import Divider from "./Divider";
 
 interface FactoryProps extends ResumeNode {
     index: number;       // The n-th index of this node relative to its parent
-    resumeIsEditing: boolean;
     numSiblings: number; // Number of siblings this node has
     parentId?: IdType;   // The id of the parent node
     updateResumeData: (id: IdType, key: string, data: NodeProperty) => void,
@@ -27,8 +26,6 @@ interface FactoryProps extends ResumeNode {
 export default function ResumeComponentFactory(props: FactoryProps) {
     const parentId = props.parentId;
     const index = props.index;
-    const isSelected = props.selectedNodeManagement.selectedUuid ===
-        props.uuid;
     const nodeId = parentId ? [...parentId, index] : [index];
 
     let newProps = {
@@ -37,8 +34,6 @@ export default function ResumeComponentFactory(props: FactoryProps) {
 
         // Compute properties
         updateData: (key, data) => props.updateResumeData(nodeId, key, data),
-        isEditing: props.resumeIsEditing && isSelected,
-        isSelected: isSelected,
 
         // Generate unique IDs for component
         id: nodeId,
@@ -91,9 +86,7 @@ export default function ResumeComponentFactory(props: FactoryProps) {
                 const uniqueId = elem.uuid;
                 const childProps = {
                     ...elem,
-                    resumeIsEditing: props.resumeIsEditing,
                     selectedNodeManagement: props.selectedNodeManagement,
-                    isSelected: props.selectedNodeManagement.selectedUuid === elem.uuid,
                     updateResumeData: props.updateResumeData,
 
                     index: idx,

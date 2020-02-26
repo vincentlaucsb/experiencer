@@ -4,6 +4,7 @@ import Container from "./Container";
 import { process, deleteAt, moveUp, moveDown } from "./Helpers";
 import ResumeComponentProps, { BasicResumeNode } from "./utility/Types";
 import Popover from "react-tiny-popover";
+import ResumeContext from "src/ResumeContext";
 
 interface DescriptionItemBase {
     term?: string;
@@ -18,6 +19,7 @@ interface DescriptionItemState {
 }
 
 export class DescriptionListItem extends React.PureComponent<DescriptionItemProps, DescriptionItemState> {
+    static contextType = ResumeContext;
     static readonly type = 'Description List Item';
 
     getDefinitions() {
@@ -49,6 +51,8 @@ export class DescriptionListItem extends React.PureComponent<DescriptionItemProp
 
         const fields = this.props.definitions;
         if (fields) {
+            const isSelected = this.context.selectedUuid === this.props.uuid;
+
             return fields.map((text: string, index: number, arr: string[]) => {
                 const definitionOptions = [
                     {
@@ -67,7 +71,7 @@ export class DescriptionListItem extends React.PureComponent<DescriptionItemProp
 
                 return <dd key={`${index}/${arr.length}`}>
                     <TextField
-                        static={!this.props.isSelected}
+                        static={!isSelected}
                         onChange={(data: string) => updater(index, data)}
                         value={text}
                         defaultText="Enter a value"

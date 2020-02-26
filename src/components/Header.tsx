@@ -39,10 +39,12 @@ export default class Header extends React.PureComponent<HeaderProps> {
     }
 
     render() {
+        const isEditing = this.context.isEditingSelected && this.context.selectedUuid === this.props.uuid;
+
         let value = <h1 dangerouslySetInnerHTML={{ __html: this.props.value || "Enter a title" }} />
         let subtitle = <h2 className="subtitle" dangerouslySetInnerHTML={{ __html: this.props.subtitle || "" }} />
 
-        if (this.props.isEditing) {
+        if (isEditing) {
             value = <QuillEditor
                 id={`${this.props.uuid}-title`}
                 value={this.props.value || ""}

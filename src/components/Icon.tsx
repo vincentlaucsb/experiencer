@@ -5,8 +5,10 @@ import Email from "../icons/feather/mail.svg";
 import LinkedIn from "../icons/LI-In-Bug.png";
 import GitHubDark from "../icons/GitHub-Mark-120px-plus.png";
 import Phone from "../icons/feather/phone.svg";
-import { selectTriggerProps } from "./Container";
 import ResumeComponentProps, { BasicResumeNode } from "./utility/Types";
+import { selectTriggerProps } from "./Container";
+import ResumeComponentFactory from "./ResumeComponent";
+import ResumeContext from "src/ResumeContext";
 
 interface IconBase {
     icon?: 'email'
@@ -21,9 +23,11 @@ export interface BasicIconProps extends IconBase, BasicResumeNode {}
 export interface IconProps extends IconBase, ResumeComponentProps {}
 
 export default class Icon extends React.PureComponent<IconProps> {
+    static contextType = ResumeContext;
     static readonly type = 'Icon';
 
     render() {
+        const isEditing = this.context.isEditingSelected && this.context.selectedUuid === this.props.uuid;
         let src = '';
 
         switch (this.props.icon) {
@@ -51,7 +55,10 @@ export default class Icon extends React.PureComponent<IconProps> {
         }
 
         return <img className="icon" src={src} alt="Icon"
-            {...selectTriggerProps(this.props)}
+            {...selectTriggerProps({
+                isEditing: isEditing,
+                ...this.props
+            })}
         />
     }
 }

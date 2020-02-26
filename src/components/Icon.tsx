@@ -6,7 +6,7 @@ import LinkedIn from "../icons/LI-In-Bug.png";
 import GitHubDark from "../icons/GitHub-Mark-120px-plus.png";
 import Phone from "../icons/feather/phone.svg";
 import ResumeComponentProps, { BasicResumeNode } from "./utility/Types";
-import Container, { selectTriggerProps } from "./Container";
+import Container from "./Container";
 import ResumeContext from "./ResumeContext";
 
 interface IconBase {
@@ -26,7 +26,6 @@ export default class Icon extends React.PureComponent<IconProps> {
     static readonly type = 'Icon';
 
     render() {
-        const isEditing = this.context.isEditingSelected && this.context.selectedUuid === this.props.uuid;
         let src = '';
 
         switch (this.props.icon) {

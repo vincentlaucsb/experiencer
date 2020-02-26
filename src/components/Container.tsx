@@ -1,6 +1,8 @@
 ﻿import React from "react";
 import { IdType } from "./utility/Types";
 import ResumeContext from "./ResumeContext";
+import { createContainer } from "./Helpers";
+import ReactDOM from "react-dom";
 
 interface SelectTriggerProps {
     id: IdType;
@@ -46,14 +48,16 @@ export function selectTriggerProps(props: SelectTriggerProps) {
  */
 export default function Container(props: ContainerProps) {
     const displayAs = props.displayAs || "div";
+    const highlightContainer = createContainer("hl-box-container");
     let classes = [props.className];
-    
+    let ref = React.createRef();
+
     return (
         <ResumeContext.Consumer>
             {(value) => {
                 const isSelected = value.selectedUuid === props.uuid;
                 if (isSelected) {
-                    classes = classes.concat('resume-selected');
+                    value.updateSelectedRef(ref);
                 }
 
                 const newProps = {
@@ -65,7 +69,8 @@ export default function Container(props: ContainerProps) {
                         updateClicked: value.updateClicked,
                         isEditing: value.isEditingSelected,
                         ...props
-                    })
+                    }),
+                    ref: ref
                 }
 
                 return (

@@ -159,16 +159,14 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                     let left = `${bounds.left}px`;
                     let top = `${bounds.top}px`;
 
-                    const hlBox = <div className="resume-hl-box"
+                    const hlBox = <div className="resume-hl-box resume-hl-box-selected-node"
                         style={{
                             position: "fixed",
-                            border: "2px solid black",
                             left: left,
                             width: `${bounds.width}px`,
                             height: `${bounds.height}px`,
                             boxSizing: "border-box",
                             top: top,
-                            pointerEvents: "none",
                             zIndex: 2000
                         }}
                     />

@@ -155,21 +155,18 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                 if (this.selectedRef.current) {
                     const node = this.selectedRef.current;
                     const bounds = node.getBoundingClientRect();
-                    const computedStyle = window.getComputedStyle(node);
 
-                    let left = `calc(${bounds.left}px - ${computedStyle.marginLeft})`;
-                    let top = `calc(${bounds.top}px - ${computedStyle.marginTop})`
+                    let left = `${bounds.left}px`;
+                    let top = `${bounds.top}px`;
 
                     const hlBox = <div className="resume-hl-box"
                         style={{
                             position: "fixed",
-                            borderLeftWidth: `${computedStyle.marginLeft}`,
-                            borderRightWidth: `${computedStyle.marginRight}`,
-                            borderTopWidth: `${computedStyle.marginTop}`,
-                            borderBottomWidth: `${computedStyle.marginBottom}`,
+                            border: "2px solid black",
                             left: left,
                             width: `${bounds.width}px`,
                             height: `${bounds.height}px`,
+                            boxSizing: "border-box",
                             top: top,
                             pointerEvents: "none",
                             zIndex: 2000

@@ -33,7 +33,6 @@ import ResumeContext from './components/ResumeContext';
 import ReactDOM from 'react-dom';
 import { HighlightBox } from './components/utility/HighlightBox';
 import SplitPane from 'react-split-pane';
-import LayoutContext from './components/controls/LayoutContext';
 
 /** These props are only used for testing */
 export interface ResumeProps {

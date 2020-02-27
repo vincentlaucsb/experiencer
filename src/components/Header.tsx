@@ -2,6 +2,7 @@
 import { RowProps, BasicRowProps } from "./Row";
 import QuillEditor from "./controls/inputs/QuillEditor";
 import Container from "./Container";
+import ResumeContext from "./ResumeContext";
 
 interface HeaderBase {
     distribution?: 'top-to-bottom' | 'left-to-right' | 'bottom-to-top' | 'right-to-left';
@@ -14,6 +15,7 @@ export interface HeaderProps extends RowProps, HeaderBase { };
 
 export default class Header extends React.PureComponent<HeaderProps> {
     static readonly type: string = 'Header';
+    static contextType = ResumeContext;
 
     get style(): React.CSSProperties {
         let style: React.CSSProperties = {};

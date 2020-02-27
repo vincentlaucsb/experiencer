@@ -1,4 +1,5 @@
 ﻿import React from "react";
+import ResizeObserver from "resize-observer-polyfill";
 import SplitPane from "react-split-pane";
 
 interface HighlightBoxProps {
@@ -23,23 +24,37 @@ export function HighlightBox(props: HighlightBoxProps) {
     const updateDimensions = () => {
         if (node) {
             const bounds = node.getBoundingClientRect();
-            setDims({
-                left: bounds.left,
-                top: bounds.top,
-                width: bounds.width,
-                height: bounds.height
+            requestAnimationFrame(() => {
+                setDims({
+                    left: bounds.left,
+                    top: bounds.top,
+                    width: bounds.width,
+                    height: bounds.height
+                });
             });
         }
     };
+
+    const resizeObserver = new ResizeObserver((entries) => {
+        entries.forEach(() => updateDimensions());
+    });
 
     React.useEffect(() => {
         // Perform initial load
         updateDimensions();
 
-        // Add resize listener
+        // Add resize listeners
         window.addEventListener("resize", updateDimensions);
+        if (node) {
+            resizeObserver.observe(node);
+        }
+
         return function cleanup() {
             window.removeEventListener("resize", updateDimensions);
+
+            if (node) {
+                resizeObserver.unobserve(node);
+            }
         }
 
     }, [props.objectRef]);
@@ -47,12 +62,16 @@ export function HighlightBox(props: HighlightBoxProps) {
     React.useEffect(() => {
         // Add scroll listener
         if (props.verticalSplitRef.current) {
-            props.verticalSplitRef.current['pane1'].addEventListener("scroll", updateDimensions);
+            const mainPane = props.verticalSplitRef.current['pane1'];
+            mainPane.addEventListener("scroll", updateDimensions);
+            resizeObserver.observe(mainPane);
+        }
 
-            return function cleanup() {
-                if (props.verticalSplitRef.current) {
-                    props.verticalSplitRef.current['pane1'].removeEventListener("scroll", updateDimensions);
-                }
+        return function cleanup() {
+            if (props.verticalSplitRef.current) {
+                const mainPane = props.verticalSplitRef.current['pane1'];
+                resizeObserver.unobserve(mainPane);
+                props.verticalSplitRef.current['pane1'].removeEventListener("scroll", updateDimensions);
             }
         }
     }, [props.objectRef, props.verticalSplitRef]);

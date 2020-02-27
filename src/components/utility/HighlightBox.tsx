@@ -3,8 +3,8 @@ import ResizeObserver from "resize-observer-polyfill";
 import SplitPane from "react-split-pane";
 
 interface HighlightBoxProps {
-    /** Ref for the selected node in question */
-    objectRef: React.RefObject<HTMLElement>;
+    /** The selected HTML node in question */
+    elem: HTMLElement;
 
     /** Ref for the vertical split pane */
     verticalSplitRef: React.RefObject<SplitPane>;
@@ -18,7 +18,7 @@ interface BoxDimensions {
 }
 
 export function HighlightBox(props: HighlightBoxProps) {
-    const node = props.objectRef.current;
+    const node = props.elem;
     let [dims, setDims] = React.useState<BoxDimensions>();
 
     const updateDimensions = () => {
@@ -57,7 +57,7 @@ export function HighlightBox(props: HighlightBoxProps) {
             }
         }
 
-    }, [props.objectRef]);
+    }, [props.elem]);
 
     React.useEffect(() => {
         // Add scroll listener
@@ -74,7 +74,7 @@ export function HighlightBox(props: HighlightBoxProps) {
                 props.verticalSplitRef.current['pane1'].removeEventListener("scroll", updateDimensions);
             }
         }
-    }, [props.objectRef, props.verticalSplitRef]);
+    }, [props.elem, props.verticalSplitRef]);
 
     if (dims) {
         return (

@@ -154,10 +154,10 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                 this.setState({ isEditingSelected: false });
             }
 
-            if (this.state.selectedNode) {
+            if (this.state.selectedNode && this.selectedRef.current) {
                 this.setState({
                     hlBox: <HighlightBox
-                        objectRef={this.selectedRef}
+                        elem={this.selectedRef.current}
                         verticalSplitRef={this.verticalPaneRef}
                     />
                 })

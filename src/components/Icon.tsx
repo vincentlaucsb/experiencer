@@ -7,7 +7,6 @@ import GitHubDark from "../icons/GitHub-Mark-120px-plus.png";
 import Phone from "../icons/feather/phone.svg";
 import ResumeComponentProps, { BasicResumeNode } from "./utility/Types";
 import Container from "./Container";
-import ResumeContext from "./ResumeContext";
 
 interface IconBase {
     icon?: 'email'
@@ -21,45 +20,42 @@ interface IconBase {
 export interface BasicIconProps extends IconBase, BasicResumeNode {}
 export interface IconProps extends IconBase, ResumeComponentProps {}
 
-export default class Icon extends React.PureComponent<IconProps> {
-    static contextType = ResumeContext;
-    static readonly type = 'Icon';
+export const IconType = "Icon";
 
-    render() {
-        let src = '';
+export default function Icon(props: IconProps) {
+    let src = '';
 
-        switch (this.props.icon) {
-            case 'email':
-                src = Email;
-                break;
-            case 'github':
-                src = GitHubDark;
-                break;
-            case 'globe':
-                src = Globe;
-                break;
-            case 'linkedin':
-                src = LinkedIn;
-                break;
-            case 'map-pin':
-                src = MapPin;
-                break;
-            case 'phone':
-                src = Phone;
-                break;
-            default:
-                src = '';
-                break;
-        }
-
-        return <Container displayAs="img"
-            className="icon"
-            attributes={{
-                alt: "Icon",
-                src: src
-            }}
-
-            {...this.props}
-        />
+    switch (props.icon) {
+        case 'email':
+            src = Email;
+            break;
+        case 'github':
+            src = GitHubDark;
+            break;
+        case 'globe':
+            src = Globe;
+            break;
+        case 'linkedin':
+            src = LinkedIn;
+            break;
+        case 'map-pin':
+            src = MapPin;
+            break;
+        case 'phone':
+            src = Phone;
+            break;
+        default:
+            src = '';
+            break;
     }
+
+    return <Container displayAs="img"
+        className="icon"
+        attributes={{
+            alt: "Icon",
+            src: src
+        }}
+
+        {...props}
+    />
 }

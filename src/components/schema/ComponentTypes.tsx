@@ -4,8 +4,8 @@ import Column from "../Column";
 import Section from "../Section";
 import Entry, { BasicEntryProps } from "../Entry";
 import RichText from "../RichText";
-import DescriptionList, { DescriptionListItem, BasicDescriptionItemProps } from "../List";
-import Icon from "../Icon";
+import DescriptionList, { DescriptionListItem, BasicDescriptionItemProps, DescriptionListType, DescriptionListItemType } from "../List";
+import { IconType } from "../Icon";
 import Header from "../Header";
 import { BasicResumeNode } from "../utility/Types";
 
@@ -32,8 +32,8 @@ export default class ComponentTypes {
                     Entry.type,
                     RichText.type,
                     AliasTypes.BulletedList,
-                    DescriptionList.type,
-                    Icon.type
+                    DescriptionListType,
+                    IconType
                 ];
             case Row.type:
                 return Column.type;
@@ -45,17 +45,17 @@ export default class ComponentTypes {
                     Entry.type,
                     RichText.type,
                     AliasTypes.BulletedList,
-                    DescriptionList.type
+                    DescriptionListType
                 ]
-            case DescriptionList.type:
-                return DescriptionListItem.type;
-            case DescriptionListItem.type:
+            case DescriptionListType:
+                return DescriptionListItemType;
+            case DescriptionListItemType:
             case RichText.type:
                 return [];
             case Entry.type:
                 return [
                     AliasTypes.BulletedList,
-                    DescriptionList.type,
+                    DescriptionListType,
                     RichText.type
                 ];
             case Header.type:
@@ -63,7 +63,7 @@ export default class ComponentTypes {
                     Entry.type,
                     RichText.type,
                     AliasTypes.BulletedList,
-                    DescriptionList.type,
+                    DescriptionListType,
                     Grid.type
                 ];
             case Section.type:
@@ -72,7 +72,7 @@ export default class ComponentTypes {
                     Entry.type,
                     RichText.type,
                     AliasTypes.BulletedList,
-                    DescriptionList.type,
+                    DescriptionListType,
                     Grid.type,
                     Row.type
                 ]
@@ -82,7 +82,7 @@ export default class ComponentTypes {
                     Entry.type,
                     RichText.type,
                     AliasTypes.BulletedList,
-                    DescriptionList.type
+                    DescriptionListType
                 ];
         }
     }
@@ -94,9 +94,9 @@ export default class ComponentTypes {
      */
     static cssName(type: string) : string[] {
         switch (type) {
-            case DescriptionList.type:
+            case DescriptionListType:
                 return ['Description List'];
-            case DescriptionListItem.type:
+            case DescriptionListItemType:
                 return ['Description List'];
             case RichText.type:
                 return ['Rich Text'];
@@ -130,24 +130,24 @@ export default class ComponentTypes {
                     },
                     icon: 'swoosh-down'
                 }
-            case DescriptionList.type:
+            case DescriptionListType:
                 return {
                     text: 'Description List',
                     node: {
-                        type: DescriptionList.type,
+                        type: DescriptionListType,
                         childNodes: [
                             {
-                                type: DescriptionListItem.type,
+                                type: DescriptionListItemType,
                                 definitions: ['']
                             } as BasicDescriptionItemProps
                         ]
                     },
                     icon: 'sub-listing'
                 }
-            case DescriptionListItem.type:
+            case DescriptionListItemType:
                 return {
                     text: 'Description List Item',
-                    node: { type: DescriptionListItem.type }
+                    node: { type: DescriptionListItemType }
                 }
             case Entry.type:
                 return {
@@ -195,11 +195,11 @@ export default class ComponentTypes {
                     },
                     icon: 'book-mark'
                 }
-            case Icon.type:
+            case IconType:
                 return {
-                    text: Icon.type,
+                    text: IconType,
                     node: {
-                        type: Icon.type
+                        type: IconType
                     }
                 }
             default:

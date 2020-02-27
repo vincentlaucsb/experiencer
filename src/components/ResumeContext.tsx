@@ -1,7 +1,7 @@
 ﻿import React from "react";
 import { IdType } from "./utility/Types";
 
-interface IResumeContext {
+export interface IResumeContext {
     isEditingSelected: boolean;
     selectedUuid?: string;
     updateSelectedRef: (ref: React.RefObject<any>) => void;

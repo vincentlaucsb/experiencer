@@ -2,13 +2,13 @@
 
 import Section from "./Section";
 import Entry from "./Entry";
-import DescriptionList, { DescriptionListItem } from "./List";
+import DescriptionList, { DescriptionListItem, DescriptionListType, DescriptionListItemType } from "./List";
 import RichText from "./RichText";
 import Header from "./Header";
 import Row from "./Row";
 import Column from "./Column";
 import Grid from "./Grid";
-import Icon from "./Icon";
+import Icon, { IconType } from "./Icon";
 import ResumeComponentProps, { IdType, NodeProperty, ResumeNode } from "./utility/Types";
 import Divider from "./Divider";
 
@@ -38,12 +38,12 @@ export default function ResumeComponentFactory(props: FactoryProps) {
         isLast: index === props.numSiblings - 1
     } as ResumeComponentProps;
 
-    let Container: typeof React.Component;
+    let Container: typeof React.Component | React.FC<ResumeComponentProps>;
     switch (props.type) {
-        case DescriptionList.type:
+        case DescriptionListType:
             Container = DescriptionList;
             break;
-        case DescriptionListItem.type:
+        case DescriptionListItemType:
             Container = DescriptionListItem;
             break;
         case Divider.type:
@@ -70,7 +70,7 @@ export default function ResumeComponentFactory(props: FactoryProps) {
         case RichText.type:
             Container = RichText;
             break;
-        case Icon.type:
+        case IconType:
             Container = Icon;
             break;
         default:

@@ -31,6 +31,9 @@ import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode, Globals }
 import ObservableResumeNodeTree from './components/utility/ObservableResumeNodeTree';
 import ResumeContext from './components/ResumeContext';
 import ReactDOM from 'react-dom';
+import { HighlightBox } from './components/utility/HighlightBox';
+import SplitPane from 'react-split-pane';
+import LayoutContext from './components/controls/LayoutContext';
 
 /** These props are only used for testing */
 export interface ResumeProps {
@@ -67,8 +70,9 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     private css: CssNode;
     private rootCss: CssNode;
     private style = document.createElement("style");
+    private verticalPaneRef = React.createRef<SplitPane>();
     private resumeRef = React.createRef<HTMLDivElement>();
-    private selectedRef = React.createRef<any>();
+    private selectedRef = React.createRef<HTMLElement>();
 
     constructor(props: ResumeProps) {
         super(props);
@@ -152,27 +156,12 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             }
 
             if (this.state.selectedNode) {
-                if (this.selectedRef.current) {
-                    const node = this.selectedRef.current;
-                    const bounds = node.getBoundingClientRect();
-
-                    let left = `${bounds.left}px`;
-                    let top = `${bounds.top}px`;
-
-                    const hlBox = <div className="resume-hl-box resume-hl-box-selected-node"
-                        style={{
-                            position: "fixed",
-                            left: left,
-                            width: `${bounds.width}px`,
-                            height: `${bounds.height}px`,
-                            boxSizing: "border-box",
-                            top: top,
-                            zIndex: 2000
-                        }}
+                this.setState({
+                    hlBox: <HighlightBox
+                        objectRef={this.selectedRef}
+                        verticalSplitRef={this.verticalPaneRef}
                     />
-
-                    this.setState({ hlBox: hlBox })
-                }
+                })
             }
             else {
                 this.setState({ hlBox: <></> })
@@ -638,6 +627,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                 return resume;
             default:
                 return <ResizableSidebarLayout
+                    ref={this.verticalPaneRef}
                     topNav={editingTop}
                     main={resume}
                     isPrinting={this.isPrinting}

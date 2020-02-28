@@ -56,7 +56,6 @@ $main-pane-z: $default-z + 1;
 
 /* || Highlight Boxes */
 .resume-hl-box {
-    background: transparentize($dark-accent, 0.75);
     z-index: $main-pane-z + 1;
 }
 

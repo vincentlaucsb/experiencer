@@ -1,7 +1,7 @@
 ﻿/**
  * @jest-environment jsdom
  */
-import { render, fireEvent, getByText, getByTitle, getAllByText } from "@testing-library/react";
+import { render, fireEvent, getByText, getByTitle, getAllByText, act, wait } from "@testing-library/react";
 import Resume from "./Resume";
 import React from "react";
 import ResumeTemplates from "./components/templates/ResumeTemplates";
@@ -10,15 +10,15 @@ import CssNode from "./components/utility/CssTree";
 /**
  * Simulate selecting a resume node
  * @param next Next node to be selected
- * @param prev Node to be unselected
  */
-function selectNode(next: HTMLElement, prev?: HTMLElement) {
-    // Select target node
-    fireEvent.click(next, {
-        bubbles: true,
-        cancelable: true,
+const selectNode = async (next: HTMLElement) => {
+    await act(async () => {
+        fireEvent.click(next, {
+            bubbles: true,
+            cancelable: true,
+        })
     });
-}
+};
 
 // Test selecting an node
 test('Resume Select Test', async () => {
@@ -33,9 +33,9 @@ test('Resume Select Test', async () => {
 
     // Test Selection
     const header = getByText(container, 'Randy Marsh');
-    selectNode(header);
+    await selectNode(header);
 
-    const selected = container.querySelector('.resume-selected');
+    const selected = container.querySelector("[data-selected='true']");
     expect(selected).not.toBeNull();
 
     if (selected) {
@@ -63,9 +63,10 @@ test('Resume Select Parent + Child Test', async () => {
     let entry = entries.filter((elem) => {
         return elem.classList.contains('field');
     })[0];
-    selectNode(entry);
 
-    let selected = container.querySelector('.resume-selected');
+    await selectNode(entry);
+
+    let selected = container.querySelector("[data-selected='true']");
     expect(selected).not.toBeNull();
 
     if (selected) {
@@ -82,10 +83,10 @@ test('Resume Select Parent + Child Test', async () => {
         return !elem.classList.contains('tree-item-section');
     })[0];
 
-    // Deselect entry and select section
-    selectNode(section, entry);
+    // Select section
+    await selectNode(section);
     
-    selected = container.querySelector('.resume-selected');
+    selected = container.querySelector("[data-selected='true']");
     expect(selected).not.toBeNull();
 
     if (selected) {

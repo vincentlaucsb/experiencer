@@ -10,6 +10,7 @@ interface HighlightBoxProps {
     verticalSplitRef: React.RefObject<SplitPane>;
 
     /** Attributes for the highlight boxes */
+    attributes?: any;
     className: string;
     calcStyle?: (bounds: ClientRect | DOMRect, style: CSSStyleDeclaration) => any;
 }
@@ -45,7 +46,10 @@ export function HighlightBox(props: HighlightBoxProps) {
 
     React.useEffect(() => {
         // Perform initial load
-        updateBoxes();
+        if (node) {
+            updateBounds(node.getBoundingClientRect());
+            updateComputedStyle(window.getComputedStyle(node));
+        }
 
         // Add resize listeners
         window.addEventListener("resize", updateBoxes);
@@ -55,10 +59,7 @@ export function HighlightBox(props: HighlightBoxProps) {
 
         return function cleanup() {
             window.removeEventListener("resize", updateBoxes);
-
-            if (node) {
-                resizeObserver.unobserve(node);
-            }
+            resizeObserver.disconnect();
         }
 
     }, [props.elem]);
@@ -77,8 +78,8 @@ export function HighlightBox(props: HighlightBoxProps) {
             if (props.verticalSplitRef.current) {
                 const mainPane = props.verticalSplitRef.current['pane1'];
                 if (mainPane) {
+                    mainPane.removeEventListener("scroll", updateBoxes);
                     resizeObserver.unobserve(mainPane);
-                    props.verticalSplitRef.current['pane1'].removeEventListener("scroll", updateBoxes);
                 }
             }
         }
@@ -91,6 +92,7 @@ export function HighlightBox(props: HighlightBoxProps) {
                     position: "fixed",
                     ...calcStyle(bounds, computedStyle),
                 }}
+                {...props.attributes}
             />
         );
     }

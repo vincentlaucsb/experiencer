@@ -559,43 +559,47 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     render() {
         const hlBoxContainer = createContainer("hl-box-container");
         const resume = (
-            <ContextMenuTrigger attributes={{ id: "resume-container" }}
-                id="resume-menu">
+            <>
+                <ContextMenuTrigger attributes={{ id: "resume-container" }}
+                    id="resume-menu">
+                    <div id="resume" ref={this.resumeRef}
+                        onClick={() => this.handleClick()}
+                        onContextMenu={() => this.handleClick(true)}>
+                        <ResumeHotKeys {...this.resumeHotKeysProps} />
+                        {this.state.childNodes.map((elem, idx, arr) => {
+                            const uniqueId = elem.uuid;
+                            const props = {
+                                ...elem,
+                                updateResumeData: this.updateData,
+                                index: idx,
+                                numSiblings: arr.length
+                            };
+
+                            return (
+                                <ResumeContext.Provider
+                                    key={uniqueId}
+                                    value={{
+                                    isEditingSelected: this.state.isEditingSelected,
+                                    selectedUuid: this.selectedNode ? this.selectedNode.uuid : undefined,
+                                    updateClicked: (id: IdType) => { this.clicked.push(id) },
+                                    updateSelectedRef: (ref: React.RefObject<any>) => { this.selectedRef = ref }
+                                }}>
+                                    <ResumeComponentFactory {...props} />
+                                </ResumeContext.Provider>
+                            );
+                        })}
+                    </div>
+
+                <ResumeContextMenu
+                    nodes={this.nodes}
+                    currentId={this.state.selectedNode}
+                    editSelected={() => this.setState({ isEditingSelected: true })}
+                    updateSelected={this.updateSelected}
+                    selectNode={(id) => this.setState({ selectedNode: id })}
+                />
+                </ContextMenuTrigger>
                 {ReactDOM.createPortal(this.state.hlBox, hlBoxContainer)}
-                <div id="resume" ref={this.resumeRef}
-                    onClick={() => this.handleClick()}
-                    onContextMenu={() => this.handleClick(true)}>
-                    <ResumeHotKeys {...this.resumeHotKeysProps} />
-                    {this.state.childNodes.map((elem, idx, arr) => {
-                        const uniqueId = elem.uuid;
-                        const props = {
-                            ...elem,
-                            updateResumeData: this.updateData,
-                            index: idx,
-                            numSiblings: arr.length
-                        };
-
-                        return (
-                            <ResumeContext.Provider value={{
-                                isEditingSelected: this.state.isEditingSelected,
-                                selectedUuid: this.selectedNode ? this.selectedNode.uuid : undefined,
-                                updateClicked: (id: IdType) => { this.clicked.push(id) },
-                                updateSelectedRef: (ref: React.RefObject<any>) => { this.selectedRef = ref }
-                            }}>
-                                <ResumeComponentFactory key={uniqueId} {...props} />
-                            </ResumeContext.Provider>
-                        );
-                    })}
-                </div>
-
-            <ResumeContextMenu
-                nodes={this.nodes}
-                currentId={this.state.selectedNode}
-                editSelected={() => this.setState({ isEditingSelected: true })}
-                updateSelected={this.updateSelected}
-                selectNode={(id) => this.setState({ selectedNode: id })}
-            />
-        </ContextMenuTrigger>
+            </>
         );
         
         const editingTop = this.isPrinting ? <></> : (

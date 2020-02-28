@@ -30,9 +30,6 @@ export default function Container(props: ContainerProps) {
         <ResumeContext.Consumer>
             {(value) => {
                 const isSelected = value.selectedUuid === props.uuid;
-                if (isSelected) {
-                    value.updateSelectedRef(ref);
-                }
 
                 /** Props for managing selection and focus */
                 const selectTriggerProps = {
@@ -52,13 +49,18 @@ export default function Container(props: ContainerProps) {
                     }
                 }
 
-                const newProps = {
+                let newProps = {
                     ...props.attributes,
                     className: classes.join(' '),
                     style: props.style,
                     id: props.htmlId,
                     ref: ref,
                     ...selectTriggerProps
+                }
+
+                if (isSelected) {
+                    newProps['data-selected'] = true;
+                    value.updateSelectedRef(ref);
                 }
 
                 if (displayAs !== "img") {

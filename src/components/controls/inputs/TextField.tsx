@@ -120,9 +120,9 @@ export default class TextField extends React.Component<TextFieldProps, TextField
 
         const contextMenuContainer = createContainer("context-menu-container");
         const contextMenuOptions = this.props.contextMenuOptions ?
-            this.props.contextMenuOptions.map((option) => {
+            this.props.contextMenuOptions.map((option, index: number) => {
             return (
-                <MenuItem onClick={option.action}>{option.text}</MenuItem>
+                <MenuItem onClick={option.action} key={index}>{option.text}</MenuItem>
             )
         }) : <></>;
 

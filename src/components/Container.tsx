@@ -1,39 +1,20 @@
 ﻿import React from "react";
-import { IdType, SelectedNodeManagement } from "./utility/Types";
+import { IdType } from "./utility/Types";
+import ResumeContext from "./ResumeContext";
 
-interface SelectTriggerProps extends SelectedNodeManagement {
+export interface ContainerProps {
     id: IdType;
     uuid: string;
-    isEditing: boolean;
-}
 
-export interface ContainerProps extends SelectTriggerProps {
+    /** Any other HTML attributes that should be set */
+    attributes?: Object;
+
     children?: React.ReactNode;
     className?: string;
     displayAs?: string;
     emptyText?: string; // TODO: Do something
     htmlId?: string;
     style?: React.CSSProperties;
-    isEditing: boolean;
-}
-
-export function selectTriggerProps(props: SelectTriggerProps) {
-    return {
-        onClick: () => {
-            props.clicked(props.id);
-        },
-
-        onContextMenu: (event: React.MouseEvent) => {
-            if (props.isEditing) {
-                // If editing, use default context menu
-                // so user can use browser's spellcheck, etc.
-                event.stopPropagation();
-            }
-            else {
-                props.clicked(props.id);
-            }
-        }
-    };
 }
 
 /**
@@ -42,20 +23,57 @@ export function selectTriggerProps(props: SelectTriggerProps) {
  */
 export default function Container(props: ContainerProps) {
     const displayAs = props.displayAs || "div";
-    const isSelected = props.selectedUuid === props.uuid;
-
     let classes = [props.className];
-    if (isSelected) {
-        classes = classes.concat('resume-selected');
-    }
+    let ref = React.createRef();
 
-    let newProps = {
-        children: props.children,
-        className: classes.join(' '),
-        style: props.style,
-        id: props.htmlId,
-        ...selectTriggerProps(props)
-    }
-    
-    return React.createElement(displayAs, newProps);
+    return (
+        <ResumeContext.Consumer>
+            {(value) => {
+                const isSelected = value.selectedUuid === props.uuid;
+
+                /** Props for managing selection and focus */
+                const selectTriggerProps = {
+                    onClick: () => {
+                        value.updateClicked(props.id);
+                    },
+
+                    onContextMenu: (event: React.MouseEvent) => {
+                        if (value.isEditingSelected) {
+                            // If editing, use default context menu
+                            // so user can use browser's spellcheck, etc.
+                            event.stopPropagation();
+                        }
+                        else {
+                            value.updateClicked(props.id);
+                        }
+                    }
+                }
+
+                let newProps = {
+                    ...props.attributes,
+                    className: classes.join(' '),
+                    style: props.style,
+                    id: props.htmlId,
+                    ref: ref,
+                    ...selectTriggerProps
+                }
+
+                if (isSelected) {
+                    newProps['data-selected'] = true;
+                    value.updateSelectedRef(ref);
+                }
+
+                if (displayAs !== "img") {
+                    newProps['children'] = props.children;
+                }
+
+                return (
+                    <>
+                        {React.createElement(displayAs, newProps)}
+                    </>
+                )
+
+            }}
+        </ResumeContext.Consumer>
+    );
 }

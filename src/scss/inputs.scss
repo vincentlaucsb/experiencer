@@ -1,9 +1,12 @@
 ﻿@import "variables";
 
+input {
+    background: inherit;
+    border: 0;
+}
+
 #resume {
     input {
-        background: inherit;
-        border: 0;
         border-bottom: 1px solid $light-accent;
 
         &:hover {

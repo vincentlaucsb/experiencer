@@ -1,5 +1,16 @@
 ﻿import React, { MouseEvent } from "react";
+import uuid from 'uuid/v4';
+import parse from 'html-react-parser';
 import { isNullOrUndefined } from "util";
+import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
+import ReactDOM from "react-dom";
+
+import { createContainer } from "../../Helpers";
+
+interface ContextMenuOption {
+    text: string;
+    action: () => void;
+}
 
 interface TextFieldProps {
     value?: string;
@@ -9,9 +20,8 @@ interface TextFieldProps {
     displayValue?: string;
     static?: boolean;
 
-    /** Callback to delete the text field */
-    delete?: () => void;
-
+    contextMenuOptions?: Array<ContextMenuOption>;
+    
     /** A callback which modifies the display text */
     displayProcessors?: ((text?: string) => string)[];
     onChange: (text: string) => void;
@@ -32,22 +42,6 @@ export default class TextField extends React.Component<TextFieldProps, TextField
         };
 
         this.onKeyDown = this.onKeyDown.bind(this);
-    }
-
-    get deleteButton() {
-        const deleter = this.props.delete as () => void;
-        if (deleter) {
-            return (
-                <button
-                    onClick={(event: React.MouseEvent) => {
-                        deleter();
-                        event.stopPropagation();
-                    }}
-                ><i className="icofont-ui-delete" /></button>
-            );
-        }
-
-        return <></>
     }
 
     /** Update parent when appropriate */
@@ -97,7 +91,7 @@ export default class TextField extends React.Component<TextFieldProps, TextField
             return <span
                 onBlur={(event: React.FocusEvent) => {
                     // Avoid triggering event if delete button
-                    //w as clicked
+                    // was clicked
                     if (isNullOrUndefined(event.relatedTarget)) {
                         this.setState({ isEditing: false });
                     }
@@ -109,7 +103,6 @@ export default class TextField extends React.Component<TextFieldProps, TextField
                     onKeyDown={this.onKeyDown}
                     value={this.state.value}
                 />
-                {this.deleteButton}
             </span>
         }
 
@@ -125,17 +118,35 @@ export default class TextField extends React.Component<TextFieldProps, TextField
             displayValue = "Enter a value";
         }
 
-        return (
-            <span
-                onClick={(event: MouseEvent) => {
-                    if (!this.props.static) {
-                        this.setState({ isEditing: true });
-                    }
-                }}
+        const contextMenuContainer = createContainer("context-menu-container");
+        const contextMenuOptions = this.props.contextMenuOptions ?
+            this.props.contextMenuOptions.map((option, index: number) => {
+            return (
+                <MenuItem onClick={option.action} key={index}>{option.text}</MenuItem>
+            )
+        }) : <></>;
 
-                className={props.displayClassName}
-                dangerouslySetInnerHTML={{ __html: displayValue }}
-            />
+        const menuId = uuid();
+        return (
+            <>
+                {ReactDOM.createPortal(<ContextMenu id={menuId}>
+                    <h3>Text Field</h3>
+                    <MenuItem onClick={() => this.setState({ isEditing: true })}>Edit</MenuItem>
+                    {contextMenuOptions}
+                </ContextMenu>, contextMenuContainer)}
+                <ContextMenuTrigger
+                    attributes={{
+                        onClick: (event: MouseEvent) => {
+                            if (!this.props.static) {
+                                this.setState({ isEditing: true });
+                            }
+                        },
+                        className: props.displayClassName,
+                    }}
+                    id={menuId} renderTag="span">
+                    {parse(displayValue)}
+                </ContextMenuTrigger>
+            </>
         );
     }
 }

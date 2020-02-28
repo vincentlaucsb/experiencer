@@ -5,6 +5,9 @@ import TextField from "../controls/inputs/TextField";
 import ReactDOM from "react-dom";
 import CssSuggestions from "./CssSuggestions";
 import CssEditorToolbar from "./CssEditorToolbar";
+import { HighlightBox } from "./HighlightBox";
+import SplitPane from "react-split-pane";
+import { createContainer } from "../Helpers";
 
 export interface CssUpdateProps {
     addSelector: (path: string[], name: string, selector: string) => void;
@@ -22,6 +25,8 @@ export interface CssEditorProps extends CssUpdateProps {
 
     /** Whether or not the section is open initially */
     isOpen?: boolean;
+
+    verticalSplitRef: React.RefObject<SplitPane>;
 }
 
 export interface CssEditorState {
@@ -148,7 +153,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
             />
         </span>
     }
-    
+
     /**
      * Contains the rows of a CSS ruleset
      * @param props
@@ -176,37 +181,36 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
     /** Highlight all DOM nodes matching the current selector */
     renderHighlightBoxes() {
+        const cssHlCalcStyle = (bounds: ClientRect | DOMRect, computedStyle: CSSStyleDeclaration) => {
+            return {
+                left: `calc(${bounds.left}px - ${computedStyle.marginLeft})`,
+                top: `calc(${bounds.top}px - ${computedStyle.marginTop})`,
+                width: `${bounds.width}px`,
+                height: `${bounds.height}px`,
+                borderLeftWidth: `${computedStyle.marginLeft}`,
+                borderRightWidth: `${computedStyle.marginRight}`,
+                borderTopWidth: `${computedStyle.marginTop}`,
+                borderBottomWidth: `${computedStyle.marginBottom}`
+            }
+        }
+
         let selector = this.props.cssNode.fullSelector;
         try {
             const hits = document.querySelectorAll(selector);
-            const root = document.getElementById("resume");
-            if (root && this.state.highlight) {
+            const hlBoxContainer = createContainer("hl-box-container");
+            if (hlBoxContainer && this.state.highlight) {
                 let elems = new Array<JSX.Element>();
                 hits.forEach((node: Element, key: number) => {
-                    const bounds = node.getBoundingClientRect();
-                    const computedStyle = window.getComputedStyle(node);
-
-                    let left = `calc(${bounds.left}px - ${computedStyle.marginLeft})`;
-                    let top = `calc(${bounds.top}px - ${computedStyle.marginTop})`
-
-                    elems.push(<div className="resume-hl-box"
+                    elems.push(<HighlightBox
                         key={key}
-                        style={{
-                            position: "fixed",
-                            borderLeftWidth: `${computedStyle.marginLeft}`,
-                            borderRightWidth: `${computedStyle.marginRight}`,
-                            borderTopWidth: `${computedStyle.marginTop}`,
-                            borderBottomWidth: `${computedStyle.marginBottom}`,
-                            left: left,
-                            width: `${bounds.width}px`,
-                            height: `${bounds.height}px`,
-                            top: top,
-                            zIndex: 2000
-                        }}
-                    />);
+                        className="resume-hl-box"
+                        elem={node}
+                        verticalSplitRef={this.props.verticalSplitRef}
+                        calcStyle={cssHlCalcStyle}
+                    />)
                 });
 
-                return ReactDOM.createPortal(elems, root);
+                return ReactDOM.createPortal(elems, hlBoxContainer);
             }
         }
         catch (e) {
@@ -249,6 +253,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
                 updateSelector={this.props.updateSelector}
                 deleteKey={this.props.deleteKey}
                 deleteNode={this.props.deleteNode}
+                verticalSplitRef={this.props.verticalSplitRef}
                 />
         });
     }

@@ -1,0 +1,16 @@
+﻿@import "variables";
+
+.resume-hl-box {
+    background: transparentize(darken($light-shade, 0.25), 0.5);
+    border-color: transparentize($light-accent, 0.5);
+    border-style: solid;
+    border-width: 0;
+    pointer-events: none;
+
+    &.resume-hl-box-selected-node {
+        background: transparentize(darken($light-shade, 0.25), 0.9);
+        border-width: 2px;
+        border-style: solid;
+        box-sizing: border-box;
+    }
+}

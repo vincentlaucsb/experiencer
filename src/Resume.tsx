@@ -8,7 +8,7 @@ import './scss/index.scss';
 import './fonts/icofont.min.css';
 
 import ResumeComponentFactory from './components/ResumeComponent';
-import { assignIds, deepCopy, arraysEqual } from './components/Helpers';
+import { assignIds, deepCopy, arraysEqual, createContainer } from './components/Helpers';
 import ResumeTemplates from './components/templates/ResumeTemplates';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from './components/controls/Layouts';
 import Landing from './components/help/Landing';
@@ -29,6 +29,10 @@ import generateHtml from './components/utility/GenerateHtml';
 import ComponentTypes from './components/schema/ComponentTypes';
 import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode, Globals } from './components/utility/Types';
 import ObservableResumeNodeTree from './components/utility/ObservableResumeNodeTree';
+import ResumeContext from './components/ResumeContext';
+import ReactDOM from 'react-dom';
+import { HighlightBox } from './components/utility/HighlightBox';
+import SplitPane from 'react-split-pane';
 
 /** These props are only used for testing */
 export interface ResumeProps {
@@ -44,10 +48,15 @@ export interface ResumeState {
     childNodes: Array<ResumeNode>;
     mode: EditorMode;
     unsavedChanges: boolean;
+    hlBox?: React.ReactNode;
 
     activeTemplate?: string;
     clipboard?: ResumeNode;
+
+    // TODO: Remove???
     hoverNode?: IdType;
+
+    /** Are we editing the currently selected node */
     isEditingSelected: boolean;
     selectedNode?: IdType;
 }
@@ -60,7 +69,9 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     private css: CssNode;
     private rootCss: CssNode;
     private style = document.createElement("style");
+    private verticalPaneRef = React.createRef<SplitPane>();
     private resumeRef = React.createRef<HTMLDivElement>();
+    private selectedRef = React.createRef<HTMLElement>();
 
     constructor(props: ResumeProps) {
         super(props);
@@ -117,17 +128,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         return this.state.mode === 'printing';
     }
 
-    /** Return props related to hover/select functionality */
-    private get selectedNodeProps() {
-        return {
-            // Update list of clicked nodes
-            clicked: (id: IdType) => { this.clicked.push(id) },
-
-            // The UUID of the currently selected node
-            selectedUuid: this.selectedNode ? this.selectedNode.uuid : undefined,
-        }
-    }
-
     /** Retrieve the selected node **/
     get selectedNode() {
         return this.state.selectedNode ?
@@ -149,9 +149,23 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         }
 
         // Reset "editing selected" when selected node changes
-        if (this.state.selectedNode !== prevState.selectedNode &&
-            this.state.isEditingSelected) {
-            this.setState({ isEditingSelected: false });
+        if (this.state.selectedNode !== prevState.selectedNode) {
+            if (this.state.isEditingSelected) {
+                this.setState({ isEditingSelected: false });
+            }
+
+            if (this.state.selectedNode && this.selectedRef.current) {
+                this.setState({
+                    hlBox: <HighlightBox
+                        className="resume-hl-box resume-hl-box-selected-node"
+                        elem={this.selectedRef.current}
+                        verticalSplitRef={this.verticalPaneRef}
+                    />
+                })
+            }
+            else {
+                this.setState({ hlBox: <></> })
+            }
         }
     }
 
@@ -505,8 +519,10 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             const rootNode = this.state.css.findNode(
                 ComponentTypes.cssName(this.selectedNode.type)) as CssNode;
             if (rootNode) {
-                generalCssEditor = <CssEditor cssNode={new ReadonlyCssNode(rootNode)}
+                generalCssEditor = <CssEditor
+                    cssNode={new ReadonlyCssNode(rootNode)}
                     isOpen={true}
+                    verticalSplitRef={this.verticalPaneRef}
                     {...makeCssEditorProps(this.css, cssUpdateCallback)}
                 />
             }
@@ -515,6 +531,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                 const specificRoot = this.state.css.findNode([`#${this.selectedNode.htmlId}`]) as CssNode;
                 specificCssEditor = <CssEditor cssNode={new ReadonlyCssNode(specificRoot)}
                     isOpen={true}
+                    verticalSplitRef={this.verticalPaneRef}
                     {...makeCssEditorProps(this.css, cssUpdateCallback)} />
             }
 
@@ -528,47 +545,62 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             <CssEditor
                 cssNode={new ReadonlyCssNode(this.state.rootCss)}
                 isOpen={true}
+                verticalSplitRef={this.verticalPaneRef}
                 {...makeCssEditorProps(this.rootCss, rootCssUpdateCallback)} />
             <CssEditor
                 cssNode={new ReadonlyCssNode(this.state.css)}
                 isOpen={true}
+                verticalSplitRef={this.verticalPaneRef}
                 varSuggestions={this.makeCssEditorVarSuggestions()}
                 {...makeCssEditorProps(this.css, cssUpdateCallback)} />
         </>
     }
 
     render() {
-        const resume = <div id="resume-container">
-            <ContextMenuTrigger id="resume-menu">
-                <div id="resume" ref={this.resumeRef}
-                    onClick={() => this.handleClick()}
-                    onContextMenu={() => this.handleClick(true)}>
-                <ResumeHotKeys {...this.resumeHotKeysProps} />
-                
-                {this.state.childNodes.map((elem, idx, arr) => {
-                    const uniqueId = elem.uuid;
-                    const props = {
-                        ...elem,
-                        mode: this.state.mode,
-                        updateResumeData: this.updateData,
-                        resumeIsEditing: this.state.isEditingSelected,
-                        selectedNodeManagement: this.selectedNodeProps,
+        const hlBoxContainer = createContainer("hl-box-container");
+        const resume = (
+            <>
+                <ContextMenuTrigger attributes={{ id: "resume-container" }}
+                    id="resume-menu">
+                    <div id="resume" ref={this.resumeRef}
+                        onClick={() => this.handleClick()}
+                        onContextMenu={() => this.handleClick(true)}>
+                        <ResumeHotKeys {...this.resumeHotKeysProps} />
+                        {this.state.childNodes.map((elem, idx, arr) => {
+                            const uniqueId = elem.uuid;
+                            const props = {
+                                ...elem,
+                                updateResumeData: this.updateData,
+                                index: idx,
+                                numSiblings: arr.length
+                            };
 
-                        index: idx,
-                        numSiblings: arr.length
-                    };
+                            return (
+                                <ResumeContext.Provider
+                                    key={uniqueId}
+                                    value={{
+                                    isEditingSelected: this.state.isEditingSelected,
+                                    selectedUuid: this.selectedNode ? this.selectedNode.uuid : undefined,
+                                    updateClicked: (id: IdType) => { this.clicked.push(id) },
+                                    updateSelectedRef: (ref: React.RefObject<any>) => { this.selectedRef = ref }
+                                }}>
+                                    <ResumeComponentFactory {...props} />
+                                </ResumeContext.Provider>
+                            );
+                        })}
+                    </div>
 
-                return <ResumeComponentFactory key={uniqueId} {...props} />
-                    })}
-            </div>
-            </ContextMenuTrigger>
-
-            <ResumeContextMenu
-                nodes={this.nodes}
-                currentId={this.state.selectedNode}
-                selectNode={(id) => this.setState({selectedNode: id})}
-            />
-        </div>
+                <ResumeContextMenu
+                    nodes={this.nodes}
+                    currentId={this.state.selectedNode}
+                    editSelected={() => this.setState({ isEditingSelected: true })}
+                    updateSelected={this.updateSelected}
+                    selectNode={(id) => this.setState({ selectedNode: id })}
+                />
+                </ContextMenuTrigger>
+                {ReactDOM.createPortal(this.state.hlBox, hlBoxContainer)}
+            </>
+        );
         
         const editingTop = this.isPrinting ? <></> : (
             <header id="app-header" className="no-print">
@@ -604,6 +636,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                 return resume;
             default:
                 return <ResizableSidebarLayout
+                    ref={this.verticalPaneRef}
                     topNav={editingTop}
                     main={resume}
                     isPrinting={this.isPrinting}

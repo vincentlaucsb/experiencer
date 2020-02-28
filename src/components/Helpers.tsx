@@ -1,6 +1,38 @@
 ﻿import uuid from 'uuid/v4';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined, isNull } from 'util';
 import { BasicResumeNode, ResumeNode } from './utility/Types';
+
+/**
+ * Create a container for holding context menus and other dialogs
+ * as a child of the <body> tag
+ * 
+ * @param elementId The desired HTML id of the container
+ * @returns A reference to the contaienr
+ */
+export function createContainer(elementId: string) {
+    const htmlBody = document.getElementsByTagName("body")[0];
+    if (isNull(document.getElementById(elementId))) {
+        const container = document.createElement("div");
+        container.setAttribute("id", elementId);
+        return htmlBody.appendChild(container);
+    }
+    
+    const container = document.getElementById(elementId);
+    if (container) {
+        return container;
+    }
+
+    throw new Error(`Couldn't create or find ${elementId}`);
+}
+
+export function getElementById(elementId: string) {
+    const elem = document.getElementById(elementId);
+    if (elem) {
+        return elem;
+    }
+
+    throw new Error(`The element with id "${elementId}" was not found.`);
+}
 
 /**
  * Return a copy of an array with the i-th element removed

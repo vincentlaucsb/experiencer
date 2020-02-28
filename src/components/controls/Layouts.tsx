@@ -32,17 +32,20 @@ export function StaticSidebarLayout(props: SidebarLayoutProps) {
     </React.Fragment>
 }
 
-export function ResizableSidebarLayout(props: SidebarLayoutProps) {
-    return <SplitPane split="horizontal"
-        pane1Style={{ display: "block", height: "auto" }}
-        resizerStyle={{ display: "none" }}>
-        {props.topNav}
-        <SplitPane split="vertical" defaultSize="500px" primary="second"
-            style={{ height: "100%" }}
-            pane1Style={{ height: "100%", overflow: "auto" }}
-            pane2Style={{ overflow: "auto" }}>
-            {props.main}
-            {props.sidebar}
+export const ResizableSidebarLayout = React.forwardRef(
+    (props: SidebarLayoutProps, ref: React.Ref<SplitPane>) => (
+        <SplitPane split="horizontal"
+            pane1Style={{ display: "block", height: "auto" }}
+            resizerStyle={{ display: "none" }}>
+            {props.topNav}
+            <SplitPane split="vertical"
+                ref={ref}
+                defaultSize="500px" primary="second"
+                style={{ height: "100%" }}
+                pane1Style={{ height: "100%", overflow: "auto" }}
+                pane2Style={{ overflow: "auto" }}>
+                {props.main}
+                {props.sidebar}
+            </SplitPane>
         </SplitPane>
-    </SplitPane>
-}
+    ));

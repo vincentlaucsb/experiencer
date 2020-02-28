@@ -1,4 +1,6 @@
-﻿// For simplicity, and to avoid problems, avoid all
+﻿import { ReactNode } from "react";
+
+// For simplicity, and to avoid problems, avoid all
 // imports in this file
 
 export class Globals {
@@ -55,18 +57,10 @@ export interface ResumeSaveData {
     childNodes: Array<ResumeNode>;
 }
 
-/** Methods and properties used by the top level component
- *  for managing selection */
-export interface SelectedNodeManagement {
-    clicked: (id: IdType) => void;
-    selectedUuid?: string;
-}
-
 /** Used in creating React components over resume nodes */
-export default interface ResumeComponentProps extends ResumeNode, SelectedNodeManagement {
+export default interface ResumeComponentProps extends ResumeNode {
+    children?: ReactNode;
     id: IdType;   // Hierarchical ID based on the node's position in the resume; subject to change
-    isEditing: boolean;
     isLast: boolean;
-    isSelected: boolean;
     updateData: (key: string, data: NodeProperty) => void;
 }

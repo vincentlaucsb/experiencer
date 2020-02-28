@@ -11,6 +11,11 @@
         padding: $spacing/4 $spacing;
     }
 
+    hr {
+        border: 0;
+        border-top: 1px solid darken($light-shade, 20%);
+    }
+
     .react-contextmenu-item {
         cursor: pointer;
         padding: $spacing/4 $spacing;

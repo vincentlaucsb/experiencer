@@ -14,14 +14,8 @@ test('Entry Class Names Test', async () => {
         id={[0]}
         type={Entry.type}
         uuid=""
-        isEditing={false}
         isLast={false}
-        hoverOut={() => { }}
-        hoverOver={() => { }}
-        isSelected={false}
-        isSelectBlocked={() => { return false }}
         updateData={() => { }}
-        updateSelected={() => { }}
         title={title}
         subtitle={subtitle}
     />);

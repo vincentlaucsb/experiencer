@@ -3,6 +3,7 @@ import TextField from "./controls/inputs/TextField";
 import Container from "./Container";
 import { process, deleteAt, toUrl } from "./Helpers";
 import ResumeComponentProps, { BasicResumeNode } from "./utility/Types";
+import ResumeContext from "./ResumeContext";
 
 interface EntryBase {
     title?: string[];
@@ -16,6 +17,7 @@ export interface BasicEntryProps extends BasicResumeNode, EntryBase { };
 export interface EntryProps extends ResumeComponentProps, EntryBase { };
 
 export default class Entry extends React.PureComponent<EntryProps> {
+    static contextType = ResumeContext;
     static readonly type = 'Entry';
 
     /**
@@ -37,6 +39,9 @@ export default class Entry extends React.PureComponent<EntryProps> {
     }
 
     getFields(key: 'title' | 'subtitle') {
+        const value = this.context;
+        const isSelected = value.selectedUuid === this.props.uuid;
+
         const deleter = (key: 'title' | 'subtitle', index: number) => {
             let arr = this.props[key] || [];
             this.props.updateData(key, deleteAt(arr, index));
@@ -62,15 +67,22 @@ export default class Entry extends React.PureComponent<EntryProps> {
                     }}/>
                 }
 
+                const textFieldOptions = [
+                    {
+                        text: 'Delete',
+                        action: () => deleter(key, index)
+                    }
+                ];
+
                 return <React.Fragment key={`${index}/${arr.length}`}>
                     <TextField
-                        delete={() => deleter(key, index)}
                         displayClassName={this.getFieldClassName(index, arr)}
-                        static={!this.props.isSelected}
+                        static={!isSelected}
                         onChange={(data: string) => updater(key, index, data)}
                         value={text || ""}
                         defaultText="Enter a value"
                         displayProcessors={[process, toUrl]}
+                        contextMenuOptions={textFieldOptions}
                     />
                     {lineBreak}
                 </React.Fragment>
@@ -81,11 +93,13 @@ export default class Entry extends React.PureComponent<EntryProps> {
     }
 
     render() {
+        const isEditing = this.context.isEditingSelected && this.context.selectedUuid === this.props.uuid;
+
         /** hgroup onclick stops event from bubbling up to resume */
         return (
             <Container {...this.props} className="entry">
                 <hgroup onClick={(event) => {
-                    if (this.props.isEditing) {
+                    if (isEditing) {
                         event.stopPropagation();
                     }
                 }}>

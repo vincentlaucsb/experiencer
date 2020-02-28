@@ -1,10 +1,9 @@
 ﻿import Entry, { BasicEntryProps } from "../Entry";
 import Row, { BasicRowProps } from "../Row";
 import Header from "../Header";
-import Icon from "../Icon";
+import { IconType } from "../Icon";
 import { ResumeNode, NodeProperty } from "../utility/Types";
-import { ToolbarSection } from "../controls/toolbar/ToolbarMaker";
-import { DescriptionListItem, BasicDescriptionItemProps } from "../List";
+import { BasicDescriptionItemProps, DescriptionListItemType } from "../List";
 import { ToolbarItemData } from "../controls/toolbar/ToolbarButton";
 
 /**
@@ -80,7 +79,7 @@ export default function toolbarOptions(
     };
 
     switch (node.type) {
-        case DescriptionListItem.type:
+        case DescriptionListItemType:
             const addDefinition = (node: BasicDescriptionItemProps) => {
                 let arr = node.definitions || [];
                 arr.push('');
@@ -150,7 +149,7 @@ export default function toolbarOptions(
                 justifyContentOptions
             ]
 
-        case Icon.type:
+        case IconType:
             return [
                 {
                     text: 'GitHub',

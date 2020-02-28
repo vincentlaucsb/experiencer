@@ -157,6 +157,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             if (this.state.selectedNode && this.selectedRef.current) {
                 this.setState({
                     hlBox: <HighlightBox
+                        className="resume-hl-box resume-hl-box-selected-node"
                         elem={this.selectedRef.current}
                         verticalSplitRef={this.verticalPaneRef}
                     />
@@ -518,8 +519,10 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             const rootNode = this.state.css.findNode(
                 ComponentTypes.cssName(this.selectedNode.type)) as CssNode;
             if (rootNode) {
-                generalCssEditor = <CssEditor cssNode={new ReadonlyCssNode(rootNode)}
+                generalCssEditor = <CssEditor
+                    cssNode={new ReadonlyCssNode(rootNode)}
                     isOpen={true}
+                    verticalSplitRef={this.verticalPaneRef}
                     {...makeCssEditorProps(this.css, cssUpdateCallback)}
                 />
             }
@@ -528,6 +531,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                 const specificRoot = this.state.css.findNode([`#${this.selectedNode.htmlId}`]) as CssNode;
                 specificCssEditor = <CssEditor cssNode={new ReadonlyCssNode(specificRoot)}
                     isOpen={true}
+                    verticalSplitRef={this.verticalPaneRef}
                     {...makeCssEditorProps(this.css, cssUpdateCallback)} />
             }
 
@@ -541,10 +545,12 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             <CssEditor
                 cssNode={new ReadonlyCssNode(this.state.rootCss)}
                 isOpen={true}
+                verticalSplitRef={this.verticalPaneRef}
                 {...makeCssEditorProps(this.rootCss, rootCssUpdateCallback)} />
             <CssEditor
                 cssNode={new ReadonlyCssNode(this.state.css)}
                 isOpen={true}
+                verticalSplitRef={this.verticalPaneRef}
                 varSuggestions={this.makeCssEditorVarSuggestions()}
                 {...makeCssEditorProps(this.css, cssUpdateCallback)} />
         </>

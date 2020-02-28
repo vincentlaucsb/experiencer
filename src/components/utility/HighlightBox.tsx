@@ -4,53 +4,57 @@ import SplitPane from "react-split-pane";
 
 interface HighlightBoxProps {
     /** The selected HTML node in question */
-    elem: HTMLElement;
+    elem: Element;
 
     /** Ref for the vertical split pane */
     verticalSplitRef: React.RefObject<SplitPane>;
+
+    /** Attributes for the highlight boxes */
+    className: string;
+    calcStyle?: (bounds: ClientRect | DOMRect, style: CSSStyleDeclaration) => any;
 }
 
-interface BoxDimensions {
-    left: number;
-    top: number;
-    width: number;
-    height: number;
+function defaultCalcStyle(bounds: ClientRect | DOMRect, style: CSSStyleDeclaration) {
+    return {
+        left: `${bounds.left}px`,
+        top: `${bounds.top}px`,
+        width: `${bounds.width}px`,
+        height: `${bounds.height}px`
+    }
 }
 
 export function HighlightBox(props: HighlightBoxProps) {
     const node = props.elem;
-    let [dims, setDims] = React.useState<BoxDimensions>();
+    const calcStyle = props.calcStyle || defaultCalcStyle;
 
-    const updateDimensions = () => {
+    let [bounds, updateBounds] = React.useState<ClientRect | DOMRect>();
+    let [computedStyle, updateComputedStyle] = React.useState<CSSStyleDeclaration>();
+
+    const updateBoxes = () => {
         if (node) {
-            const bounds = node.getBoundingClientRect();
             requestAnimationFrame(() => {
-                setDims({
-                    left: bounds.left,
-                    top: bounds.top,
-                    width: bounds.width,
-                    height: bounds.height
-                });
+                updateBounds(node.getBoundingClientRect());
+                updateComputedStyle(window.getComputedStyle(node));
             });
         }
     };
 
     const resizeObserver = new ResizeObserver((entries) => {
-        entries.forEach(() => updateDimensions());
+        entries.forEach(() => updateBoxes());
     });
 
     React.useEffect(() => {
         // Perform initial load
-        updateDimensions();
+        updateBoxes();
 
         // Add resize listeners
-        window.addEventListener("resize", updateDimensions);
+        window.addEventListener("resize", updateBoxes);
         if (node) {
             resizeObserver.observe(node);
         }
 
         return function cleanup() {
-            window.removeEventListener("resize", updateDimensions);
+            window.removeEventListener("resize", updateBoxes);
 
             if (node) {
                 resizeObserver.unobserve(node);
@@ -63,7 +67,7 @@ export function HighlightBox(props: HighlightBoxProps) {
         // Add scroll listener
         if (props.verticalSplitRef.current) {
             const mainPane = props.verticalSplitRef.current['pane1'];
-            mainPane.addEventListener("scroll", updateDimensions);
+            mainPane.addEventListener("scroll", updateBoxes);
             resizeObserver.observe(mainPane);
         }
 
@@ -71,22 +75,17 @@ export function HighlightBox(props: HighlightBoxProps) {
             if (props.verticalSplitRef.current) {
                 const mainPane = props.verticalSplitRef.current['pane1'];
                 resizeObserver.unobserve(mainPane);
-                props.verticalSplitRef.current['pane1'].removeEventListener("scroll", updateDimensions);
+                props.verticalSplitRef.current['pane1'].removeEventListener("scroll", updateBoxes);
             }
         }
     }, [props.elem, props.verticalSplitRef]);
 
-    if (dims) {
+    if (node && bounds && computedStyle) {
         return (
-            <div className="resume-hl-box resume-hl-box-selected-node"
+            <div className={props.className}
                 style={{
                     position: "fixed",
-                    left: `${dims.left}px`,
-                    top: `${dims.top}px`,
-                    width: `${dims.width}px`,
-                    height: `${dims.height}px`,
-                    boxSizing: "border-box",
-                    zIndex: 2000
+                    ...calcStyle(bounds, computedStyle),
                 }}
             />
         );

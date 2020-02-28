@@ -202,6 +202,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
                 let elems = new Array<JSX.Element>();
                 hits.forEach((node: Element, key: number) => {
                     elems.push(<HighlightBox
+                        key={key}
                         className="resume-hl-box"
                         elem={node}
                         verticalSplitRef={this.props.verticalSplitRef}

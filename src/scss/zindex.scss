@@ -4,7 +4,8 @@
 $default-z: 0;
 $header-z: 1000;
 
-#app-header {
+/** || Header Panae */
+.horizontal.Pane1 {
     &, * {
         z-index: $header-z;
     }
@@ -39,7 +40,7 @@ $main-pane-z: $default-z + 1;
         z-index: $main-pane-z;
     }
 
-    .react-contextmenu { 
+    .react-contextmenu {
         // Make context menu appear over sidebar
         &, * {
             z-index: $main-pane-z + 1;
@@ -47,16 +48,16 @@ $main-pane-z: $default-z + 1;
     }
 }
 
+/** || CSS Editor Highlight Boxes */
+#hl-box-container .resume-hl-box {
+    z-index: $main-pane-z + 1;
+}
+
 /** || Sidebar */
 .vertical.Pane2 {
     &, * {
         z-index: $default-z;
     }
-}
-
-/* || Highlight Boxes */
-.resume-hl-box {
-    z-index: $main-pane-z + 1;
 }
 
 /** || Context Menu */

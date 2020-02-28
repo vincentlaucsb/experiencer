@@ -41,16 +41,18 @@ $main-pane-z: $default-z + 1;
     }
 
     .react-contextmenu {
-        // Make context menu appear over sidebar
+        // Make context menu appear over sidebars and highlight boxes
         &, * {
-            z-index: $main-pane-z + 1;
+            z-index: $main-pane-z + 2;
         }
     }
 }
 
-/** || CSS Editor Highlight Boxes */
-#hl-box-container .resume-hl-box {
-    z-index: $main-pane-z + 1;
+/** || Highlight Boxes */
+#hl-box-container {
+    &, * {
+        z-index: $main-pane-z + 1;
+    }
 }
 
 /** || Sidebar */
@@ -63,7 +65,7 @@ $main-pane-z: $default-z + 1;
 /** || Context Menu */
 #context-menu-container {
     &, * {
-        z-index: $main-pane-z + 1;
+        z-index: $main-pane-z + 2;
     }
 }
 

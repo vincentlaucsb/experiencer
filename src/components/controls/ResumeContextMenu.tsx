@@ -5,6 +5,8 @@ import ObservableResumeNodeTree from "../utility/ObservableResumeNodeTree";
 import Section from "../Section";
 import contextMenuOptions from "../schema/ContextMenuOptions";
 import RichText from "../RichText";
+import ReactDOM from "react-dom";
+import { createContainer } from "../Helpers";
 
 export interface ResumeContextProps {
     currentId?: IdType;
@@ -94,13 +96,14 @@ export default class ResumeContextMenu extends React.Component<ResumeContextProp
 
         const hrule = isEditable ? <hr /> : <></>
 
-        return (
+        const contextMenuContainer = createContainer("context-menu-container");
+        return ReactDOM.createPortal(
             <ContextMenu id="resume-menu">
                 {header}
                 {menu}
                 {hrule}
                 {additionalOptions}
-            </ContextMenu>
-        );
+            </ContextMenu>,
+            contextMenuContainer);
     }
 }

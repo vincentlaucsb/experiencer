@@ -67,15 +67,19 @@ export function HighlightBox(props: HighlightBoxProps) {
         // Add scroll listener
         if (props.verticalSplitRef.current) {
             const mainPane = props.verticalSplitRef.current['pane1'];
-            mainPane.addEventListener("scroll", updateBoxes);
-            resizeObserver.observe(mainPane);
+            if (mainPane) {
+                mainPane.addEventListener("scroll", updateBoxes);
+                resizeObserver.observe(mainPane);
+            }
         }
 
         return function cleanup() {
             if (props.verticalSplitRef.current) {
                 const mainPane = props.verticalSplitRef.current['pane1'];
-                resizeObserver.unobserve(mainPane);
-                props.verticalSplitRef.current['pane1'].removeEventListener("scroll", updateBoxes);
+                if (mainPane) {
+                    resizeObserver.unobserve(mainPane);
+                    props.verticalSplitRef.current['pane1'].removeEventListener("scroll", updateBoxes);
+                }
             }
         }
     }, [props.elem, props.verticalSplitRef]);

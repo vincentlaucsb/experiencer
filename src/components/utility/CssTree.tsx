@@ -1,5 +1,4 @@
-﻿import { isNullOrUndefined } from "util";
-import { deleteAt } from "../Helpers";
+﻿import { deleteAt, isNullOrUndefined } from "../Helpers";
 import { CssNodeDump } from "./Types";
 
 export default class CssNode {

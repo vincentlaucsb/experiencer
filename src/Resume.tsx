@@ -30,7 +30,7 @@ import ComponentTypes from './components/schema/ComponentTypes';
 import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode, Globals } from './components/utility/Types';
 import ObservableResumeNodeTree from './components/utility/ObservableResumeNodeTree';
 import ResumeContext from './components/ResumeContext';
-import ReactDOM from 'react-dom';
+import { createPortal } from 'react-dom';
 import { HighlightBox } from './components/utility/HighlightBox';
 import SplitPane from 'react-split-pane';
 
@@ -598,7 +598,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                     selectNode={(id) => this.setState({ selectedNode: id })}
                 />
                 </ContextMenuTrigger>
-                {ReactDOM.createPortal(this.state.hlBox, hlBoxContainer)}
+                {createPortal(this.state.hlBox, hlBoxContainer)}
             </>
         );
         

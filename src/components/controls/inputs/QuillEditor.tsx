@@ -13,6 +13,7 @@ export interface QuillEditorProps {
 
 export default function QuillEditor(props: QuillEditorProps) {
     let [showToolbar, setToolbar] = React.useState(false);
+    const quillRef = React.useRef<ReactQuill>(null);
 
     const selectTriggerProps = {
         onClick: (event: React.MouseEvent) => {
@@ -29,6 +30,7 @@ export default function QuillEditor(props: QuillEditorProps) {
         <div className="resume-ql" {...selectTriggerProps}>
             <QuillToolbar id={toolbarId} show={showToolbar} />
             <ReactQuill
+                ref={quillRef}
                 modules={{ toolbar: `#${toolbarId}` }}
                 value={props.value}
                 onChange={props.onChange}

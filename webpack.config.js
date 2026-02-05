@@ -1,73 +1,162 @@
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+
+const isDevelopment = process.env.NODE_ENV !== 'production';
+
 module.exports = {
-    mode: 'development',
-
-    entry: "./src/index.tsx",
-
+    mode: isDevelopment ? 'development' : 'production',
+    entry: './src/index.tsx',
+    
     output: {
-        filename: "bundle.js",
-        chunkFilename: '[name].bundle.js',
-        path: __dirname + "/public/scripts"
+        path: path.resolve(__dirname, 'build'),
+        filename: isDevelopment ? '[name].js' : '[name].[contenthash].js',
+        chunkFilename: isDevelopment ? '[name].chunk.js' : '[name].[contenthash].chunk.js',
+        publicPath: '/',
+        clean: true,
     },
 
-    optimization: {
-        splitChunks: {
-            chunks: 'all'
-        }
-    },
+    devtool: isDevelopment ? 'eval-source-map' : 'source-map',
 
-    // Enable sourcemaps for debugging webpack's output.
-    devtool: "source-map",
+    devServer: {
+        static: {
+            directory: path.join(__dirname, 'public'),
+        },
+        historyApiFallback: true,
+        hot: true,
+        port: 3000,
+        open: true,
+        compress: true,
+    },
 
     resolve: {
-        // Add '.ts' and '.tsx' as resolvable extensions.
-        extensions: [".ts", ".tsx", ".js", ".json"]
+        extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
     },
 
     module: {
         rules: [
-            // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-            { test: /\.tsx?$/, loader: "awesome-typescript-loader" },
-
-            // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-            { enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
-
-            // Process CSS and SASS with 'typings-for-css-modules'
-            { test: /\.css$/, loader: 'typings-for-css-modules-loader?modules' },
-            { test: /\.scss$/, loader: 'typings-for-css-modules-loader?modules&sass' },
-
-            // Process SVG with 'svg-inline-loader'
+            // TypeScript and TSX
+            {
+                test: /\.(ts|tsx)$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: [
+                                '@babel/preset-env',
+                                ['@babel/preset-react', { runtime: 'automatic' }],
+                                '@babel/preset-typescript',
+                            ],
+                            plugins: [
+                                isDevelopment && require.resolve('react-refresh/babel'),
+                            ].filter(Boolean),
+                        },
+                    },
+                ],
+            },
+            // JavaScript and JSX
+            {
+                test: /\.(js|jsx)$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: [
+                            '@babel/preset-env',
+                            ['@babel/preset-react', { runtime: 'automatic' }],
+                        ],
+                        plugins: [
+                            isDevelopment && require.resolve('react-refresh/babel'),
+                        ].filter(Boolean),
+                    },
+                },
+            },
+            // CSS
+            {
+                test: /\.css$/,
+                use: [
+                    isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            postcssOptions: {
+                                plugins: [
+                                    'autoprefixer',
+                                ],
+                            },
+                        },
+                    },
+                ],
+            },
+            // SCSS
+            {
+                test: /\.scss$/,
+                use: [
+                    isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            postcssOptions: {
+                                plugins: [
+                                    'autoprefixer',
+                                ],
+                            },
+                        },
+                    },
+                    'sass-loader',
+                ],
+            },
+            // SVG
             {
                 test: /\.svg$/,
-                loader: 'svg-inline-loader'
+                type: 'asset/resource',
             },
-
-            // Process SCSS with 'saas-loader'
+            // Images
             {
-                test: /\.(scss)$/,
-                use: [{
-                    loader: 'style-loader', // inject CSS to page
-                }, {
-                    loader: 'css-loader', // translates CSS into CommonJS modules
-                }, {
-                    loader: 'postcss-loader', // Run post css actions
-                    options: {
-                        plugins: function () { // post css plugins, can be exported to postcss.config.js
-                            return [
-                                require('precss'),
-                                require('autoprefixer')
-                            ];
-                        }
-                    }
-                }, {
-                    loader: 'sass-loader' // compiles Sass to CSS
-                }]
-        ]
+                test: /\.(png|jpg|jpeg|gif)$/i,
+                type: 'asset/resource',
+            },
+            // Fonts
+            {
+                test: /\.(woff|woff2|eot|ttf|otf)$/i,
+                type: 'asset/resource',
+            },
+        ],
     },
 
-    // When importing a module whose path matches one of the following, just
-    // assume a corresponding global variable exists and use that instead.
-    // This is important because it allows us to avoid bundling all of our
-    // dependencies, which allows browsers to cache those libraries between builds.
-    externals: {
-    }
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: './public/index.html',
+            favicon: './public/favicon.ico',
+        }),
+        !isDevelopment && new MiniCssExtractPlugin({
+            filename: '[name].[contenthash].css',
+            chunkFilename: '[name].[contenthash].chunk.css',
+        }),
+        isDevelopment && new ReactRefreshWebpackPlugin(),
+    ].filter(Boolean),
+
+    optimization: {
+        moduleIds: 'deterministic',
+        runtimeChunk: 'single',
+        splitChunks: {
+            cacheGroups: {
+                vendor: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: 'vendors',
+                    chunks: 'all',
+                },
+            },
+        },
+    },
+
+    performance: {
+        hints: isDevelopment ? false : 'warning',
+        maxEntrypointSize: 512000,
+        maxAssetSize: 512000,
+    },
 };

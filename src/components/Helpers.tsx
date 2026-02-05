@@ -1,6 +1,13 @@
-﻿import uuid from 'uuid/v4';
-import { isNullOrUndefined, isNull } from 'util';
+﻿import { v4 as uuid } from 'uuid';
+import { isNull } from 'lodash';
 import { BasicResumeNode, ResumeNode } from './utility/Types';
+
+/**
+ * Helper function to check if value is null or undefined
+ */
+export function isNullOrUndefined(value: any): boolean {
+    return value === null || value === undefined;
+}
 
 /**
  * Create a container for holding context menus and other dialogs

@@ -1,11 +1,10 @@
 ﻿import React, { MouseEvent } from "react";
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 import parse from 'html-react-parser';
-import { isNullOrUndefined } from "util";
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
 import ReactDOM from "react-dom";
 
-import { createContainer } from "../../Helpers";
+import { createContainer, isNullOrUndefined } from "../../Helpers";
 
 interface ContextMenuOption {
     text: string;

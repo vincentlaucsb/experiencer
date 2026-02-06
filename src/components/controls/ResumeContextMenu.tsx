@@ -5,6 +5,7 @@ import ObservableResumeNodeTree from "../utility/ObservableResumeNodeTree";
 import Section from "../Section";
 import contextMenuOptions from "../schema/ContextMenuOptions";
 import RichText from "../RichText";
+import Link from "../Link";
 import ReactDOM from "react-dom";
 import { createContainer } from "../Helpers";
 
@@ -18,7 +19,8 @@ export interface ResumeContextProps {
 
 export default class ResumeContextMenu extends React.Component<ResumeContextProps> {
     static Editable = new Set<string>([
-        RichText.type
+        RichText.type,
+        Link.type
     ]);
 
     hoveringMenu(currentNode?: IdType) {

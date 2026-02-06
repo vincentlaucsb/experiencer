@@ -32,32 +32,38 @@ export interface ToolbarButtonProps {
  * A basic toolbar button
  * @param props
  */
-export default function ToolbarButton(props: ToolbarButtonProps) {
-    const text = props.condensedButton && !props.dropdownChild ?
-        <></> : <span className="button-text">{props.text}</span>
-    const icon = props.icon ? <i className={`icofont-${props.icon}`} /> : <></>
-    const shortcut = props.shortcut ? <span className="button-shortcut">{props.shortcut}</span> : <></>
+const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(
+    (props, ref) => {
+        const text = props.condensedButton && !props.dropdownChild ?
+            <></> : <span className="button-text">{props.text}</span>
+        const icon = props.icon ? <i className={`icofont-${props.icon}`} /> : <></>
+        const shortcut = props.shortcut ? <span className="button-shortcut">{props.shortcut}</span> : <></>
 
-    let Container = Button;
-    if (props.dropdownChild) {
-        /** Thank you Google Chrome for allowing me to 
-         *  craft this beautiful hack because you won't allow
-         *  buttons to be grid containers
-         */
-        Container = (props) => {
-            return (
-                <Button {...props}>
-                    <div>
-                        {props.children}
-                    </div>
-                </Button>
-            );
-        };
+        let Container = Button;
+        if (props.dropdownChild) {
+            /** Thank you Google Chrome for allowing me to 
+             *  craft this beautiful hack because you won't allow
+             *  buttons to be grid containers
+             */
+            Container = (props) => {
+                return (
+                    <Button {...props}>
+                        <div>
+                            {props.children}
+                        </div>
+                    </Button>
+                );
+            };
+        }
+
+        return (
+            <Container ref={ref} disabled={props.disabled} onClick={props.action}>
+                {icon} {text} {shortcut}
+            </Container>
+        );
     }
+);
 
-    return (
-        <Container disabled={props.disabled} onClick={props.action}>
-            {icon} {text} {shortcut}
-        </Container>
-    );
-}
+ToolbarButton.displayName = 'ToolbarButton';
+
+export default ToolbarButton;

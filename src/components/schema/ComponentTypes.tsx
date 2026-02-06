@@ -4,6 +4,7 @@ import Column from "../Column";
 import Section from "../Section";
 import Entry, { BasicEntryProps } from "../Entry";
 import RichText from "../RichText";
+import Link from "../Link";
 import DescriptionList, { DescriptionListItem, BasicDescriptionItemProps, DescriptionListType, DescriptionListItemType } from "../List";
 import { IconType } from "../Icon";
 import Header from "../Header";
@@ -31,6 +32,7 @@ export default class ComponentTypes {
                     Section.type,
                     Entry.type,
                     RichText.type,
+                    Link.type,
                     AliasTypes.BulletedList,
                     DescriptionListType,
                     IconType
@@ -44,6 +46,7 @@ export default class ComponentTypes {
                     Section.type,
                     Entry.type,
                     RichText.type,
+                    Link.type,
                     AliasTypes.BulletedList,
                     DescriptionListType
                 ]
@@ -51,17 +54,20 @@ export default class ComponentTypes {
                 return DescriptionListItemType;
             case DescriptionListItemType:
             case RichText.type:
+            case Link.type:
                 return [];
             case Entry.type:
                 return [
                     AliasTypes.BulletedList,
                     DescriptionListType,
-                    RichText.type
+                    RichText.type,
+                    Link.type
                 ];
             case Header.type:
                 return [
                     Entry.type,
                     RichText.type,
+                    Link.type,
                     AliasTypes.BulletedList,
                     DescriptionListType,
                     Grid.type
@@ -71,6 +77,7 @@ export default class ComponentTypes {
                     Section.type,
                     Entry.type,
                     RichText.type,
+                    Link.type,
                     AliasTypes.BulletedList,
                     DescriptionListType,
                     Grid.type,
@@ -81,6 +88,7 @@ export default class ComponentTypes {
                     Section.type,
                     Entry.type,
                     RichText.type,
+                    Link.type,
                     AliasTypes.BulletedList,
                     DescriptionListType
                 ];
@@ -201,6 +209,16 @@ export default class ComponentTypes {
                     node: {
                         type: IconType
                     }
+                }
+            case Link.type:
+                return {
+                    text: 'Link',
+                    node: {
+                        type: Link.type,
+                        value: '',
+                        url: ''
+                    },
+                    icon: 'link'
                 }
             default:
                 throw new Error(`Couldn't find information for component named ${type}`);

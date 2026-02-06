@@ -1,4 +1,4 @@
-﻿@import "variables";
+﻿@use "variables";
 
 input {
     background: inherit;
@@ -7,10 +7,10 @@ input {
 
 #resume {
     input {
-        border-bottom: 1px solid $light-accent;
+        border-bottom: 1px solid variables.$light-accent;
 
         &:hover {
-            border-bottom-color: $dark-shade;
+            border-bottom-color: variables.$dark-shade;
         }
     }
 }

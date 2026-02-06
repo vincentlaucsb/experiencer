@@ -1,6 +1,6 @@
-﻿import ResumeNodeTree from "./NodeTree";
-import { assignIds } from "../Helpers";
-import { BasicResumeNode } from "./Types";
+﻿import ResumeNodeTree from "../NodeTree";
+import { assignIds } from "../../Helpers";
+import { BasicResumeNode } from "../Types";
 
 test('getNodeById Test', () => {
     const resumeData = [{

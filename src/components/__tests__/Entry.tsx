@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { render } from "@testing-library/react";
-import Entry from "./Entry";
+import Entry from "../Entry";
 import React from "react";
 
 /** Assert that the correct class names are generated */

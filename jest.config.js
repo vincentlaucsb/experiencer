@@ -6,5 +6,14 @@ module.exports = {
         "^[./a-zA-Z0-9$_-]+\\.png$": "<rootDir>/config/StyleStubber",
     },
     preset: 'ts-jest',
-    testEnvironment: 'node',
+    testEnvironment: 'jsdom',
+    transform: {
+        '^.+\\.tsx?$': ['ts-jest', {
+            tsconfig: {
+                jsx: 'react',
+                esModuleInterop: true,
+                allowSyntheticDefaultImports: true,
+            }
+        }]
+    },
 };

@@ -1,5 +1,5 @@
-﻿import CssNode from "./CssTree";
-import { arraysEqual } from "../Helpers";
+﻿import CssNode from "../CssTree";
+import { arraysEqual } from "../../Helpers";
 
 function makeCssTree() {
     return CssNode.load({

@@ -1,6 +1,6 @@
-﻿import ObservableResumeNodeTree from "./ObservableResumeNodeTree";
-import { ResumeNode } from "./Types";
-import { assignIds } from "../Helpers";
+﻿import ObservableResumeNodeTree from "../ObservableResumeNodeTree";
+import { ResumeNode } from "../Types";
+import { assignIds } from "../../Helpers";
 
 /** Test undo/redo functionality */
 test('Undo/Redo Test', async () => {

@@ -1,8 +1,8 @@
-@import "variables";
+@use "variables";
 
 #resume {
     div.resume-ql {
-        margin-bottom: $spacing;
+        margin-bottom: variables.$spacing;
     }
 
     .quill-toolbar {
@@ -18,6 +18,6 @@
     }
 
     hgroup .ql-container {
-        border-bottom: 1px solid $main;
+        border-bottom: 1px solid variables.$main;
     }
 }

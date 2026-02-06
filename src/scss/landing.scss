@@ -1,8 +1,10 @@
-﻿@import "variables";
+﻿@use "sass:math";
+@use "sass:color";
+@use "variables";
 
 #landing {
     max-width: 75ch;
-    padding: 0 $edge-horizontal-spacing;
+    padding: 0 variables.$edge-horizontal-spacing;
     margin-left: auto;
     margin-right: auto;
 }
@@ -13,7 +15,7 @@
 
         /** || Adjacent Menu Items */
         + .pure-menu-item {
-            margin-top: $spacing/2;
+            margin-top: math.div(variables.$spacing, 2);
         }
 
         /** || Buttons */
@@ -21,19 +23,19 @@
             display: flex;
             align-items: center;
             background: inherit;
-            padding: $spacing/2;
+            padding: math.div(variables.$spacing, 2);
             font-size: large;
             width: 100%;
 
             &:hover {
-                background: lighten($light-accent, 20%);
+                background: color.adjust(variables.$light-accent, $lightness: 20%);
             }
         }
 
         i[class*="icofont"] {
             font-size: 40px;
-            color: $main;
-            margin-right: $spacing;
+            color: variables.$main;
+            margin-right: variables.$spacing;
         }
     }
 }

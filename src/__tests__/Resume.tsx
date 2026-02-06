@@ -2,10 +2,10 @@
  * @jest-environment jsdom
  */
 import { render, fireEvent, getByText, getByTitle, getAllByText, act, wait } from "@testing-library/react";
-import Resume from "./Resume";
+import Resume from "../Resume";
 import React from "react";
-import ResumeTemplates from "./components/templates/ResumeTemplates";
-import CssNode from "./components/utility/CssTree";
+import ResumeTemplates from "../components/templates/ResumeTemplates";
+import CssNode from "../components/utility/CssTree";
 
 /**
  * Simulate selecting a resume node

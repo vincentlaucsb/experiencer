@@ -5,29 +5,33 @@ interface ButtonProps extends React.DetailedHTMLProps<React.ButtonHTMLAttributes
     disabled?: boolean;
 }
 
-export function Button(props: ButtonProps) {
-    let classes = ['pure-button'];
-    if (props.primary) {
-        classes.push('pure-button-primary');
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+    (props, ref) => {
+        let classes = ['pure-button'];
+        if (props.primary) {
+            classes.push('pure-button-primary');
+        }
+
+        if (props.disabled) {
+            classes.push('pure-button-disabled');
+        }
+
+        if (props.className) {
+            classes.push(props.className);
+        }
+
+        const newProps = {
+            ...props,
+            className: classes.join(' '),
+        };
+
+        return (
+            <button ref={ref} className={classes.join(' ')} {...newProps} />
+        );
     }
+);
 
-    if (props.disabled) {
-        classes.push('pure-button-disabled');
-    }
-
-    if (props.className) {
-        classes.push(props.className);
-    }
-
-    const newProps = {
-        ...props,
-        className: classes.join(' '),
-    };
-
-    return (
-        <button className={classes.join(' ')} {...newProps} />
-    );
-}
+Button.displayName = 'Button';
 
 interface ConfirmProps {
     buttonProps?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;

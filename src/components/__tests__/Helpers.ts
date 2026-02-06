@@ -1,5 +1,5 @@
-﻿import { assignIds, process, arraysEqual } from "./Helpers";
-import { BasicResumeNode } from "./utility/Types";
+﻿import { assignIds, process, arraysEqual } from "../Helpers";
+import { BasicResumeNode } from "../utility/Types";
 
 test('assignIDs Test', async () => {
     const node = {

@@ -3,6 +3,7 @@ import { IdType } from "./utility/Types";
 
 export interface IResumeContext {
     isEditingSelected: boolean;
+    isPrinting: boolean;
     selectedUuid?: string;
     updateSelectedRef: (ref: React.RefObject<any>) => void;
 
@@ -12,6 +13,7 @@ export interface IResumeContext {
 
 const defaultResumeContext: IResumeContext = {
     isEditingSelected: false,
+    isPrinting: false,
     selectedUuid: undefined,
     updateSelectedRef: (_) => { },
 

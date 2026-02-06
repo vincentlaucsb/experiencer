@@ -3,16 +3,25 @@
 ## Project Overview
 **Experiencer** is an interactive HTML/CSS resume builder that allows users to create, edit, and export professional resumes directly in the browser. Built with React, it provides a WYSIWYG editing experience with real-time CSS customization.
 
+## Quick Reference
+
+For detailed project rules and conventions, see [.claude/rules/](.claude/rules/).
+For planned work and improvements, see [docs/TODO.md](docs/TODO.md).
+For architecture details, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+For migration history, see [docs/MIGRATION.md](docs/MIGRATION.md).
+
 ## Recent Major Updates (2024-2026)
-- **Migrated from React 16 → React 19** (createRoot API, automatic JSX transform)
+- **Migrated from React 16 → React 18** (pragmatic choice, React 19 blocked by react-quill)
 - **Removed Create React App** → Custom Webpack 5 configuration
 - **Upgraded TypeScript** 3.7 → 5.7
 - **Modern build tooling** with HMR, React Refresh, and code splitting
+- **Modern SCSS** syntax (@use, math.div, color.adjust)
+- **Added Link component** for external links with proper href export
 
 ## Tech Stack
-- **React 19** with TypeScript
+- **React 18.3.1** with TypeScript
 - **Webpack 5** with custom configuration
-- **SCSS** for styling (with deprecation warnings - non-blocking)
+- **SCSS** (Dart Sass 1.83.0) for styling
 - **react-quill** for rich text editing
 - **react-contextmenu** for right-click menus (uses legacy peer deps)
 - **uuid** v11 for ID generation
@@ -60,10 +69,16 @@ src/
 - **tsconfig.json**: TypeScript config with modern module resolution
 - **package.json**: All dependencies (uses `--legacy-peer-deps`)
 
+### Documentation
+- **.claude/rules**: Project coding standards and conventions
+- **docs/TODO.md**: Planned features and improvements
+- **docs/ARCHITECTURE.md**: System design and component patterns
+- **docs/MIGRATION.md**: Upgrade history and breaking changes
+
 ### Core Components
-- **Resume.tsx**: Main app component (649 lines) - orchestrates everything
+- **Resume.tsx**: Main app component (650 lines) - orchestrates everything
 - **Helpers.tsx**: Utility functions, includes `isNullOrUndefined` helper
-- **ResumeContext.tsx**: Context for editing state
+- **ResumeContext.tsx**: Context for isPrinting state
 - **NodeTree.tsx**: Tree data structure for resume hierarchy
 
 ### Critical Utilities
@@ -73,45 +88,36 @@ src/
 
 ## Common Patterns & Conventions
 
-### Import Statements
-```typescript
-// React 19 - no need to import React in most files (automatic JSX)
-import { useState } from 'react';
+See [.claude/rules](.claude/rules) for comprehensive coding standards.
 
-// Named exports preferred
+### Quick Import Reference
+```typescript
+// React 18 - automatic JSX transform
+import { useState, useContext } from 'react';
+
+// UUID generation
 import { v4 as uuid } from 'uuid';
+
+// Common libraries
 import { Popover } from 'react-tiny-popover';
 import { createPortal } from 'react-dom';
 
-// Helper function (not Node's util)
+// Local helpers
 import { isNullOrUndefined } from './Helpers';
-```
-
-### Component Types
-```typescript
-// Most components have Basic and full Props interfaces
-interface BasicIconProps extends IconBase, BasicResumeNode {}
-interface IconProps extends IconBase, ResumeComponentProps {}
-```
-
-### UUID Generation
-```typescript
-// Always use v4 from uuid package
-import { v4 as uuid } from 'uuid';
-const newId = uuid();
 ```
 
 ## Known Issues & Quirks
 
 ### Dependencies
 - **react-contextmenu** doesn't officially support React 19 - works with `--legacy-peer-deps`
+- **react-quill** compatible with React 18 (not 19) - reason we stayed on React 18
 - **react-tiny-popover** v8 uses named export `{ Popover }`, not default
 - **lodash** added for `isNull` utility (replaces deprecated Node util)
 
-### SCSS Warnings
-- Numerous deprecation warnings from Sass (lighten, darken, transparentize, division)
-- Non-blocking, cosmetic - can be fixed later by updating SCSS syntax
-- All warnings are about future Dart Sass compatibility
+### SCSS
+- All deprecation warnings fixed - using modern @use syntax
+- Files use sass:math and sass:color modules
+- Any lingering warnings are from cached webpack output
 
 ### File Loading
 - SVGs loaded as asset resources (not inlined) for `<img src>` usage
@@ -160,7 +166,7 @@ npm build                 # Creates optimized build in /build
 
 ## Testing
 - Jest configuration present in `jest.config.js`
-- Test files: `*.test.tsx` or `*.test.ts`
+- Test files: Located in `__tests__/` directories
 - Limited test coverage currently
 
 ## Export Functionality
@@ -227,25 +233,19 @@ npx tsc --noEmit
 npm test
 ```
 
-## Questions to Ask When Working on This Codebase
-
-1. Does this change affect the ResumeNode tree structure?
-2. Will this impact the export/import functionality?
-3. Is this component used in multiple templates?
-4. Does this need to work in both editing and preview modes?
-5. Should this be persisted to localStorage?
-6. Does this affect the CSS editor or style generation?
-
 ## Getting Context
 
 When working on a specific feature:
-1. Start with `Resume.tsx` to understand state flow
-2. Check `ComponentTypes.tsx` for available component types
-3. Look at existing templates in `templates/` for patterns
-4. Review `Helpers.tsx` for utility functions
-5. Check `ResumeContext.tsx` for available context values
+1. Check [.claude/rules](.claude/rules) for coding standards
+2. Review [docs/TODO.md](docs/TODO.md) for planned work
+3. Start with `Resume.tsx` to understand state flow
+4. Check `ComponentTypes.tsx` for available component types
+5. Look at existing templates in `templates/` for patterns
+6. Review `Helpers.tsx` for utility functions
+7. Check `ResumeContext.tsx` for available context values
 
 ## Additional Resources
-- React 19 docs: https://react.dev
+- React 18 docs: https://react.dev
 - Webpack 5 docs: https://webpack.js.org
 - TypeScript handbook: https://www.typescriptlang.org/docs/
+- Zustand (planned): https://github.com/pmndrs/zustand

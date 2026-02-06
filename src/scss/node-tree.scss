@@ -1,21 +1,23 @@
-﻿@import "variables";
+﻿@use "sass:math";
+@use "sass:color";
+@use "variables";
 
 .node-tree {
-    padding-left: $spacing;
+    padding-left: variables.$spacing;
 
     ul {
-        margin-left: $spacing;
-        border-left: 1px solid $main;
+        margin-left: variables.$spacing;
+        border-left: 1px solid variables.$main;
     }
 
     li {
         list-style-type: none;
         cursor: pointer;
-        padding: $spacing/8 0;
+        padding: math.div(variables.$spacing, 8) 0;
     }
 
     .tree-item-selected {
-        background: transparentize($light-accent, 0.5);
+        background: color.adjust(variables.$light-accent, $alpha: -0.5);
 
         > span {
             font-weight: bold;
@@ -27,10 +29,10 @@
     }
 
     .tree-item-selector {
-        padding-left: $spacing/2;
+        padding-left: math.div(variables.$spacing, 2);
         font-style: initial;
         font-weight: initial;
-        color: lighten($dark-shade, 50%);
+        color: color.adjust(variables.$dark-shade, $lightness: 50%);
     }
 
     /** Italic font for types that don't have their own
@@ -43,6 +45,6 @@
 
 %icon {
     // text-align: center;
-    width: $spacing;
+    width: variables.$spacing;
     display: inline-block;
 }

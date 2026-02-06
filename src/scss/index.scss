@@ -1,22 +1,22 @@
-@import "context-menu";
-@import "variables";
-@import "landing";
-@import "resume-hover";
-@import "modals";
-@import "node-tree";
-@import "forms";
-@import "css-editor";
-@import "quill";
-@import "header";
-@import "hl-box";
-@import "inputs";
-@import "zindex";
+@use "context-menu";
+@use "variables";
+@use "landing";
+@use "resume-hover";
+@use "modals";
+@use "node-tree";
+@use "forms";
+@use "css-editor";
+@use "quill";
+@use "header";
+@use "hl-box";
+@use "inputs";
+@use "zindex";
 
 /* App Stuff */
 body {
-    background: $light-shade;
-    font-family: $sans-serif;
-    color: $dark-shade;
+    background: variables.$light-shade;
+    font-family: variables.$sans-serif;
+    color: variables.$dark-shade;
     margin: 0;
 }
 
@@ -30,7 +30,7 @@ body {
 
 /* || Resizer */
 .Resizer.vertical {
-    width: $spacing;
+    width: variables.$spacing;
     cursor: col-resize;
 }
 
@@ -52,13 +52,13 @@ button img {
     overflow: auto;
 
     // Column Gap for flexbox is only supported in FF
-    // column-gap: $spacing;
+    // column-gap: variables.$spacing;
 
     /** Grid Children */
     > * {
         max-width: 100%;
         overflow: auto;
-        margin-right: $spacing;
+        margin-right: variables.$spacing;
     }
 
     > *:first-child {
@@ -71,7 +71,7 @@ button img {
         flex-shrink: 0;
     }
 
-    @media (max-width: $screen-small) {
+    @media (max-width: variables.$screen-small) {
         flex-direction: column;
     }
 }
@@ -94,13 +94,13 @@ button img {
         min-height: 11in;
         box-sizing: border-box;
         border: 1px solid #dddddd;
-        margin-bottom: $spacing;
+        margin-bottom: variables.$spacing;
         margin-left: auto;
         margin-right: auto;
     }
 }
 
-@media screen and (max-width: $screen-medium) {
+@media screen and (max-width: variables.$screen-medium) {
     #brand h1 {
         font-size: large;
         margin: 0;

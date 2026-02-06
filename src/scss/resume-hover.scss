@@ -1,12 +1,12 @@
-@import "variables";
+@use "variables";
 
 .resume-selected {
-    background: $light-shade;
+    background: variables.$light-shade;
 }
 
 #resume {
     div.resume-selected, .resume-selected {
-        border: 2px solid $dark-shade;
+        border: 2px solid variables.$dark-shade;
         cursor: auto;
     }
 }

@@ -351,13 +351,27 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     exportHtml() {
         // TODO: Make this user defineable
         const filename = 'resume.html';
-        let resumeHtml = this.resumeRef.current ? this.resumeRef.current.outerHTML : '';
-        var blob = new Blob(
-            [generateHtml(this.stylesheet, resumeHtml)],
-            { type: "text/html;charset=utf-8" }
-        );
+        
+        // Temporarily switch to print mode to get proper link rendering
+        const prevState = { ...this.state };
+        this.setState({
+            selectedNode: undefined,
+            mode: 'printing'
+        });
 
-        saveAs(blob, filename);
+        // Wait for render to complete before capturing HTML
+        requestAnimationFrame(() => {
+            let resumeHtml = this.resumeRef.current ? this.resumeRef.current.outerHTML : '';
+            var blob = new Blob(
+                [generateHtml(this.stylesheet, resumeHtml)],
+                { type: "text/html;charset=utf-8" }
+            );
+
+            saveAs(blob, filename);
+            
+            // Restore previous state
+            this.setState(prevState);
+        });
     }
 
     loadData(data: object, mode: EditorMode = 'normal') {
@@ -580,6 +594,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                                     key={uniqueId}
                                     value={{
                                     isEditingSelected: this.state.isEditingSelected,
+                                    isPrinting: this.isPrinting,
                                     selectedUuid: this.selectedNode ? this.selectedNode.uuid : undefined,
                                     updateClicked: (id: IdType) => { this.clicked.push(id) },
                                     updateSelectedRef: (ref: React.RefObject<any>) => { this.selectedRef = ref }

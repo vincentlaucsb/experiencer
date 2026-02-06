@@ -4,6 +4,7 @@ import Section from "./Section";
 import Entry from "./Entry";
 import DescriptionList, { DescriptionListItem, DescriptionListType, DescriptionListItemType } from "./List";
 import RichText from "./RichText";
+import Link from "./Link";
 import Header from "./Header";
 import Row from "./Row";
 import Column from "./Column";
@@ -69,6 +70,9 @@ export default function ResumeComponentFactory(props: FactoryProps) {
             break;
         case RichText.type:
             Container = RichText;
+            break;
+        case Link.type:
+            Container = Link;
             break;
         case IconType:
             Container = Icon;

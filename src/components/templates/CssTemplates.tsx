@@ -2,6 +2,7 @@
 import Entry from "../Entry";
 import Section from "../Section";
 import RichText from "../RichText";
+import Link from "../Link";
 
 function getRichTextCss(): CssNode {
     let richTextCss = new CssNode(RichText.type, {}, '.rich-text');
@@ -93,6 +94,20 @@ function getHeaderCss() {
     return headerCss;
 }
 
+function getLinkCss(): CssNode {
+    let linkCss = new CssNode(Link.type, {
+        'color': '#0066cc',
+        'text-decoration': 'underline'
+    }, 'a');
+
+    linkCss.add('Hover', {
+        'color': '#004499',
+        'text-decoration': 'none'
+    }, ':hover');
+
+    return linkCss;
+}
+
 /** Return the default CSS template */
 export default function getDefaultCss(): CssNode {
     let defaultCss = new CssNode('Resume CSS', {
@@ -110,8 +125,6 @@ export default function getDefaultCss(): CssNode {
         'object-fit': 'scale-down'
     }, 'img');
 
-    defaultCss.add('Link', { 'color': '#000000' }, 'a, a:hover');
-
     let dlCss = defaultCss.add('Description List', { }, 'dl');
     dlCss.add('Definitions', { 'padding-left': '0.5rem' }, 'dd');
 
@@ -122,6 +135,7 @@ export default function getDefaultCss(): CssNode {
     defaultCss.addNode(getSectionCss());
     defaultCss.addNode(getEntryCss());
     defaultCss.addNode(getRichTextCss());
+    defaultCss.addNode(getLinkCss());
     return defaultCss;
 }
 

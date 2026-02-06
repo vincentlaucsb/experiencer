@@ -1,4 +1,5 @@
-@import "variables";
+@use "sass:math";
+@use "variables";
 
 .tabs-container {
     @extend %flex-col;
@@ -12,22 +13,22 @@
         }
 
         .tabs-button-active {
-            background: $main;
-            color: $light-shade;
+            background: variables.$main;
+            color: variables.$light-shade;
         }
     }
 
     .tabs-children {
-        border: solid $main;
+        border: solid variables.$main;
         border-width: 2px 0px 0px 2px;
-        padding: $spacing;
+        padding: variables.$spacing;
         overflow-y: auto;
         flex-grow: 2;
     }
 }
 
 pre {
-    font-family: $monospace;
+    font-family: variables.$monospace;
     font-size: 11pt;
 }
 
@@ -38,7 +39,7 @@ section.css-category * {
 
 section.css-category {
     font-size: 11pt;
-    margin: $spacing 0;
+    margin: variables.$spacing 0;
     /** || Heading */
     h2.css-title-heading {
         margin: 0.3em 0;
@@ -73,31 +74,31 @@ section.css-category {
     }
 
     input {
-        padding: $light-spacing;
+        padding: variables.$light-spacing;
     }
 
     /** || Highlighting Button */
     button.hl {
         background: inherit;
         border: none;
-        color: $light-accent;
+        color: variables.$light-accent;
 
         &:hover, &.hl-active {
-            color: $dark-shade;
+            color: variables.$dark-shade;
         }
     }
 
     /* || Rulesets */
     span.css-description {
-        margin-top: $spacing;
+        margin-top: variables.$spacing;
     }
     /* || Property Lists */
     div.css-ruleset {
-        font-family: $monospace;
-        margin-top: $spacing;
+        font-family: variables.$monospace;
+        margin-top: variables.$spacing;
 
         table.css-ruleset-table {
-            margin-left: $spacing;
+            margin-left: variables.$spacing;
 
             th::after {
                 content: ':'
@@ -116,17 +117,17 @@ section.css-category {
 section.css-category-1 {
     /** All nested categories */
     section.css-category {
-        border: 1px solid $main;
+        border: 1px solid variables.$main;
 
         h2 {
             margin: 0;
-            padding: $spacing/2 $spacing;
-            color: $light-shade;
+            padding: math.div(variables.$spacing, 2) variables.$spacing;
+            color: variables.$light-shade;
         }
 
         div.css-category-content {
-            background: $light-shade;
-            padding: $spacing/2 $spacing;
+            background: variables.$light-shade;
+            padding: math.div(variables.$spacing, 2) variables.$spacing;
         }
 
         button {
@@ -141,24 +142,24 @@ section.css-category-1 {
 
     /** First nested category */
     section.css-category-2 h2 {
-        background: $dark-shade;
+        background: variables.$dark-shade;
         font-size: large;
     }
 
     section.css-category-3 {
         h2 {
-            background: $dark-accent;
+            background: variables.$dark-accent;
             font-size: medium;
         }
     }
 
     section.css-category-4 h2 {
-        background: $main;
+        background: variables.$main;
         font-size: small;
     }
 
     section.css-category-5 h2 {
-        background: $light-accent;
+        background: variables.$light-accent;
     }
 }
 

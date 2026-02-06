@@ -1,10 +1,12 @@
 ﻿import Entry, { BasicEntryProps } from "../Entry";
 import Row, { BasicRowProps } from "../Row";
 import Header from "../Header";
+import Link from "../Link";
 import { IconType } from "../Icon";
 import { ResumeNode, NodeProperty } from "../utility/Types";
 import { BasicDescriptionItemProps, DescriptionListItemType } from "../List";
 import { ToolbarItemData } from "../controls/toolbar/ToolbarButton";
+import UrlInput from "../controls/inputs/UrlInput";
 
 /**
  * Retrieves custom toolbar options for a node
@@ -154,6 +156,16 @@ export default function toolbarOptions(
                 {
                     text: 'GitHub',
                     action: () => updateNode('icon', 'github')
+                }
+            ];
+
+        case Link.type:
+            return [
+                {
+                    content: <UrlInput
+                        url={(node as any).url}
+                        onChange={(url) => updateNode('url', url)}
+                    />
                 }
             ];
 

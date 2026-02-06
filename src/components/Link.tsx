@@ -3,6 +3,7 @@ import Container from "./Container";
 import { process } from "./Helpers";
 import ResumeComponentProps from "./utility/Types";
 import ResumeContext from "./ResumeContext";
+import { useIsNodeEditing } from "../stores/editorStore";
 
 interface LinkBase {
     url?: string;
@@ -15,7 +16,7 @@ export interface LinkProps extends ResumeComponentProps, LinkBase {}
  */
 function Link(props: LinkProps) {
     const context = useContext(ResumeContext);
-    const isEditing = context.isEditingSelected && context.selectedUuid === props.uuid;
+    const isEditing = useIsNodeEditing(props.uuid);
     const displayText = process(props.value) as string || "Link text";
     const url = props.url || "#";
 

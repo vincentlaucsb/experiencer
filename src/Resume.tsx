@@ -33,6 +33,7 @@ import ResumeContext from './components/ResumeContext';
 import { createPortal } from 'react-dom';
 import { HighlightBox } from './components/utility/HighlightBox';
 import SplitPane from 'react-split-pane';
+import { useEditorStore } from './stores/editorStore';
 
 /** These props are only used for testing */
 export interface ResumeProps {
@@ -56,8 +57,6 @@ export interface ResumeState {
     // TODO: Remove???
     hoverNode?: IdType;
 
-    /** Are we editing the currently selected node */
-    isEditingSelected: boolean;
     selectedNode?: IdType;
 }
 
@@ -88,7 +87,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             css: this.css,
             rootCss: this.rootCss,
             childNodes: props.nodes || [],
-            isEditingSelected: false,
             mode: props.mode || "landing",
             unsavedChanges: false
         };
@@ -150,8 +148,9 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
 
         // Reset "editing selected" when selected node changes
         if (this.state.selectedNode !== prevState.selectedNode) {
-            if (this.state.isEditingSelected) {
-                this.setState({ isEditingSelected: false });
+            const { isEditingSelected, unselectNode } = useEditorStore.getState();
+            if (isEditingSelected) {
+                unselectNode();
             }
 
             if (this.state.selectedNode && this.selectedRef.current) {
@@ -186,12 +185,21 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         // Reset list of clicked nodes
         this.clicked = new Array<IdType>();
 
-        if (!rightClick && arraysEqual(selectedNode, this.state.selectedNode)) {
+        const currentNode = this.state.selectedNode;
+        const { editNode, selectNode } = useEditorStore.getState();
+        const nodeToSelect = this.nodes.getNodeById(selectedNode);
+        
+        if (!rightClick && arraysEqual(selectedNode, currentNode)) {
             // Double click on a node ==> edit the node
-            this.setState({ isEditingSelected: true });
+            if (nodeToSelect) {
+                editNode(nodeToSelect.uuid);
+            }
         }
         else {
             this.setState({ selectedNode: selectedNode });
+            if (nodeToSelect) {
+                selectNode(nodeToSelect.uuid);
+            }
         }
     }
     
@@ -593,9 +601,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                                 <ResumeContext.Provider
                                     key={uniqueId}
                                     value={{
-                                    isEditingSelected: this.state.isEditingSelected,
                                     isPrinting: this.isPrinting,
-                                    selectedUuid: this.selectedNode ? this.selectedNode.uuid : undefined,
                                     updateClicked: (id: IdType) => { this.clicked.push(id) },
                                     updateSelectedRef: (ref: React.RefObject<any>) => { this.selectedRef = ref }
                                 }}>
@@ -608,9 +614,20 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                 <ResumeContextMenu
                     nodes={this.nodes}
                     currentId={this.state.selectedNode}
-                    editSelected={() => this.setState({ isEditingSelected: true })}
+                    editSelected={() => {
+                        const node = this.selectedNode;
+                        if (node) {
+                            useEditorStore.getState().editNode(node.uuid);
+                        }
+                    }}
                     updateSelected={this.updateSelected}
-                    selectNode={(id) => this.setState({ selectedNode: id })}
+                    selectNode={(id) => {
+                        this.setState({ selectedNode: id });
+                        const node = this.nodes.getNodeById(id);
+                        if (node) {
+                            useEditorStore.getState().selectNode(node.uuid);
+                        }
+                    }}
                 />
                 </ContextMenuTrigger>
                 {createPortal(this.state.hlBox, hlBoxContainer)}

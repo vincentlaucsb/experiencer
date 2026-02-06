@@ -102,17 +102,26 @@ ResumeComponent (wrapper)
 Specific Component (Header, Entry, etc.)
 ```
 
-### Context Usage
-All resume components receive:
+### State Management
+
+**Zustand Store** (high-frequency state):
+- `selectedNodeId`: Currently selected component UUID
 - `isEditingSelected`: Boolean for edit mode
-- `selectedUuid`: Currently selected component ID
-- `updateComponent`: Callback to update component data
+- `selectNode(uuid)`: Select a node
+- `editNode(uuid)`: Select and enter edit mode
+- `unselectNode()`: Clear selection
+- `toggleEdit()`: Toggle edit mode
+
+**Context** (low-frequency state):
 - `isPrinting`: Print mode indicator
+- `updateComponent`: Callback to update component data
+- `updateSelectedRef`: Callback to update selected component ref
+- `updateClicked`: Callback to track clicks
 
 ### Event Flow
 1. User interacts with component
-2. Component calls context method (e.g., `updateComponent`)
-3. Context updates state in Resume.tsx
+2. Component calls store action (e.g., `selectNode(uuid)`) or context method (e.g., `updateComponent`)
+3. Store/context updates state
 4. State change triggers re-render
 5. Changes persisted to localStorage
 
@@ -188,13 +197,29 @@ Most components use:
 
 ### Editing Mode Styles
 Components often render differently when editing:
+
+**Function components** use hooks:
 ```typescript
-const isEditing = context.isEditingSelected && context.selectedUuid === props.uuid;
+import { useIsNodeEditing } from "../stores/editorStore";
+
+const isEditing = useIsNodeEditing(props.uuid);
 
 if (isEditing) {
     return <QuillEditor {...props} />;
 } else {
     return <div dangerouslySetInnerHTML={{ __html: props.value }} />;
+}
+```
+
+**Class components** use direct store access:
+```typescript
+import { useEditorStore } from "../stores/editorStore";
+
+render() {
+    const { selectedNodeId, isEditingSelected } = useEditorStore.getState();
+    const isEditing = isEditingSelected && selectedNodeId === this.props.uuid;
+    
+    // ... rest of render
 }
 ```
 
@@ -208,12 +233,42 @@ Use `no-print` class for elements that shouldn't appear in exports:
 
 ## State Management Details
 
+### Zustand Store (src/stores/editorStore.ts)
+High-frequency state that changes on every selection or edit:
+```typescript
+interface EditorState {
+    selectedNodeId: string | undefined;  // Selected component UUID
+    isEditingSelected: boolean;          // Edit mode active
+    selectNode: (uuid: string) => void;
+    editNode: (uuid: string) => void;
+    unselectNode: () => void;
+    toggleEdit: () => void;
+}
+```
+
+**Usage in function components**:
+```typescript
+import { useIsNodeEditing, useIsNodeSelected } from "../stores/editorStore";
+
+const isEditing = useIsNodeEditing(props.uuid);
+const isSelected = useIsNodeSelected(props.uuid);
+```
+
+**Usage in class components**:
+```typescript
+import { useEditorStore } from "../stores/editorStore";
+
+render() {
+    const { selectedNodeId, isEditingSelected } = useEditorStore.getState();
+    const isEditing = isEditingSelected && selectedNodeId === this.props.uuid;
+}
+```
+
 ### Resume.tsx State
 ```typescript
 state = {
     nodes: ResumeNode[];              // Resume tree
-    selectedNode: string;             // Selected UUID
-    isEditingSelected: boolean;       // Edit mode
+    selectedNode: IdType;             // Selected node path (for tree nav)
     editMode: EditorMode;             // 'editing' | 'viewing'
     layoutMode: LayoutMode;           // Layout type
     cssTree: CssNode;                 // CSS rules
@@ -224,13 +279,23 @@ state = {
 ### Context Values
 ```typescript
 {
-    isEditingSelected: boolean;
-    selectedUuid: string;
     isPrinting: boolean;
     updateComponent: (uuid: string, updates: Partial<ResumeNode>) => void;
-    // ... more methods
+    updateSelectedRef: (ref: HTMLElement | null) => void;
+    updateClicked: (clicked: boolean) => void;
 }
 ```
+
+## Why Zustand for Selection State?
+
+**Problem**: Context API causes full tree re-renders on selection changes because every component checks `selectedUuid`.
+
+**Solution**: Zustand allows selective subscriptions:
+- Function components subscribe only to the state they need via hooks
+- Class components read state directly without subscribing
+- Only components that actually use the selected state re-render
+
+**Performance improvement**: Instead of re-rendering 50+ components on selection, only the selected/unselected components update.
 
 ## Performance Optimization Tips
 
@@ -244,7 +309,18 @@ state = {
 - Expensive computations
 - Dependency arrays in effects
 
-### Current Performance Bottlenecks
+### State Management Best Practices
+1. **Use Zustand for high-frequency state**: Selection, editing mode, UI toggles
+2. **Use Context for low-frequency state**: Print mode, global callbacks, theme
+3. **Avoid putting frequent state in Context**: Causes unnecessary re-renders
+4. **Use selector hooks**: Subscribe only to the state slices you need
+
+### Current Performance Optimizations
+1. **Zustand for selection**: Only selected/unselected components re-render
+2. **React.PureComponent for class components**: Shallow prop comparison
+3. **Selective subscriptions**: Function components use specific hooks
+
+### Remaining Performance Considerations
 1. **CSS Editor re-renders**: Updates on every keystroke
 2. **Large node trees**: Deep nesting can slow selection
 3. **Quill editor**: Heavy library, consider lazy loading

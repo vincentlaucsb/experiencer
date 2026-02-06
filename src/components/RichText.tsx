@@ -3,31 +3,30 @@ import * as Helpers from "./Helpers";
 import QuillEditor from "./controls/inputs/QuillEditor";
 import Container from "./Container";
 import ResumeComponentProps from "./utility/Types";
-import ResumeContext from "./ResumeContext";
+import { useIsNodeEditing } from "../stores/editorStore";
 
-export default class RichText extends React.PureComponent<ResumeComponentProps> {    
-    static contextType = ResumeContext;
-    static readonly type = 'Rich Text';
-
-    render() {
-        const isEditing = this.context.isEditingSelected && this.context.selectedUuid === this.props.uuid;
-        const textValue = Helpers.process(this.props.value) as string || "Empty text";
-        
-        if (isEditing) {
-            return (
-                <Container className="rich-text" {...this.props}>
+export default function RichText(props: ResumeComponentProps) {
+    const isEditing = useIsNodeEditing(props.uuid);
+    const textValue = Helpers.process(props.value) as string || "Empty text";
+    
+    if (isEditing) {
+        return (
+            <Container className="rich-text" {...props}>
                 <QuillEditor
-                    id={this.props.uuid}
-                    value={this.props.value || ""}
-                    htmlId={this.props.htmlId}
-                    onChange={(value) => this.props.updateData("value", value)}
-                    />
-                </Container>
-            );
-        }
+                    id={props.uuid}
+                    value={props.value || ""}
+                    htmlId={props.htmlId}
+                    onChange={(value) => props.updateData("value", value)}
+                />
+            </Container>
+        );
+    }
 
-        return <Container {...this.props} className="rich-text">
+    return (
+        <Container {...props} className="rich-text">
             <span dangerouslySetInnerHTML={{ __html: textValue }} />
         </Container>
-    }
+    );
 }
+
+RichText.type = 'Rich Text';

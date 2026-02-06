@@ -38,13 +38,6 @@ export default function UrlInput(props: UrlInputProps) {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     placeholder="https://example.com"
-                    style={{
-                        width: '300px',
-                        padding: '6px 10px',
-                        border: '1px solid #ccc',
-                        borderRadius: '4px',
-                        fontSize: '14px'
-                    }}
                 />
             </fieldset>
         </form>

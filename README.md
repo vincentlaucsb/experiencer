@@ -40,13 +40,12 @@ You can use this app live at [http://vincela.com/experiencer](http://vincela.com
 
 In the project directory, you can run:
 
-### `npm start`
+### `npm run dev`
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Runs the app in development mode with Vite.<br />
+Open [http://localhost:3000/experiencer/](http://localhost:3000/experiencer/) to view it in the browser.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+The page will reload instantly with Hot Module Replacement (HMR) when you make edits.
 
 ### `npm test`
 
@@ -55,10 +54,23 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.<br />
+Builds the app for production to the `build` folder using Vite.<br />
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.<br />
+### `npm run preview`
+
+Preview the production build locally before deploying.
+
+## Tech Stack
+
+- **React 18.3** - Modern React with hooks and concurrent features
+- **TypeScript 5.7** - Type-safe development
+- **Vite 7.3** - Lightning-fast dev server and build tool (⚡ 10x faster than webpack)
+- **Zustand** - Lightweight state management for optimal performance
+- **React Quill** - Rich text editing
+- **SCSS** - Advanced styling with variables and nesting
+
+The build is minified and the filenames include the hashes.
 Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.

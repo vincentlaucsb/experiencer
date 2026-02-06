@@ -1,6 +1,7 @@
 ﻿import React from "react";
 import { IdType } from "./utility/Types";
 import ResumeContext from "./ResumeContext";
+import { useIsNodeSelected, useIsEditingSelected } from "../stores/editorStore";
 
 export interface ContainerProps {
     id: IdType;
@@ -25,12 +26,12 @@ export default function Container(props: ContainerProps) {
     const displayAs = props.displayAs || "div";
     let classes = [props.className];
     let ref = React.createRef();
+    const isSelected = useIsNodeSelected(props.uuid);
+    const isEditingSelected = useIsEditingSelected();
 
     return (
         <ResumeContext.Consumer>
             {(value) => {
-                const isSelected = value.selectedUuid === props.uuid;
-
                 /** Props for managing selection and focus */
                 const selectTriggerProps = {
                     onClick: () => {
@@ -38,7 +39,7 @@ export default function Container(props: ContainerProps) {
                     },
 
                     onContextMenu: (event: React.MouseEvent) => {
-                        if (value.isEditingSelected) {
+                        if (isEditingSelected) {
                             // If editing, use default context menu
                             // so user can use browser's spellcheck, etc.
                             event.stopPropagation();

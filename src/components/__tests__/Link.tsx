@@ -5,13 +5,12 @@ import { render } from "@testing-library/react";
 import Link from "../Link";
 import React from "react";
 import ResumeContext, { IResumeContext } from "../ResumeContext";
+import { useEditorStore } from "../../stores/editorStore";
 
 /** Verify Link renders as span in editor mode */
 test('Link renders as span when not printing', () => {
     const contextValue: IResumeContext = {
         isPrinting: false,
-        selectedUuid: '',
-        isEditingSelected: false,
         updateSelectedRef: () => {},
         updateClicked: () => {}
     };
@@ -43,8 +42,6 @@ test('Link renders as span when not printing', () => {
 test('Link renders as anchor tag when isPrinting is true', () => {
     const contextValue: IResumeContext = {
         isPrinting: true,
-        selectedUuid: '',
-        isEditingSelected: false,
         updateSelectedRef: () => {},
         updateClicked: () => {}
     };
@@ -75,8 +72,6 @@ test('Link renders as anchor tag when isPrinting is true', () => {
 test('Link shows default text when value is empty', () => {
     const contextValue: IResumeContext = {
         isPrinting: false,
-        selectedUuid: '',
-        isEditingSelected: false,
         updateSelectedRef: () => {},
         updateClicked: () => {}
     };
@@ -102,8 +97,6 @@ test('Link shows default text when value is empty', () => {
 test('Link uses # as default href when url is empty in print mode', () => {
     const contextValue: IResumeContext = {
         isPrinting: true,
-        selectedUuid: '',
-        isEditingSelected: false,
         updateSelectedRef: () => {},
         updateClicked: () => {}
     };
@@ -123,4 +116,37 @@ test('Link uses # as default href when url is empty in print mode', () => {
 
     const anchor = container.querySelector('a.link');
     expect(anchor?.getAttribute('href')).toBe('#');
+});
+
+/** Verify Link enters edit mode when selected */
+test('Link shows input when in edit mode', () => {
+    const contextValue: IResumeContext = {
+        isPrinting: false,
+        updateSelectedRef: () => {},
+        updateClicked: () => {}
+    };
+
+    // Set the node as editing
+    useEditorStore.getState().editNode('test-uuid');
+
+    const { container } = render(
+        <ResumeContext.Provider value={contextValue}>
+            <Link
+                id={[0]}
+                type={Link.type}
+                uuid="test-uuid"
+                isLast={false}
+                updateData={() => { }}
+                value="Test Link"
+                url="https://example.com"
+            />
+        </ResumeContext.Provider>
+    );
+
+    const input = container.querySelector('input');
+    expect(input).toBeTruthy();
+    expect(input?.value).toBe('Test Link');
+    
+    // Clean up
+    useEditorStore.getState().unselectNode();
 });

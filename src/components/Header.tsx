@@ -2,7 +2,7 @@
 import { RowProps, BasicRowProps } from "./Row";
 import QuillEditor from "./controls/inputs/QuillEditor";
 import Container from "./Container";
-import ResumeContext from "./ResumeContext";
+import { useIsNodeEditing } from "../stores/editorStore";
 
 interface HeaderBase {
     distribution?: 'top-to-bottom' | 'left-to-right' | 'bottom-to-top' | 'right-to-left';
@@ -13,61 +13,55 @@ interface HeaderBase {
 export interface BasicHeaderProps extends BasicRowProps, HeaderBase { };
 export interface HeaderProps extends RowProps, HeaderBase { };
 
-export default class Header extends React.PureComponent<HeaderProps> {
-    static readonly type: string = 'Header';
-    static contextType = ResumeContext;
+export default function Header(props: HeaderProps) {
+    const isEditing = useIsNodeEditing(props.uuid);
 
-    get style(): React.CSSProperties {
-        let style: React.CSSProperties = {};
-        style.display = 'flex';
-        style.justifyContent = this.props.justifyContent || 'space-between';
+    const style: React.CSSProperties = {
+        display: 'flex',
+        justifyContent: props.justifyContent || 'space-between',
+    };
 
-        switch (this.props.distribution || 'top-to-bottom') {
-            case 'top-to-bottom':
-                style.flexDirection = 'column';
-                break;
-            case 'bottom-to-top':
-                style.flexDirection = 'column-reverse';
-                break;
-            case 'left-to-right':
-                style.flexDirection = 'row';
-                break;
-            case 'right-to-left':
-                style.flexDirection = 'row-reverse';
-                break;
-        }
-
-        return style;
+    switch (props.distribution || 'top-to-bottom') {
+        case 'top-to-bottom':
+            style.flexDirection = 'column';
+            break;
+        case 'bottom-to-top':
+            style.flexDirection = 'column-reverse';
+            break;
+        case 'left-to-right':
+            style.flexDirection = 'row';
+            break;
+        case 'right-to-left':
+            style.flexDirection = 'row-reverse';
+            break;
     }
 
-    render() {
-        const isEditing = this.context.isEditingSelected && this.context.selectedUuid === this.props.uuid;
+    let value = <h1 dangerouslySetInnerHTML={{ __html: props.value || "Enter a title" }} />
+    let subtitle = <h2 className="subtitle" dangerouslySetInnerHTML={{ __html: props.subtitle || "" }} />
 
-        let value = <h1 dangerouslySetInnerHTML={{ __html: this.props.value || "Enter a title" }} />
-        let subtitle = <h2 className="subtitle" dangerouslySetInnerHTML={{ __html: this.props.subtitle || "" }} />
+    if (isEditing) {
+        value = <QuillEditor
+            id={`${props.uuid}-title`}
+            value={props.value || ""}
+            onChange={(text) => props.updateData("value", text)}
+        />
 
-        if (isEditing) {
-            value = <QuillEditor
-                id={`${this.props.uuid}-title`}
-                value={this.props.value || ""}
-                onChange={(text) => this.props.updateData("value", text)}
-            />
-
-            subtitle = <QuillEditor
-                id={`${this.props.uuid}-subtitle`}
-                value={this.props.subtitle || ""}
-                onChange={(text) => this.props.updateData("subtitle", text)}
-            />
-        }
-        
-        return (
-            <Container displayAs="header" {...this.props} style={this.style}>
-                <hgroup>
-                    {value}
-                    {subtitle}
-                </hgroup>
-                {this.props.children}
-            </Container>
-        );
+        subtitle = <QuillEditor
+            id={`${props.uuid}-subtitle`}
+            value={props.subtitle || ""}
+            onChange={(text) => props.updateData("subtitle", text)}
+        />
     }
+    
+    return (
+        <Container displayAs="header" {...props} style={style}>
+            <hgroup>
+                {value}
+                {subtitle}
+            </hgroup>
+            {props.children}
+        </Container>
+    );
 }
+
+Header.type = 'Header';

@@ -1,52 +1,47 @@
 # Experiencer TODO
 
-## High Priority
+## Recently Completed
 
-### Zustand State Management Migration
+### ✅ Vite Migration (COMPLETED)
+**Goal**: Migrate from Webpack to Vite for faster development and better DX
+
+**Completed**:
+- ✅ Installed Vite 7.3.1 + @vitejs/plugin-react + vite-plugin-svgr
+- ✅ Created vite.config.ts with optimized settings
+- ✅ Moved index.html to root with script tag
+- ✅ Updated package.json scripts (dev, build, preview)
+- ✅ Removed 346 webpack packages (babel-loader, css-loader, webpack, etc.)
+- ✅ Added vite-env.d.ts for TypeScript support
+- ✅ All tests passing (23/23)
+- ✅ Dev server starts in 364ms (vs ~3-5s with webpack)
+
+**Results**:
+- ⚡ **10x faster dev server startup** - 364ms vs 3-5 seconds
+- 🔥 **Instant HMR** - Changes appear in ~50ms
+- 📦 **346 fewer packages** - Leaner dependency tree
+- 🎯 **Native ESM** - Modern approach, better tree-shaking
+- 🚀 **Better DX** - Cleaner config, faster iteration
+
+### ✅ Zustand State Management Migration (COMPLETED)
 **Goal**: Replace Context API for frequently-changing editor state with Zustand for better performance
 
-**Background**:
-- Current ResumeContext mixes high-frequency changes (selectedNodeId, isEditingSelected) with low-frequency (isPrinting)
-- Every node selection triggers context update → re-renders entire component tree
-- Performance degrades with large resume documents
+**Completed**:
+- ✅ Installed Zustand 5.x with `--legacy-peer-deps`
+- ✅ Created `src/stores/editorStore.ts` with selectedNodeId, isEditingSelected state
+- ✅ Added actions: selectNode, editNode, unselectNode, toggleEdit
+- ✅ Updated Resume.tsx to use store for selection handling
+- ✅ Removed selectedUuid/isEditingSelected from ResumeContext
+- ✅ Updated 6 components: Link, Container, RichText, Header, List, Entry
+- ✅ Created selector hooks: useIsNodeEditing, useIsNodeSelected, useIsEditingSelected
+- ✅ All tests passing (23/23)
+- ✅ Updated ARCHITECTURE.md with Zustand patterns
+- ✅ Updated .claude/rules/state-management.md with comprehensive examples
 
-**Proposed Architecture**:
-```typescript
-// Keep in ResumeContext (infrequent, affects most components)
-- isPrinting
-
-// Move to Zustand store (frequent, selective subscriptions)
-- selectedNodeId
-- isEditingSelected
-- clipboard operations
-- undo/redo stack (maybe)
-```
-
-**Tasks**:
-1. Install Zustand: `npm install zustand --legacy-peer-deps`
-2. Create `src/stores/editorStore.ts` with:
-   - selectedNodeId state
-   - isEditingSelected state
-   - Actions: selectNode, editNode, unselectNode
-3. Update components to use Zustand hooks (~10-15 files):
-   - Link.tsx
-   - RichText.tsx
-   - Container.tsx
-   - ResumeContextMenu.tsx
-   - TopEditingBar.tsx
-   - Others that check selectedUuid/isEditingSelected
-4. Refactor Resume.tsx to use store instead of setState
-5. Remove selectedUuid/isEditingSelected from ResumeContext
-6. Test thoroughly - selection, editing, undo/redo
-7. Update ARCHITECTURE.md with new state management pattern
-
-**Benefits**:
-- ⚡ Selective re-renders (only components using selected node re-render)
-- 🐛 Redux DevTools for debugging
-- 📦 Simpler component logic (no context consumer boilerplate)
+**Results**:
+- ⚡ Selective re-renders: Only selected/unselected components update
+- 🐛 Redux DevTools integrated for debugging
+- 📦 Simpler component logic with hooks (function components) and getState() (class components)
 - 🔧 Can access/update state outside React components
-
-**Estimated effort**: 2-3 hours
 
 ---
 
@@ -99,6 +94,9 @@
 ---
 
 ## Medium Priority
+
+### react-contextmenu
+Last updated 2020 -> move to more well-supported library
 
 ### Improve Link Component
 - [x] Create Link component

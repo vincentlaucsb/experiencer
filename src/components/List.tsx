@@ -3,7 +3,7 @@ import TextField from "./controls/inputs/TextField";
 import Container from "./Container";
 import { process, deleteAt, moveUp, moveDown } from "./Helpers";
 import ResumeComponentProps, { BasicResumeNode } from "./utility/Types";
-import ResumeContext, { IResumeContext } from "./ResumeContext";
+import { useEditorStore } from "../stores/editorStore";
 
 interface DescriptionItemBase {
     term?: string;
@@ -16,7 +16,7 @@ interface DescriptionItemProps extends DescriptionItemBase, ResumeComponentProps
 export const DescriptionListItemType = "Description List Item";
 
 /** Helper function for DescriptionListItem */
-function getDefinitions(props: DescriptionItemProps, context: IResumeContext) {
+function getDefinitions(props: DescriptionItemProps, isSelected: boolean) {
     const moveFieldUp = (index: number) => {
         props.updateData('definitions', moveUp(props.definitions || [], index));
     };
@@ -39,7 +39,6 @@ function getDefinitions(props: DescriptionItemProps, context: IResumeContext) {
 
     const fields = props.definitions;
     if (fields) {
-        const isSelected = context.selectedUuid === props.uuid;
 
         return fields.map((text: string, index: number, arr: string[]) => {
             const definitionOptions = [
@@ -74,6 +73,8 @@ function getDefinitions(props: DescriptionItemProps, context: IResumeContext) {
 }
 
 export function DescriptionListItem(props: DescriptionItemProps) {
+    const isSelected = useEditorStore(state => state.selectedNodeId === props.uuid);
+
     const term = <TextField
         label="Term"
         onChange={(text: string) => { props.updateData("value", text) }}
@@ -82,16 +83,12 @@ export function DescriptionListItem(props: DescriptionItemProps) {
         displayProcessors={[process]}
     />
 
-    return <ResumeContext.Consumer>
-        {(context) => {
-            return (
-                <Container {...props} className="resume-definition">
-                    <dt>{term}</dt>
-                    {getDefinitions(props, context)}
-                </Container>
-            );
-        }}
-    </ResumeContext.Consumer>
+    return (
+        <Container {...props} className="resume-definition">
+            <dt>{term}</dt>
+            {getDefinitions(props, isSelected)}
+        </Container>
+    );
 }
 
 export const DescriptionListType = "Description List";

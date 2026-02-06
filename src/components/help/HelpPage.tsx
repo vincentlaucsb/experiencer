@@ -1,5 +1,5 @@
 ﻿import React from "react";
-import CloseIcon from "../../icons/close-24px.svg";
+import CloseIcon from "../../icons/close-24px.svg?url";
 import { Action } from "../utility/Types";
 
 export interface HelpPageActions {

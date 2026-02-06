@@ -15,8 +15,22 @@ input.invalid {
     background: red;
 }
 
-/** Quill */
+#toolbar {
+    fieldset {
+        padding: 0;
+    }
+}
 
+#link-url {
+    width: 300px;
+    color: variables.$porcelain;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+/** Quill */
 #resume {
     .ql-container {
         font-family: inherit;

@@ -5,7 +5,7 @@ import { BasicResumeNode, ResumeNode } from './utility/Types';
 /**
  * Helper function to check if value is null or undefined
  */
-export function isNullOrUndefined(value: any): boolean {
+export function isNullOrUndefined<T>(value: T | null | undefined): value is null | undefined {
     return value === null || value === undefined;
 }
 

@@ -1,10 +1,10 @@
 ﻿import React from "react";
-import MapPin from "../icons/feather/map-pin.svg";
-import Globe from "../icons/feather/globe.svg";
-import Email from "../icons/feather/mail.svg";
+import MapPin from "../icons/feather/map-pin.svg?url";
+import Globe from "../icons/feather/globe.svg?url";
+import Email from "../icons/feather/mail.svg?url";
 import LinkedIn from "../icons/LI-In-Bug.png";
 import GitHubDark from "../icons/GitHub-Mark-120px-plus.png";
-import Phone from "../icons/feather/phone.svg";
+import Phone from "../icons/feather/phone.svg?url";
 import ResumeComponentProps, { BasicResumeNode } from "./utility/Types";
 import Container from "./Container";
 

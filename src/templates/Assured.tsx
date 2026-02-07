@@ -6,6 +6,7 @@ import getDefaultCss, { getRootCss } from "./CssTemplates";
 import CssNode from "@/shared/utils/CssTree";
 import { BasicResumeNode } from "@/types";
 import MarkdownText from "@/resume/Markdown";
+import Link from "@/resume/Link";
 
 export function assuredCss() {
     let css = getDefaultCss().setProperties([
@@ -13,17 +14,25 @@ export function assuredCss() {
         ["font-size", "11pt"]
     ]);
 
+    css.add('Icon', {
+        'display': 'inline-block',
+        'vertical-align': 'middle'
+    }, '.icon');
+
+    css.add('Markdown Lists', {
+        'padding-left': 'var(--spacing)'
+    }, '.text-content ul, .text-content ol');
+
     /** Header */
     const header = css.mustFindNode("Header").setProperties([
-        ["background", "#eeeeee"],
+        ["background", "#e8e8e8"],
         ["margin-bottom", "var(--large-spacing)"],
-        ["padding", "var(--edge-margin)"],
+        ["padding-left", "var(--edge-margin)"],
+        ["padding-right", "var(--edge-margin)"],
+        ["padding-top", "var(--x-large-spacing)"],
         ["padding-bottom", "var(--large-spacing)"],
     ]).setProperties([["margin-right", "auto"]], 'Title Group'
-    ).add('Markdown', {
-        'text-align': 'right',
-        'font-size': '10pt'
-    }, '.text-content');
+    );
 
     /** Contact Information */
     let contact = css.add("Contact Information", {
@@ -34,6 +43,13 @@ export function assuredCss() {
         "height": "auto",
     }, "#contact, #social-media");
     
+    contact.add('Text', {
+        'text-align': 'right',
+        'font-size': '0.8rem',
+        'margin': '0',
+        'line-height': '24px'
+    }, '.link, .text-content, p');
+
     contact.add('Icon', {
         'height': '24px',
         'vertical-align': 'middle'
@@ -41,13 +57,13 @@ export function assuredCss() {
 
     /** Section */
     css.mustFindNode('Section').setProperties([
-        ['margin-bottom', 'var(--x-large-spacing)']]
+        ['margin-bottom', 'var(--xx-large-spacing)']]
         ).setProperties([
             ['padding-top', 'var(--small-spacing)']
         ], 'Content'
         ).setProperties([
             ["font-family", "var(--serif)"],
-            ["font-weight", "bold"],
+            ["font-weight", "700"],
             ["font-size", "18pt"],
             ["color", "var(--accent)"]
         ], 'Title');
@@ -56,7 +72,7 @@ export function assuredCss() {
     css.add('#main', {
         'padding-left': 'var(--edge-margin)',
         'padding-right': 'var(--edge-margin)',
-        'grid-template-columns': '1fr 180px',
+        'grid-template-columns': '1fr 200px',
         'grid-column-gap': 'var(--large-spacing)'
     });
 
@@ -69,7 +85,7 @@ export function assuredCss() {
     if (subtitleFields) {
         subtitleFields.mustFindNode("Middle Fields").add(":before", {
             content: '"|"',
-            padding: "0.5em"
+            padding: "0 0.6em"
         });
 
         subtitleFields.setProperties([
@@ -122,7 +138,7 @@ export function assuredHeader() {
         "htmlId": "social-media",
         childNodes: [
             {
-                type: MarkdownText.type,
+                type: Link.type,
                 value: "My GitHub"
             },
             {
@@ -130,7 +146,7 @@ export function assuredHeader() {
                 icon: "github"
             } as BasicIconProps,
             {
-                type: MarkdownText.type,
+                type: Link.type,
                 value: "mylinkedin"
             },
             {
@@ -138,7 +154,7 @@ export function assuredHeader() {
                 icon: "linkedin"
             } as BasicIconProps,
             {
-                type: MarkdownText.type,
+                type: Link.type,
                 value: "mywebsite.com"
             },
             {

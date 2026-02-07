@@ -168,6 +168,7 @@ export function getRootCss(): CssNode {
         '--small-spacing': '4px',
         '--spacing': '8px',
         '--large-spacing': '16px',
-        '--x-large-spacing': '32px'
+        '--x-large-spacing': '32px',
+        '--xx-large-spacing': '48px'
     });
 }

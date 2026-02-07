@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { saveAs } from 'file-saver';
-import { ContextMenuTrigger } from "react-contextmenu";
+import { ContextMenuTrigger } from "@/controls/ContextMenu";
 
 import 'purecss/build/pure-min.css';
 import 'react-quill/dist/quill.snow.css';

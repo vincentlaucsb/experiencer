@@ -1,5 +1,5 @@
 import React from "react";
-import { ContextMenu, MenuItem } from "react-contextmenu";
+import { ContextMenu, MenuItem } from "@/controls/ContextMenu";
 import { IdType, ResumeNode, NodeProperty } from "@/shared/utils/Types";
 import ObservableResumeNodeTree from "@/editor/ObservableResumeNodeTree";
 import Section from "@/resume/Section";

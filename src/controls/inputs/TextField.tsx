@@ -1,7 +1,7 @@
 import React, { MouseEvent } from "react";
 import { v4 as uuid } from 'uuid';
 import parse from 'html-react-parser';
-import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
+import { ContextMenu, ContextMenuTrigger, MenuItem } from "@/controls/ContextMenu";
 import ReactDOM from "react-dom";
 
 import { createContainer, isNullOrUndefined } from "@/shared/utils/Helpers";

@@ -96,7 +96,18 @@
 ## Medium Priority
 
 ### react-contextmenu
-Last updated 2020 -> move to more well-supported library
+✅ **COMPLETED** - Created custom ContextMenu component at `src/controls/ContextMenu.tsx`
+- Replaced react-contextmenu (last updated 2020) with custom implementation
+- Provides ContextMenu and ContextMenuTrigger components
+- Resolves TypeScript type compatibility issues
+
+### react-resizable-and-movable (SplitPane)
+Similar situation to react-contextmenu - type compatibility issues with modern React
+- **Issue**: `children` prop type mismatch in SplitPane component
+- **Location**: `src/controls/Layouts.tsx` (ResizableSidebarLayout - 2 instances)
+- **Solution**: Create custom SplitPane wrapper component following the ContextMenu pattern
+- **Effort**: Medium (similar complexity to ContextMenu wrapper)
+- **Status**: Backlog - working component but TypeScript errors
 
 ### Improve Link Component
 - [x] Create Link component

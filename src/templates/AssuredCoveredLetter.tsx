@@ -1,4 +1,4 @@
-import { BasicResumeNode } from "@/shared/utils/Types";
+import { BasicResumeNode } from "@/types";
 import { assuredHeader } from "./Assured";
 import RichText from "@/resume/RichText";
 import Divider from "@/resume/Divider";

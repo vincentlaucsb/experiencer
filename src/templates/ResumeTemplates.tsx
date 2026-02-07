@@ -1,7 +1,7 @@
 import { assignIds } from "@/shared/utils/Helpers";
 import { randyMarshCss, randyMarsh, randyMarshRootCss } from "./RandyMarsh";
 import { assuredNodes, assuredCss, assuredRootCss } from "./Assured";
-import { ResumeSaveData } from "@/shared/utils/Types";
+import { ResumeSaveData } from "@/types";
 import { assuredCoverLetterNodes, assuredCoverLetterCss } from "./AssuredCoveredLetter";
 
 export default class ResumeTemplates {

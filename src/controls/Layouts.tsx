@@ -34,6 +34,10 @@ export function StaticSidebarLayout(props: SidebarLayoutProps) {
 
 export const ResizableSidebarLayout = React.forwardRef(
     (props: SidebarLayoutProps, ref: React.Ref<SplitPane>) => (
+        // TODO: Create custom SplitPane wrapper to resolve TypeScript errors
+        // Current issue: react-resizable-and-movable SplitPane has type incompatibilities
+        // Solution: Follow the pattern used in src/controls/ContextMenu.tsx to wrap the component
+        // This will provide proper TypeScript support and resolve the 'children' prop type mismatch
         <SplitPane split="horizontal"
             pane1Style={{ display: "block", height: "auto" }}
             resizerStyle={{ display: "none" }}>

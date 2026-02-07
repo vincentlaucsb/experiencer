@@ -1,7 +1,7 @@
 import React from "react";
 import { GlobalHotKeys, KeyMap, ExtendedKeyMapOptions } from "react-hotkeys";
 import { SelectedNodeActions } from "./SelectedNodeActions";
-import { Action } from "@/shared/utils/Types";
+import { Action } from "@/types";
 
 export interface ResumeHotKeysProps extends SelectedNodeActions {
     /** Editor Modes */

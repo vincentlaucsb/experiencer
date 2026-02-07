@@ -18,7 +18,8 @@ module.exports = {
     transform: {
         '^.+\\.tsx?$': ['ts-jest', {
             tsconfig: {
-                jsx: 'react',
+                jsx: 'react-jsx',
+                jsxImportSource: 'react',
                 esModuleInterop: true,
                 allowSyntheticDefaultImports: true,
             }

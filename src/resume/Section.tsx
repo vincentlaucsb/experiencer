@@ -1,8 +1,8 @@
 import * as React from "react";
 import TextField from "@/controls/inputs/TextField";
 import Container from "./Container";
-import { process, isEmpty } from "@/shared/utils/Helpers";
-import ResumeComponentProps from "@/shared/utils/Types";
+import { process } from "@/shared/utils/Helpers";
+import ResumeComponentProps from "@/types";
 
 /** Represents a section in a resume */
 export default class Section extends React.PureComponent<ResumeComponentProps> {
@@ -18,7 +18,7 @@ export default class Section extends React.PureComponent<ResumeComponentProps> {
         />
 
         let helperText = <></>
-        if (isEmpty(this.props.children)) {
+        if (React.Children.count(this.props.children) === 0) {
             helperText = <p>This section is empty. Click here to select it and add content.</p>
         }
 

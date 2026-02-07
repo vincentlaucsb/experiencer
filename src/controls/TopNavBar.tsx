@@ -4,7 +4,7 @@ import FileSaver from "./FileSaver";
 import PureMenu, { PureMenuItem, PureDropdown } from "./menus/PureMenu";
 import Modal from "./Modal";
 import GitHubLight from "@/assets/icons/GitHub-Mark-Light-120px-plus.png";
-import { Action, EditorMode } from "@/shared/utils/Types";
+import { Action, EditorMode } from "@/types";
 import { Button } from "./Buttons";
 import ToolbarButton, { ToolbarButtonProps } from "./toolbar/ToolbarButton";
 

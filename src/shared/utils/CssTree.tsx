@@ -1,5 +1,6 @@
-import { deleteAt, isNullOrUndefined } from "@/shared/utils/Helpers";
-import { CssNodeDump } from "./Types";
+import { deleteAt } from "@/shared/utils/arrayHelpers";
+import { isNullOrUndefined } from "@/shared/utils/Helpers";
+import { CssNodeDump } from "@/types";
 
 export default class CssNode {
     /** A mapping of keys to CSS properties */

@@ -5,7 +5,7 @@ import Email from "@/assets/icons/feather/mail.svg?url";
 import LinkedIn from "@/assets/icons/LI-In-Bug.png";
 import GitHubDark from "@/assets/icons/GitHub-Mark-120px-plus.png";
 import Phone from "@/assets/icons/feather/phone.svg?url";
-import ResumeComponentProps, { BasicResumeNode } from "@/shared/utils/Types";
+import ResumeComponentProps, { BasicResumeNode } from "@/types";
 import Container from "./Container";
 
 interface IconBase {

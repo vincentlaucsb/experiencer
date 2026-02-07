@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Helpers from "@/shared/utils/Helpers";
 import QuillEditor from "@/controls/inputs/QuillEditor";
 import Container from "./Container";
-import ResumeComponentProps from "@/shared/utils/Types";
+import ResumeComponentProps from "@/types";
 import { useIsNodeEditing } from "@/shared/stores/editorStore";
 
 export default function RichText(props: ResumeComponentProps) {

@@ -81,7 +81,7 @@ export default function HtmlIdAdder(props: htmlIdAdderProps) {
         <Popover
             containerClassName="resume-popover"
             isOpen={isOpen}
-            position="bottom"
+            positions={"bottom"}
             content={expanded}>
             <ToolbarButton
                 action={() => setOpen(!isOpen)}

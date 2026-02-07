@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Action } from "@/shared/utils/Types";
+import { Action } from "@/types";
 
 interface FileLoaderProps {
     close: Action;

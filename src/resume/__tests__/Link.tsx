@@ -3,7 +3,6 @@
  */
 import { render } from "@testing-library/react";
 import Link from "@/resume/Link";
-import React from "react";
 import ResumeContext, { IResumeContext } from "@/shared/utils/ResumeContext";
 import { useEditorStore } from "@/shared/stores/editorStore";
 
@@ -11,7 +10,6 @@ import { useEditorStore } from "@/shared/stores/editorStore";
 test('Link renders as span when not printing', () => {
     const contextValue: IResumeContext = {
         isPrinting: false,
-        updateSelectedRef: () => {},
         updateClicked: () => {}
     };
 
@@ -42,7 +40,6 @@ test('Link renders as span when not printing', () => {
 test('Link renders as anchor tag when isPrinting is true', () => {
     const contextValue: IResumeContext = {
         isPrinting: true,
-        updateSelectedRef: () => {},
         updateClicked: () => {}
     };
 
@@ -72,7 +69,6 @@ test('Link renders as anchor tag when isPrinting is true', () => {
 test('Link shows default text when value is empty', () => {
     const contextValue: IResumeContext = {
         isPrinting: false,
-        updateSelectedRef: () => {},
         updateClicked: () => {}
     };
 
@@ -97,7 +93,6 @@ test('Link shows default text when value is empty', () => {
 test('Link uses # as default href when url is empty in print mode', () => {
     const contextValue: IResumeContext = {
         isPrinting: true,
-        updateSelectedRef: () => {},
         updateClicked: () => {}
     };
 
@@ -122,7 +117,6 @@ test('Link uses # as default href when url is empty in print mode', () => {
 test('Link shows input when in edit mode', () => {
     const contextValue: IResumeContext = {
         isPrinting: false,
-        updateSelectedRef: () => {},
         updateClicked: () => {}
     };
 

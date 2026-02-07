@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import ResumeNodeTree from '@/shared/utils/NodeTree';
-import { ResumeNode, IdType } from '@/shared/utils/Types';
+import { ResumeNode, IdType } from '@/types';
 
 interface ResumeState {
     // Core data
@@ -11,7 +11,14 @@ interface ResumeState {
     // UI state
     unsavedChanges: boolean;
     
-    // Actions for tree manipulation
+    // Actions for tree manipulation (UUID-based - preferred)
+    addNodeByUuid: (parentUuid: string, node: ResumeNode) => void;
+    deleteNodeByUuid: (uuid: string) => void;
+    updateNodeByUuid: (uuid: string, key: string, data: any) => void;
+    moveNodeUpByUuid: (uuid: string) => string;
+    moveNodeDownByUuid: (uuid: string) => string;
+    
+    // Legacy IdType-based actions (internal use)
     setNodes: (nodes: ResumeNode[]) => void;
     addNode: (parentId: IdType, node: ResumeNode) => void;
     deleteNode: (id: IdType) => void;
@@ -21,6 +28,8 @@ interface ResumeState {
     
     // Utility actions
     getNode: (id: IdType) => ResumeNode;
+    getNodeByUuid: (uuid: string) => ResumeNode | undefined;
+    getParentUuids: (uuid: string) => string[];  // Returns parent UUIDs from bottom to top
     clearUnsavedChanges: () => void;
 }
 
@@ -109,6 +118,110 @@ export const useResumeStore = create<ResumeState>()(
                 return get().tree.getNodeById(id);
             },
 
+            // Get node by UUID (read-only operation)
+            getNodeByUuid: (uuid: string) => {
+                return get().tree.getNodeByUuid(uuid);
+            },
+
+            // UUID-based actions (preferred API)
+            addNodeByUuid: (parentUuid: string, node: ResumeNode) => {
+                const parentId = get().tree.getHierarchicalId(parentUuid);
+                if (parentId) {
+                    set(
+                        (state) => {
+                            state.tree.addNestedChild(parentId, node);
+                            state.unsavedChanges = true;
+                        },
+                        false,
+                        'addNodeByUuid'
+                    );
+                }
+            },
+
+            deleteNodeByUuid: (uuid: string) => {
+                const id = get().tree.getHierarchicalId(uuid);
+                if (id) {
+                    set(
+                        (state) => {
+                            state.tree.deleteChild(id);
+                            state.unsavedChanges = true;
+                        },
+                        false,
+                        'deleteNodeByUuid'
+                    );
+                }
+            },
+
+            updateNodeByUuid: (uuid: string, key: string, data: any) => {
+                const id = get().tree.getHierarchicalId(uuid);
+                if (id) {
+                    set(
+                        (state) => {
+                            state.tree.updateChild(id, key, data);
+                            state.unsavedChanges = true;
+                        },
+                        false,
+                        'updateNodeByUuid'
+                    );
+                }
+            },
+
+            moveNodeUpByUuid: (uuid: string) => {
+                const id = get().tree.getHierarchicalId(uuid);
+                if (id) {
+                    let newId: IdType = id;
+                    set(
+                        (state) => {
+                            newId = state.tree.moveUp(id);
+                            state.unsavedChanges = true;
+                        },
+                        false,
+                        'moveNodeUpByUuid'
+                    );
+                    const movedNode = get().tree.getNodeById(newId);
+                    return movedNode.uuid;
+                }
+                return uuid;
+            },
+
+            moveNodeDownByUuid: (uuid: string) => {
+                const id = get().tree.getHierarchicalId(uuid);
+                if (id) {
+                    let newId: IdType = id;
+                    set(
+                        (state) => {
+                            newId = state.tree.moveDown(id);
+                            state.unsavedChanges = true;
+                        },
+                        false,
+                        'moveNodeDownByUuid'
+                    );
+                    const movedNode = get().tree.getNodeById(newId);
+                    return movedNode.uuid;
+                }
+                return uuid;
+            },
+
+            // Get parent UUIDs from bottom to top (for context menu)
+            getParentUuids: (uuid: string) => {
+                const id = get().tree.getHierarchicalId(uuid);
+                if (!id || id.length === 0) return [];
+                
+                const parentIds: string[] = [];
+                const parentId = [...id];
+                parentId.pop(); // Remove last element to get parent
+                
+                while (parentId.length > 0) {
+                    const parent = get().tree.getNodeById(parentId);
+                    if (parent) {
+                        parentIds.push(parent.uuid);
+                    }
+                    parentId.pop();
+                }
+                
+                return parentIds;
+            },
+
             // Clear unsaved changes flag (after save)
             clearUnsavedChanges: () =>
                 set({ unsavedChanges: false }, false, 'clearUnsavedChanges'),
@@ -123,3 +236,5 @@ export const useResumeNodes = () => useResumeStore((state) => state.tree.childNo
 export const useHasUnsavedChanges = () => useResumeStore((state) => state.unsavedChanges);
 export const useResumeNode = (id: IdType) => 
     useResumeStore((state) => state.tree.getNodeById(id));
+export const useResumeNodeByUuid = (uuid: string) =>
+    useResumeStore((state) => state.tree.getNodeByUuid(uuid));

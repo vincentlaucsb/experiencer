@@ -1,8 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { temporal } from 'zustand/middleware';
 import { useResumeStore } from './resumeStore';
-import { ResumeNode } from '@/shared/utils/Types';
+import { ResumeNode } from '@/types';
 
 interface HistoryState {
     past: ResumeNode[][];
@@ -100,29 +99,34 @@ export const useHistoryStore = create<HistoryStore>()(
 );
 
 /**
+ * Record a snapshot of current state for undo/redo.
+ * Call this BEFORE making changes to the resume tree.
+ * This is a regular function (not a hook) so it can be called from anywhere.
+ */
+export const recordHistory = () => {
+    const current = useResumeStore.getState().tree.childNodes;
+    const { past } = useHistoryStore.getState();
+    
+    // Deep clone to prevent reference issues
+    const snapshot = JSON.parse(JSON.stringify(current));
+    
+    // Limit history to 50 entries to prevent memory issues
+    const newPast = past.length >= 50 
+        ? [...past.slice(1), snapshot]
+        : [...past, snapshot];
+    
+    useHistoryStore.setState({
+        past: newPast,
+        future: [], // Clear future when new action is performed
+    });
+};
+
+/**
  * Hook to record a snapshot of current state for undo/redo.
  * Call this BEFORE making changes to the resume tree.
  */
 export const useRecordHistory = () => {
-    const recordSnapshot = () => {
-        const current = useResumeStore.getState().tree.childNodes;
-        const { past } = useHistoryStore.getState();
-        
-        // Deep clone to prevent reference issues
-        const snapshot = JSON.parse(JSON.stringify(current));
-        
-        // Limit history to 50 entries to prevent memory issues
-        const newPast = past.length >= 50 
-            ? [...past.slice(1), snapshot]
-            : [...past, snapshot];
-        
-        useHistoryStore.setState({
-            past: newPast,
-            future: [], // Clear future when new action is performed
-        });
-    };
-
-    return recordSnapshot;
+    return recordHistory;
 };
 
 // Selector hooks

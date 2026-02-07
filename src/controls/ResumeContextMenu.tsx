@@ -1,7 +1,6 @@
 import React from "react";
 import { ContextMenu, MenuItem } from "@/controls/ContextMenu";
-import { IdType, ResumeNode, NodeProperty } from "@/shared/utils/Types";
-import ObservableResumeNodeTree from "@/editor/ObservableResumeNodeTree";
+import { ResumeNode, NodeProperty } from "@/types";
 import Section from "@/resume/Section";
 import contextMenuOptions from "@/shared/schema/ContextMenuOptions";
 import RichText from "@/resume/RichText";
@@ -10,11 +9,12 @@ import ReactDOM from "react-dom";
 import { createContainer } from "@/shared/utils/Helpers";
 
 export interface ResumeContextProps {
-    currentId?: IdType;
-    nodes: ObservableResumeNodeTree;
+    currentId?: string;  // UUID
+    getNode: (uuid: string) => ResumeNode | undefined;
+    getParentUuids: (uuid: string) => string[];  // Returns array of parent UUIDs from bottom to top
     editSelected: () => void;
     updateSelected: (key: string, data: NodeProperty) => void;
-    selectNode: (id: IdType) => void;
+    selectNode: (uuid: string) => void;
 }
 
 export default class ResumeContextMenu extends React.Component<ResumeContextProps> {
@@ -23,19 +23,13 @@ export default class ResumeContextMenu extends React.Component<ResumeContextProp
         Link.type
     ]);
 
-    hoveringMenu(currentNode?: IdType) {
+    hoveringMenu(currentNode?: ResumeNode) {
         if (currentNode) {
-            let menuItems = Array<IdType>();
-            currentNode.pop();
-
-            while (currentNode.length > 0) {
-                menuItems.push([...currentNode]);
-                currentNode.pop();
-            }
+            const parentUuids = this.props.getParentUuids(currentNode.uuid);
             
             return <>
-                {menuItems.map((id) => {
-                    return this.selectOption(id);
+                {parentUuids.map((uuid) => {
+                    return this.selectOption(uuid);
                 })}
             </>
         }
@@ -43,8 +37,10 @@ export default class ResumeContextMenu extends React.Component<ResumeContextProp
         return <></>
     }
 
-    selectOption(id: IdType) {
-        const node = this.props.nodes.getNodeById(id) as ResumeNode;
+    selectOption(uuid: string) {
+        const node = this.props.getNode(uuid);
+        if (!node) return null;
+        
         let text = "";
 
         switch (node.type) {
@@ -56,7 +52,7 @@ export default class ResumeContextMenu extends React.Component<ResumeContextProp
         }
 
         return <MenuItem key={node.uuid}
-            onClick={() => this.props.selectNode(id)}>
+            onClick={() => this.props.selectNode(uuid)}>
             Select {text}
         </MenuItem>
     }
@@ -70,16 +66,17 @@ export default class ResumeContextMenu extends React.Component<ResumeContextProp
         let customOptions: React.ReactNode = <></>
 
         if (this.props.currentId) {
-            const currentNode = this.props.nodes.getNodeById(this.props.currentId);
-            const rawCustomOptions = contextMenuOptions(currentNode, this.props.updateSelected);
-            if (rawCustomOptions) {
-                customOptions = rawCustomOptions.map((option) => {
-                    return <MenuItem onClick={option.action}>{option.text}</MenuItem>
-                });
-            }
-
+            const currentNode = this.props.getNode(this.props.currentId);
+            
             if (currentNode) {
-                menu = this.hoveringMenu([...this.props.currentId]);
+                const rawCustomOptions = contextMenuOptions(currentNode, this.props.updateSelected);
+                if (rawCustomOptions) {
+                    customOptions = rawCustomOptions.map((option) => {
+                        return <MenuItem onClick={option.action}>{option.text}</MenuItem>
+                    });
+                }
+
+                menu = this.hoveringMenu(currentNode);
                 header = <h3>{currentNode.type}</h3>
 
                 isEditable = ResumeContextMenu.Editable.has(currentNode.type);

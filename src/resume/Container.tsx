@@ -1,5 +1,5 @@
 import React from "react";
-import { IdType } from "@/shared/utils/Types";
+import { IdType } from "@/types";
 import ResumeContext from "@/shared/utils/ResumeContext";
 import { useIsNodeSelected, useIsEditingSelected } from "@/shared/stores/editorStore";
 
@@ -55,13 +55,13 @@ export default function Container(props: ContainerProps) {
                     className: classes.join(' '),
                     style: props.style,
                     id: props.htmlId,
+                    'data-uuid': props.uuid,
                     ref: ref,
                     ...selectTriggerProps
                 }
 
                 if (isSelected) {
                     newProps['data-selected'] = true;
-                    value.updateSelectedRef(ref);
                 }
 
                 if (displayAs !== "img") {

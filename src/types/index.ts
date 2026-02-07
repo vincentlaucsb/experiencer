@@ -1,4 +1,4 @@
-﻿import { ReactNode } from "react";
+import { ReactNode } from "react";
 
 // For simplicity, and to avoid problems, avoid all
 // imports in this file
@@ -9,7 +9,7 @@ export class Globals {
 
 export type IdType = Array<number>;
 export type Action = (() => void);
-export type AddChild = ((id: IdType, node: ResumeNode) => void);
+export type AddChild = ((parentUuid: string | undefined, node: ResumeNode) => void);
 export type ModifyChild = (id: IdType) => void;
 export type NodeProperty = string | string[] | boolean | number | number[];
 

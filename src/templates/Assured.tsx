@@ -4,7 +4,7 @@ import { makeList } from "./TemplateHelper";
 import { BasicIconProps } from "@/resume/Icon";
 import getDefaultCss, { getRootCss } from "./CssTemplates";
 import CssNode from "@/shared/utils/CssTree";
-import { BasicResumeNode } from "@/shared/utils/Types";
+import { BasicResumeNode } from "@/types";
 
 export function assuredCss() {
     let css = getDefaultCss().setProperties([

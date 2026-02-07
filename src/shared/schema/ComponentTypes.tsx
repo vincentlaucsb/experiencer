@@ -8,11 +8,11 @@ import Link from "@/resume/Link";
 import DescriptionList, { DescriptionListItem, BasicDescriptionItemProps, DescriptionListType, DescriptionListItemType } from "@/resume/List";
 import { IconType } from "@/resume/Icon";
 import Header from "@/resume/Header";
-import { BasicResumeNode } from "@/shared/utils/Types";
+import { BasicResumeNode } from "@/types";
 
 export interface NodeInformation {
     text: string;
-    node: BasicResumeNode;
+    node: BasicResumeNode & Record<string, any>;
     icon?: string;
 }
 
@@ -217,7 +217,7 @@ export default class ComponentTypes {
                         type: Link.type,
                         value: '',
                         url: ''
-                    },
+                    } as BasicResumeNode & { url: string },
                     icon: 'link'
                 }
             default:

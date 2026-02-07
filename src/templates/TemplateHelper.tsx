@@ -1,5 +1,5 @@
 import RichText from "@/resume/RichText";
-import { BasicResumeNode } from "@/shared/utils/Types";
+import { BasicResumeNode } from "@/types";
 
 /**
     * Construct a bulleted list

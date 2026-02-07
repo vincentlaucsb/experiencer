@@ -1,9 +1,10 @@
 import * as React from "react";
 import TextField from "@/controls/inputs/TextField";
-import Container from "./Container";
-import { process, deleteAt, moveUp, moveDown } from "@/shared/utils/Helpers";
-import ResumeComponentProps, { BasicResumeNode } from "@/shared/utils/Types";
+import { deleteAt, moveUp, moveDown } from "@/shared/utils/arrayHelpers";
+import { process } from "@/shared/utils/Helpers";
+import ResumeComponentProps, { BasicResumeNode } from "@/types";
 import { useEditorStore } from "@/shared/stores/editorStore";
+import Container from "./Container";
 
 interface DescriptionItemBase {
     term?: string;
@@ -18,11 +19,15 @@ export const DescriptionListItemType = "Description List Item";
 /** Helper function for DescriptionListItem */
 function getDefinitions(props: DescriptionItemProps, isSelected: boolean) {
     const moveFieldUp = (index: number) => {
-        props.updateData('definitions', moveUp(props.definitions || [], index));
+        const definitions = props.definitions || [];
+        moveUp(definitions, index);
+        props.updateData('definitions', definitions);
     };
 
     const moveFieldDown = (index: number) => {
-        props.updateData('definitions', moveDown(props.definitions || [], index));
+        const definitions = props.definitions || [];
+        moveDown(definitions, index);
+        props.updateData('definitions', definitions);
     };
 
     const deleteField = (index: number) => {

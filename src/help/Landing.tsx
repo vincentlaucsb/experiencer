@@ -2,7 +2,7 @@ import React from "react";
 import PureMenu, { PureMenuItem } from "@/controls/menus/PureMenu";
 import FileLoader from "@/controls/FileLoader";
 import Modal from "@/controls/Modal";
-import { Globals, Action } from "@/shared/utils/Types";
+import { Globals, Action } from "@/types";
 import { Button } from "@/controls/Buttons";
 
 interface LandingProps {

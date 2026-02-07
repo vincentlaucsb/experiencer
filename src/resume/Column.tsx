@@ -1,7 +1,6 @@
 import React from "react";
 import Container from "./Container";
-import { isEmpty } from "@/shared/utils/Helpers";
-import ResumeComponentProps from "@/shared/utils/Types";
+import ResumeComponentProps from "@/types";
 
 export default class Column extends React.PureComponent<ResumeComponentProps> {
     static readonly type = 'Column';
@@ -39,7 +38,7 @@ export default class Column extends React.PureComponent<ResumeComponentProps> {
     
     render() {
         let helperText = <></>;
-        if (isEmpty(this.props.children)) {
+        if (React.Children.count(this.props.children) === 0) {
             helperText = <span>Column {this.position}: Click to select and add content</span>
         }
 

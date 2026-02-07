@@ -1,8 +1,9 @@
 import * as React from "react";
 import TextField from "@/controls/inputs/TextField";
 import Container from "./Container";
-import { process, deleteAt, toUrl } from "@/shared/utils/Helpers";
-import ResumeComponentProps, { BasicResumeNode } from "@/shared/utils/Types";
+import { process, toUrl } from "@/shared/utils/Helpers";
+import { deleteAt } from "@/shared/utils/arrayHelpers";
+import ResumeComponentProps, { BasicResumeNode } from "@/types";
 import { useIsNodeEditing, useIsNodeSelected } from "@/shared/stores/editorStore";
 
 interface EntryBase {

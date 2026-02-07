@@ -3,7 +3,7 @@ import Row, { BasicRowProps } from "@/resume/Row";
 import Header from "@/resume/Header";
 import Link from "@/resume/Link";
 import { IconType } from "@/resume/Icon";
-import { ResumeNode, NodeProperty } from "@/shared/utils/Types";
+import { ResumeNode, NodeProperty } from "@/types";
 import { BasicDescriptionItemProps, DescriptionListItemType } from "@/resume/List";
 import { ToolbarItemData } from "@/controls/toolbar/ToolbarButton";
 import UrlInput from "@/controls/inputs/UrlInput";

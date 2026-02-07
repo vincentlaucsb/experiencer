@@ -1,22 +1,24 @@
-import React from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { SelectedNodeActions } from "./SelectedNodeActions";
 import { assignIds } from "@/shared/utils/Helpers";
 import ComponentTypes, { NodeInformation } from "@/shared/schema/ComponentTypes";
 import Grid from "@/resume/Grid";
 import Row from "@/resume/Row";
 import Section from "@/resume/Section";
-import { Action, IdType, NodeProperty, ResumeNode, AddChild } from "@/shared/utils/Types";
+import { Action, IdType, NodeProperty, ResumeNode, AddChild } from "@/types";
 import Toolbar, { ToolbarSection } from "./toolbar/ToolbarMaker";
 import Column from "@/resume/Column";
 import toolbarOptions from "@/shared/schema/ToolbarOptions";
 import HtmlIdAdder from "./HtmlIdAdder";
 import ResumeHotKeys from "./ResumeHotkeys";
 import { ToolbarItemData } from "./toolbar/ToolbarButton";
+import { useEditorStore } from "@/shared/stores/editorStore";
+import { useResumeStore } from "@/shared/stores/resumeStore";
 
 interface AddOptionProps {
     options: string | Array<string>;
     addChild: AddChild;
-    id: IdType;
+    id: string | undefined;  // UUID or undefined for root
 }
 
 /**
@@ -88,17 +90,19 @@ function ClipboardMenu(data: EditingBarProps): ToolbarItemData[] {
 
 interface EditingBarSubProps extends EditingBarProps {
     isOverflowing: boolean;
+    selectedNode: ResumeNode | undefined;
 }
 
 function SelectedNodeToolbar(props: EditingBarSubProps) {
-    const id = props.selectedNodeId;
-    if (id && props.selectedNode) {
-        const type = props.selectedNode.type;
+    const { selectedNode } = props;
+    
+    if (selectedNode) {
+        const type = selectedNode.type;
         let moveUpText = "rounded-up";
         let moveDownText = "rounded-down";
 
         const childTypes = ComponentTypes.childTypes(type);
-        const htmlId = props.selectedNode.htmlId ? `#${props.selectedNode.htmlId}` : 'CSS';
+        const htmlId = selectedNode.htmlId ? `#${selectedNode.htmlId}` : 'CSS';
 
         if (type === Column.type) {
             moveUpText = "rounded-left";
@@ -106,11 +110,11 @@ function SelectedNodeToolbar(props: EditingBarSubProps) {
         }
 
         return new Map<string, ToolbarSection>([
-            [`Current Node (${props.selectedNode.type})`, {
+            [`Current Node (${selectedNode.type})`, {
                 icon: "gear",
                 items: [
                     addOptions({
-                        id: id,
+                        id: selectedNode.uuid,
                         addChild: props.addChild,
                         options: childTypes
                     }),
@@ -126,7 +130,7 @@ function SelectedNodeToolbar(props: EditingBarSubProps) {
                         condensedButton: true,
                         items: ClipboardMenu(props),
                     },
-                    ...toolbarOptions(props.selectedNode, props.updateSelected),
+                    ...toolbarOptions(selectedNode, props.updateSelected),
                     {
                         action: props.unselect,
                         text: 'Unselect'
@@ -155,9 +159,9 @@ function SelectedNodeToolbar(props: EditingBarSubProps) {
                 items: [
                     {
                         content: <HtmlIdAdder
-                            key={props.selectedNode.uuid}
-                            htmlId={props.selectedNode.htmlId}
-                            cssClasses={props.selectedNode.classNames}
+                            key={selectedNode.uuid}
+                            htmlId={selectedNode.htmlId}
+                            cssClasses={selectedNode.classNames}
                             addHtmlId={props.addHtmlId}
                             addCssClasses={props.addCssClasses} />
                     }
@@ -176,8 +180,6 @@ interface EditingSectionProps {
 }
 
 export interface EditingBarProps extends SelectedNodeActions, EditingSectionProps {
-    selectedNodeId?: IdType;
-    selectedNode?: ResumeNode,
     addHtmlId: (htmlId: string) => void;
     addCssClasses: (classes: string) => void;
 
@@ -186,82 +188,48 @@ export interface EditingBarProps extends SelectedNodeActions, EditingSectionProp
     unselect: Action;
 }
 
-interface EditingBarState {
-    isOverflowing: boolean;
-    overflowWidth: number;
+/** Screen width at which toolbar should shrink regardless of anything */
+const CLIP_WIDTH = 800;
+
+function getEditingSection(props: EditingBarProps): ToolbarItemData[] {
+    return [
+        {
+            action: props.saveLocal,
+            icon: "save",
+            text: "Save",
+            condensedButton: true
+        },
+        {
+            action: props.undo,
+            icon: "undo",
+            text: "Undo",
+            condensedButton: true
+        },
+        {
+            action: props.redo,
+            icon: "redo",
+            text: "Redo",
+            condensedButton: true
+        }
+    ];
 }
 
 /** A responsive top editing bar */
-export default class TopEditingBar extends React.Component<EditingBarProps, EditingBarState> {
-    toolbarRef = React.createRef<HTMLDivElement>();
+export default function TopEditingBar(props: EditingBarProps) {
+    const toolbarRef = useRef<HTMLDivElement>(null);
+    const [isOverflowing, setIsOverflowing] = useState(false);
+    const [overflowWidth, setOverflowWidth] = useState(-1);
+    
+    // Subscribe to store changes - these will cause re-renders
+    const selectedNodeId = useEditorStore(state => state.selectedNodeId);
+    const selectedNode = useResumeStore(state => 
+        selectedNodeId ? state.getNodeByUuid(selectedNodeId) : undefined
+    );
 
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            isOverflowing: false,
-
-            // The breakpoint at which toolbar begins to overflow
-            overflowWidth: -1
-        };
-
-        this.updateResizer = this.updateResizer.bind(this);
-    }
-
-    /** Screen width at which toolbar should shrink regardless of anything */
-    get clipWidth() {
-        return 800;
-    }
-
-    get editingSection(): ToolbarItemData[] {
-        return [
-            {
-                action: this.props.saveLocal,
-                icon: "save",
-                text: "Save",
-                condensedButton: true
-            },
-            {
-                action: this.props.undo,
-                icon: "undo",
-                text: "Undo",
-                condensedButton: true
-            },
-            {
-                action: this.props.redo,
-                icon: "redo",
-                text: "Redo",
-                condensedButton: true
-            }
-        ];
-    }
-
-    componentDidMount() {
-        window.addEventListener("resize", this.updateResizer);
-
-        // Perform initial resize
-        this.updateResizer();
-    }
-
-    componentDidUpdate(prevProps: EditingBarProps) {
-        // When the selected node changes, so does the toolbar
-        // which means we need to update the overflow widths
-        if (prevProps.selectedNodeId !== this.props.selectedNodeId) {
-            this.setState({ overflowWidth: -1 });
-            this.updateResizer();
-        }
-    }
-
-    /**
-     * Resize the toolbar on resize
-     * @param event
-     */
-    updateResizer() {
-        const container = this.toolbarRef.current;
+    const updateResizer = useCallback(() => {
+        const container = toolbarRef.current;
         if (container) {
             // Get width of parent container
-            // Note: Since container.parentElement is almost always defined
-            //       the fallback only exists so TypeScript doesn't yell at us
             const parentWidth = container.parentElement ?
                 container.parentElement.clientWidth : window.innerWidth;
 
@@ -269,65 +237,74 @@ export default class TopEditingBar extends React.Component<EditingBarProps, Edit
             // Case 2: Editing bar has been shrunk, but parent container
             //         isn't large enough for editing bar to fully expand
             // Case 3: Screen width is smaller than a certain breakpoint
-            const isOverflowing = (container.scrollWidth > container.clientWidth)
-                || (parentWidth < this.state.overflowWidth)
-                || (window.innerWidth < this.clipWidth);
+            const shouldOverflow = (container.scrollWidth > container.clientWidth)
+                || (parentWidth < overflowWidth)
+                || (window.innerWidth < CLIP_WIDTH);
 
-            // This sets the breakpoint at which the editing bar should
-            // collapse
-            if (this.state.overflowWidth < 0 && isOverflowing) {
-                this.setState({ overflowWidth: container.scrollWidth });
+            // This sets the breakpoint at which the editing bar should collapse
+            if (overflowWidth < 0 && shouldOverflow) {
+                setOverflowWidth(container.scrollWidth);
             }
 
-            this.setState({ isOverflowing: isOverflowing });
+            setIsOverflowing(shouldOverflow);
         }
-    };
+    }, [overflowWidth]);
 
-    render() {
-        const props = this.props;
-        const id = props.selectedNodeId;
+    useEffect(() => {
+        window.addEventListener("resize", updateResizer);
+        updateResizer(); // Initial resize
 
-        let data = new Map<string, ToolbarSection>([
-            ["Editing", {
-                icon: 'ui-edit',
-                items: this.editingSection
-            }],
-        ]);
+        return () => {
+            window.removeEventListener("resize", updateResizer);
+        };
+    }, [updateResizer]);
 
-        if (id && props.selectedNode) {
-            let selectedNodeOptions = SelectedNodeToolbar({
-                ...props,
-                isOverflowing: this.state.isOverflowing
-            });
+    // Update overflow when selection changes
+    useEffect(() => {
+        updateResizer();
+    }, [selectedNodeId, updateResizer]);
 
-            selectedNodeOptions.forEach((value, key) => {
-                data.set(key, value);
-            });
-        }
-        else {
-            data.set("Resume Components", {
-                items: [
-                    {
-                        action: () => props.addChild([], assignIds({ type: Section.type })),
-                        icon: "book-mark",
-                        text: "Add Section"
-                    },
-                    {
-                        action: () => props.addChild([], assignIds(ComponentTypes.defaultValue(Row.type).node)),
-                        icon: "swoosh-right",
-                        text: "Add Rows & Columns"
-                    },
-                    {
-                        action: () => props.addChild([], assignIds(ComponentTypes.defaultValue(Grid.type).node)),
-                        icon: "table",
-                        text: "Add Grid"
-                    }
-                ]
-            });
-        }
+    let data = new Map<string, ToolbarSection>([
+        ["Editing", {
+            icon: 'ui-edit',
+            items: getEditingSection(props)
+        }],
+    ]);
 
-        let children = <Toolbar data={data} collapse={this.state.isOverflowing} />;
-        const className = this.state.isOverflowing ? "toolbar-collapsed" : "";
-        return <div ref={this.toolbarRef} id="toolbar" className={className}>{children}</div>
+    if (selectedNode) {
+        let selectedNodeOptions = SelectedNodeToolbar({
+            ...props,
+            isOverflowing,
+            selectedNode
+        });
+
+        selectedNodeOptions.forEach((value, key) => {
+            data.set(key, value);
+        });
     }
+    else {
+        data.set("Resume Components", {
+            items: [
+                {
+                    action: () => props.addChild(undefined, assignIds({ type: Section.type })),
+                    icon: "book-mark",
+                    text: "Add Section"
+                },
+                {
+                    action: () => props.addChild(undefined, assignIds(ComponentTypes.defaultValue(Row.type).node)),
+                    icon: "swoosh-right",
+                    text: "Add Rows & Columns"
+                },
+                {
+                    action: () => props.addChild(undefined, assignIds(ComponentTypes.defaultValue(Grid.type).node)),
+                    icon: "table",
+                    text: "Add Grid"
+                }
+            ]
+        });
+    }
+
+    const children = <Toolbar data={data} collapse={isOverflowing} />;
+    const className = isOverflowing ? "toolbar-collapsed" : "";
+    return <div ref={toolbarRef} id="toolbar" className={className}>{children}</div>;
 }

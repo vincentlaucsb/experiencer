@@ -1,13 +1,13 @@
-import CssNode, { ReadonlyCssNode } from "./CssTree";
 import React from "react";
+import ReactDOM from "react-dom";
+import SplitPane from "react-split-pane";
 import MappedTextFields, { ContainerProps } from "@/controls/inputs/MappedTextFields";
 import TextField from "@/controls/inputs/TextField";
-import ReactDOM from "react-dom";
+import CssNode, { ReadonlyCssNode } from "@/shared/utils/CssTree";
+import { createContainer } from "@/shared/utils/Helpers";
 import CssSuggestions from "./CssSuggestions";
 import CssEditorToolbar from "./CssEditorToolbar";
 import { HighlightBox } from "./HighlightBox";
-import SplitPane from "react-split-pane";
-import { createContainer } from "@/shared/utils/Helpers";
 
 export interface CssUpdateProps {
     addSelector: (path: string[], name: string, selector: string) => void;

@@ -39,7 +39,7 @@ const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(
         const icon = props.icon ? <i className={`icofont-${props.icon}`} /> : <></>
         const shortcut = props.shortcut ? <span className="button-shortcut">{props.shortcut}</span> : <></>
 
-        let Container = Button;
+        let Container: React.ComponentType<any> = Button;
         if (props.dropdownChild) {
             /** Thank you Google Chrome for allowing me to 
              *  craft this beautiful hack because you won't allow

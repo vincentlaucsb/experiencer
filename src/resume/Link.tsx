@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import Container from "./Container";
 import { process } from "@/shared/utils/Helpers";
-import ResumeComponentProps from "@/shared/utils/Types";
+import ResumeComponentProps from "@/types";
 import ResumeContext from "@/shared/utils/ResumeContext";
 import { useIsNodeEditing } from "@/shared/stores/editorStore";
 

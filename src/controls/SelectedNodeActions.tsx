@@ -1,4 +1,4 @@
-import { Action } from "@/shared/utils/Types";
+import { Action } from "@/types";
 
 /** Things you can do with a selected node */
 export interface SelectedNodeActions {

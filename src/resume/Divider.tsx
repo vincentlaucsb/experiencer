@@ -1,6 +1,6 @@
 import React from "react";
 import Container from "./Container";
-import ResumeComponentProps from "@/shared/utils/Types";
+import ResumeComponentProps from "@/types";
 
 /** Generic <div> element */
 export default class Divider extends React.PureComponent<ResumeComponentProps> {

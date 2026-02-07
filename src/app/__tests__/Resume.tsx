@@ -1,9 +1,8 @@
 /**
  * @jest-environment jsdom
  */
-import { render, fireEvent, getByText, getByTitle, getAllByText, act, wait } from "@testing-library/react";
+import { render, fireEvent, getByText, getAllByText, act } from "@testing-library/react";
 import Resume from "@/app/Resume";
-import React from "react";
 import ResumeTemplates from "@/templates/ResumeTemplates";
 import CssNode from "@/shared/utils/CssTree";
 

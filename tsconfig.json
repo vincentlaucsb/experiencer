@@ -19,7 +19,18 @@
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "noEmit": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/app/*": ["src/app/*"],
+      "@/resume/*": ["src/resume/*"],
+      "@/editor/*": ["src/editor/*"],
+      "@/controls/*": ["src/controls/*"],
+      "@/templates/*": ["src/templates/*"],
+      "@/help/*": ["src/help/*"],
+      "@/shared/*": ["src/shared/*"],
+      "@/assets/*": ["src/assets/*"]
+    }
   },
   "include": [
     "./src/**/*"

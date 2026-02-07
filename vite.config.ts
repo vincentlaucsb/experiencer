@@ -10,6 +10,17 @@ export default defineConfig({
   
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+      '@/app': path.resolve(__dirname, './src/app'),
+      '@/resume': path.resolve(__dirname, './src/resume'),
+      '@/editor': path.resolve(__dirname, './src/editor'),
+      '@/controls': path.resolve(__dirname, './src/controls'),
+      '@/templates': path.resolve(__dirname, './src/templates'),
+      '@/help': path.resolve(__dirname, './src/help'),
+      '@/shared': path.resolve(__dirname, './src/shared'),
+      '@/assets': path.resolve(__dirname, './src/assets'),
+    },
   },
   
   css: {

@@ -1,5 +1,64 @@
 # Component Development
 
+## Text Input Pattern: Markdown Support
+
+**RULE: All text inputs in ANY component (unless otherwise specified) MUST support basic Markdown formatting.**
+
+This applies to:
+- Header titles and subtitles
+- Entry field values (title, subtitle)
+- TextField components
+- Any user-facing text input that displays content in view mode
+
+### Implementation
+
+1. **Edit Mode**: Use plain `<input>` or `<textarea>` - users type raw Markdown syntax
+2. **View Mode**: Render through `InlineMarkdown` component for formatting
+
+### Using InlineMarkdown
+
+For **inline contexts** (headings, spans, or any element where `<p>` tags would break layout):
+
+```tsx
+import InlineMarkdown from '@/resume/helpers/InlineMarkdown';
+
+// ✅ Correct - inline rendering
+<h1><InlineMarkdown>{title}</InlineMarkdown></h1>
+<span><InlineMarkdown>{text}</InlineMarkdown></span>
+```
+
+For **block contexts** (standalone content where `<p>` tags are acceptable):
+
+```tsx
+import Markdown from 'react-markdown';
+
+// ✅ Correct - block rendering
+<div className="text-content">
+  <Markdown>{content}</Markdown>
+</div>
+```
+
+### Pattern Example
+
+```tsx
+function MyComponent(props) {
+    const isEditing = useIsNodeEditing(props.uuid);
+    
+    if (isEditing) {
+        return <input value={props.value} onChange={...} />;
+    }
+    
+    return <span><InlineMarkdown>{props.value}</InlineMarkdown></span>;
+}
+```
+
+### Why This Approach?
+
+- **Consistency**: Uniform Markdown support across all text inputs
+- **No Bloat**: Lightweight - users just type `**bold**` or `*italic*`
+- **Progressive Enhancement**: Power users get formatting, casual users see plain text
+- **Future-Proof**: Easy to add formatting UI controls later
+
 ## Prefer Function Components
 New components should use function components with hooks:
 ```typescript

@@ -3,7 +3,7 @@ import Row from "@/resume/Row";
 import Column from "@/resume/Column";
 import Section from "@/resume/Section";
 import Entry, { BasicEntryProps } from "@/resume/Entry";
-import RichText from "@/resume/RichText";
+import MarkdownText from "@/resume/Markdown";
 import Link from "@/resume/Link";
 import DescriptionList, { DescriptionListItem, BasicDescriptionItemProps, DescriptionListType, DescriptionListItemType } from "@/resume/List";
 import { IconType } from "@/resume/Icon";
@@ -31,7 +31,7 @@ export default class ComponentTypes {
                     Column.type,
                     Section.type,
                     Entry.type,
-                    RichText.type,
+                    MarkdownText.type,
                     Link.type,
                     AliasTypes.BulletedList,
                     DescriptionListType,
@@ -45,7 +45,7 @@ export default class ComponentTypes {
                     Grid.type,
                     Section.type,
                     Entry.type,
-                    RichText.type,
+                    MarkdownText.type,
                     Link.type,
                     AliasTypes.BulletedList,
                     DescriptionListType
@@ -53,20 +53,19 @@ export default class ComponentTypes {
             case DescriptionListType:
                 return DescriptionListItemType;
             case DescriptionListItemType:
-            case RichText.type:
             case Link.type:
                 return [];
             case Entry.type:
                 return [
                     AliasTypes.BulletedList,
                     DescriptionListType,
-                    RichText.type,
+                    MarkdownText.type,
                     Link.type
                 ];
             case Header.type:
                 return [
                     Entry.type,
-                    RichText.type,
+                    MarkdownText.type,
                     Link.type,
                     AliasTypes.BulletedList,
                     DescriptionListType,
@@ -76,7 +75,7 @@ export default class ComponentTypes {
                 return [
                     Section.type,
                     Entry.type,
-                    RichText.type,
+                    MarkdownText.type,
                     Link.type,
                     AliasTypes.BulletedList,
                     DescriptionListType,
@@ -87,7 +86,7 @@ export default class ComponentTypes {
                 return [
                     Section.type,
                     Entry.type,
-                    RichText.type,
+                    MarkdownText.type,
                     Link.type,
                     AliasTypes.BulletedList,
                     DescriptionListType
@@ -106,8 +105,8 @@ export default class ComponentTypes {
                 return ['Description List'];
             case DescriptionListItemType:
                 return ['Description List'];
-            case RichText.type:
-                return ['Rich Text'];
+            case MarkdownText.type:
+                return ['Markdown'];
             case Column.type:
                 return [Column.type];
             default:
@@ -125,10 +124,11 @@ export default class ComponentTypes {
                 return {
                     text: 'Bulleted List',
                     node: {
-                        type: RichText.type,
-                        value: '<ul><li></li></ul>'
+                        type: MarkdownText.type,
+                        value: '- ',
+                        hideBullets: false
                     },
-                    icon: 'listine-dots',
+                    icon: 'list-dots',
                 }
             case Column.type:
                 return {
@@ -175,11 +175,11 @@ export default class ComponentTypes {
                     },
                     icon: 'table'
                 }
-            case RichText.type:
+            case MarkdownText.type:
                 return {
-                    text: 'Rich Text',
+                    text: 'Markdown',
                     node: {
-                        type: RichText.type
+                        type: MarkdownText.type
                     },
                     icon: 'paragraph'
                 }

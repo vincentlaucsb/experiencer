@@ -1,8 +1,8 @@
 import React, { MouseEvent } from "react";
 import { v4 as uuid } from 'uuid';
-import parse from 'html-react-parser';
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "@/controls/ContextMenu";
 import ReactDOM from "react-dom";
+import InlineMarkdown from "@/resume/helpers/InlineMarkdown";
 
 import { createContainer, isNullOrUndefined } from "@/shared/utils/Helpers";
 
@@ -143,7 +143,7 @@ export default class TextField extends React.Component<TextFieldProps, TextField
                         className: props.displayClassName,
                     }}
                     id={menuId} renderTag="span">
-                    {parse(displayValue)}
+                    <InlineMarkdown>{displayValue}</InlineMarkdown>
                 </ContextMenuTrigger>
             </>
         );

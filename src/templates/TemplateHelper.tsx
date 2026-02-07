@@ -1,4 +1,4 @@
-import RichText from "@/resume/RichText";
+import MarkdownText from "@/resume/Markdown";
 import { BasicResumeNode } from "@/types";
 
 /**
@@ -6,13 +6,10 @@ import { BasicResumeNode } from "@/types";
     * @param items A list of items
     */
 export function makeList(items: Array<string>): BasicResumeNode {
-    let value = "";
-    items.forEach((i) => {
-        value += `<li>${i}</li>`
-    });
+    let value = items.map(item => `- ${item}`).join('\n');
 
     return {
-        type: RichText.type,
-        value: `<ul>${value}</ul>`
+        type: MarkdownText.type,
+        value
     };
 }

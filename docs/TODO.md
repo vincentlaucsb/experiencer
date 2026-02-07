@@ -45,55 +45,74 @@
 
 ---
 
-### Markdown Component (Replace RichText)
+### Markdown Component (Replace RichText) - IN PROGRESS
 **Goal**: Move away from react-quill (React 18 compatibility issues) to Markdown-based text editing
 
-**Decisions needed**:
-1. **Editor choice**:
-   - Option A: `react-markdown` + `react-simplemde-editor` (full markdown editor with toolbar)
-   - Option B: `@uiw/react-md-editor` (modern, TypeScript-first, preview pane)
-   - Option C: Plain textarea + `react-markdown` for preview (minimal, flexible)
-   - **Recommendation**: Option B (@uiw/react-md-editor) - good balance of features/complexity
+**Architecture**:
+- **Markdown RichText**: General-purpose freeform text (intro paragraphs, summaries, formatted content)
+- **BulletedList** (Phase 1): Markdown RichText with `- ` prefix pre-populated, `hideBullets` toggle
+- **BulletedList** (Phase 2): Dedicated component with array structure (when feature demands justify refactor)
 
-2. **Migration strategy**:
-   - Option A: Keep both RichText and Markdown, manual migration by users
-   - Option B: Create HTML-to-Markdown converter utility for automatic migration
-   - **Recommendation**: Option A initially, add converter if needed
-
-**Tasks**:
-1. Research & decide on editor library
-2. Install dependencies: `npm install react-markdown @uiw/react-md-editor --legacy-peer-deps`
-3. Create `src/components/Markdown.tsx`:
+**Phase 1 - Markdown RichText (CURRENT)**:
+1. ✅ Install dependencies: `react-markdown` + plain textarea (no WYSIWYG for now)
+2. ⏳ Create `src/resume/Markdown.tsx`:
    - Function component with hooks
-   - Edit mode: Markdown editor
-   - View mode: Rendered markdown
+   - Edit mode: Plain textarea with markdown syntax hints
+   - View mode: Rendered markdown via react-markdown
    - Uses isPrinting context for export
-4. Update ComponentTypes.tsx:
+3. ⏳ Update ComponentTypes.tsx:
    - Add Markdown to childTypes for Grid, Column, Entry, Section, Header
-   - Add defaultValue for Markdown type
+   - Keep RichText for backward compatibility initially
+   - Add defaultValue for Markdown type ("# " for headers, "- " for lists)
    - Add cssName mapping
-5. Add Markdown to ResumeComponent.tsx factory
-6. Create CSS template in CssTemplates.tsx:
-   - Styles for rendered markdown (headings, lists, code blocks, etc.)
-7. Optional: Create HTML → Markdown converter utility
-8. Update templates to use Markdown instead of RichText
-9. Test rendering, editing, export, print
-10. Update documentation
+4. ⏳ Add Markdown to ResumeComponent.tsx factory
+5. ⏳ Update CssTemplates.tsx:
+   - Styles for rendered markdown (headings, lists, code blocks, blockquotes)
+6. ⏳ Update templates to use Markdown instead of RichText
+7. ⏳ Test rendering, editing, export, print
+8. ⏳ Remove/deprecate RichText component
 
-**Features to support**:
-- Headings (h1-h6)
-- Bold, italic, strikethrough
-- Ordered/unordered lists
-- Links (inline markdown syntax)
-- Code blocks (inline and fenced)
-- Blockquotes
-- Horizontal rules
+**Phase 2 - Bulleted List Refactor** (Backlog):
+- Create dedicated `src/resume/BulletedList.tsx` component
+- Data structure: `{ items: string[], showBullets: boolean }`
+- Features: drag-to-reorder, bulk operations, consistent presentation
+- Migrate existing Markdown lists with `- ` prefix automatically
+- Add list-specific UI (add/remove item buttons)
 
-**Estimated effort**: 3-4 hours
+**Phase 3 - WYSIWYG Editor** (Nice-to-have, Backlog):
+- Evaluate `@uiw/react-md-editor` (modern, TypeScript-first, preview pane)
+- Provides visual toolbar while maintaining markdown compatibility
+- Can be added later without breaking Phase 1 implementation
+
+**Supported Markdown Features**:
+- Headings (# h1, ## h2, etc.)
+- Bold (**text**), italic (*text*), strikethrough (~~text~~)
+- Ordered lists (1. item)
+- Unordered lists (- item)
+- Links ([text](url))
+- Code blocks (` `` `code` `` `)
+- Blockquotes (> quote)
+- Horizontal rules (---)
+
+**Estimated effort**:
+- Phase 1: 2-3 hours
+- Phase 2: 1.5-2 hours (when ready)
+- Phase 3: 1-2 hours (optional improvement)
 
 ---
 
 ## Medium Priority
+
+### Image Component for Data URIs
+**Issue**: react-markdown doesn't properly render base64 data URIs in `<img src="data:image/...">`
+**Use Case**: Embedded signature images in cover letters (previously supported in RichText)
+**Solution**: Create dedicated Image component for resume nodes
+- Component: `src/resume/Image.tsx`
+- Props: `{ src: string, alt?: string, width?: string, height?: string }`
+- Edit mode: Input fields for src/alt/width/height or file upload with base64 conversion
+- View mode: Standard `<img>` tag (no react-markdown processing)
+- Add to ComponentTypes and ResumeComponent factory
+**Estimated effort**: 1-2 hours
 
 ### react-contextmenu
 ✅ **COMPLETED** - Created custom ContextMenu component at `src/controls/ContextMenu.tsx`

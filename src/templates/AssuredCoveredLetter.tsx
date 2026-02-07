@@ -1,6 +1,6 @@
 import { BasicResumeNode } from "@/types";
 import { assuredHeader } from "./Assured";
-import RichText from "@/resume/RichText";
+import MarkdownText from "@/resume/Markdown";
 import Divider from "@/resume/Divider";
 import getDefaultCss from "./CssTemplates";
 import CssNode from "@/shared/utils/CssTree";
@@ -34,43 +34,34 @@ export function assuredCoverLetterNodes(): Array<BasicResumeNode> {
             htmlId: "content",
             childNodes: [
                 {
-                    type: RichText.type, 
+                    type: MarkdownText.type, 
                     value: date,
                     htmlId: "date"
                 },
                 {
-                    type: RichText.type,
+                    type: MarkdownText.type,
                     value: "Dear Hiring Manager,",
                     htmlId: "salutation"
                 },
                 {
-                    type: RichText.type,
+                    type: MarkdownText.type,
                     htmlId: "body",
-                    value: `<p>What do you think of when you think of reliable? In 
-an age of planned obsolescence, it's hard to find any good examples. 
-</p>
+                    value: `What do you think of when you think of reliable? In an age of planned obsolescence, it's hard to find any good examples.
 
-<p>But I want to change that, which is why I am applying to this
-position. My name is Joe Blow, and I'm a software engineering 
-manager with a proven track record of delivering quality software that won't
-crash and burn.
-</p>
+But I want to change that, which is why I am applying to this position. My name is Joe Blow, and I'm a software engineering manager with a proven track record of delivering quality software that won't crash and burn.
 
-<p>As a team lead at Boeing, I oversaw a talented multi-national
-group of engineers responsible for creating mission critical software for 
-the 737 MAX 8 jet. As a result of our efforts, we were able to 
-create a revolutionary new commercial airliner that still passed
-stringent Federal Aviation Administration testing. It is a plane
-that I would let my family fly on, especially my in-laws.
-</p>
+As a team lead at Boeing, I oversaw a talented multi-national group of engineers responsible for creating mission critical software for the 737 MAX 8 jet. As a result of our efforts, we were able to create a revolutionary new commercial airliner that still passed stringent Federal Aviation Administration testing. It is a plane that I would let my family fly on, especially my in-laws.
 
-<p>I am committed to helping great companies like yours build great products.
-I look forward to hearing from you soon.</p>`
+I am committed to helping great companies like yours build great products. I look forward to hearing from you soon.`
                 },
                 {
-                    type: RichText.type,
+                    type: MarkdownText.type,
                     htmlId: "closing",
-                    value: `<p>Sincerely,</p><p>${signature}<p>Joe Blow</p>`
+                    value: `Sincerely,
+
+![Signature](${signature})
+
+Joe Blow`
                 }
             ]
         }
@@ -89,10 +80,10 @@ export function assuredCoverLetterCss() {
         ["padding", "var(--edge-margin)"],
         ["padding-bottom", "var(--large-spacing)"],
     ]).setProperties([["margin-right", "auto"]], 'Title Group'
-    ).add('Rich Text', {
+    ).add('Markdown', {
         'text-align': 'right',
         'font-size': '10pt'
-    }, '.rich-text');
+    }, '.text-content');
 
     /** Contact Information */
     let contact = css.add("Contact Information", {

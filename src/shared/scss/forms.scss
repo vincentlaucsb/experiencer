@@ -29,18 +29,3 @@ input.invalid {
     border-radius: 4px;
     font-size: 1rem;
 }
-
-/** Quill */
-#resume {
-    .ql-container {
-        font-family: inherit;
-    }
-
-    .ql-editor {
-        padding: initial;
-
-        li {
-            list-style-type: none;
-        }
-    }
-}

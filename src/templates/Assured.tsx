@@ -5,6 +5,7 @@ import { BasicIconProps } from "@/resume/Icon";
 import getDefaultCss, { getRootCss } from "./CssTemplates";
 import CssNode from "@/shared/utils/CssTree";
 import { BasicResumeNode } from "@/types";
+import MarkdownText from "@/resume/Markdown";
 
 export function assuredCss() {
     let css = getDefaultCss().setProperties([
@@ -19,10 +20,10 @@ export function assuredCss() {
         ["padding", "var(--edge-margin)"],
         ["padding-bottom", "var(--large-spacing)"],
     ]).setProperties([["margin-right", "auto"]], 'Title Group'
-    ).add('Rich Text', {
+    ).add('Markdown', {
         'text-align': 'right',
         'font-size': '10pt'
-    }, '.rich-text');
+    }, '.text-content');
 
     /** Contact Information */
     let contact = css.add("Contact Information", {
@@ -90,7 +91,7 @@ export function assuredHeader() {
         "htmlId": "contact",
         childNodes: [
             {
-                type: "Rich Text",
+                type: MarkdownText.type,
                 value: "(123) 456-7890"
             },
             {
@@ -98,7 +99,7 @@ export function assuredHeader() {
                 icon: "phone"
             } as BasicIconProps,
             {
-                type: "Rich Text",
+                type: MarkdownText.type,
                 value: "mynameis@mail.com"
             },
             {
@@ -106,7 +107,7 @@ export function assuredHeader() {
                 icon: "email"
             } as BasicIconProps,
             {
-                type: "Rich Text",
+                type: MarkdownText.type,
                 value: "Sometown, USA"
             },
             {
@@ -121,7 +122,7 @@ export function assuredHeader() {
         "htmlId": "social-media",
         childNodes: [
             {
-                type: "Rich Text",
+                type: MarkdownText.type,
                 value: "My GitHub"
             },
             {
@@ -129,7 +130,7 @@ export function assuredHeader() {
                 icon: "github"
             } as BasicIconProps,
             {
-                type: "Rich Text",
+                type: MarkdownText.type,
                 value: "mylinkedin"
             },
             {
@@ -137,7 +138,7 @@ export function assuredHeader() {
                 icon: "linkedin"
             } as BasicIconProps,
             {
-                type: "Rich Text",
+                type: MarkdownText.type,
                 value: "mywebsite.com"
             },
             {
@@ -149,9 +150,9 @@ export function assuredHeader() {
 
     return {
         "type": "Header",
-        "value": "<p>Solid <strong>Programmer</strong></p>",
+        "value": "**Solid** Programmer",
         "childNodes": [contact, socialMedia],
-        "subtitle": "<p>Software Engineer</p>",
+        "subtitle": "Software Engineer",
         "justifyContent": "flex-end",
         "distribution": "left-to-right"
     } as BasicHeaderProps;

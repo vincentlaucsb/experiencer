@@ -25,4 +25,9 @@ module.exports = {
             }
         }]
     },
+    // Handle ESM packages like react-markdown
+    transformIgnorePatterns: [
+        'node_modules/(?!(react-markdown|micromark|character-entities|decode-named-character-reference|unist-|unified|ccount)/)'
+    ],
+    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node']
 };

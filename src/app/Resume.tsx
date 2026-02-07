@@ -3,7 +3,6 @@ import { saveAs } from 'file-saver';
 import { ContextMenuTrigger } from "@/controls/ContextMenu";
 
 import 'purecss/build/pure-min.css';
-import 'react-quill/dist/quill.snow.css';
 import '@/shared/scss/index.scss';
 import '@/assets/fonts/icofont.min.css';
 

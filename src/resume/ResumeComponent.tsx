@@ -3,7 +3,7 @@ import * as React from "react";
 import Section from "./Section";
 import Entry from "./Entry";
 import DescriptionList, { DescriptionListItem, DescriptionListType, DescriptionListItemType } from "./List";
-import RichText from "./RichText";
+import MarkdownText from "./Markdown";
 import Link from "./Link";
 import Header from "./Header";
 import Row from "./Row";
@@ -68,8 +68,8 @@ export default function ResumeComponentFactory(props: FactoryProps) {
         case Entry.type:
             Container = Entry;
             break;
-        case RichText.type:
-            Container = RichText;
+        case MarkdownText.type:
+            Container = MarkdownText;
             break;
         case Link.type:
             Container = Link;

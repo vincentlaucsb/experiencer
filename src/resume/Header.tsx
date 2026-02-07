@@ -1,8 +1,8 @@
 import * as React from "react";
 import { RowProps, BasicRowProps } from "./Row";
-import QuillEditor from "@/controls/inputs/QuillEditor";
 import Container from "./Container";
 import { useIsNodeEditing } from "@/shared/stores/editorStore";
+import InlineMarkdown from "./helpers/InlineMarkdown";
 
 interface HeaderBase {
     distribution?: 'top-to-bottom' | 'left-to-right' | 'bottom-to-top' | 'right-to-left';
@@ -36,20 +36,24 @@ export default function Header(props: HeaderProps) {
             break;
     }
 
-    let value = <h1 dangerouslySetInnerHTML={{ __html: props.value || "Enter a title" }} />
-    let subtitle = <h2 className="subtitle" dangerouslySetInnerHTML={{ __html: props.subtitle || "" }} />
+    let value = <h1><InlineMarkdown>{props.value || "Enter a title"}</InlineMarkdown></h1>
+    let subtitle = <h2 className="subtitle"><InlineMarkdown>{props.subtitle || ""}</InlineMarkdown></h2>
 
     if (isEditing) {
-        value = <QuillEditor
+        value = <input
             id={`${props.uuid}-title`}
+            type="text"
             value={props.value || ""}
-            onChange={(text) => props.updateData("value", text)}
+            onChange={(e) => props.updateData("value", e.target.value)}
+            placeholder="Enter a title"
         />
 
-        subtitle = <QuillEditor
+        subtitle = <input
             id={`${props.uuid}-subtitle`}
+            type="text"
             value={props.subtitle || ""}
-            onChange={(text) => props.updateData("subtitle", text)}
+            onChange={(e) => props.updateData("subtitle", e.target.value)}
+            placeholder="Enter a subtitle"
         />
     }
     

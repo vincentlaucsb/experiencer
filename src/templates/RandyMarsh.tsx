@@ -3,7 +3,7 @@ import Header, { BasicHeaderProps } from "@/resume/Header";
 import CssNode from "@/shared/utils/CssTree";
 import Section from "@/resume/Section";
 import Entry, { BasicEntryProps } from "@/resume/Entry";
-import RichText from "@/resume/RichText";
+import MarkdownText from "@/resume/Markdown";
 import getDefaultCss, { getRootCss } from "./CssTemplates";
 import Grid from "@/resume/Grid";
 import { makeList } from "./TemplateHelper";
@@ -84,7 +84,7 @@ export function randyMarshCss() {
     ]).add('Heading', { 'color': 'var(--text-color)' }, 'h2');
 
     randyCss.addNode(
-        (randyCss.findNode("Rich Text") as CssNode).copySkeleton('#tegridy', '#tegridy')
+        (randyCss.findNode("Markdown") as CssNode).copySkeleton('#tegridy', '#tegridy')
     ).setProperties([
         ["margin-top", "auto"],
         ["text-align", "right"]]);
@@ -109,7 +109,7 @@ export function randyMarsh(): BasicResumeNode[] {
         type: Grid.type,
         childNodes: [
             {
-                type: RichText.type,
+                type: MarkdownText.type,
                 value: "2019 -- Present"
             },
             {
@@ -118,13 +118,13 @@ export function randyMarsh(): BasicResumeNode[] {
                 subtitle: ["Founder/CEO", "Somewhere in the boonies"],
                 childNodes: [
                     {
-                        type: RichText.type,
-                        value: "<ul><li>Pioneered farm-to-door delivery of fresh agricultural produce</li><li>Negotiated a multi-million dollar contract with the Chinese government</li></ul>"
+                        type: MarkdownText.type,
+                        value: "- Pioneered farm-to-door delivery of fresh agricultural produce\n- Negotiated a multi-million dollar contract with the Chinese government"
                     }
                 ]
             },
             {
-                type: RichText.type,
+                type: MarkdownText.type,
                 value: "2010 -- 2019"
             },
             {
@@ -133,7 +133,7 @@ export function randyMarsh(): BasicResumeNode[] {
                 subtitle: ["Geologist", "South Park, CO"],
             } as BasicEntryProps,
             {
-                type: RichText.type,
+                type: MarkdownText.type,
                 value: "2014"
             },
             {
@@ -142,8 +142,8 @@ export function randyMarsh(): BasicResumeNode[] {
                 subtitle: ["Pop Star"],
                 childNodes: [
                     {
-                        type: RichText.type,
-                        value: "<ul><li>Released the Billboard #1 hit <em>Push (Feeling Good on A Wednesday)</em></li></ul>",
+                        type: MarkdownText.type,
+                        value: "- Released the Billboard #1 hit *Push (Feeling Good on A Wednesday)*",
                     }
                 ]
             } as BasicEntryProps
@@ -155,7 +155,7 @@ export function randyMarsh(): BasicResumeNode[] {
         htmlId: "sidebar",
         childNodes: [
             {
-                type: RichText.type,
+                type: MarkdownText.type,
                 htmlId: "headshot",
                 value: headshot
             },
@@ -164,8 +164,8 @@ export function randyMarsh(): BasicResumeNode[] {
                 value: "Contact",
                 childNodes: [
                     {
-                        type: RichText.type,
-                        value: "<p>South Park, CO</p><p>@GettinRandy55</p>"
+                        type: MarkdownText.type,
+                        value: "South Park, CO\n\n@GettinRandy55"
                     }
                 ]
             } as BasicResumeNode,
@@ -188,14 +188,14 @@ export function randyMarsh(): BasicResumeNode[] {
                 value: "References",
                 childNodes: [
                     {
-                        type: RichText.type,
-                        value: "<p><strong>Towelie</strong></p><p>Agricultural Inspector</p><p><br></p>"
+                        type: MarkdownText.type,
+                        value: "**Towelie**\n\nAgricultural Inspector"
                     }
                 ]
             } as BasicResumeNode,
             {
-                type: RichText.type,
-                value: "<p>Typeset entirely with HTML, CSS, and good old-fashioned<strong> TEGRIDY</strong></p>",
+                type: MarkdownText.type,
+                value: "Typeset entirely with HTML, CSS, and good old-fashioned **TEGRIDY**",
                 htmlId: "tegridy"
             }
         ]
@@ -227,7 +227,7 @@ export function randyMarsh(): BasicResumeNode[] {
                         type: Grid.type,
                         childNodes: [
                             {
-                                type: RichText.type,
+                                type: MarkdownText.type,
                                 value: "1992"
                             },
                             {
@@ -249,8 +249,8 @@ export function randyMarsh(): BasicResumeNode[] {
                         subtitle: ["Break Wind Theory"],
                         childNodes: [
                             {
-                                type: RichText.type,
-                                value: "<p>Awarded the Nobel Prize for my work on the Break Wind theory of spontaneous combustion</p>"
+                                type: MarkdownText.type,
+                                value: "Awarded the Nobel Prize for my work on the Break Wind theory of spontaneous combustion"
                             }
                         ]
                     } as BasicEntryProps,
@@ -260,8 +260,8 @@ export function randyMarsh(): BasicResumeNode[] {
                         subtitle: ["Outstanding Animated Program"],
                         childNodes: [
                             {
-                                type: RichText.type,
-                                value: "<p>Gifted an Emmy Award after passing a stool weighing well over 100 courics</p>"
+                                type: MarkdownText.type,
+                                value: "Gifted an Emmy Award after passing a stool weighing well over 100 courics"
                             }
                         ]
                     }

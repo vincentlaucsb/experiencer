@@ -1,5 +1,4 @@
 import { ResumeNode, NodeProperty } from "@/types";
-import RichText from "@/resume/RichText";
 
 interface ContextMenuOption {
     text: string;

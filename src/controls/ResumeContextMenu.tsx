@@ -3,7 +3,7 @@ import { ContextMenu, MenuItem } from "@/controls/ContextMenu";
 import { ResumeNode, NodeProperty } from "@/types";
 import Section from "@/resume/Section";
 import contextMenuOptions from "@/shared/schema/ContextMenuOptions";
-import RichText from "@/resume/RichText";
+import MarkdownText from "@/resume/Markdown";
 import Link from "@/resume/Link";
 import ReactDOM from "react-dom";
 import { createContainer } from "@/shared/utils/Helpers";
@@ -19,7 +19,7 @@ export interface ResumeContextProps {
 
 export default class ResumeContextMenu extends React.Component<ResumeContextProps> {
     static Editable = new Set<string>([
-        RichText.type,
+        MarkdownText.type,
         Link.type
     ]);
 

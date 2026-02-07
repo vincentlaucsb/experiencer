@@ -1,19 +1,40 @@
 import CssNode from "@/shared/utils/CssTree";
 import Entry from "@/resume/Entry";
 import Section from "@/resume/Section";
-import RichText from "@/resume/RichText";
+import MarkdownText from "@/resume/Markdown";
 import Link from "@/resume/Link";
 
-function getRichTextCss(): CssNode {
-    let richTextCss = new CssNode(RichText.type, {}, '.rich-text');
+function getMarkdownCss(): CssNode {
+    let markdownCss = new CssNode(MarkdownText.type, {}, '.text-content');
 
-    let listCss = richTextCss.add('Lists', {
-        'padding-left': 'var(--large-spacing)'
-    }, 'ul');
+    let listCss = markdownCss.add('Lists', {
+        'padding-left': 'var(--large-spacing)',
+    }, 'ul, ol');
 
     listCss.add('List Item', { 'list-style-type': 'square' }, 'li');
 
-    return richTextCss;
+    markdownCss.add('Paragraphs', {
+        'margin': 'var(--small-spacing) 0'
+    }, 'p');
+
+    markdownCss.add('Headings', {
+        'margin': 'var(--spacing) 0 var(--small-spacing) 0',
+        'font-weight': 'bold'
+    }, 'h1, h2, h3, h4, h5, h6');
+
+    markdownCss.add('Code Blocks', {
+        'background-color': '#f5f5f5',
+        'padding': 'var(--spacing)',
+        'margin': 'var(--spacing) 0',
+        'border-radius': '4px'
+    }, 'pre');
+
+    markdownCss.add('Links', {
+        'color': '#0066cc',
+        'text-decoration': 'underline'
+    }, 'a');
+
+    return markdownCss;
 }
 
 function getSectionCss(): CssNode {
@@ -134,7 +155,7 @@ export default function getDefaultCss(): CssNode {
     defaultCss.addNode(getHeaderCss());
     defaultCss.addNode(getSectionCss());
     defaultCss.addNode(getEntryCss());
-    defaultCss.addNode(getRichTextCss());
+    defaultCss.addNode(getMarkdownCss());
     defaultCss.addNode(getLinkCss());
     return defaultCss;
 }

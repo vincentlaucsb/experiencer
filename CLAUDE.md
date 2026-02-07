@@ -10,6 +10,8 @@ For planned work and improvements, see [docs/TODO.md](docs/TODO.md).
 For architecture details, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 For migration history, see [docs/MIGRATION.md](docs/MIGRATION.md).
 
+**Note:** All coding rules and conventions should be documented in `.claude/rules/` for automatic AI assistant visibility.
+
 ## Recent Major Updates (2024-2026)
 - **Migrated from React 16 → React 18** (pragmatic choice, React 19 blocked by react-quill)
 - **Removed Create React App** → Custom Webpack 5 configuration

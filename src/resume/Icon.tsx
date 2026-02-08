@@ -6,7 +6,7 @@ import LinkedIn from "@/assets/icons/LI-In-Bug.png";
 import GitHubDark from "@/assets/icons/GitHub-Mark-120px-plus.png";
 import Phone from "@/assets/icons/feather/phone.svg?url";
 import ResumeComponentProps, { BasicResumeNode } from "@/types";
-import Container from "./Container";
+import Container from "@/resume/infrastructure/Container";
 
 interface IconBase {
     icon?: 'email'

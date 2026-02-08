@@ -1,6 +1,6 @@
 import * as React from "react";
 import TextField from "@/controls/inputs/TextField";
-import Container from "./Container";
+import Container from "@/resume/infrastructure/Container";
 import { process } from "@/shared/utils/Helpers";
 import ResumeComponentProps from "@/types";
 

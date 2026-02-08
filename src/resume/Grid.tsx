@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import Container from "./Container";
+import Container from "@/resume/infrastructure/Container";
 import ResumeComponentProps from "@/types";
 
 export default function Grid({ children, ...props }: ResumeComponentProps) {

@@ -1,5 +1,4 @@
 import Markdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
 
 /**
  * InlineMarkdown - Renders Markdown without wrapping content in block-level elements
@@ -23,7 +22,6 @@ import rehypeRaw from 'rehype-raw';
 export default function InlineMarkdown({ children }: { children: string }) {
     return (
         <Markdown 
-            rehypePlugins={[rehypeRaw]}
             components={{ p: ({ children }) => <>{children}</> }}
         >
             {children}

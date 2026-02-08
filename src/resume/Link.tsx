@@ -4,7 +4,7 @@ import ResumeComponentProps from "@/types";
 import ResumeContext from "@/shared/utils/ResumeContext";
 import { useIsNodeEditing, useEditorStore } from "@/shared/stores/editorStore";
 import useEditingHotkeys from "./hooks/useEditingHotkeys";
-import Container from "./Container";
+import Container from "@/resume/infrastructure/Container";
 
 interface LinkBase {
     url?: string;
@@ -30,7 +30,7 @@ function Link(props: LinkProps) {
         ctrlEnter: false
     });
 
-    if (isEditing) {
+    if (isEditing && !context.isPrinting) {
         return (
             <Container displayAs="span" className="link-editing" {...props}>
                 <input

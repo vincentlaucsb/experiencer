@@ -1,5 +1,5 @@
 import React from "react";
-import Container from "./Container";
+import Container from "@/resume/infrastructure/Container";
 import ResumeComponentProps from "@/types";
 
 export default class Column extends React.PureComponent<ResumeComponentProps> {

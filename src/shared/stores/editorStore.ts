@@ -5,6 +5,7 @@ interface EditorState {
     // Selection state
     selectedNodeId: string | undefined;
     isEditingSelected: boolean;
+
     
     // UI state
     leftPaneElement: HTMLDivElement | null;

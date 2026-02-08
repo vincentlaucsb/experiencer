@@ -9,8 +9,7 @@ import { useEditorStore } from "@/shared/stores/editorStore";
 /** Verify Link renders as span in editor mode */
 test('Link renders as span when not printing', () => {
     const contextValue: IResumeContext = {
-        isPrinting: false,
-        updateClicked: () => {}
+        isPrinting: false
     };
 
     const { container } = render(
@@ -39,8 +38,7 @@ test('Link renders as span when not printing', () => {
 /** Verify Link renders as <a> tag when printing */
 test('Link renders as anchor tag when isPrinting is true', () => {
     const contextValue: IResumeContext = {
-        isPrinting: true,
-        updateClicked: () => {}
+        isPrinting: true
     };
 
     const { container } = render(
@@ -68,8 +66,7 @@ test('Link renders as anchor tag when isPrinting is true', () => {
 /** Verify Link displays default text when value is empty */
 test('Link shows default text when value is empty', () => {
     const contextValue: IResumeContext = {
-        isPrinting: false,
-        updateClicked: () => {}
+        isPrinting: false
     };
 
     const { container } = render(
@@ -92,8 +89,7 @@ test('Link shows default text when value is empty', () => {
 /** Verify Link uses # as default href when url is empty */
 test('Link uses # as default href when url is empty in print mode', () => {
     const contextValue: IResumeContext = {
-        isPrinting: true,
-        updateClicked: () => {}
+        isPrinting: true
     };
 
     const { container } = render(
@@ -116,8 +112,7 @@ test('Link uses # as default href when url is empty in print mode', () => {
 /** Verify Link enters edit mode when selected */
 test('Link shows input when in edit mode', () => {
     const contextValue: IResumeContext = {
-        isPrinting: false,
-        updateClicked: () => {}
+        isPrinting: false
     };
 
     // Set the node as editing
@@ -137,7 +132,8 @@ test('Link shows input when in edit mode', () => {
         </ResumeContext.Provider>
     );
 
-    const input = container.querySelector('input');
+    // Link uses inline editing, so find the input within the container
+    const input = container.querySelector('.link-editing input') as HTMLInputElement;
     expect(input).toBeTruthy();
     expect(input?.value).toBe('Test Link');
     

@@ -1,6 +1,9 @@
 ﻿import { v4 as uuid } from 'uuid';
-import { isNull } from 'lodash';
 import { BasicResumeNode, ResumeNode } from '@/types';
+
+function isNull(value: any): value is null {
+    return value === null;
+}
 
 /**
  * Helper function to check if value is null or undefined

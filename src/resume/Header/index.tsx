@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useIsNodeEditing } from "@/shared/stores/editorStore";
 import InlineMarkdown from "../helpers/InlineMarkdown";
-import Container from "../Container";
+import Container from "@/resume/infrastructure/Container";
 import { RowProps, BasicRowProps } from "../Row";
 
 import "./index.scss";

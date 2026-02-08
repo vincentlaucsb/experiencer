@@ -32,7 +32,11 @@ For complex resume components with additional logic, use this folder structure:
 ## Container onClick Propagation
 
 **The Pitfall:**
-The `Container` component wraps all resume elements and has a built-in `onClick` handler that calls `value.updateClicked(props.id)` to manage selection state. This handler is attached to every resume component.
+The `Container` component (now in `src/resume/infrastructure/`) wraps all resume elements and manages selection/editing on click:
+- If not selected → select the node
+- If already selected → enter edit mode
+
+If you add clickable elements (buttons, links, etc.) inside a Container without stopping propagation, the click will bubble and change selection or toggle editing unexpectedly.
 
 If you add clickable elements (buttons, links, etc.) inside a Container without stopping propagation, the click bubbles up to the Container's handler, which interferes with your element's behavior.
 
@@ -46,7 +50,7 @@ If you add clickable elements (buttons, links, etc.) inside a Container without 
 
 When clicked, the flow is:
 1. Button's onClick fires → calls handleSave()
-2. Event bubbles → Container's onClick fires → calls updateClicked()
+2. Event bubbles → Container's onClick fires → selects/edits the node
 3. State changes can conflict/cancel out
 
 **The Solution:**
@@ -133,7 +137,7 @@ This is a selector hook that prevents unnecessary re-renders by only triggering 
 Standard resume component template:
 
 ```tsx
-import Container from "./Container";
+import Container from "@/resume/infrastructure/Container";
 import ResumeComponentProps from "@/types";
 import { useIsNodeEditing, useEditorStore } from "@/shared/stores/editorStore";
 
@@ -162,8 +166,8 @@ YourComponent.type = 'ComponentName';
 
 ## Common Gotchas
 
-### Gotcha 1: Markdown with rehype-raw
-HTML rendering works, but data URIs don't render (react-markdown limitation). Workaround documented in TODO.md - create dedicated Image component for base64 images.
+### Gotcha 1: Markdown HTML
+Raw HTML rendering is disabled (no `rehype-raw`). Use explicit components (e.g., Image) instead of inline HTML in Markdown.
 
 ### Gotcha 2: SCSS Imports with Vite
 Use static imports, not dynamic:

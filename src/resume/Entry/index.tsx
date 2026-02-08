@@ -4,7 +4,7 @@ import { process, toUrl } from "@/shared/utils/Helpers";
 import { deleteAt } from "@/shared/utils/arrayHelpers";
 import ResumeComponentProps, { BasicResumeNode } from "@/types";
 import { useIsNodeEditing, useIsNodeSelected } from "@/shared/stores/editorStore";
-import Container from "../Container";
+import Container from "@/resume/infrastructure/Container";
 
 interface EntryBase {
     title?: string[];

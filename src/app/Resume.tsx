@@ -54,9 +54,6 @@ export interface ResumeState {
 }
 
 class Resume extends React.Component<ResumeProps, ResumeState> {
-    /** Stores IDs of nodes that were targeted by a single click */
-    private clicked = new Array<IdType>();
-
     private css: CssNode;
     private rootCss: CssNode;
     private style = document.createElement("style");
@@ -84,7 +81,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             mode: props.mode || "landing"
         };
 
-        this.handleClick = this.handleClick.bind(this);
         this.print = this.print.bind(this);
         this.toggleMode = this.toggleMode.bind(this);
 
@@ -161,37 +157,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         }
     }
 
-    /**
-     * Handles clicks on the resume
-     * @param rightClick Whether or not the click was a right click
-     */
-    private handleClick(rightClick = false) {
-        // We want to select the node with the longest ID, i.e.
-        // the deepest node that was clicked
-        let selectedId: IdType = [];
-        this.clicked.forEach((id) => {
-            if (id.length > selectedId.length) {
-                selectedId = id;
-            }
-        });
-
-        // Reset list of clicked nodes
-        this.clicked = new Array<IdType>();
-
-        const currentNode = useEditorStore.getState().selectedNodeId;
-        const { editNode, selectNode } = useEditorStore.getState();
-        const nodeToSelect = useResumeStore.getState().getNode(selectedId);
-        
-        if (!rightClick && nodeToSelect && currentNode === nodeToSelect.uuid) {
-            // Double click on a node ==> edit the node
-            editNode(nodeToSelect.uuid);
-        }
-        else if (nodeToSelect) {
-            // Single click ==> select the node
-            selectNode(nodeToSelect.uuid);
-        }
-    }
-    
     /**
      * Switch into mode if not already. Otherwise, return to normal.
      * @param mode Mode to check
@@ -587,9 +552,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             <>
                 <ContextMenuTrigger attributes={{ id: "resume-container" }}
                     id="resume-menu">
-                    <div id="resume" ref={this.resumeRef}
-                        onClick={() => this.handleClick()}
-                        onContextMenu={() => this.handleClick(true)}>
+                    <div id="resume" ref={this.resumeRef}>
                         <ResumeHotKeys {...this.resumeHotKeysProps} />
                         {useResumeStore.getState().tree.childNodes.map((elem, idx, arr) => {
                             const uniqueId = elem.uuid;
@@ -604,8 +567,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                                 <ResumeContext.Provider
                                     key={uniqueId}
                                     value={{
-                                    isPrinting: this.isPrinting,
-                                    updateClicked: (id: IdType) => { this.clicked.push(id) }
+                                    isPrinting: this.isPrinting
                                 }}>
                                     <ResumeComponentFactory {...props} />
                                 </ResumeContext.Provider>

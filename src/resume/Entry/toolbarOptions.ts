@@ -1,8 +1,8 @@
 import { ToolbarItemData } from "@/types/toolbar";
 
 export default function getEntryToolbarOptions(
-    node: any,
-    updateNode: (key: string, value: any) => void
+    updateNode: (key: string, value: any) => void,
+    node: any
 ): ToolbarItemData[] {
     const addLineBreak = (node: any) => {
         if (node.subtitle) {

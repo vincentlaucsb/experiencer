@@ -24,7 +24,7 @@ import NodeTreeVisualizer from '@/editor/NodeTreeVisualizer';
 import Tabs from '@/controls/Tabs';
 import ResumeContextMenu from '@/controls/ResumeContextMenu';
 import generateHtml from '@/editor/GenerateHtml';
-import ComponentTypes from '@/shared/schema/ComponentTypes';
+import ComponentTypes from '@/resume/schema/ComponentTypes';
 import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode, Globals } from '@/types';
 import ResumeContext from '@/shared/utils/ResumeContext';
 import { createPortal } from 'react-dom';
@@ -197,7 +197,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         if (currentNode && uuid) {
             let root = new CssNode(`#${htmlId}`, {}, `#${htmlId}`);
             let copyTree = this.css.findNode(
-                ComponentTypes.cssName(currentNode.type)) as CssNode;
+                ComponentTypes.instance.cssName(currentNode.type)) as CssNode;
 
             if (copyTree) {
                 root = copyTree.copySkeleton(`#${htmlId}`, `#${htmlId}`);
@@ -511,7 +511,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             let specificCssEditor = <></>
 
             const rootNode = this.state.css.findNode(
-                ComponentTypes.cssName(this.selectedNode.type)) as CssNode;
+                ComponentTypes.instance.cssName(this.selectedNode.type)) as CssNode;
             if (rootNode) {
                 generalCssEditor = <CssEditor
                     cssNode={new ReadonlyCssNode(rootNode)}

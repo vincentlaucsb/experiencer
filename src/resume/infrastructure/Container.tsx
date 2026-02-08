@@ -48,12 +48,8 @@ export default function Container(props: ContainerProps) {
         },
 
         onContextMenu: (event: React.MouseEvent) => {
-            if (isEditingNode) {
-                // If editing, use default context menu
-                // so user can use browser's spellcheck, etc.
-                event.stopPropagation();
-            }
-            else {
+            event.stopPropagation();
+            if (!isEditingNode) {
                 selectNode(props.uuid);
             }
         }

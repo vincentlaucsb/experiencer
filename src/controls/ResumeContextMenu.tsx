@@ -2,7 +2,7 @@ import React from "react";
 import { ContextMenu, MenuItem } from "@/controls/ContextMenu";
 import { ResumeNode, NodeProperty } from "@/types";
 import Section from "@/resume/Section";
-import contextMenuOptions from "@/shared/schema/ContextMenuOptions";
+import contextMenuOptions from "@/resume/schema/ContextMenuOptions";
 import MarkdownText from "@/resume/Markdown";
 import Link from "@/resume/Link";
 import ReactDOM from "react-dom";

@@ -83,6 +83,14 @@ export function arraysEqual<T>(left: Array<T>, right?: Array<T>): boolean {
     return true;
 }
 
+export function arrayNormalize<T>(item: T | Array<T>): Array<T> {
+    if (Array.isArray(item)) {
+        return item;
+    }
+
+    return [item];
+}
+
 /**
  * Add an element to an array
  * @param arr The array to modify

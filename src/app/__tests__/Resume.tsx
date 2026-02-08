@@ -5,6 +5,10 @@ import { render, fireEvent, getByText, getAllByText, act } from "@testing-librar
 import Resume from "@/app/Resume";
 import ResumeTemplates from "@/templates/ResumeTemplates";
 import CssNode from "@/shared/utils/CssTree";
+import registerNodes from "@/resume/schema";
+
+// Initialize the schema registry
+registerNodes();
 
 /**
  * Simulate selecting a resume node

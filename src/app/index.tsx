@@ -1,6 +1,9 @@
 import { createRoot } from 'react-dom/client';
+import registerNodes from '@/resume/schema';
 import Resume from './Resume';
 // import * as serviceWorker from './serviceWorker';
+
+registerNodes();
 
 const container = document.getElementById('root');
 const root = createRoot(container!);

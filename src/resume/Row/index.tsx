@@ -1,7 +1,7 @@
 import * as React from "react";
-import Column from "./Column";
 import Container from "@/resume/infrastructure/Container";
 import ResumeComponentProps, { BasicResumeNode, ResumeNode } from "@/types";
+import Column from "../Column";
 
 interface RowBase {
     justifyContent?: string;

@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
+import Container from "@/resume/infrastructure/Container";
 import { process } from "@/shared/utils/Helpers";
-import ResumeComponentProps from "@/types";
 import ResumeContext from "@/shared/utils/ResumeContext";
 import { useIsNodeEditing, useEditorStore } from "@/shared/stores/editorStore";
-import useEditingHotkeys from "./hooks/useEditingHotkeys";
-import Container from "@/resume/infrastructure/Container";
+import ResumeComponentProps from "@/types";
+import useEditingHotkeys from "../hooks/useEditingHotkeys";
 
 interface LinkBase {
     url?: string;

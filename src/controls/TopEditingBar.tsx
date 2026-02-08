@@ -1,14 +1,13 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import { SelectedNodeActions } from "./SelectedNodeActions";
 import { assignIds } from "@/shared/utils/Helpers";
-import ComponentTypes, { NodeInformation } from "@/shared/schema/ComponentTypes";
+import ComponentTypes, { NodeInformation } from "@/resume/schema/ComponentTypes";
 import Grid from "@/resume/Grid";
 import Row from "@/resume/Row";
 import Section from "@/resume/Section";
 import { Action, IdType, NodeProperty, ResumeNode, AddChild } from "@/types";
 import Toolbar, { ToolbarSection } from "./toolbar/ToolbarMaker";
 import Column from "@/resume/Column";
-import toolbarOptions from "@/shared/schema/ToolbarOptions";
 import HtmlIdAdder from "./HtmlIdAdder";
 import ResumeHotKeys from "./ResumeHotkeys";
 import { ToolbarItemData } from "./toolbar/ToolbarButton";
@@ -27,7 +26,7 @@ interface AddOptionProps {
  */
 function addOptions(data: AddOptionProps): ToolbarItemData {
     const options = data.options;
-    const nodeInfo = (type: string) => ComponentTypes.defaultValue(type);
+    const nodeInfo = (type: string) => ComponentTypes.instance.defaultValue(type);
 
     if (Array.isArray(options)) {
         if (options.length === 0) {
@@ -101,7 +100,7 @@ function SelectedNodeToolbar(props: EditingBarSubProps) {
         let moveUpText = "rounded-up";
         let moveDownText = "rounded-down";
 
-        const childTypes = ComponentTypes.childTypes(type);
+        const childTypes = ComponentTypes.instance.childTypes(type);
         const htmlId = selectedNode.htmlId ? `#${selectedNode.htmlId}` : 'CSS';
 
         if (type === Column.type) {
@@ -130,7 +129,7 @@ function SelectedNodeToolbar(props: EditingBarSubProps) {
                         condensedButton: true,
                         items: ClipboardMenu(props),
                     },
-                    ...toolbarOptions(selectedNode, props.updateSelected),
+                    ...ComponentTypes.instance.toolbarOptions(selectedNode, props.updateSelected),
                     {
                         action: props.unselect,
                         text: 'Unselect'
@@ -291,12 +290,12 @@ export default function TopEditingBar(props: EditingBarProps) {
                     text: "Add Section"
                 },
                 {
-                    action: () => props.addChild(undefined, assignIds(ComponentTypes.defaultValue(Row.type).node)),
+                    action: () => props.addChild(undefined, assignIds(ComponentTypes.instance.defaultValue(Row.type).node)),
                     icon: "swoosh-right",
                     text: "Add Rows & Columns"
                 },
                 {
-                    action: () => props.addChild(undefined, assignIds(ComponentTypes.defaultValue(Grid.type).node)),
+                    action: () => props.addChild(undefined, assignIds(ComponentTypes.instance.defaultValue(Grid.type).node)),
                     icon: "table",
                     text: "Add Grid"
                 }

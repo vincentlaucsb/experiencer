@@ -103,6 +103,34 @@
 
 ## Medium Priority
 
+### UX & Visual Polish
+**Goal**: Elevate the interface from functional to premium
+- [ ] Modern visual design: Subtle shadows, glassmorphism effects, refined spacing
+- [ ] Onboarding experience: Quick tutorial or template wizard for first-time users
+- [ ] Template gallery view: Show all templates at once instead of dropdown selection
+- [ ] Improved tree view: Better visual hierarchy, drag-and-drop indicators
+- [ ] Responsive design improvements: Better mobile/tablet layout
+**Estimated effort**: 4-6 hours
+
+### Export & Output Features
+**Goal**: Professional-grade export capabilities
+- [ ] PDF export with print CSS optimization
+- [ ] Multiple format support: JSON, YAML, plain text
+- [ ] Custom page size options (A4, Letter, Legal)
+- [ ] Print preview mode with margin guides
+- [ ] Mobile preview: Real-time preview on mobile while editing on desktop
+**Estimated effort**: 3-5 hours
+
+### AI-Assisted Editing
+**Goal**: Help users improve their resume content
+- [ ] Suggest improvements to bullet points (clarity, impact, action verbs)
+- [ ] Identify weak phrasing or passive voice
+- [ ] Recommend relevant skills based on job description
+- [ ] Grammar and spelling suggestions
+- [ ] Tone analyzer (professional, casual, technical)
+**Estimated effort**: 8-12 hours (requires API integration)
+**Status**: Nice-to-have, long-term feature
+
 ### Image Component for Data URIs
 **Issue**: react-markdown doesn't properly render base64 data URIs in `<img src="data:image/...">`
 **Use Case**: Embedded signature images in cover letters (previously supported in RichText)

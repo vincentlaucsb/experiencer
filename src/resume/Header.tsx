@@ -4,6 +4,8 @@ import Container from "./Container";
 import { useIsNodeEditing } from "@/shared/stores/editorStore";
 import InlineMarkdown from "./helpers/InlineMarkdown";
 
+import "./Header.scss";
+
 interface HeaderBase {
     distribution?: 'top-to-bottom' | 'left-to-right' | 'bottom-to-top' | 'right-to-left';
     justifyContent?: string;

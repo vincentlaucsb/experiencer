@@ -134,7 +134,7 @@ export default class ResumeNodeTree implements ResumeNode {
      */
     getNodeById(id: IdType): ResumeNode {
         if (id.length === 0) {
-            throw new Error("Cannot get node with empty hierarchical ID");
+            return this;
         }
 
         return this.traverse(id)[0];

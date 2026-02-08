@@ -1,9 +1,10 @@
 import React, { useContext } from "react";
-import Container from "./Container";
 import { process } from "@/shared/utils/Helpers";
 import ResumeComponentProps from "@/types";
 import ResumeContext from "@/shared/utils/ResumeContext";
-import { useIsNodeEditing } from "@/shared/stores/editorStore";
+import { useIsNodeEditing, useEditorStore } from "@/shared/stores/editorStore";
+import useEditingHotkeys from "./hooks/useEditingHotkeys";
+import Container from "./Container";
 
 interface LinkBase {
     url?: string;
@@ -17,8 +18,17 @@ export interface LinkProps extends ResumeComponentProps, LinkBase {}
 function Link(props: LinkProps) {
     const context = useContext(ResumeContext);
     const isEditing = useIsNodeEditing(props.uuid);
+    const toggleEdit = useEditorStore((state) => state.toggleEdit);
     const displayText = process(props.value) as string || "Link text";
     const url = props.url || "#";
+
+    useEditingHotkeys({
+        isEditing,
+        value: props.value || '',
+        onChange: (originalValue) => props.updateData("value", originalValue),
+        toggleEditing: toggleEdit,
+        ctrlEnter: false
+    });
 
     if (isEditing) {
         return (

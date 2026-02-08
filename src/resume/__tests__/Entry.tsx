@@ -3,7 +3,6 @@
  */
 import { render } from "@testing-library/react";
 import Entry from "@/resume/Entry";
-import React from "react";
 
 /** Assert that the correct class names are generated */
 test('Entry Class Names Test', async () => {

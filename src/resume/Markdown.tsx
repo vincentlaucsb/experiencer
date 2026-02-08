@@ -1,9 +1,10 @@
-import * as React from "react";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
-import Container from "./Container";
+
 import ResumeComponentProps from "@/types";
 import { useIsNodeEditing, useEditorStore } from "@/shared/stores/editorStore";
+import useEditingHotkeys from "./hooks/useEditingHotkeys";
+import Container from "./Container";
 
 /**
  * Markdown component - Freeform text with Markdown formatting support
@@ -26,17 +27,13 @@ export default function MarkdownText(props: ResumeComponentProps) {
     const toggleEdit = useEditorStore((state) => state.toggleEdit);
     const textValue = props.value || "";
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        // Ctrl+Enter (or Cmd+Enter on Mac) to exit editing
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-            e.preventDefault();
-            toggleEdit();
-        }
-    };
-
-    const handleSave = () => {
-        toggleEdit();
-    };
+    useEditingHotkeys({
+        isEditing,
+        ctrlEnter: true,
+        value: textValue,
+        onChange: (newValue) => props.updateData("value", newValue),
+        toggleEditing: toggleEdit,
+    });
 
     if (isEditing) {
         return (
@@ -46,10 +43,12 @@ export default function MarkdownText(props: ResumeComponentProps) {
                     id={props.uuid}
                     value={textValue}
                     onChange={(e) => props.updateData("value", e.target.value)}
-                    onKeyDown={handleKeyDown}
                     placeholder={`# Markdown supported\n\n- Lists\n- **Bold** *italic* ~~strikethrough~~\n- [Links](url)\n- \`code\` or \`\`\`code blocks\`\`\``}
                 />
-                <button className="markdown-save-button" onClick={handleSave}>
+                <button className="markdown-save-button" onClick={(e) => {
+                    e.stopPropagation();
+                    toggleEdit();
+                }}>
                     Save (Ctrl + Enter)
                 </button>
             </Container>

@@ -161,7 +161,7 @@ export function ContextMenuTrigger({
 }: {
     id: string;
     children: ReactNode;
-    renderTag?: keyof JSX.IntrinsicElements;
+    renderTag?: string;
     attributes?: Record<string, any>;
 }) {
     const handleContextMenu = (e: ReactMouseEvent) => {

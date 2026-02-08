@@ -107,7 +107,7 @@ export interface MappedTextFieldsProps {
     valueSuggestions?: Map<string, Array<string>>;
 
     /** Render prop for rendering the element containing the input fields */
-    container: (props: ContainerProps) => JSX.Element;
+    container: (props: ContainerProps) => React.ReactNode;
 }
 
 export default class MappedTextFields extends React.Component<MappedTextFieldsProps, MappedTextFieldsState> {

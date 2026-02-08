@@ -8,11 +8,6 @@ export default defineConfig({
   plugins: [
     react({
       jsxImportSource: 'react',
-      babel: {
-        plugins: [
-          ['@babel/plugin-transform-react-jsx', { runtime: 'automatic' }],
-        ],
-      },
     }),
     checker({
       typescript: true,
@@ -52,7 +47,6 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          quill: ['react-quill'],
         },
       },
     },

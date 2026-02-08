@@ -198,7 +198,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
             const hlBoxContainer = createContainer("hl-box-container");
             if (hlBoxContainer && this.state.highlight) {
                 const leftPaneElement = useEditorStore.getState().leftPaneElement;
-                let elems = new Array<JSX.Element>();
+                let elems = new Array<React.ReactNode>();
                 hits.forEach((node: Element, key: number) => {
                     elems.push(<HighlightBox
                         key={key}

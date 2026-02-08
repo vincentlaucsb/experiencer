@@ -1,5 +1,4 @@
 ﻿import React, { useEffect } from "react";
-import ResizeObserver from "resize-observer-polyfill";
 
 interface HighlightBoxProps {
     /** The selected HTML node in question */

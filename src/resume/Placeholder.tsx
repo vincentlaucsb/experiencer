@@ -5,7 +5,7 @@ export interface PlaceholderProps {
     alt?: string;
 }
 
-export default function Placeholder(props: PlaceholderProps) : JSX.Element {
+export default function Placeholder(props: PlaceholderProps) {
     if (!props.text) {
         return <span className='resume-default'>
             {props.alt || 'Enter a value here'}

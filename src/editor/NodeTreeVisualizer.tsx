@@ -12,7 +12,7 @@ export interface NodeTreeVisualizerProps {
 /**
  * Represent a resume node on the tree
  */
-function represent(node: ResumeNode): JSX.Element {
+function represent(node: ResumeNode) {
     let classNames = ["tree-item"];
     let htmlId = node.htmlId ? `#${node.htmlId}` : "";
     let cssClasses = node.classNames ? node.classNames.split(' ').map(
@@ -51,7 +51,7 @@ interface TreeMapperProps {
     selectedNode?: string;
 }
 
-function TreeMapper({ root, selectNode, selectedNode }: TreeMapperProps): JSX.Element {
+function TreeMapper({ root, selectNode, selectedNode }: TreeMapperProps) {
     let childNodes: Array<ResumeNode> | undefined = undefined;
     
     if (Array.isArray(root)) {

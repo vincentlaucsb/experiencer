@@ -13,7 +13,7 @@ For migration history, see [docs/MIGRATION.md](docs/MIGRATION.md).
 **Note:** All coding rules and conventions should be documented in `.claude/rules/` for automatic AI assistant visibility.
 
 ## Recent Major Updates (2024-2026)
-- **Migrated from React 16 → React 18** (pragmatic choice, React 19 blocked by react-quill)
+- **Migrated from React 16 → React 18 → React 19** (React 19 now stable, custom SplitPane replaces react-split-pane)
 - **Removed Create React App** → Custom Webpack 5 configuration
 - **Upgraded TypeScript** 3.7 → 5.7
 - **Modern build tooling** with HMR, React Refresh, and code splitting
@@ -24,7 +24,7 @@ For migration history, see [docs/MIGRATION.md](docs/MIGRATION.md).
 - **React 18.3.1** with TypeScript
 - **Webpack 5** with custom configuration
 - **SCSS** (Dart Sass 1.83.0) for styling
-- **react-quill** for rich text editing
+- **react-markdown** for Markdown text rendering (replacing react-quill)
 - **react-contextmenu** for right-click menus (uses legacy peer deps)
 - **uuid** v11 for ID generation
 - **file-saver** for export functionality
@@ -112,7 +112,6 @@ import { isNullOrUndefined } from './Helpers';
 
 ### Dependencies
 - **react-contextmenu** doesn't officially support React 19 - works with `--legacy-peer-deps`
-- **react-quill** compatible with React 18 (not 19) - reason we stayed on React 18
 - **react-tiny-popover** v8 uses named export `{ Popover }`, not default
 - **lodash** added for `isNull` utility (replaces deprecated Node util)
 

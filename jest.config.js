@@ -15,16 +15,22 @@ module.exports = {
         "^@/help/(.*)$": "<rootDir>/src/help/$1",
         "^@/shared/(.*)$": "<rootDir>/src/shared/$1",
     },
-    preset: 'ts-jest',
     testEnvironment: 'jsdom',
+    setupFilesAfterEnv: ['<rootDir>/config/jest.setup.js'],
     transform: {
-        '^.+\\.tsx?$': ['ts-jest', {
-            tsconfig: {
-                jsx: 'react-jsx',
-                jsxImportSource: 'react',
-                esModuleInterop: true,
-                allowSyntheticDefaultImports: true,
-            }
+        '^.+\\.tsx?$': ['@swc/jest', {
+            jsc: {
+                parser: {
+                    syntax: 'typescript',
+                    tsx: true,
+                    decorators: true,
+                },
+                transform: {
+                    react: {
+                        runtime: 'automatic',
+                    },
+                },
+            },
         }]
     },
     // Handle ESM packages like react-markdown, rehype-raw

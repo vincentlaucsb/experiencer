@@ -2,13 +2,13 @@
 import { SplitPane } from "./SplitPane";
 
 interface DefaultLayoutProps {
-    topNav: JSX.Element;
-    main: JSX.Element;
+    topNav: React.ReactNode;
+    main: React.ReactNode;
 }
 
 interface SidebarLayoutProps extends DefaultLayoutProps {
     isPrinting?: boolean;
-    sidebar: JSX.Element;
+    sidebar: React.ReactNode;
 }
 
 export function DefaultLayout(props: DefaultLayoutProps) {

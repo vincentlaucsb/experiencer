@@ -1,39 +1,50 @@
-import * as React from 'react';
 import { saveAs } from 'file-saver';
-import { ContextMenuTrigger } from "@/controls/ContextMenu";
-
-import 'purecss/build/pure-min.css';
-import '@/shared/scss/index.scss';
-import '@/assets/fonts/icofont.min.css';
-
-import ResumeComponentFactory from '@/resume/ResumeComponent';
-import { assignIds, deepCopy, createContainer } from '@/shared/utils/Helpers';
-import ResumeTemplates from '@/templates/ResumeTemplates';
-import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from '@/controls/Layouts';
-import Landing from '@/help/Landing';
-import TopNavBar, { TopNavBarProps } from '@/controls/TopNavBar';
-import ResumeHotKeys from '@/controls/ResumeHotkeys';
-import Help from '@/help/Help';
-import TopEditingBar, { EditingBarProps } from '@/controls/TopEditingBar';
-import CssNode, { ReadonlyCssNode } from '@/shared/utils/CssTree';
-import PureMenu, { PureMenuLink, PureMenuItem } from '@/controls/menus/PureMenu';
-import { Button } from '@/controls/Buttons';
-import { SelectedNodeActions } from '@/controls/SelectedNodeActions';
-import CssEditor, { makeCssEditorProps } from '@/editor/CssEditor';
-import NodeTreeVisualizer from '@/editor/NodeTreeVisualizer';
-import Tabs from '@/controls/Tabs';
-import ResumeContextMenu from '@/controls/ResumeContextMenu';
-import generateHtml from '@/editor/GenerateHtml';
-import ComponentTypes from '@/resume/schema/ComponentTypes';
-import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode, Globals } from '@/types';
-import ResumeContext from '@/shared/utils/ResumeContext';
+import * as React from 'react';
 import { createPortal } from 'react-dom';
-import { SelectedNodeHighlightBox } from '@/editor/HighlightBox';
-import { useEditorStore } from '@/shared/stores/editorStore';
-import { useResumeStore } from '@/shared/stores/resumeStore';
-import { useHistoryStore, recordHistory } from '@/shared/stores/historyStore';
 
-/** These props are only used for testing */
+import '@/assets/fonts/icofont.min.css';
+import '@/shared/scss/index.scss';
+import 'purecss/build/pure-min.css';
+
+// Utilities
+import { assignIds, createContainer, deepCopy } from '@/shared/utils/Helpers';
+import ResumeContext from '@/shared/utils/ResumeContext';
+
+// Components
+import { Button } from '@/controls/Buttons';
+import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from '@/controls/Layouts';
+import ResumeHotKeys from '@/controls/ResumeHotkeys';
+import { SelectedNodeActions } from '@/controls/SelectedNodeActions';
+import TopEditingBar, { EditingBarProps } from '@/controls/TopEditingBar';
+import TopNavBar, { TopNavBarProps } from '@/controls/TopNavBar';
+import Tabs from '@/controls/Tabs';
+import PureMenu, { PureMenuLink, PureMenuItem } from '@/controls/menus/PureMenu';
+import CssEditor, { makeCssEditorProps } from '@/editor/CssEditor';
+import generateHtml from '@/editor/GenerateHtml';
+import NodeTreeVisualizer from '@/editor/NodeTreeVisualizer';
+import Help from '@/help/Help';
+import Landing from '@/help/Landing';
+import ResumeComponentFactory from '@/resume/ResumeComponent';
+import ComponentTypes from '@/resume/schema/ComponentTypes';
+import ResumeTemplates from '@/templates/ResumeTemplates';
+
+// Stores
+import { useEditorStore } from '@/shared/stores/editorStore';
+import { useHistoryStore, recordHistory } from '@/shared/stores/historyStore';
+import { useResumeStore } from '@/shared/stores/resumeStore';
+
+// Types
+import CssNode, { ReadonlyCssNode } from '@/shared/utils/CssTree';
+import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode, Globals } from '@/types';
+
+// Dynamic imports (lazy-loaded on-demand)
+const ResumeContextMenuConnected = React.lazy(
+    () => import('@/controls/ResumeContextMenuConnected')
+);
+const SelectedNodeHighlightBox = React.lazy(
+    () => import('@/editor/HighlightBox').then(m => ({ default: m.SelectedNodeHighlightBox }))
+);
+
 export interface ResumeProps {
     mode?: EditorMode;
     nodes?: Array<ResumeNode>;
@@ -48,9 +59,6 @@ export interface ResumeState {
 
     activeTemplate?: string;
     clipboard?: ResumeNode;
-
-    // TODO: Remove???
-    hoverNode?: IdType;
 }
 
 class Resume extends React.Component<ResumeProps, ResumeState> {
@@ -550,9 +558,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         const hlBoxContainer = createContainer("hl-box-container");
         const resume = (
             <>
-                <ContextMenuTrigger attributes={{ id: "resume-container" }}
-                    id="resume-menu">
-                    <div id="resume" ref={this.resumeRef}>
+                <div id="resume" ref={this.resumeRef}>
                         <ResumeHotKeys {...this.resumeHotKeysProps} />
                         {useResumeStore.getState().tree.childNodes.map((elem, idx, arr) => {
                             const uniqueId = elem.uuid;
@@ -573,24 +579,14 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                                 </ResumeContext.Provider>
                             );
                         })}
-                    </div>
-
-                <ResumeContextMenu
-                    getNode={(uuid) => useResumeStore.getState().getNodeByUuid(uuid)}
-                    getParentUuids={(uuid) => useResumeStore.getState().getParentUuids(uuid)}
-                    currentId={useEditorStore.getState().selectedNodeId}
-                    editSelected={() => {
-                        const node = this.selectedNode;
-                        if (node) {
-                            useEditorStore.getState().editNode(node.uuid);
-                        }
-                    }}
-                    updateSelected={this.updateSelected}
-                    selectNode={(uuid) => useEditorStore.getState().selectNode(uuid)}
-                />
-                </ContextMenuTrigger>
+                </div>
+                <React.Suspense fallback={null}>
+                    <ResumeContextMenuConnected />
+                </React.Suspense>
                 {createPortal(
-                    <SelectedNodeHighlightBox />,
+                    <React.Suspense fallback={null}>
+                        <SelectedNodeHighlightBox />
+                    </React.Suspense>,
                     hlBoxContainer
                 )}
             </>

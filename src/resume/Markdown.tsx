@@ -1,10 +1,16 @@
-import React from "react";
 import Markdown from "react-markdown";
 
-import ResumeComponentProps from "@/types";
-import { useIsNodeEditing, useEditorStore } from "@/shared/stores/editorStore";
+// Utilities
 import useEditingHotkeys from "./hooks/useEditingHotkeys";
+
+// Components
 import Container from "@/resume/infrastructure/Container";
+
+// Stores
+import { useEditorStore, useIsNodeEditing } from "@/shared/stores/editorStore";
+
+// Types
+import ResumeComponentProps from "@/types";
 
 /**
  * Markdown component - Freeform text with Markdown formatting support

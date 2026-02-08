@@ -9,6 +9,9 @@ type ResumeNodeDefinition = {
     /** Indicates if this node type is a default child type */
     isDefaultChildType?: boolean;
 
+    /** Indicates if this node type can be edited inline (has text fields) */
+    isEditable?: boolean;
+
     /** Template node data (type will be automatically set if omitted) */
     defaultValue?: Omit<BasicResumeNode & Record<string, any>, 'type'>;
 

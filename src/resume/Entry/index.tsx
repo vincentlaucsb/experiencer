@@ -65,7 +65,7 @@ export default function Entry(props: EntryProps) {
 
                 const textFieldOptions = [
                     {
-                        text: 'Delete',
+                        text: `Delete "${text}"`,
                         action: () => deleter(key, index)
                     }
                 ];

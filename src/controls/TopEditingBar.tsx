@@ -8,8 +8,10 @@ import Section from "@/resume/Section";
 import { Action, IdType, NodeProperty, ResumeNode, AddChild } from "@/types";
 import Toolbar, { ToolbarSection } from "./toolbar/ToolbarMaker";
 import Column from "@/resume/Column";
-import HtmlIdAdder from "./HtmlIdAdder";
 import ResumeHotKeys from "./ResumeHotkeys";
+
+// Lazy-load HtmlIdAdder since it's only shown when user clicks the ID/Classes button
+const HtmlIdAdder = React.lazy(() => import("./HtmlIdAdder"));
 import { ToolbarItemData } from "./toolbar/ToolbarButton";
 import { useEditorStore } from "@/shared/stores/editorStore";
 import { useResumeStore } from "@/shared/stores/resumeStore";
@@ -157,12 +159,14 @@ function SelectedNodeToolbar(props: EditingBarSubProps) {
                 icon: "ui-tag",
                 items: [
                     {
-                        content: <HtmlIdAdder
-                            key={selectedNode.uuid}
-                            htmlId={selectedNode.htmlId}
-                            cssClasses={selectedNode.classNames}
-                            addHtmlId={props.addHtmlId}
-                            addCssClasses={props.addCssClasses} />
+                        content: <React.Suspense fallback={null}>
+                            <HtmlIdAdder
+                                key={selectedNode.uuid}
+                                htmlId={selectedNode.htmlId}
+                                cssClasses={selectedNode.classNames}
+                                addHtmlId={props.addHtmlId}
+                                addCssClasses={props.addCssClasses} />
+                        </React.Suspense>
                     }
                 ]
             }]

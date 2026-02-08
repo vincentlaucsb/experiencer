@@ -24,6 +24,7 @@ export default class ComponentTypes {
     private _icons: Map<string, string | undefined> = new Map();
     private _registeredTypes: Set<string> = new Set();
     private _toolbarOptions: Map<string, ToolbarOptionsFunction> = new Map();
+    private _editableTypes: Set<string> = new Set();
 
     private constructor() {}
 
@@ -77,6 +78,15 @@ export default class ComponentTypes {
         return this._toolbarOptions.get(node.type)?.(updateNode, node) || [];
     }
 
+    /**
+     * Check if a node type is editable (has inline text fields)
+     * @param type The node type
+     * @returns True if the node type can be edited inline
+     */
+    isEditable(type: string) : boolean {
+        return this._editableTypes.has(type);
+    }
+
     private static _instance: ComponentTypes;
 
     /**
@@ -109,6 +119,9 @@ export default class ComponentTypes {
         
         if (def.isDefaultChildType)
             this._defaultChildTypes.push(def.type);
+
+        if (def.isEditable)
+            this._editableTypes.add(def.type);
 
         if (def.toolbarOptions)
             this._toolbarOptions.set(def.type, def.toolbarOptions);

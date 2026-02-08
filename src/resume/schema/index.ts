@@ -116,7 +116,8 @@ export default function registerNodes() {
         text: 'Markdown',
         icon: 'paragraph',
         defaultValue: {},
-        isDefaultChildType: true
+        isDefaultChildType: true,
+        isEditable: true
     });
 
     schema.registerNodeType({
@@ -129,6 +130,7 @@ export default function registerNodes() {
             url: ''
         },
         isDefaultChildType: true,
+        isEditable: true,
         toolbarOptions: getLinkToolbarOptions
     });
 
@@ -150,6 +152,7 @@ export default function registerNodes() {
             Grid.type
         ],
         defaultValue: {},
+        isEditable: true,
         toolbarOptions: getHeaderToolbarOptions
     });
 

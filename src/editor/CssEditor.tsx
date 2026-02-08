@@ -6,8 +6,10 @@ import TextField from "@/controls/inputs/TextField";
 import CssNode, { ReadonlyCssNode } from "@/shared/utils/CssTree";
 import { createContainer } from "@/shared/utils/Helpers";
 import CssSuggestions from "./CssSuggestions";
-import CssEditorToolbar from "./CssEditorToolbar";
 import { HighlightBox } from "./HighlightBox";
+
+// Lazy-load CssEditorToolbar since it's only shown in CSS editor sections
+const CssEditorToolbar = React.lazy(() => import("./CssEditorToolbar"));
 
 export interface CssUpdateProps {
     addSelector: (path: string[], name: string, selector: string) => void;
@@ -264,11 +266,13 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
             <span className="css-title-trigger">{caret}</span>
             {this.sectionName}
             {this.highlighter}
-            <CssEditorToolbar
-                cssNode={this.props.cssNode}
-                addSelector={(name, selector) => this.props.addSelector(this.path, name, selector)}
-                deleteNode={() => this.props.deleteNode(this.path)}
-            />
+            <React.Suspense fallback={null}>
+                <CssEditorToolbar
+                    cssNode={this.props.cssNode}
+                    addSelector={(name, selector) => this.props.addSelector(this.path, name, selector)}
+                    deleteNode={() => this.props.deleteNode(this.path)}
+                />
+            </React.Suspense>
         </h2>
 
         const content = this.state.isOpen ? <div className="css-category-content">

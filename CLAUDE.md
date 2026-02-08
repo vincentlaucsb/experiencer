@@ -23,6 +23,7 @@ For migration history, see [docs/MIGRATION.md](docs/MIGRATION.md).
 ## Tech Stack
 - **React 18.3.1** with TypeScript
 - **Webpack 5** with custom configuration
+- **Zustand** for state management (editorStore, etc.)
 - **SCSS** (Dart Sass 1.83.0) for styling
 - **react-markdown** for Markdown text rendering (replacing react-quill)
 - **react-contextmenu** for right-click menus (uses legacy peer deps)
@@ -31,38 +32,35 @@ For migration history, see [docs/MIGRATION.md](docs/MIGRATION.md).
 
 ## Architecture
 
-### Core Concepts
-1. **ResumeNode Tree**: Hierarchical data structure representing resume components
-2. **Observable Pattern**: `ObservableResumeNodeTree` manages state changes
-3. **Context API**: `ResumeContext` provides editing state throughout the app
-4. **Component Factory**: `ResumeComponentFactory` maps node types to React components
+**For detailed architecture documentation, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).**
 
-### Key Directories
+This includes:
+- Component hierarchy and organization
+- Core component types (Layout, Content, Controls, Utility)
+- Component communication patterns
+- State management with Zustand
+- Schema registry pattern (src/resume/schema as source of truth)
+- Styling patterns and conventions
+- Adding new components
+- Presentation component + store-aware wrapper pattern (recommended)
+
+Quick overview:
 ```
 src/
-├── components/
-│   ├── controls/          # UI controls, buttons, toolbars, modals
-│   │   └── inputs/        # Form inputs and editors
-│   ├── schema/            # Component types and configurations
-│   ├── templates/         # Resume templates (Assured, RandyMarsh, etc.)
-│   ├── utility/           # Tree structures, CSS editor, HTML generation
-│   └── help/              # Help pages and landing page
-├── scss/                  # Global styles and theme variables
-├── icons/                 # SVG and PNG icons
-└── fonts/                 # Icon fonts (icofont)
+├── resume/               # Resume domain
+│   ├── schema/          # Node type definitions (source of truth)
+│   ├── [components]/    # Individual components with their toolbarOptions
+│   └── infrastructure/  # Container, OverlayEditor, etc.
+└── shared/              # Shared utilities
+    ├── stores/          # Zustand stores (editorStore, etc.)
+    └── utils/           # Helper functions
 ```
 
-### Component Patterns
-- **Container.tsx**: Flexible wrapper that renders as any HTML element
-- **ResumeComponent.tsx**: Base wrapper for all resume components
-- **Entry.tsx**: Represents a job/education entry with title, date, location
-- **Section.tsx**: Groups related entries (Experience, Education, etc.)
-
-### State Management
-- Main state in `Resume.tsx` (class component)
-- Uses `setState` for local state management
-- Context API for global editing state
-- No Redux/external state library
+### Key Files
+- **src/resume/schema/index.ts**: Registers all node types with metadata
+- **src/resume/schema/ComponentTypes.ts**: Central registry for node definitions
+- **src/shared/stores/editorStore.ts**: Zustand store for editor state
+- **src/resume/infrastructure/Container.tsx**: Generic wrapper (example of presentation + wrapper pattern)
 
 ## Important Files
 

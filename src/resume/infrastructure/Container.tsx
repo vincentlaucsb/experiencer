@@ -1,8 +1,17 @@
 import React from "react";
+
+// Utilities
 import { isNullOrUndefined } from "@/shared/utils/Helpers";
-import { useEditorStore, useIsNodeSelected, useIsNodeEditing } from "@/shared/stores/editorStore";
-import { IdType } from "@/types";
+
+// Components
+import { ContextMenuTrigger } from "@/controls/ContextMenu";
 import OverlayEditor from "./OverlayEditor";
+
+// Stores
+import { useEditorStore, useIsNodeEditing, useIsNodeSelected } from "@/shared/stores/editorStore";
+
+// Types
+import { IdType } from "@/types";
 
 export interface ContainerProps {
     id: IdType;
@@ -21,39 +30,60 @@ export interface ContainerProps {
     style?: React.CSSProperties;
 }
 
+export interface ContainerPresentationProps extends ContainerProps {
+    /** Selection and editing state */
+    isSelected: boolean;
+    isEditing: boolean;
+
+    /** Callbacks */
+    onSelect: (uuid: string) => void;
+    onEdit: (uuid: string) => void;
+    onContextMenuOpen: (uuid: string) => void;
+}
+
 /**
- * Generic parent-level container for resume components
- * @param props
+ * Presentational component for Container logic.
+ * 
+ * Pure component that receives all state and callbacks as props.
+ * Handles the core interaction patterns for all resume nodes:
+ * - Single click: Select the node
+ * - Double click (when selected): Enter edit mode
+ * - Right click: Open context menu (suppressed while editing)
+ * - Overlay editor positioning when in edit mode
+ * 
+ * All logic is deterministic based on props - no store dependencies.
+ * Used directly in tests, wrapped with store logic in production.
+ * 
+ * This separation of "what should happen" (presentation) from "how to connect 
+ * to state" (wrapper) keeps this component easy to understand and test.
  */
-export default function Container(props: ContainerProps) {
+export function ContainerPresentation(props: ContainerPresentationProps) {
     const displayAs = props.displayAs || "div";
     let classes = [props.className];
     let elementRef = React.useRef<HTMLElement>(null);
-    const isSelected = useIsNodeSelected(props.uuid);
-    const isEditingNode = useIsNodeEditing(props.uuid);
     const hasOverlayEdit = !isNullOrUndefined(props.editContent);
-    const selectNode = useEditorStore((state) => state.selectNode);
-    const editNode = useEditorStore((state) => state.editNode);
 
     /** Props for managing selection and focus */
     const selectTriggerProps = {
         onClick: (event: React.MouseEvent) => {
-            if (isSelected) {
-                editNode(props.uuid);
+            if (props.isSelected) {
+                props.onEdit(props.uuid);
             }
             else {
-                selectNode(props.uuid);
+                props.onSelect(props.uuid);
             }
             event.stopPropagation();
-        },
-
-        onContextMenu: (event: React.MouseEvent) => {
-            event.stopPropagation();
-            if (!isEditingNode) {
-                selectNode(props.uuid);
-            }
         }
     }
+
+    const handleContextMenu = (event: React.MouseEvent) => {
+        event.stopPropagation();
+
+        // Only open context menu if not currently editing
+        if (!props.isEditing) {
+            props.onContextMenuOpen(props.uuid);
+        }
+    };
 
     let newProps = {
         ...props.attributes,
@@ -65,15 +95,21 @@ export default function Container(props: ContainerProps) {
         ...selectTriggerProps
     }
 
-    if (isSelected) {
+    if (props.isSelected) {
         newProps['data-selected'] = true;
     }
 
-    if (displayAs !== "img") {
-        newProps['children'] = props.children;
-    }
-
-    const element = React.createElement(displayAs, newProps);
+    const element = (
+        <ContextMenuTrigger
+            id="resume-menu"
+            renderTag={displayAs}
+            attributes={newProps}
+            onContextMenu={handleContextMenu}
+            disabled={props.isEditing}
+        >
+            {displayAs === "img" ? undefined : props.children}
+        </ContextMenuTrigger>
+    );
 
     return (
         <>
@@ -81,12 +117,47 @@ export default function Container(props: ContainerProps) {
             {hasOverlayEdit && (
                 <OverlayEditor
                     triggerElement={elementRef.current}
-                    isOpen={isEditingNode}
+                    isOpen={props.isEditing}
                     className="container-overlay-editor"
                 >
                     {props.editContent}
                 </OverlayEditor>
             )}
         </>
+    );
+}
+
+/**
+ * Connected Container component that hooks into Zustand stores.
+ * 
+ * Wraps ContainerPresentation with store logic, implementing the "container" pattern:
+ * This component bridges the gap between the resume node tree and React's component tree,
+ * making every resume node interactive (selectable, editable, etc.) without requiring
+ * each component to manage these concerns individually.
+ * 
+ * By centralizing node interaction logic here, we avoid duplicating selection/editing code
+ * across Header, Entry, Section, Grid, Row, Column, etc. This is React composition at work:
+ * a single wrapper component providing cross-cutting concerns to all descendants.
+ * 
+ * The "several responsibilities" (click handling, double-click editing, context menu, overlay)
+ * are unified by a single domain: "what does it mean for a resume node to be interactive?"
+ * They necessarily go together - you can't have editing without selection, can't have context
+ * menus without selection, etc. This isn't SRP violation; it's proper domain grouping.
+ */
+export default function Container(props: ContainerProps) {
+    const isSelected = useIsNodeSelected(props.uuid);
+    const isEditingNode = useIsNodeEditing(props.uuid);
+    const selectNode = useEditorStore((state) => state.selectNode);
+    const editNode = useEditorStore((state) => state.editNode);
+
+    return (
+        <ContainerPresentation
+            {...props}
+            isSelected={isSelected}
+            isEditing={isEditingNode}
+            onSelect={selectNode}
+            onEdit={editNode}
+            onContextMenuOpen={selectNode}
+        />
     );
 }

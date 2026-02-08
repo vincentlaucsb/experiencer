@@ -158,13 +158,27 @@ export function ContextMenuTrigger({
     children,
     renderTag = "div",
     attributes = {},
+    onContextMenu,
+    disabled = false,
 }: {
     id: string;
     children: ReactNode;
     renderTag?: string;
     attributes?: Record<string, any>;
+    onContextMenu?: (e: ReactMouseEvent) => void;
+    disabled?: boolean;
 }) {
     const handleContextMenu = (e: ReactMouseEvent) => {
+        if (disabled) {
+            return;
+        }
+
+        onContextMenu?.(e);
+
+        if (e.defaultPrevented) {
+            return;
+        }
+
         e.preventDefault();
         
         const registry = (window as any).__contextMenuRegistry || {};

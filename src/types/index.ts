@@ -57,7 +57,7 @@ export interface ResumeSaveData {
     childNodes: Array<ResumeNode>;
 }
 
-/** Used in creating React components over resume nodes */
+/** Used in creating React components representing resume nodes */
 export default interface ResumeComponentProps extends ResumeNode {
     children?: ReactNode;
     id: IdType;   // Hierarchical ID based on the node's position in the resume; subject to change

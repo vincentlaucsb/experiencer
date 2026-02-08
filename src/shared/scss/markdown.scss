@@ -56,7 +56,7 @@
     .text-content {
         // Headings
         h1, h2, h3, h4, h5, h6 {
-            margin: variables.$spacing 0 (variables.$spacing / 2) 0;
+            margin: variables.$spacing 0 calc(variables.$spacing / 2) 0;
             font-weight: 600;
         }
 
@@ -69,13 +69,13 @@
 
         // Paragraphs
         p {
-            margin: (variables.$spacing / 2) 0;
+            margin: calc(variables.$spacing / 2) 0;
             line-height: 1.6;
         }
 
         // List items
         li {
-            margin-bottom: (variables.$spacing / 4);
+            margin-bottom: calc(variables.$spacing / 4);
         }
 
         // Inline code

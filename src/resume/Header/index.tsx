@@ -1,10 +1,10 @@
 import * as React from "react";
-import { RowProps, BasicRowProps } from "./Row";
-import Container from "./Container";
 import { useIsNodeEditing } from "@/shared/stores/editorStore";
-import InlineMarkdown from "./helpers/InlineMarkdown";
+import InlineMarkdown from "../helpers/InlineMarkdown";
+import Container from "../Container";
+import { RowProps, BasicRowProps } from "../Row";
 
-import "./Header.scss";
+import "./index.scss";
 
 interface HeaderBase {
     distribution?: 'top-to-bottom' | 'left-to-right' | 'bottom-to-top' | 'right-to-left';

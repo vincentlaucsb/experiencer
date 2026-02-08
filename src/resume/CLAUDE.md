@@ -2,6 +2,33 @@
 
 This document describes common patterns, gotchas, and best practices specific to resume component development.
 
+## Component File Structure
+
+For complex resume components with additional logic, use this folder structure:
+
+```
+/resume/<ComponentName>/
+├── index.tsx           # Main React component (required)
+├── index.scss          # Additional editing styles (optional)
+└── toolbarOptions.ts   # Top toolbar options (optional)
+```
+
+**Examples:**
+- `src/resume/Entry/` - Entry component with toolbar options
+- `src/resume/Header/` - Header component with toolbar options and styles
+
+**Simple components** (no additional files) can remain as single files:
+- `src/resume/Link.tsx`
+- `src/resume/Icon.tsx`
+- `src/resume/Divider.tsx`
+
+**When to create a folder:**
+- Component has custom toolbar options
+- Component has editing-specific SCSS
+- Component has helper functions/utilities that should be colocated
+
+**IMPORTANT:** When creating a folder structure, move the component file into the folder as `index.tsx`. There should never be both `resume/<Component>.tsx` AND `resume/<Component>/` at the same time. If the folder exists, the component must be at `resume/<Component>/index.tsx`.
+
 ## Container onClick Propagation
 
 **The Pitfall:**

@@ -1,22 +1,9 @@
 ﻿import React from "react";
 import { Button } from "../Buttons";
+import type { BasicToolbarItemData, ToolbarItemData } from "@/types/toolbar";
 
-export interface BasicToolbarItemData {
-    icon?: string;
-    items?: BasicToolbarItemData[];
-    text?: string;
-}
-
-export interface ToolbarItemData extends BasicToolbarItemData {
-    action?: (() => void) | ((event: React.MouseEvent) => void);
-
-    /** Whether or not text should be hidden when displayed on toolbar */
-    condensedButton?: boolean;
-
-    content?: React.ReactElement;
-    items?: ToolbarItemData[];
-    shortcut?: string;
-};
+// TODO: Remove these re-exports and import directly from types/toolbar
+export type { BasicToolbarItemData, ToolbarItemData };
 
 export interface ToolbarButtonProps {
     action?: (() => void) | ((event: React.MouseEvent) => void);

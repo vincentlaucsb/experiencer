@@ -5,12 +5,16 @@ interface EditorState {
     // Selection state
     selectedNodeId: string | undefined;
     isEditingSelected: boolean;
+    
+    // UI state
+    leftPaneElement: HTMLDivElement | null;
 
     // Actions
     selectNode: (nodeId: string) => void;
     editNode: (nodeId: string) => void;
     unselectNode: () => void;
     toggleEdit: () => void;
+    setLeftPaneElement: (element: HTMLDivElement | null) => void;
 }
 
 export const useEditorStore = create<EditorState>()(
@@ -19,6 +23,7 @@ export const useEditorStore = create<EditorState>()(
             // Initial state
             selectedNodeId: undefined,
             isEditingSelected: false,
+            leftPaneElement: null,
 
             // Actions
             selectNode: (nodeId: string) =>
@@ -32,6 +37,15 @@ export const useEditorStore = create<EditorState>()(
 
             toggleEdit: () =>
                 set((state) => ({ isEditingSelected: !state.isEditingSelected }), false, 'toggleEdit'),
+            
+            setLeftPaneElement: (element: HTMLDivElement | null) =>
+                set((state) => {
+                    // Only update if the element reference actually changed
+                    if (state.leftPaneElement === element) {
+                        return state; // No change, don't trigger update
+                    }
+                    return { leftPaneElement: element };
+                }, false, 'setLeftPaneElement'),
         }),
         { name: 'EditorStore' }
     )
@@ -40,6 +54,7 @@ export const useEditorStore = create<EditorState>()(
 // Selector hooks for better performance (only re-render when specific values change)
 export const useSelectedNodeId = () => useEditorStore((state) => state.selectedNodeId);
 export const useIsEditingSelected = () => useEditorStore((state) => state.isEditingSelected);
+export const useLeftPaneElement = () => useEditorStore((state) => state.leftPaneElement);
 export const useIsNodeSelected = (nodeId: string) => 
     useEditorStore((state) => state.selectedNodeId === nodeId);
 export const useIsNodeEditing = (nodeId: string) => 

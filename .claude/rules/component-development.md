@@ -1,3 +1,8 @@
+---
+paths:
+  - "**/*.tsx"
+---
+
 # Component Development
 
 ## Text Input Pattern: Markdown Support

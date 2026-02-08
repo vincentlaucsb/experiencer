@@ -1,10 +1,10 @@
 import * as React from "react";
 import TextField from "@/controls/inputs/TextField";
-import Container from "./Container";
 import { process, toUrl } from "@/shared/utils/Helpers";
 import { deleteAt } from "@/shared/utils/arrayHelpers";
 import ResumeComponentProps, { BasicResumeNode } from "@/types";
 import { useIsNodeEditing, useIsNodeSelected } from "@/shared/stores/editorStore";
+import Container from "../Container";
 
 interface EntryBase {
     title?: string[];

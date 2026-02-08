@@ -1,32 +1,36 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Container from "./Container";
 import ResumeComponentProps from "@/types";
 
-export default class Grid extends React.PureComponent<ResumeComponentProps> {
-    static readonly type = 'Grid';
+export default function Grid({ children, ...props }: ResumeComponentProps) {
+    const isEmpty = useMemo(() => {
+        return props.childNodes === undefined || props.childNodes.length === 0
+    }, [props.childNodes]);
 
-    get style() : React.CSSProperties {
-        let style: React.CSSProperties = {
+    const style = useMemo(() => {
+        let ret: React.CSSProperties = {
             display: "grid",
         };
 
-        if (React.Children.count(this.props.children) === 0) {
-            style.minWidth = '100px';
-            style.minHeight = '100px';
+        if (isEmpty) {
+            ret.minWidth = '100px';
+            ret.minHeight = '100px';
         }
 
-        return style;
-    }
+        return ret;
+    }, [children]);
 
-    render() {
-        const helperText = React.Children.count(this.props.children) === 0 ? <span>
-            This grid is empty. Click here to select it and add items.
-            </span>  : <></>
+    const helperText = isEmpty ? <span>
+        This grid is empty. Click here to select it and add items.
+        </span>  : <></>
 
-        return <Container {...this.props} className="grid-container"
-            style={this.style}>
+    return (
+        <Container {...props} className="grid-container"
+            style={style}>
             {helperText}
-            {this.props.children}
+            {children}
         </Container>
-    }
+    );
 }
+
+Grid.type = 'Grid';

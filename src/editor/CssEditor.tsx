@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import SplitPane from "react-split-pane";
+import { useEditorStore } from '@/shared/stores/editorStore';
 import MappedTextFields, { ContainerProps } from "@/controls/inputs/MappedTextFields";
 import TextField from "@/controls/inputs/TextField";
 import CssNode, { ReadonlyCssNode } from "@/shared/utils/CssTree";
@@ -25,8 +25,6 @@ export interface CssEditorProps extends CssUpdateProps {
 
     /** Whether or not the section is open initially */
     isOpen?: boolean;
-
-    verticalSplitRef: React.RefObject<SplitPane>;
 }
 
 export interface CssEditorState {
@@ -199,13 +197,14 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
             const hits = document.querySelectorAll(selector);
             const hlBoxContainer = createContainer("hl-box-container");
             if (hlBoxContainer && this.state.highlight) {
+                const leftPaneElement = useEditorStore.getState().leftPaneElement;
                 let elems = new Array<JSX.Element>();
                 hits.forEach((node: Element, key: number) => {
                     elems.push(<HighlightBox
                         key={key}
                         className="resume-hl-box"
                         elem={node}
-                        verticalSplitRef={this.props.verticalSplitRef}
+                        leftPaneElement={leftPaneElement}
                         calcStyle={cssHlCalcStyle}
                     />)
                 });
@@ -253,7 +252,6 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
                 updateSelector={this.props.updateSelector}
                 deleteKey={this.props.deleteKey}
                 deleteNode={this.props.deleteNode}
-                verticalSplitRef={this.props.verticalSplitRef}
                 />
         });
     }

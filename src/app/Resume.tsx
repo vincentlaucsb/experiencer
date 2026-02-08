@@ -29,7 +29,6 @@ import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode, Globals }
 import ResumeContext from '@/shared/utils/ResumeContext';
 import { createPortal } from 'react-dom';
 import { SelectedNodeHighlightBox } from '@/editor/HighlightBox';
-import SplitPane from 'react-split-pane';
 import { useEditorStore } from '@/shared/stores/editorStore';
 import { useResumeStore } from '@/shared/stores/resumeStore';
 import { useHistoryStore, recordHistory } from '@/shared/stores/historyStore';
@@ -61,7 +60,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     private css: CssNode;
     private rootCss: CssNode;
     private style = document.createElement("style");
-    private verticalPaneRef = React.createRef<SplitPane>();
     private resumeRef = React.createRef<HTMLDivElement>();
     private unsubscribeStores?: () => void;
 
@@ -553,7 +551,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                 generalCssEditor = <CssEditor
                     cssNode={new ReadonlyCssNode(rootNode)}
                     isOpen={true}
-                    verticalSplitRef={this.verticalPaneRef}
                     {...makeCssEditorProps(this.css, cssUpdateCallback)}
                 />
             }
@@ -562,7 +559,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                 const specificRoot = this.state.css.findNode([`#${this.selectedNode.htmlId}`]) as CssNode;
                 specificCssEditor = <CssEditor cssNode={new ReadonlyCssNode(specificRoot)}
                     isOpen={true}
-                    verticalSplitRef={this.verticalPaneRef}
                     {...makeCssEditorProps(this.css, cssUpdateCallback)} />
             }
 
@@ -576,12 +572,10 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             <CssEditor
                 cssNode={new ReadonlyCssNode(this.state.rootCss)}
                 isOpen={true}
-                verticalSplitRef={this.verticalPaneRef}
                 {...makeCssEditorProps(this.rootCss, rootCssUpdateCallback)} />
             <CssEditor
                 cssNode={new ReadonlyCssNode(this.state.css)}
                 isOpen={true}
-                verticalSplitRef={this.verticalPaneRef}
                 varSuggestions={this.makeCssEditorVarSuggestions()}
                 {...makeCssEditorProps(this.css, cssUpdateCallback)} />
         </>
@@ -634,9 +628,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                 />
                 </ContextMenuTrigger>
                 {createPortal(
-                    <SelectedNodeHighlightBox 
-                        verticalSplitRef={this.verticalPaneRef}
-                    />,
+                    <SelectedNodeHighlightBox />,
                     hlBoxContainer
                 )}
             </>
@@ -676,7 +668,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                 return resume;
             default:
                 return <ResizableSidebarLayout
-                    ref={this.verticalPaneRef}
                     topNav={editingTop}
                     main={resume}
                     isPrinting={this.isPrinting}

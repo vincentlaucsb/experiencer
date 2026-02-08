@@ -32,3 +32,29 @@ These rules help maintain consistency and quality. When making changes:
 2. Follow established patterns
 3. Update rules if new patterns emerge
 4. Keep rules in sync with actual codebase
+
+## Rule File Format
+
+Rule files use standard Markdown with optional YAML front matter for scoping:
+
+```yaml
+---
+paths:
+  - "**/*.scss"
+  - "**/*.css"
+---
+
+# Rule Title
+...
+```
+
+**YAML Front Matter:**
+- `paths`: Array of glob patterns to scope the rule to specific files
+- **Specify paths whenever possible** for more targeted rules
+- Only omit if the rule truly applies project-wide (rare)
+- Use standard glob syntax: `**/*.ext` for file patterns
+
+**Examples:**
+- `css-scss.md` scopes to `.scss` files: `paths: ["**/*.scss"]`
+- `state-management.md` scopes to TypeScript: `paths: ["**/*.ts", "**/*.tsx"]`
+- `git-and-docs.md` applies everywhere (no paths)

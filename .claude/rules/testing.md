@@ -1,3 +1,9 @@
+---
+paths:
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+---
+
 # Testing
 
 ## Test Files

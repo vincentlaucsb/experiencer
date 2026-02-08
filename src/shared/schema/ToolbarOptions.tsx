@@ -1,84 +1,26 @@
-import Entry, { BasicEntryProps } from "@/resume/Entry";
+import Entry from "@/resume/Entry";
 import Row, { BasicRowProps } from "@/resume/Row";
 import Header from "@/resume/Header";
 import Link from "@/resume/Link";
 import { IconType } from "@/resume/Icon";
 import { ResumeNode, NodeProperty } from "@/types";
 import { BasicDescriptionItemProps, DescriptionListItemType } from "@/resume/List";
-import { ToolbarItemData } from "@/controls/toolbar/ToolbarButton";
+import { ToolbarItemData } from "@/types/toolbar";
 import UrlInput from "@/controls/inputs/UrlInput";
+import getJustifyContentOptions from "@/resume/helpers/getJustifyContentOptions";
+import getHeaderToolbarOptions from "@/resume/Header/toolbarOptions";
+import getEntryToolbarOptions from "@/resume/Entry/toolbarOptions";
 
 /**
  * Retrieves custom toolbar options for a node
- * @param type
  * @param node
  * @param updateNode
  */
 export default function toolbarOptions(
     node: ResumeNode,
-    updateNode: (key: string, value: NodeProperty) => void):
-    ToolbarItemData[]
-{
-    const addLineBreak = (node: BasicEntryProps) => {
-        if (node.subtitle) {
-            let arr = node.subtitleBreaks || [];
-            arr.push(node.subtitle.length - 1);
-            return arr;
-        }
-
-        return [];
-    }
-
-    const removeLineBreak = (node: BasicEntryProps) => {
-        if (node.subtitleBreaks) {
-            return node.subtitleBreaks.slice(0, node.subtitleBreaks.length - 1);
-        }
-
-        return [];
-    };
-
-    const addTitleField = (node: BasicEntryProps) => {
-        let arr = node.title || [];
-        arr.push('');
-        return arr;
-    }
-
-    const addSubtitleField = (node: BasicEntryProps) => {
-        let arr = node.subtitle || [];
-        arr.push('');
-        return arr;
-    }
-    
-    const justifyContent = (option: string) => updateNode('justifyContent', option);
-    const justifyContentOptions = {
-        text: 'Justify Content',
-        items: [
-            {
-                text: 'Space between',
-                action: () => justifyContent('space-between')
-            },
-            {
-                text: 'Stack at beginning',
-                action: () => justifyContent('flex-start')
-            },
-            {
-                text: 'Stack at end',
-                action: () => justifyContent('flex-end')
-            },
-            {
-                text: 'Stack center',
-                action: () => justifyContent('center')
-            },
-            {
-                text: 'Space around',
-                action: () => justifyContent('space-around')
-            },
-            {
-                text: 'Space evenly',
-                action: () => justifyContent('space-evenly')
-            }
-        ]
-    };
+    updateNode: (key: string, value: NodeProperty) => void
+): ToolbarItemData[] {
+    const justifyContentOptions = getJustifyContentOptions(updateNode);
 
     switch (node.type) {
         case DescriptionListItemType:
@@ -86,7 +28,7 @@ export default function toolbarOptions(
                 let arr = node.definitions || [];
                 arr.push('');
                 return arr;
-            }
+            };
 
             return [
                 {
@@ -96,60 +38,10 @@ export default function toolbarOptions(
             ];
 
         case Entry.type:
-            return [
-                {
-                    text: 'Title Options',
-                    items: [
-                        {
-                            text: 'Add title field',
-                            action: () =>
-                                updateNode('title', addTitleField(node))
-                        },
-                        {
-                            text: 'Add subtitle field',
-                            action: () =>
-                                updateNode('subtitle', addSubtitleField(node))
-                        },
-                        {
-                            text: 'Add subtitle line break',
-                            action: () =>
-                                updateNode('subtitleBreaks', addLineBreak(node))
-                        },
-                        {
-                            text: 'Remove subtitle line break (from right)',
-                            action: () => updateNode('subtitleBreaks', removeLineBreak(node)),
-                        }
-                    ]
-                }
-            ];
+            return getEntryToolbarOptions(node, updateNode);
 
         case Header.type:
-            const distribute = (value: string) => updateNode('distribution', value);
-
-            return [
-                {
-                    text: `Distribute Items`,
-                    items: [
-                        {
-                            text: 'Top-to-Bottom',
-                            action: () => distribute('top-to-bottom')
-                        },
-                        {
-                            text: 'Bottom-to-Top',
-                            action: () => distribute('bottom-to-top')
-                        },
-                        {
-                            text: 'Left-to-Right',
-                            action: () => distribute('left-to-right')
-                        },
-                        {
-                            text: 'Right-to-Left',
-                            action: () => distribute('right-to-left')
-                        }
-                    ]
-                },
-                justifyContentOptions
-            ]
+            return getHeaderToolbarOptions(updateNode);
 
         case IconType:
             return [

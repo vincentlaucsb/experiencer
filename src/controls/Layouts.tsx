@@ -1,5 +1,5 @@
 ﻿import React from "react";
-import SplitPane from "react-split-pane";
+import { SplitPane } from "./SplitPane";
 
 interface DefaultLayoutProps {
     topNav: JSX.Element;
@@ -33,23 +33,29 @@ export function StaticSidebarLayout(props: SidebarLayoutProps) {
 }
 
 export const ResizableSidebarLayout = React.forwardRef(
-    (props: SidebarLayoutProps, ref: React.Ref<SplitPane>) => (
-        // TODO: Create custom SplitPane wrapper to resolve TypeScript errors
-        // Current issue: react-resizable-and-movable SplitPane has type incompatibilities
-        // Solution: Follow the pattern used in src/controls/ContextMenu.tsx to wrap the component
-        // This will provide proper TypeScript support and resolve the 'children' prop type mismatch
-        <SplitPane split="horizontal"
-            pane1Style={{ display: "block", height: "auto" }}
-            resizerStyle={{ display: "none" }}>
-            {props.topNav}
-            <SplitPane split="vertical"
-                ref={ref}
-                defaultSize="500px" primary="second"
-                style={{ height: "100%" }}
-                pane1Style={{ height: "100%", overflow: "auto" }}
-                pane2Style={{ overflow: "auto" }}>
-                {props.main}
-                {props.sidebar}
-            </SplitPane>
-        </SplitPane>
+    (props: SidebarLayoutProps, ref: React.Ref<HTMLDivElement>) => (
+        <div 
+            ref={ref}
+            style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                height: '100vh',
+                overflow: 'hidden'
+            }}
+        >
+            {/* Top navigation bar */}
+            <div style={{ flexShrink: 0 }}>
+                {props.topNav}
+            </div>
+            
+            {/* Resizable split pane area */}
+            <div style={{ flex: 1, overflow: 'hidden' }}>
+                <SplitPane 
+                    left={props.main} 
+                    right={props.sidebar}
+                    minSize={300}
+                    storageKey="experiencer-sidebar-width"
+                />
+            </div>
+        </div>
     ));

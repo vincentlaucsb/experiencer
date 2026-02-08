@@ -1,3 +1,9 @@
+---
+paths:
+  - "**/*.ts"
+  - "**/*.tsx"
+---
+
 # Common Pitfalls to Avoid
 
 ## Import Mistakes
@@ -8,11 +14,11 @@
 ## SCSS Mistakes
 4. ❌ Don't use deprecated SCSS functions (lighten, darken, etc.)
 5. ❌ Don't use @import - use @use
-6. ❌ Don't use direct division - use math.div()
+6. ❌ Don't use direct division - use calc() or math.div()
 
 ## Dependency Mistakes
 7. ❌ Don't forget --legacy-peer-deps flag when installing
-8. ❌ Don't assume React 19 compatibility - we're on React 18
+8. ❌ Don't assume React 19 compatibility - we upgraded to React 19
 
 ## Code Quality Mistakes
 9. ❌ Don't use class components for new code

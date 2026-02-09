@@ -1,9 +1,11 @@
 import * as React from "react";
+import { useRef } from "react";
 import InlineMarkdown from "../helpers/InlineMarkdown";
 import Container from "@/resume/infrastructure/Container";
 import { useEditorStore, useIsNodeEditing } from "@/shared/stores/editorStore";
 import { RowBase } from "../Row";
 import useEditingHotkeys from "../hooks/useEditingHotkeys";
+import useAutoExpandInput from "../hooks/useAutoExpandInput";
 
 import "./index.scss";
 import ResumeComponentProps, { BasicResumeNode } from "@/types";
@@ -20,6 +22,13 @@ export interface HeaderProps extends ResumeComponentProps<HeaderBase> {};
 export default function Header({ updateDataFields, ...props }: HeaderProps) {
     const isEditing = useIsNodeEditing(props.uuid);
     const toggleEdit = useEditorStore((state) => state.toggleEdit);
+    const titleRef = useRef<HTMLInputElement>(null);
+    const subtitleRef = useRef<HTMLInputElement>(null);
+
+    useAutoExpandInput(
+        titleRef as React.RefObject<HTMLInputElement>,
+        subtitleRef as React.RefObject<HTMLInputElement>
+    );
 
     const editValue = {
         value: props.value || "",
@@ -59,6 +68,7 @@ export default function Header({ updateDataFields, ...props }: HeaderProps) {
 
     if (isEditing) {
         value = <input
+            ref={titleRef}
             id={`${props.uuid}-title`}
             type="text"
             value={props.value || ""}
@@ -67,6 +77,7 @@ export default function Header({ updateDataFields, ...props }: HeaderProps) {
         />
 
         subtitle = <input
+            ref={subtitleRef}
             id={`${props.uuid}-subtitle`}
             type="text"
             value={props.subtitle || ""}

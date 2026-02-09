@@ -1,4 +1,3 @@
-import React from "react";
 import MapPin from "@/assets/icons/feather/map-pin.svg?url";
 import Globe from "@/assets/icons/feather/globe.svg?url";
 import Email from "@/assets/icons/feather/mail.svg?url";

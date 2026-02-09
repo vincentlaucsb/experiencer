@@ -8,8 +8,8 @@ import MarkdownText from "@/resume/Markdown";
 import Link from "@/resume/Link";
 import Image from "@/resume/Image";
 import Divider from "@/resume/Divider";
-import DescriptionList, { BasicDescriptionItemProps, DescriptionListType, DescriptionListItemType } from "@/resume/List";
-import { IconType } from "@/resume/Icon";
+import DescriptionList, { BasicDescriptionItemProps, DescriptionListType, DescriptionListItemType, DescriptionListItem } from "@/resume/List";
+import Icon, { IconType } from "@/resume/Icon";
 import Header from "@/resume/Header";
 import getEntryToolbarOptions from "../Entry/toolbarOptions";
 import getHeaderToolbarOptions from "../Header/toolbarOptions";
@@ -20,11 +20,18 @@ import getLinkToolbarOptions from "../Link/toolbarOptions";
 import getIconToolbarOptions from "../Icon/toolbarOptions";
 import getDescriptionListItemToolbarOptions from "../List/DescriptionListItemToolbarOptions";
 
-/** Registers all resume node types with their schema definitions */
+/**
+ * Registers all resume node types with their schema definitions.
+ * 
+ * This is the central place where all resume node types are defined and registered, including their
+ * allowed child types, default values, and toolbar options. By keeping this logic in one place, we can easily manage
+ * the structure and behavior of all resume components without scattering this information across multiple files.
+ */
 export default function registerNodes() {
     const schema = ComponentTypes.instance;
 
     schema.registerNodeType({
+        component: Grid,
         type: Grid.type,
         text: 'Grid',
         icon: 'table',
@@ -45,6 +52,7 @@ export default function registerNodes() {
     });
 
     schema.registerNodeType({
+        component: Row,
         type: Row.type,
         text: 'Row',
         icon: 'swoosh-right',
@@ -59,6 +67,7 @@ export default function registerNodes() {
     });
 
     schema.registerNodeType({
+        component: Column,
         type: Column.type,
         text: 'Column',
         icon: 'swoosh-down',
@@ -78,6 +87,7 @@ export default function registerNodes() {
     });
 
     schema.registerNodeType({
+        component: Section,
         type: Section.type,
         text: 'Section',
         icon: 'book-mark',
@@ -97,6 +107,7 @@ export default function registerNodes() {
     });
 
     schema.registerNodeType({
+        component: Entry,
         type: Entry.type,
         text: 'Entry',
         icon: 'calendar',
@@ -117,6 +128,7 @@ export default function registerNodes() {
     });
 
     schema.registerNodeType({
+        component: MarkdownText,
         type: MarkdownText.type,
         text: 'Markdown',
         icon: 'paragraph',
@@ -126,6 +138,7 @@ export default function registerNodes() {
     });
 
     schema.registerNodeType({
+        component: Link,
         type: Link.type,
         text: 'Link',
         icon: 'link',
@@ -140,12 +153,14 @@ export default function registerNodes() {
     });
 
     schema.registerNodeType({
+        component: Divider,
         type: Divider.type,
         text: 'Divider',
         defaultValue: {}
     });
 
     schema.registerNodeType({
+        component: Header,
         type: Header.type,
         text: 'Header',
         childTypes: [
@@ -163,6 +178,7 @@ export default function registerNodes() {
     });
 
     schema.registerNodeType({
+        component: DescriptionList,
         type: DescriptionListType,
         text: 'Description List',
         icon: 'sub-listing',
@@ -180,6 +196,7 @@ export default function registerNodes() {
     });
 
     schema.registerNodeType({
+        component: DescriptionListItem,
         type: DescriptionListItemType,
         text: 'Description List Item',
         defaultValue: {},
@@ -187,6 +204,7 @@ export default function registerNodes() {
     });
 
     schema.registerNodeType({
+        component: Icon,
         type: IconType,
         text: 'Icon',
         defaultValue: {},
@@ -194,6 +212,7 @@ export default function registerNodes() {
     });
 
     schema.registerNodeType({
+        component: Image,
         type: Image.type,
         text: 'Image',
         icon: 'image',
@@ -203,6 +222,7 @@ export default function registerNodes() {
     });
 
     schema.registerNodeType({
+        component: MarkdownText,
         type: AliasTypes.BulletedList,
         text: 'Bulleted List',
         icon: 'list-dots',

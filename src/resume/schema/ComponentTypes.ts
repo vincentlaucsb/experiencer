@@ -1,6 +1,7 @@
+import React from "react";
 import ResumeNodeDefinition from "./ResumeNodeDefinition";
 import { arrayNormalize } from "@/shared/utils/arrayHelpers";
-import { BasicResumeNode, NodeProperty, ResumeNode } from "@/types";
+import ResumeComponentProps, { BasicResumeNode, NodeProperty, ResumeNode } from "@/types";
 import { ToolbarItemData } from "@/types/toolbar";
 
 export interface NodeInformation {
@@ -18,6 +19,7 @@ type ToolbarOptionsFunction = (
 /** Stores schema information */
 export default class ComponentTypes {
     private _childTypes: Map<string, Array<string> | undefined> = new Map();
+    private _components: Map<string, typeof React.Component | React.FC<ResumeComponentProps>> = new Map();
     private _defaultChildTypes: string[] = [];
     private _defaultValues: Map<string, DefaultNodeValue> = new Map();
     private _displayText: Map<string, string> = new Map();
@@ -66,6 +68,13 @@ export default class ComponentTypes {
     }
 
     /**
+     * Get the React component associated with a given node type, if it exists.
+     */
+    getComponent(type: string) : typeof React.Component | React.FC<ResumeComponentProps> | undefined {
+        return this._components.get(type);
+    }
+
+    /**
      * Get toolbar options for a given node
      * @param node The node instance
      * @param updateNode Callback to update node properties
@@ -105,13 +114,16 @@ export default class ComponentTypes {
      * @param def The node definition containing type, display text, children, defaults, icon, and optional toolbar options
      */
     registerNodeType(def: ResumeNodeDefinition) {
-        if (this._registeredTypes.has(def.type)) return;
+        if (this._registeredTypes.has(def.type)) {
+            console.warn(`Component type "${def.type}" is already registered. Skipping duplicate registration.`);
+            return;
+        }
 
         this._registeredTypes.add(def.type);
 
         this._childTypes.set(def.type, def.childTypes ? 
             arrayNormalize(def.childTypes) : undefined);
-
+        this._components.set(def.type, def.component);
         const defaultValue = { ...def.defaultValue, type: def.type };
         this._defaultValues.set(def.type, defaultValue);
         this._displayText.set(def.type, def.text);

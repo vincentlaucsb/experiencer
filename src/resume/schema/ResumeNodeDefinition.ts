@@ -1,10 +1,14 @@
+import React from "react";
 import { ToolbarItemData } from "@/controls/toolbar/ToolbarButton";
-import { BasicResumeNode, ResumeNode } from "@/types";
+import { BasicResumeNode, ResumeComponentProps, ResumeNode } from "@/types";
 
 /** Schema information for a resume node */
 type ResumeNodeDefinition = {
     /** Child node types that this node can contain */
     childTypes?: string | string[];
+
+    /** React component to render this node type */
+    component: typeof React.Component | React.FC<ResumeComponentProps>
 
     /** Indicates if this node type is a default child type */
     isDefaultChildType?: boolean;

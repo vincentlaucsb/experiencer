@@ -1,18 +1,8 @@
 import * as React from "react";
 
-import Section from "./Section";
-import Entry from "./Entry";
-import DescriptionList, { DescriptionListItem, DescriptionListType, DescriptionListItemType } from "./List";
-import MarkdownText from "./Markdown";
-import Link from "./Link";
-import Image from "./Image";
-import Header from "./Header";
-import Row from "./Row";
-import Column from "./Column";
-import Grid from "./Grid";
-import Icon, { IconType } from "./Icon";
 import ResumeComponentProps, { IdType, NodeProperty, ResumeNode } from "@/types";
-import Divider from "./Divider";
+
+import ComponentTypes from "./schema/ComponentTypes";
 
 interface FactoryProps extends ResumeNode {
     index: number;       // The n-th index of this node relative to its parent
@@ -23,7 +13,11 @@ interface FactoryProps extends ResumeNode {
 }
 
 /**
- * Factory for loading a resume node from a JavaScript object
+ * This is used when loading a resume from JSON, where we need to convert the raw data into React components.
+ * The factory takes care of recursively rendering the correct component for each node type, as well as passing
+ * down the necessary props and generating unique IDs for each component instance.
+ * By centralizing this logic in one place, we can ensure that all components are rendered consistently
+ * and have access to the data and update functions they need.
  */
 export default function ResumeComponentFactory(props: FactoryProps) {
     const parentId = props.parentId;
@@ -42,76 +36,33 @@ export default function ResumeComponentFactory(props: FactoryProps) {
         isLast: index === props.numSiblings - 1
     } as ResumeComponentProps;
 
-    let Container: typeof React.Component | React.FC<ResumeComponentProps>;
-    switch (props.type) {
-        case DescriptionListType:
-            Container = DescriptionList;
-            break;
-        case DescriptionListItemType:
-            Container = DescriptionListItem;
-            break;
-        case Divider.type:
-            Container = Divider;
-            break;
-        case Grid.type:
-            Container = Grid;
-            break;
-        case Column.type:
-            Container = Column;
-            break;
-        case Row.type:
-            Container = Row;
-            break;
-        case Header.type:
-            Container = Header;
-            break;
-        case Section.type:
-            Container = Section;
-            break;
-        case Entry.type:
-            Container = Entry;
-            break;
-        case MarkdownText.type:
-            Container = MarkdownText;
-            break;
-        case Link.type:
-            Container = Link;
-            break;
-        case Image.type:
-            Container = Image;
-            break;
-        case IconType:
-            Container = Icon;
-            break;
-        default:
-            return <React.Fragment></React.Fragment>
+    const ResumeComponent = ComponentTypes.instance.getComponent(props.type);
+    if (!ResumeComponent) 
+        return <React.Fragment></React.Fragment>
+
+    let children: React.ReactNode = <></>
+    if (props.childNodes) {
+        children = props.childNodes.map((elem, idx, arr) => {
+            const uniqueId = elem.uuid;
+            const childProps = {
+                ...elem,
+                updateResumeData: props.updateResumeData,
+                updateResumeDataFields: props.updateResumeDataFields,
+
+                index: idx,
+                numSiblings: arr.length,
+
+                // Crucial for generating IDs so hover/select works properly
+                parentId: newProps.id
+            };
+
+            return <ResumeComponentFactory key={uniqueId} {...childProps} />
+        })
     }
 
-    if (Container) {
-        let children: React.ReactNode = <></>
-        if (props.childNodes) {
-            children = props.childNodes.map((elem, idx, arr) => {
-                const uniqueId = elem.uuid;
-                const childProps = {
-                    ...elem,
-                    updateResumeData: props.updateResumeData,
-                    updateResumeDataFields: props.updateResumeDataFields,
-
-                    index: idx,
-                    numSiblings: arr.length,
-
-                    // Crucial for generating IDs so hover/select works properly
-                    parentId: newProps.id
-                };
-
-                return <ResumeComponentFactory key={uniqueId} {...childProps} />
-            })
-        }
-
-        return <Container {...newProps}>
+    return (
+        <ResumeComponent {...newProps}>
             {children}
-        </Container>
-    }
-
-    return <React.Fragment></React.Fragment>
+        </ResumeComponent>
+    );
 }

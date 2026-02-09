@@ -53,32 +53,32 @@ export function assignIds(nodeOrArray: Array<BasicResumeNode>) : Array<ResumeNod
 export function assignIds(nodeOrArray: BasicResumeNode | Array<BasicResumeNode>) {
     if (nodeOrArray instanceof Array) {
         assignIdsToNodeArray(nodeOrArray);
-        return nodeOrArray as Array<ResumeNode>;
+        return nodeOrArray as unknown as Array<ResumeNode>;
     }
 
     nodeOrArray['uuid'] = uuid();
-    let children = nodeOrArray.childNodes as Array<ResumeNode>;
+    let children = nodeOrArray.childNodes;
     if (children) {
         assignIdsToNodeArray(children);
     }
 
-    return nodeOrArray as ResumeNode;
+    return nodeOrArray as unknown as ResumeNode;
 }
 
 /**
  * Assign unique IDs to an array of nodes by reference
  * @param children An array of nodes
  */
-function assignIdsToNodeArray(children: Array<BasicResumeNode>) {
+function assignIdsToNodeArray(children: Array<BasicResumeNode | ResumeNode>) {
     // Assign unique IDs to all children
     let workQueue = [ children ];
     while(workQueue.length) {
-        let nextItem = workQueue.pop() as Array<BasicResumeNode>;
+        let nextItem = workQueue.pop() as Array<BasicResumeNode | ResumeNode>;
         nextItem.forEach((elem) => {
-            elem['uuid'] = uuid();
+            (elem as any)['uuid'] = uuid();
 
             if (elem.childNodes) {
-                workQueue.push(elem.childNodes);
+                workQueue.push(elem.childNodes as any);
             }
         });
     }

@@ -1,22 +1,38 @@
 import * as React from "react";
-import { useIsNodeEditing } from "@/shared/stores/editorStore";
 import InlineMarkdown from "../helpers/InlineMarkdown";
 import Container from "@/resume/infrastructure/Container";
-import { RowProps, BasicRowProps } from "../Row";
+import { useEditorStore, useIsNodeEditing } from "@/shared/stores/editorStore";
+import { RowBase } from "../Row";
+import useEditingHotkeys from "../hooks/useEditingHotkeys";
 
 import "./index.scss";
+import ResumeComponentProps, { BasicResumeNode } from "@/types";
 
-interface HeaderBase {
+interface HeaderBase extends RowBase {
     distribution?: 'top-to-bottom' | 'left-to-right' | 'bottom-to-top' | 'right-to-left';
     justifyContent?: string;
     subtitle?: string;
 }
 
-export interface BasicHeaderProps extends BasicRowProps, HeaderBase { };
-export interface HeaderProps extends RowProps, HeaderBase { };
+export interface BasicHeaderProps extends BasicResumeNode<HeaderBase> {};
+export interface HeaderProps extends ResumeComponentProps<HeaderBase> {};
 
-export default function Header(props: HeaderProps) {
+export default function Header({ updateDataFields, ...props }: HeaderProps) {
     const isEditing = useIsNodeEditing(props.uuid);
+    const toggleEdit = useEditorStore((state) => state.toggleEdit);
+
+    const editValue = {
+        value: props.value || "",
+        subtitle: props.subtitle || "",
+    };
+
+    useEditingHotkeys({
+        isEditing,
+        ctrlEnter: false,
+        value: editValue,
+        onChange: updateDataFields,
+        toggleEditing: toggleEdit,
+    });
 
     const style: React.CSSProperties = {
         display: 'flex',

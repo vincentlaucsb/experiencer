@@ -15,6 +15,7 @@ test('Entry Class Names Test', async () => {
         uuid=""
         isLast={false}
         updateData={() => { }}
+        updateDataFields={() => { }}
         title={title}
         subtitle={subtitle}
     />);

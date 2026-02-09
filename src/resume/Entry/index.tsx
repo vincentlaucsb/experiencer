@@ -14,8 +14,8 @@ interface EntryBase {
     subtitleBreaks?: number[];
 }
 
-export interface BasicEntryProps extends BasicResumeNode, EntryBase { };
-export interface EntryProps extends ResumeComponentProps, EntryBase { };
+export interface BasicEntryProps extends BasicResumeNode<EntryBase> { };
+export interface EntryProps extends ResumeComponentProps<EntryBase> { };
 
 /**
  * Generate the class name for the n-th field

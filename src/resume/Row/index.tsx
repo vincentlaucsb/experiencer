@@ -3,13 +3,13 @@ import Container from "@/resume/infrastructure/Container";
 import ResumeComponentProps, { BasicResumeNode, ResumeNode } from "@/types";
 import Column from "../Column";
 
-interface RowBase {
+export interface RowBase {
     justifyContent?: string;
     reverseDirection?: boolean;
 }
 
-export interface BasicRowProps extends BasicResumeNode, RowBase { }
-export interface RowProps extends ResumeComponentProps, RowBase {}
+export interface BasicRowProps extends BasicResumeNode<RowBase> {}
+export interface RowProps extends ResumeComponentProps<RowBase> {}
 
 export default class Row extends React.PureComponent<RowProps> {
     static readonly type: string = 'Row';

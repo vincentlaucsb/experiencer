@@ -13,20 +13,32 @@ export type AddChild = ((parentUuid: string | undefined, node: ResumeNode) => vo
 export type ModifyChild = (id: IdType) => void;
 export type NodeProperty = string | string[] | boolean | number | number[];
 
-/** The properties a node can be expected to have
- *  in a JSON representation
- *  
- *  This is a non-exclusive list... there may be others
- * */
-export interface BasicResumeNode {
-    childNodes?: Array<BasicResumeNode>;
+/**
+ * Base properties shared by all resume node types (excludes childNodes).
+ */
+interface ResumeNodeBase {
     classNames?: string;
     htmlId?: string;
     value?: string;
-
-    // TODO: Change to 'Row' | 'Column' | etc. ?
     type: string;
 }
+
+/** Editable properties of a resume node, excluding the `type` field. */
+export type ResumeNodeEditable<TExtra extends Record<string, any> = Record<string, any>> = 
+    Omit<ResumeNodeBase, 'type'> & TExtra;
+
+/**
+ * Common denominator for JSON-serializable resume nodes.
+ *
+ * This is the base shape persisted in saves/templates (no app-only fields).
+ * When a node needs extra, node-specific props, pass them via the generic
+ * `TExtra` parameter (e.g., `BasicResumeNode<{ altText?: string }>`).
+ */
+export type BasicResumeNode<
+    TExtra extends Record<string, any> = Record<string, any>,
+> = ResumeNodeBase & {
+    childNodes?: Array<BasicResumeNode>;
+} & TExtra;
 
 /** Return a JSON serializable format of a CssNode and its descendents */
 export interface CssNodeDump {
@@ -44,12 +56,18 @@ export type EditorMode = 'normal'
     | 'changingTemplate'
     | 'printing';
 
-export interface ResumeNode extends BasicResumeNode {
+/**
+ * Live app node type used at runtime (adds UUIDs for identity).
+ *
+ * Use `TExtra` for node-specific props that should exist at runtime but are
+ * not part of the common denominator (e.g., `ResumeNode<ImageBase>`).
+ */
+export type ResumeNode<TExtra extends Record<string, any> = Record<string, any>> = ResumeNodeBase & {
     childNodes?: Array<ResumeNode>;
-
+    
     // UUIDs are assigned by the app and need not be saved
     uuid: string;
-}
+} & TExtra;
 
 export interface ResumeSaveData {
     builtinCss: CssNodeDump;
@@ -57,10 +75,27 @@ export interface ResumeSaveData {
     childNodes: Array<ResumeNode>;
 }
 
-/** Used in creating React components representing resume nodes */
-export default interface ResumeComponentProps extends ResumeNode {
+/**
+ * Props passed to React resume components.
+ *
+ * `TExtra` carries node-specific props without expanding the base types.
+ */
+export type ResumeComponentProps<TExtra extends Record<string, any> = Record<string, any>> = ResumeNode<TExtra> & {
     children?: ReactNode;
-    id: IdType;   // Hierarchical ID based on the node's position in the resume; subject to change
+
+    /** Hierarchical ID based on the node's position in the resume.
+     * This may change as the resume structure changes.
+     */
+    id: IdType;
+
+    /** Whether this node is the last child of its parent. */
     isLast: boolean;
-    updateData: (key: string, data: NodeProperty) => void;
-}
+
+    /** Update a single field. */
+    updateData<K extends keyof ResumeNodeEditable<TExtra>>(key: K, data: ResumeNodeEditable<TExtra>[K]): void;
+
+    /** Update multiple fields at once. */
+    updateDataFields: (patch: Partial<ResumeNodeEditable<TExtra>>) => void;
+};
+
+export default ResumeComponentProps;

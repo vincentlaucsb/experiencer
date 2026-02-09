@@ -20,6 +20,7 @@ test('Link renders as span when not printing', () => {
                 uuid="test-uuid"
                 isLast={false}
                 updateData={() => { }}
+                updateDataFields={() => { }}
                 value="Test Link"
                 url="https://example.com"
             />
@@ -49,6 +50,7 @@ test('Link renders as anchor tag when isPrinting is true', () => {
                 uuid="test-uuid"
                 isLast={false}
                 updateData={() => { }}
+                updateDataFields={() => { }}
                 value="Test Link"
                 url="https://example.com"
             />
@@ -77,6 +79,7 @@ test('Link shows default text when value is empty', () => {
                 uuid="test-uuid"
                 isLast={false}
                 updateData={() => { }}
+                updateDataFields={() => { }}
                 url="https://example.com"
             />
         </ResumeContext.Provider>
@@ -100,6 +103,7 @@ test('Link uses # as default href when url is empty in print mode', () => {
                 uuid="test-uuid"
                 isLast={false}
                 updateData={() => { }}
+                updateDataFields={() => { }}
                 value="Test Link"
             />
         </ResumeContext.Provider>
@@ -126,6 +130,7 @@ test('Link shows input when in edit mode', () => {
                 uuid="test-uuid"
                 isLast={false}
                 updateData={() => { }}
+                updateDataFields={() => { }}
                 value="Test Link"
                 url="https://example.com"
             />

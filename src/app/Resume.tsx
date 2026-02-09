@@ -259,6 +259,15 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         useResumeStore.getState().updateNode(id, key, data);
     }
 
+    updateDataFields(id: IdType, patch: Partial<Record<string, NodeProperty>>) {
+        recordHistory();
+        Object.entries(patch).forEach(([key, value]) => {
+            if (value !== undefined) {
+                useResumeStore.getState().updateNode(id, key, value);
+            }
+        });
+    }
+
     updateSelected(key: string, data: NodeProperty) {
         const uuid = useEditorStore.getState().selectedNodeId;
         if (uuid) {
@@ -565,6 +574,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                             const props = {
                                 ...elem,
                                 updateResumeData: this.updateData,
+                                updateResumeDataFields: this.updateDataFields,
                                 index: idx,
                                 numSiblings: arr.length
                             };

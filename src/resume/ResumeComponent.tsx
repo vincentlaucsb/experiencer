@@ -5,6 +5,7 @@ import Entry from "./Entry";
 import DescriptionList, { DescriptionListItem, DescriptionListType, DescriptionListItemType } from "./List";
 import MarkdownText from "./Markdown";
 import Link from "./Link";
+import Image from "./Image";
 import Header from "./Header";
 import Row from "./Row";
 import Column from "./Column";
@@ -18,6 +19,7 @@ interface FactoryProps extends ResumeNode {
     numSiblings: number; // Number of siblings this node has
     parentId?: IdType;   // The id of the parent node
     updateResumeData: (id: IdType, key: string, data: NodeProperty) => void
+    updateResumeDataFields: (id: IdType, patch: Partial<Record<string, NodeProperty>>) => void
 }
 
 /**
@@ -33,6 +35,7 @@ export default function ResumeComponentFactory(props: FactoryProps) {
 
         // Compute properties
         updateData: (key, data) => props.updateResumeData(nodeId, key, data),
+        updateDataFields: (patch) => props.updateResumeDataFields(nodeId, patch),
 
         // Generate unique IDs for component
         id: nodeId,
@@ -74,6 +77,9 @@ export default function ResumeComponentFactory(props: FactoryProps) {
         case Link.type:
             Container = Link;
             break;
+        case Image.type:
+            Container = Image;
+            break;
         case IconType:
             Container = Icon;
             break;
@@ -89,6 +95,7 @@ export default function ResumeComponentFactory(props: FactoryProps) {
                 const childProps = {
                     ...elem,
                     updateResumeData: props.updateResumeData,
+                    updateResumeDataFields: props.updateResumeDataFields,
 
                     index: idx,
                     numSiblings: arr.length,

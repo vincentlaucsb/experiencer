@@ -6,6 +6,7 @@ import Section from "@/resume/Section";
 import Entry, { BasicEntryProps } from "@/resume/Entry";
 import MarkdownText from "@/resume/Markdown";
 import Link from "@/resume/Link";
+import Image from "@/resume/Image";
 import Divider from "@/resume/Divider";
 import DescriptionList, { BasicDescriptionItemProps, DescriptionListType, DescriptionListItemType } from "@/resume/List";
 import { IconType } from "@/resume/Icon";
@@ -36,7 +37,8 @@ export default function registerNodes() {
             Link.type,
             AliasTypes.BulletedList,
             DescriptionListType,
-            IconType
+            IconType,
+            Image.type
         ],
         defaultValue: {},
         toolbarOptions: getGridToolbarOptions
@@ -68,7 +70,8 @@ export default function registerNodes() {
             MarkdownText.type,
             Link.type,
             AliasTypes.BulletedList,
-            DescriptionListType
+            DescriptionListType,
+            Image.type
         ],
         defaultValue: {},
         toolbarOptions: getColumnToolbarOptions
@@ -86,7 +89,8 @@ export default function registerNodes() {
             AliasTypes.BulletedList,
             DescriptionListType,
             Grid.type,
-            Row.type
+            Row.type,
+            Image.type
         ],
         defaultValue: {},
         isDefaultChildType: true
@@ -101,7 +105,8 @@ export default function registerNodes() {
             AliasTypes.BulletedList,
             DescriptionListType,
             MarkdownText.type,
-            Link.type
+            Link.type,
+            Image.type
         ],
         defaultValue: {
             type: Entry.type,
@@ -149,7 +154,8 @@ export default function registerNodes() {
             Link.type,
             AliasTypes.BulletedList,
             DescriptionListType,
-            Grid.type
+            Grid.type,
+            Image.type
         ],
         defaultValue: {},
         isEditable: true,
@@ -185,6 +191,15 @@ export default function registerNodes() {
         text: 'Icon',
         defaultValue: {},
         toolbarOptions: getIconToolbarOptions
+    });
+
+    schema.registerNodeType({
+        type: Image.type,
+        text: 'Image',
+        icon: 'image',
+        defaultValue: {
+            value: ''
+        }
     });
 
     schema.registerNodeType({

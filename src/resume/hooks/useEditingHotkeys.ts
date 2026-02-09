@@ -1,14 +1,16 @@
 import { useEffect, useRef } from "react";
 
-export interface useEditingHotkeysOptions {
+type EditingValue = string | Record<string, string>;
+
+export interface useEditingHotkeysOptions<TValue extends EditingValue = string> {
     /** Whether the component is currently being edited */
     isEditing: boolean;
 
-    /** Called when text changes */
-    onChange: (text: string) => void;
+    /** Called when value changes, i.e. the user hits Enter. */
+    onChange: (text: TValue) => void;
 
     /** The current text value; stored on edit start and used for Escape rollback */
-    value: string;
+    value: TValue;
 
     /** Called when save hotkey is pressed (Enter or Ctrl+Enter) */
     toggleEditing: () => void;
@@ -29,7 +31,7 @@ export interface useEditingHotkeysOptions {
  * @param options - Configuration for keyboard behavior
  * @param options.isEditing - Whether the component is currently in edit mode
  * @param options.onChange - Called with original value when Escape is pressed
- * @param options.value - Current text value; captured when editing starts for rollback
+ * @param options.value - Current value; captured when editing starts for rollback
  * @param options.toggleEditing - Called when save hotkey is pressed (Enter/Ctrl+Enter)
  * @param options.ctrlEnter - Save key behavior:
  *   - `true` (default): Requires Ctrl+Enter to save (good for multiline textareas)
@@ -55,8 +57,19 @@ export interface useEditingHotkeysOptions {
  *   ctrlEnter: false
  * });
  */
-export default function useEditingHotkeys(options: useEditingHotkeysOptions) {
-    const valueRef = useRef<string>(options.value);
+export default function useEditingHotkeys<TValue extends EditingValue = string>(options: useEditingHotkeysOptions<TValue>) {
+    const valueRef = useRef<TValue>(options.value);
+
+    const isRecordValue = (value: EditingValue): value is Record<string, string> => {
+        return typeof value === "object" && value !== null;
+    };
+
+    const cloneValue = (value: TValue): TValue => {
+        if (isRecordValue(value)) {
+            return { ...(value as Record<string, string>) } as TValue;
+        }
+        return value;
+    };
 
     // Capture the original value when editing starts.
     // NOTE: options.value is intentionally omitted from dependencies.
@@ -64,7 +77,7 @@ export default function useEditingHotkeys(options: useEditingHotkeysOptions) {
     // allowing Escape to restore the original state even if the value changes during editing.
     useEffect(() => {
         if (options.isEditing) {
-            valueRef.current = options.value;
+            valueRef.current = cloneValue(options.value);
         }
     }, [options.isEditing]);
     

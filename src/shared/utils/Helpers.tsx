@@ -114,7 +114,7 @@ export function toUrl(text?: string) {
         var expression = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
         const regex = new RegExp(expression);
         if (text.match(regex)) {
-            return `<a href="${text}">${text}</a>`;
+            return `[${text}](${text})`;
         }
 
         return text;

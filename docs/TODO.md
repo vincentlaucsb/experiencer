@@ -43,6 +43,31 @@
 - 📦 Simpler component logic with hooks (function components) and getState() (class components)
 - 🔧 Can access/update state outside React components
 
+### ✅ Print Mode State in Zustand (COMPLETED)
+**Goal**: Move print/export state out of React context into a lightweight Zustand store
+
+**Completed**:
+- ✅ Added `printStore` with `isPrinting` state + selector hook
+- ✅ Removed `ResumeContext` provider usage from render tree
+- ✅ Updated Link component + tests to consume Zustand state
+- ✅ Synced print mode changes with before/after print events
+
+### ✅ Centralized Editor Mode State (COMPLETED)
+**Goal**: Move all editor modes into Zustand for better separation of concerns
+
+**Completed**:
+- ✅ Added mode state to `editorStore` with `setMode()` and `toggleMode()` actions
+- ✅ Created `useMode()`, `useIsEditing()` selector hooks
+- ✅ Moved `print()` and `exportHtml()` into utility functions (`PrintHelpers.ts`)
+- ✅ Removed mode from `Resume` component state (now purely presentational)
+- ✅ `printStore` auto-syncs with editor mode via subscription
+
+**Benefits**:
+- 📦 All UI state centralized in stores (mode, selection, printing)
+- 🔧 Utilities can access state without component instance
+- 🧪 Mode transitions testable independently
+- 📉 ~60 lines removed from Resume.tsx
+
 ---
 
 ### Markdown Component (Replace RichText) - IN PROGRESS

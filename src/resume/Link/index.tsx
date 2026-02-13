@@ -1,8 +1,8 @@
-import React, { useContext } from "react";
+import React from "react";
 import Container from "@/resume/infrastructure/Container";
 import { process } from "@/shared/utils/Helpers";
-import ResumeContext from "@/shared/utils/ResumeContext";
 import { useIsNodeEditing, useEditorStore } from "@/shared/stores/editorStore";
+import { useIsPrinting } from "@/shared/stores/printStore";
 import ResumeComponentProps from "@/types";
 import useEditingHotkeys from "../hooks/useEditingHotkeys";
 
@@ -16,7 +16,7 @@ export interface LinkProps extends ResumeComponentProps, LinkBase {}
  * Represents an external link in the resume
  */
 function Link(props: LinkProps) {
-    const context = useContext(ResumeContext);
+    const isPrinting = useIsPrinting();
     const isEditing = useIsNodeEditing(props.uuid);
     const toggleEdit = useEditorStore((state) => state.toggleEdit);
     const displayText = process(props.value) as string || "Link text";
@@ -30,7 +30,7 @@ function Link(props: LinkProps) {
         ctrlEnter: false
     });
 
-    if (isEditing && !context.isPrinting) {
+    if (isEditing && !isPrinting) {
         return (
             <Container displayAs="span" className="link-editing" {...props}>
                 <input
@@ -46,7 +46,7 @@ function Link(props: LinkProps) {
 
     // In the editor, render as span to prevent navigation
     // In print/export mode, render as actual link
-    if (!context.isPrinting) {
+    if (!isPrinting) {
         return (
             <Container 
                 displayAs="span" 

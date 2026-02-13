@@ -3,28 +3,29 @@
  */
 import { render } from "@testing-library/react";
 import Link from "@/resume/Link";
-import ResumeContext, { IResumeContext } from "@/shared/utils/ResumeContext";
 import { useEditorStore } from "@/shared/stores/editorStore";
+import { usePrintStore } from "@/shared/stores/printStore";
+
+afterEach(() => {
+    usePrintStore.getState().setPrinting(false);
+    useEditorStore.getState().unselectNode();
+});
 
 /** Verify Link renders as span in editor mode */
 test('Link renders as span when not printing', () => {
-    const contextValue: IResumeContext = {
-        isPrinting: false
-    };
+    usePrintStore.getState().setPrinting(false);
 
     const { container } = render(
-        <ResumeContext.Provider value={contextValue}>
-            <Link
-                id={[0]}
-                type={Link.type}
-                uuid="test-uuid"
-                isLast={false}
-                updateData={() => { }}
-                updateDataFields={() => { }}
-                value="Test Link"
-                url="https://example.com"
-            />
-        </ResumeContext.Provider>
+        <Link
+            id={[0]}
+            type={Link.type}
+            uuid="test-uuid"
+            isLast={false}
+            updateData={() => { }}
+            updateDataFields={() => { }}
+            value="Test Link"
+            url="https://example.com"
+        />
     );
 
     const span = container.querySelector('span.link');
@@ -38,23 +39,19 @@ test('Link renders as span when not printing', () => {
 
 /** Verify Link renders as <a> tag when printing */
 test('Link renders as anchor tag when isPrinting is true', () => {
-    const contextValue: IResumeContext = {
-        isPrinting: true
-    };
+    usePrintStore.getState().setPrinting(true);
 
     const { container } = render(
-        <ResumeContext.Provider value={contextValue}>
-            <Link
-                id={[0]}
-                type={Link.type}
-                uuid="test-uuid"
-                isLast={false}
-                updateData={() => { }}
-                updateDataFields={() => { }}
-                value="Test Link"
-                url="https://example.com"
-            />
-        </ResumeContext.Provider>
+        <Link
+            id={[0]}
+            type={Link.type}
+            uuid="test-uuid"
+            isLast={false}
+            updateData={() => { }}
+            updateDataFields={() => { }}
+            value="Test Link"
+            url="https://example.com"
+        />
     );
 
     const anchor = container.querySelector('a.link');
@@ -67,22 +64,18 @@ test('Link renders as anchor tag when isPrinting is true', () => {
 
 /** Verify Link displays default text when value is empty */
 test('Link shows default text when value is empty', () => {
-    const contextValue: IResumeContext = {
-        isPrinting: false
-    };
+    usePrintStore.getState().setPrinting(false);
 
     const { container } = render(
-        <ResumeContext.Provider value={contextValue}>
-            <Link
-                id={[0]}
-                type={Link.type}
-                uuid="test-uuid"
-                isLast={false}
-                updateData={() => { }}
-                updateDataFields={() => { }}
-                url="https://example.com"
-            />
-        </ResumeContext.Provider>
+        <Link
+            id={[0]}
+            type={Link.type}
+            uuid="test-uuid"
+            isLast={false}
+            updateData={() => { }}
+            updateDataFields={() => { }}
+            url="https://example.com"
+        />
     );
 
     const span = container.querySelector('span.link');
@@ -91,22 +84,18 @@ test('Link shows default text when value is empty', () => {
 
 /** Verify Link uses # as default href when url is empty */
 test('Link uses # as default href when url is empty in print mode', () => {
-    const contextValue: IResumeContext = {
-        isPrinting: true
-    };
+    usePrintStore.getState().setPrinting(true);
 
     const { container } = render(
-        <ResumeContext.Provider value={contextValue}>
-            <Link
-                id={[0]}
-                type={Link.type}
-                uuid="test-uuid"
-                isLast={false}
-                updateData={() => { }}
-                updateDataFields={() => { }}
-                value="Test Link"
-            />
-        </ResumeContext.Provider>
+        <Link
+            id={[0]}
+            type={Link.type}
+            uuid="test-uuid"
+            isLast={false}
+            updateData={() => { }}
+            updateDataFields={() => { }}
+            value="Test Link"
+        />
     );
 
     const anchor = container.querySelector('a.link');
@@ -115,26 +104,22 @@ test('Link uses # as default href when url is empty in print mode', () => {
 
 /** Verify Link enters edit mode when selected */
 test('Link shows input when in edit mode', () => {
-    const contextValue: IResumeContext = {
-        isPrinting: false
-    };
+    usePrintStore.getState().setPrinting(false);
 
     // Set the node as editing
     useEditorStore.getState().editNode('test-uuid');
 
     const { container } = render(
-        <ResumeContext.Provider value={contextValue}>
-            <Link
-                id={[0]}
-                type={Link.type}
-                uuid="test-uuid"
-                isLast={false}
-                updateData={() => { }}
-                updateDataFields={() => { }}
-                value="Test Link"
-                url="https://example.com"
-            />
-        </ResumeContext.Provider>
+        <Link
+            id={[0]}
+            type={Link.type}
+            uuid="test-uuid"
+            isLast={false}
+            updateData={() => { }}
+            updateDataFields={() => { }}
+            value="Test Link"
+            url="https://example.com"
+        />
     );
 
     // Link uses inline editing, so find the input within the container
@@ -142,6 +127,5 @@ test('Link shows input when in edit mode', () => {
     expect(input).toBeTruthy();
     expect(input?.value).toBe('Test Link');
     
-    // Clean up
-    useEditorStore.getState().unselectNode();
+    // Clean up handled in afterEach
 });

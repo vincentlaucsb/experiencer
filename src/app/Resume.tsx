@@ -8,7 +8,7 @@ import 'purecss/build/pure-min.css';
 
 // Utilities
 import { assignIds, createContainer, deepCopy } from '@/shared/utils/Helpers';
-import ResumeContext from '@/shared/utils/ResumeContext';
+import { printResume, exportResumeAsHtml } from '@/shared/utils/PrintHelpers';
 
 // Components
 import { Button } from '@/controls/Buttons';
@@ -20,7 +20,6 @@ import TopNavBar, { TopNavBarProps } from '@/controls/TopNavBar';
 import Tabs from '@/controls/Tabs';
 import PureMenu, { PureMenuLink, PureMenuItem } from '@/controls/menus/PureMenu';
 import CssEditor, { makeCssEditorProps } from '@/editor/CssEditor';
-import generateHtml from '@/editor/GenerateHtml';
 import NodeTreeVisualizer from '@/editor/NodeTreeVisualizer';
 import Help from '@/help/Help';
 import Landing from '@/help/Landing';
@@ -29,13 +28,14 @@ import ComponentTypes from '@/resume/schema/ComponentTypes';
 import ResumeTemplates from '@/templates/ResumeTemplates';
 
 // Stores
-import { useEditorStore } from '@/shared/stores/editorStore';
+import { useEditorStore, useMode, useSelectedNodeId, useIsEditingSelected } from '@/shared/stores/editorStore';
 import { useHistoryStore, recordHistory } from '@/shared/stores/historyStore';
 import { useResumeStore } from '@/shared/stores/resumeStore';
 
 // Types
 import CssNode, { ReadonlyCssNode } from '@/shared/utils/CssTree';
 import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode, Globals } from '@/types';
+import useHandlePrint from '@/shared/hooks/useHandlePrint';
 
 // Dynamic imports (lazy-loaded on-demand)
 const ResumeContextMenuConnected = React.lazy(
@@ -47,6 +47,8 @@ const SelectedNodeHighlightBox = React.lazy(
 
 export interface ResumeProps {
     mode?: EditorMode;
+    selectedNodeId?: string;
+    isEditingSelected?: boolean;
     nodes?: Array<ResumeNode>;
     css?: CssNode;
     rootCss?: CssNode;
@@ -55,8 +57,6 @@ export interface ResumeProps {
 export interface ResumeState {
     css: CssNode;
     rootCss: CssNode;
-    mode: EditorMode;
-
     activeTemplate?: string;
     clipboard?: ResumeNode;
 }
@@ -78,19 +78,18 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         this.css = props.css || new CssNode("Resume CSS", {}, "#resume");
         this.rootCss = props.rootCss || new CssNode(":root", {}, ":root");
         
-        // Initialize store with props if provided
+        // Initialize stores with props if provided
         if (props.nodes) {
             useResumeStore.getState().setNodes(props.nodes);
+        }
+        if (props.mode) {
+            useEditorStore.getState().setMode(props.mode);
         }
         
         this.state = {
             css: this.css,
-            rootCss: this.rootCss,
-            mode: props.mode || "landing"
+            rootCss: this.rootCss
         };
-
-        this.print = this.print.bind(this);
-        this.toggleMode = this.toggleMode.bind(this);
 
         /** Resume Nodes */
         this.addCssClasses = this.addCssClasses.bind(this);
@@ -114,21 +113,14 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
 
     /** Returns true if we are actively editing a resume */
     get isEditing(): boolean {
-        return this.state.mode === 'normal'
-            || this.state.mode === 'help';
-    }
-
-    get isPrinting(): boolean {
-        return this.state.mode === 'printing';
+        const mode = this.props.mode || 'landing';
+        return mode === 'normal' || mode === 'help';
     }
 
     /** Retrieve the selected node **/
     get selectedNode(): ResumeNode | undefined {
-        const uuid = useEditorStore.getState().selectedNodeId;
-        if (uuid) {
-            return useResumeStore.getState().getNodeByUuid(uuid);
-        }
-        return undefined;
+        const uuid = this.props.selectedNodeId;
+        return uuid ? useResumeStore.getState().getNodeByUuid(uuid) : undefined;
     }
 
     /** Return resume stylesheet */
@@ -138,21 +130,13 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
 
     componentDidMount() {
         // Subscribe to store changes to trigger re-renders
-        const unsubEditor = useEditorStore.subscribe(() => this.forceUpdate());
         const unsubResume = useResumeStore.subscribe(() => this.forceUpdate());
         const unsubHistory = useHistoryStore.subscribe(() => this.forceUpdate());
         
         this.unsubscribeStores = () => {
-            unsubEditor();
             unsubResume();
             unsubHistory();
         };
-    }
-
-    componentWillUnmount() {
-        if (this.unsubscribeStores) {
-            this.unsubscribeStores();
-        }
     }
 
     /**
@@ -163,15 +147,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         if (this.state.css !== prevState.css || this.state.rootCss !== prevState.css) {
             this.style.innerHTML = this.stylesheet;
         }
-    }
-
-    /**
-     * Switch into mode if not already. Otherwise, return to normal.
-     * @param mode Mode to check
-     */
-    toggleMode(mode: EditorMode = 'normal') {
-        const newMode = (this.state.mode === mode) ? 'normal' : mode;
-        this.setState({ mode: newMode });
     }
 
     //#region Changing Templates
@@ -192,7 +167,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                         </PureMenuItem>
                     )}
                 </PureMenu>
-                <Button onClick={() => this.toggleMode()}>Use this Template</Button>
+                <Button onClick={() => useEditorStore.getState().toggleMode('normal')}>Use this Template</Button>
             </div>
         );
     }
@@ -310,7 +285,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     }
 
     get moveSelectedProps() {
-        const uuid = useEditorStore.getState().selectedNodeId;
+        const uuid = this.props.selectedNodeId;
         if (!uuid) {
             return { moveUp: undefined, moveDown: undefined };
         }
@@ -347,27 +322,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     exportHtml() {
         // TODO: Make this user defineable
         const filename = 'resume.html';
-        
-        // Temporarily switch to print mode to get proper link rendering
-        const prevState = { ...this.state };
-        useEditorStore.getState().unselectNode();
-        this.setState({
-            mode: 'printing'
-        });
-
-        // Wait for render to complete before capturing HTML
-        requestAnimationFrame(() => {
-            let resumeHtml = this.resumeRef.current ? this.resumeRef.current.outerHTML : '';
-            var blob = new Blob(
-                [generateHtml(this.stylesheet, resumeHtml)],
-                { type: "text/html;charset=utf-8" }
-            );
-
-            saveAs(blob, filename);
-            
-            // Restore previous state
-            this.setState(prevState);
-        });
+        exportResumeAsHtml(this.resumeRef.current, this.stylesheet, filename);
     }
 
     loadData(data: object, mode: EditorMode = 'normal') {
@@ -379,11 +334,11 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         this.css = CssNode.load(savedData.builtinCss);
         this.rootCss = CssNode.load(savedData.rootCss);
 
+        useEditorStore.getState().setMode(mode);
         this.setState({
             css: this.css.deepCopy(),
-            mode: mode,
             rootCss: this.rootCss.deepCopy()
-        })
+        });
     }
 
     loadLocal() {
@@ -433,13 +388,13 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             exportHtml: this.exportHtml,
             isEditing: this.isEditing,
             loadData: this.loadData,
-            mode: this.state.mode,
+            mode: this.props.mode || 'landing',
             new: this.loadTemplate,
-            print: this.print,
+            print: printResume,
             saveLocal: this.saveLocal,
             saveFile: this.saveFile,
-            toggleHelp: () => this.toggleMode('help'),
-            toggleLanding: () => this.setState({ mode: 'landing' })
+            toggleHelp: () => useEditorStore.getState().toggleMode('help'),
+            toggleLanding: () => useEditorStore.getState().setMode('landing')
         }
                     
         return props;
@@ -462,29 +417,12 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         return {
             ...this.selectedNodeActions,
             ...this.undoRedoProps,
-            togglePrintMode: () => this.toggleMode('printing'),
+            togglePrintMode: () => useEditorStore.getState().toggleMode('printing'),
             reset: () => {
                 useEditorStore.getState().unselectNode();
-                this.setState({
-                    mode: 'normal'
-                });
+                useEditorStore.getState().setMode('normal');
             }
         }
-    }
-
-    print() {
-        requestAnimationFrame(() => {
-            const prevState = { ...this.state };
-
-            useEditorStore.getState().unselectNode();
-            this.setState({
-                mode: 'printing'
-            });
-
-            window.print();
-
-            this.setState(prevState);
-        });
     }
     //#endregion
 
@@ -564,6 +502,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     }
 
     render() {
+        const { mode } = this.props;
         const hlBoxContainer = createContainer("hl-box-container");
         const resume = (
             <>
@@ -580,13 +519,10 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                             };
 
                             return (
-                                <ResumeContext.Provider
+                                <ResumeComponentFactory
                                     key={uniqueId}
-                                    value={{
-                                    isPrinting: this.isPrinting
-                                }}>
-                                    <ResumeComponentFactory {...props} />
-                                </ResumeContext.Provider>
+                                    {...props}
+                                />
                             );
                         })}
                 </div>
@@ -602,7 +538,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             </>
         );
         
-        const editingTop = this.isPrinting ? <></> : (
+        const editingTop = mode === 'printing' ? <></> : (
             <header id="app-header" className="no-print">
                 <TopNavBar {...this.topMenuProps} />
                 {this.isEditing ? <TopEditingBar {...this.editingBarProps} /> : <></>}
@@ -610,12 +546,12 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         );
 
         // Render the final layout based on editor mode
-        switch (this.state.mode) {
+        switch (mode) {
             case 'help':
                 return <ResizableSidebarLayout
                     topNav={editingTop}
                     main={resume}
-                    sidebar={<Help close={() => this.toggleMode()} />}
+                    sidebar={<Help close={() => useEditorStore.getState().toggleMode('help')} />}
                 />
             case 'changingTemplate':
                 return <StaticSidebarLayout
@@ -638,11 +574,32 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                 return <ResizableSidebarLayout
                     topNav={editingTop}
                     main={resume}
-                    isPrinting={this.isPrinting}
                     sidebar={this.renderSidebar()}
             />
         }
     }
 }
 
-export default Resume;
+/**
+ * Functional wrapper that subscribes to mode and selection state.
+ * Provides these as props to the Resume class component for selective re-rendering.
+ */
+function ResumeContainer(props: ResumeProps) {
+    const storeMode = useMode();
+    const selectedNodeId = useSelectedNodeId();
+    const isEditingSelected = useIsEditingSelected();
+    
+    // Use prop mode if provided (for tests), otherwise use store mode
+    const mode = props.mode || storeMode;
+
+    useHandlePrint();
+    
+    return <Resume 
+        {...props}
+        mode={mode}
+        selectedNodeId={selectedNodeId}
+        isEditingSelected={isEditingSelected}
+    />
+}
+
+export default ResumeContainer;

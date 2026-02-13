@@ -1,0 +1,16 @@
+@use "variables";
+
+.resume-selected {
+    background: variables.$light-shade;
+}
+
+#resume {
+    div.resume-selected, .resume-selected {
+        border: 2px solid variables.$dark-shade;
+        cursor: auto;
+    }
+}
+
+.resume-editing {
+    background: unset;
+}

@@ -1,0 +1,113 @@
+@use "context-menu";
+@use "variables";
+@use "landing";
+@use "resume-hover";
+@use "modals";
+@use "node-tree";
+@use "forms";
+@use "css-editor";
+@use "markdown";
+@use "header";
+@use "hl-box";
+@use "inputs";
+@use "overlay-editing";
+@use "zindex";
+
+/* App Stuff */
+body {
+    background: variables.$light-shade;
+    font-family: variables.$sans-serif;
+    color: variables.$dark-shade;
+    margin: 0;
+}
+
+#root {
+    display: flex;
+    box-sizing: border-box;
+    flex-flow: column;
+    width: 100%;
+    height: 100vh;
+}
+
+/* || Resizer */
+.Resizer.vertical {
+    width: variables.$spacing;
+    cursor: col-resize;
+}
+
+.button-disabled {
+    filter: opacity(0.3);
+}
+
+button img {
+    /* Make black icons white-ish */
+    filter: invert(0.95);
+    margin-right: 2px;
+}
+
+/** || Layouts */
+#main-grid {
+    display: flex;
+    flex: 1;
+    height: 100%;
+    overflow: auto;
+
+    // Column Gap for flexbox is only supported in FF
+    // column-gap: variables.$spacing;
+
+    /** Grid Children */
+    > * {
+        max-width: 100%;
+        overflow: auto;
+        margin-right: variables.$spacing;
+    }
+
+    > *:first-child {
+        // Take up all available free space
+        flex-grow: 1;
+    }
+    /** || Sidebar */
+    > *:last-child {
+        // Never shrink
+        flex-shrink: 0;
+    }
+
+    @media (max-width: variables.$screen-small) {
+        flex-direction: column;
+    }
+}
+
+@media print {
+    body {
+        background: none;
+    }
+
+    #resume {
+        height: 100%;
+        border: none;
+    }
+}
+
+@media screen {
+    #resume {
+        background: #ffffff;
+        width: 8.5in;
+        min-height: 11in;
+        box-sizing: border-box;
+        border: 1px solid #dddddd;
+        margin-bottom: variables.$spacing;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media screen and (max-width: variables.$screen-medium) {
+    #brand h1 {
+        font-size: large;
+        margin: 0;
+    }
+
+    .Resizer.vertical, .Pane.vertical.Pane2 {
+        display: none;
+    }
+}

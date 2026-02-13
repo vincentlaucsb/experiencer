@@ -1,0 +1,131 @@
+/**
+ * @jest-environment jsdom
+ */
+import { render } from "@testing-library/react";
+import Link from "@/resume/Link";
+import { useEditorStore } from "@/shared/stores/editorStore";
+import { usePrintStore } from "@/shared/stores/printStore";
+
+afterEach(() => {
+    usePrintStore.getState().setPrinting(false);
+    useEditorStore.getState().unselectNode();
+});
+
+/** Verify Link renders as span in editor mode */
+test('Link renders as span when not printing', () => {
+    usePrintStore.getState().setPrinting(false);
+
+    const { container } = render(
+        <Link
+            id={[0]}
+            type={Link.type}
+            uuid="test-uuid"
+            isLast={false}
+            updateData={() => { }}
+            updateDataFields={() => { }}
+            value="Test Link"
+            url="https://example.com"
+        />
+    );
+
+    const span = container.querySelector('span.link');
+    expect(span).toBeTruthy();
+    expect(span?.textContent).toBe('Test Link');
+    
+    // Should NOT be an anchor tag
+    const anchor = container.querySelector('a');
+    expect(anchor).toBeNull();
+});
+
+/** Verify Link renders as <a> tag when printing */
+test('Link renders as anchor tag when isPrinting is true', () => {
+    usePrintStore.getState().setPrinting(true);
+
+    const { container } = render(
+        <Link
+            id={[0]}
+            type={Link.type}
+            uuid="test-uuid"
+            isLast={false}
+            updateData={() => { }}
+            updateDataFields={() => { }}
+            value="Test Link"
+            url="https://example.com"
+        />
+    );
+
+    const anchor = container.querySelector('a.link');
+    expect(anchor).toBeTruthy();
+    expect(anchor?.textContent).toBe('Test Link');
+    expect(anchor?.getAttribute('href')).toBe('https://example.com');
+    expect(anchor?.getAttribute('target')).toBe('_blank');
+    expect(anchor?.getAttribute('rel')).toBe('noopener noreferrer');
+});
+
+/** Verify Link displays default text when value is empty */
+test('Link shows default text when value is empty', () => {
+    usePrintStore.getState().setPrinting(false);
+
+    const { container } = render(
+        <Link
+            id={[0]}
+            type={Link.type}
+            uuid="test-uuid"
+            isLast={false}
+            updateData={() => { }}
+            updateDataFields={() => { }}
+            url="https://example.com"
+        />
+    );
+
+    const span = container.querySelector('span.link');
+    expect(span?.textContent).toBe('Link text');
+});
+
+/** Verify Link uses # as default href when url is empty */
+test('Link uses # as default href when url is empty in print mode', () => {
+    usePrintStore.getState().setPrinting(true);
+
+    const { container } = render(
+        <Link
+            id={[0]}
+            type={Link.type}
+            uuid="test-uuid"
+            isLast={false}
+            updateData={() => { }}
+            updateDataFields={() => { }}
+            value="Test Link"
+        />
+    );
+
+    const anchor = container.querySelector('a.link');
+    expect(anchor?.getAttribute('href')).toBe('#');
+});
+
+/** Verify Link enters edit mode when selected */
+test('Link shows input when in edit mode', () => {
+    usePrintStore.getState().setPrinting(false);
+
+    // Set the node as editing
+    useEditorStore.getState().editNode('test-uuid');
+
+    const { container } = render(
+        <Link
+            id={[0]}
+            type={Link.type}
+            uuid="test-uuid"
+            isLast={false}
+            updateData={() => { }}
+            updateDataFields={() => { }}
+            value="Test Link"
+            url="https://example.com"
+        />
+    );
+
+    // Link uses inline editing, so find the input within the container
+    const input = container.querySelector('.link-editing input') as HTMLInputElement;
+    expect(input).toBeTruthy();
+    expect(input?.value).toBe('Test Link');
+    
+    // Clean up handled in afterEach
+});

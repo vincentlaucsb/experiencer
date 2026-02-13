@@ -1,0 +1,16 @@
+﻿@use "variables";
+
+input {
+    background: inherit;
+    border: 0;
+}
+
+#resume {
+    input {
+        border-bottom: 1px solid variables.$light-accent;
+
+        &:hover {
+            border-bottom-color: variables.$dark-shade;
+        }
+    }
+}

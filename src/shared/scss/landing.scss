@@ -1,0 +1,41 @@
+﻿@use "sass:math";
+@use "sass:color";
+@use "variables";
+
+#landing {
+    max-width: 75ch;
+    padding: 0 variables.$edge-horizontal-spacing;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.landing-menu {
+    .pure-menu-item {
+        padding: 0;
+
+        /** || Adjacent Menu Items */
+        + .pure-menu-item {
+            margin-top: math.div(variables.$spacing, 2);
+        }
+
+        /** || Buttons */
+        .pure-button {
+            display: flex;
+            align-items: center;
+            background: inherit;
+            padding: math.div(variables.$spacing, 2);
+            font-size: large;
+            width: 100%;
+
+            &:hover {
+                background: color.adjust(variables.$light-accent, $lightness: 20%);
+            }
+        }
+
+        i[class*="icofont"] {
+            font-size: 40px;
+            color: variables.$main;
+            margin-right: variables.$spacing;
+        }
+    }
+}

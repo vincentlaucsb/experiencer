@@ -1,0 +1,50 @@
+﻿@use "sass:math";
+@use "sass:color";
+@use "variables";
+
+.node-tree {
+    padding-left: variables.$spacing;
+
+    ul {
+        margin-left: variables.$spacing;
+        border-left: 1px solid variables.$main;
+    }
+
+    li {
+        list-style-type: none;
+        cursor: pointer;
+        padding: math.div(variables.$spacing, 8) 0;
+    }
+
+    .tree-item-selected {
+        background: color.adjust(variables.$light-accent, $alpha: -0.5);
+
+        > span {
+            font-weight: bold;
+        }
+    }
+
+    .tree-item-section {
+        font-weight: bold;
+    }
+
+    .tree-item-selector {
+        padding-left: math.div(variables.$spacing, 2);
+        font-style: initial;
+        font-weight: initial;
+        color: color.adjust(variables.$dark-shade, $lightness: 50%);
+    }
+
+    /** Italic font for types that don't have their own
+        text headers or values
+     */
+    .tree-item-Column, .tree-item-Grid {
+        font-style: italic;
+    }
+}
+
+%icon {
+    // text-align: center;
+    width: variables.$spacing;
+    display: inline-block;
+}

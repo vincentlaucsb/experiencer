@@ -1,0 +1,43 @@
+﻿@use "sass:math";
+@use "variables";
+
+/** All modals */
+div[class*='ReactModal__Content'] {
+    .modal-heading {
+        display: flex;
+        align-items: center;
+        margin: 0;
+        background: variables.$main;
+        color: variables.$light-shade;
+        padding: math.div(variables.$spacing, 2) variables.$spacing;
+
+        .modal-close {
+            border: none;
+            background: inherit;
+            margin-left: auto;
+            padding: 0;
+
+            &:hover {
+                color: variables.$light-accent;
+            }
+        }
+    }
+
+    .modal-content {
+        padding: variables.$spacing;
+    }
+
+    border: 1px solid variables.$dark-shade;
+    background: variables.$light-shade;
+    overflow: auto;
+    border-radius: 4px;
+    outline: none;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20vh;
+}
+
+/** Modals created by top nav menu */
+.top-nav-modal {
+}

@@ -1,0 +1,17 @@
+﻿@use "sass:color";
+@use "variables";
+
+.resume-hl-box {
+    background: color.adjust(color.adjust(variables.$light-shade, $lightness: -0.25%), $alpha: -0.5);
+    border-color: color.adjust(variables.$light-accent, $alpha: -0.5);
+    border-style: solid;
+    border-width: 0;
+    pointer-events: none;
+
+    &.resume-hl-box-selected-node {
+        background: color.adjust(color.adjust(variables.$light-shade, $lightness: -0.25%), $alpha: -0.9);
+        border-width: 2px;
+        border-style: solid;
+        box-sizing: border-box;
+    }
+}

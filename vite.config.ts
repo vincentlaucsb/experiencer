@@ -58,5 +58,5 @@ export default defineConfig({
   },
   
   // For GitHub Pages deployment
-  base: '/experiencer/',
+  base: '/'
 });

@@ -39,44 +39,49 @@ export interface CssEditorState {
  * @param cssTreeRoot
  */
 export function makeCssEditorProps(
-    cssTreeRoot: CssNode,
-    updateCallback: () => void
+    updateTree: (updater: (cssTreeRoot: CssNode) => void) => void
 ): CssUpdateProps {
     return {
         addSelector: (path, name, selector) => {
-            cssTreeRoot.mustFindNode(path).add(
-                name, {}, selector);
-            updateCallback();
+            updateTree((cssTreeRoot) => {
+                cssTreeRoot.mustFindNode(path).add(name, {}, selector);
+            });
         },
 
         updateName: (path, value) => {
-            cssTreeRoot.mustFindNode(path).name = value;
-            updateCallback();
+            updateTree((cssTreeRoot) => {
+                cssTreeRoot.mustFindNode(path).name = value;
+            });
         },
 
         updateProperty: (path, key, value) => {
-            cssTreeRoot.setProperty(path, key, value);
-            updateCallback();
+            updateTree((cssTreeRoot) => {
+                cssTreeRoot.setProperty(path, key, value);
+            });
         },
 
         updateDescription: (path, value) => {
-            cssTreeRoot.mustFindNode(path).description = value;
-            updateCallback();
+            updateTree((cssTreeRoot) => {
+                cssTreeRoot.mustFindNode(path).description = value;
+            });
         },
 
         updateSelector: (path, value) => {
-            cssTreeRoot.mustFindNode(path).selector = value;
-            updateCallback();
+            updateTree((cssTreeRoot) => {
+                cssTreeRoot.mustFindNode(path).selector = value;
+            });
         },
 
         deleteKey: (path, key) => {
-            cssTreeRoot.deleteProperty(path, key);
-            updateCallback();
+            updateTree((cssTreeRoot) => {
+                cssTreeRoot.deleteProperty(path, key);
+            });
         },
 
         deleteNode: (path) => {
-            cssTreeRoot.delete(path);
-            updateCallback();
+            updateTree((cssTreeRoot) => {
+                cssTreeRoot.delete(path);
+            });
         }
     };
 }

@@ -7,7 +7,7 @@ import '@/shared/scss/index.scss';
 import 'purecss/build/pure-min.css';
 
 // Utilities
-import { assignIds, createContainer, deepCopy } from '@/shared/utils/Helpers';
+import { createContainer, deepCopy } from '@/shared/utils/Helpers';
 import { printResume, exportResumeAsHtml } from '@/shared/utils/PrintHelpers';
 
 // Components
@@ -19,13 +19,13 @@ import TopEditingBar, { EditingBarProps } from '@/controls/TopEditingBar';
 import TopNavBar, { TopNavBarProps } from '@/controls/TopNavBar';
 import Tabs from '@/controls/Tabs';
 import PureMenu, { PureMenuLink, PureMenuItem } from '@/controls/menus/PureMenu';
-import CssEditor, { makeCssEditorProps } from '@/editor/CssEditor';
 import NodeTreeVisualizer from '@/editor/NodeTreeVisualizer';
 import Help from '@/help/Help';
 import Landing from '@/help/Landing';
 import ResumeComponentFactory from '@/resume/ResumeComponent';
 import ComponentTypes from '@/resume/schema/ComponentTypes';
 import ResumeTemplates from '@/templates/ResumeTemplates';
+import ResumeCssEditor from '@/app/ResumeCssEditor';
 
 // Stores
 import { useEditorStore, useMode, useSelectedNodeId, useIsEditingSelected } from '@/shared/stores/editorStore';
@@ -34,11 +34,12 @@ import { useResumeStore } from '@/shared/stores/resumeStore';
 import { useCssStore, useTreeStylesheet } from '@/shared/stores/cssStore';
 
 // Types
-import CssNode, { ReadonlyCssNode } from '@/shared/utils/CssTree';
+import CssNode from '@/shared/utils/CssTree';
 import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode, Globals } from '@/types';
 import useHandlePrint from '@/shared/hooks/useHandlePrint';
 import useStylesheet from '@/shared/hooks/useStylesheet';
 import { useEffect } from 'react';
+import loadData, { loadLocal } from '@/shared/stores/loadData';
 
 // Dynamic imports (lazy-loaded on-demand)
 const ResumeContextMenuConnected = React.lazy(
@@ -66,6 +67,7 @@ export interface ResumeState {
     activeTemplate?: string;
     clipboard?: ResumeNode;
 }
+
 
 class Resume extends React.Component<ResumeProps, ResumeState> {
     private style = document.createElement("style");
@@ -99,11 +101,9 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         /** Templates and Styling **/
         this.loadTemplate = this.loadTemplate.bind(this);
         this.renderSidebar = this.renderSidebar.bind(this);
-        this.renderCssEditor = this.renderCssEditor.bind(this);
 
         /** Load & Save */
         this.exportHtml = this.exportHtml.bind(this);
-        this.loadData = this.loadData.bind(this);
         this.saveLocal = this.saveLocal.bind(this);
         this.saveFile = this.saveFile.bind(this);
     }
@@ -124,7 +124,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     loadTemplate(key = 'Integrity') {
         const template: ResumeSaveData = ResumeTemplates.templates[key];
         this.setState({ activeTemplate: key});
-        this.loadData(template, 'changingTemplate');
+        loadData(template, 'changingTemplate');
     };
 
     private renderTemplateChanger() {
@@ -296,30 +296,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         exportResumeAsHtml(this.resumeRef.current, this.props.stylesheet ?? '', filename);
     }
 
-    loadData(data: object, mode: EditorMode = 'normal') {
-        let savedData = data as ResumeSaveData;
-        const nodes = assignIds(savedData.childNodes);
-        useResumeStore.getState().setNodes(nodes);
-        useHistoryStore.getState().clear(); // Clear history when loading new data
-        
-        useCssStore.getState().loadCss(savedData.builtinCss, savedData.rootCss);
-
-        useEditorStore.getState().setMode(mode);
-    }
-
-    loadLocal() {
-        const savedData = localStorage.getItem(Globals.localStorageKey);
-        if (savedData) {
-            try {
-                this.loadData(JSON.parse(savedData));
-            }
-            catch {
-                // TODO: Show an error message
-                console.log("Nope, that didn't work.");
-            }
-        }
-    }
-
     dump(): ResumeSaveData {
         const { css, rootCss } = this.props;
         return {
@@ -354,7 +330,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         let props = {
             exportHtml: this.exportHtml,
             isEditing: this.isEditing,
-            loadData: this.loadData,
+            loadData: loadData,
             mode: this.props.mode || 'landing',
             new: this.loadTemplate,
             print: printResume,
@@ -394,13 +370,12 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     //#endregion
 
     private renderSidebar() {
-        let CssEditor = this.renderCssEditor;
         return <Tabs>
             <NodeTreeVisualizer key="Tree" childNodes={useResumeStore.getState().tree.childNodes}
                 selectNode={(uuid) => useEditorStore.getState().selectNode(uuid)}
                 selectedNode={useEditorStore.getState().selectedNodeId}
             />
-            <CssEditor key="CSS" />
+            <ResumeCssEditor key="CSS" />
             <div key="Raw CSS">
                 <pre>
                     <code>
@@ -409,65 +384,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                 </pre>
             </div>
         </Tabs>
-    }
-    
-    /** Gather all variable declarations in :root */
-    makeCssEditorVarSuggestions(): Array<string> {
-        let suggestions = new Array<string>();
-        const rootCss = useCssStore.getState().rootCss;
-
-        for (let k of rootCss.properties.keys()) {
-            if (k.slice(0, 2) === '--') {
-                suggestions.push(`var(${k})`);
-            }
-        }
-        
-        return suggestions;
-    }
-
-    private renderCssEditor() {
-        const { css, rootCss } = this.props;
-        const cssUpdateCallback = () => useCssStore.getState().updateCss(() => {});
-        const rootCssUpdateCallback = () => useCssStore.getState().updateRootCss(() => {});
-
-        if (this.selectedNode) {
-            let generalCssEditor = <></>
-            let specificCssEditor = <></>
-
-            const rootNode = css.findNode(
-                ComponentTypes.instance.cssName(this.selectedNode.type)) as CssNode;
-            if (rootNode) {
-                generalCssEditor = <CssEditor
-                    cssNode={new ReadonlyCssNode(rootNode)}
-                    isOpen={true}
-                    {...makeCssEditorProps(css, cssUpdateCallback)}
-                />
-            }
-
-            if (this.selectedNode.htmlId && css.findNode([`#${this.selectedNode.htmlId}`])) {
-                const specificRoot = css.findNode([`#${this.selectedNode.htmlId}`]) as CssNode;
-                specificCssEditor = <CssEditor cssNode={new ReadonlyCssNode(specificRoot)}
-                    isOpen={true}
-                    {...makeCssEditorProps(css, cssUpdateCallback)} />
-            }
-
-            return <>
-                {specificCssEditor}
-                {generalCssEditor}
-            </>
-        }
- 
-        return <>
-            <CssEditor
-                cssNode={new ReadonlyCssNode(rootCss)}
-                isOpen={true}
-                {...makeCssEditorProps(rootCss, rootCssUpdateCallback)} />
-            <CssEditor
-                cssNode={new ReadonlyCssNode(css)}
-                isOpen={true}
-                varSuggestions={this.makeCssEditorVarSuggestions()}
-                {...makeCssEditorProps(css, cssUpdateCallback)} />
-        </>
     }
 
     render() {
@@ -532,9 +448,9 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                 return <DefaultLayout
                     topNav={editingTop}
                     main={<Landing
-                        loadLocal={() => { this.loadLocal() }}
+                        loadLocal={() => { loadLocal() }}
                         new={this.loadTemplate}
-                        loadData={this.loadData}
+                        loadData={loadData}
                     />
                     } />
             case 'printing':

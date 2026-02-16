@@ -31,11 +31,14 @@ import ResumeTemplates from '@/templates/ResumeTemplates';
 import { useEditorStore, useMode, useSelectedNodeId, useIsEditingSelected } from '@/shared/stores/editorStore';
 import { useHistoryStore, recordHistory } from '@/shared/stores/historyStore';
 import { useResumeStore } from '@/shared/stores/resumeStore';
+import { useCssStore, useTreeStylesheet } from '@/shared/stores/cssStore';
 
 // Types
 import CssNode, { ReadonlyCssNode } from '@/shared/utils/CssTree';
 import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode, Globals } from '@/types';
 import useHandlePrint from '@/shared/hooks/useHandlePrint';
+import useStylesheet from '@/shared/hooks/useStylesheet';
+import { useEffect } from 'react';
 
 // Dynamic imports (lazy-loaded on-demand)
 const ResumeContextMenuConnected = React.lazy(
@@ -50,23 +53,23 @@ export interface ResumeProps {
     selectedNodeId?: string;
     isEditingSelected?: boolean;
     nodes?: Array<ResumeNode>;
-    css?: CssNode;
-    rootCss?: CssNode;
-}
-
-export interface ResumeState {
     css: CssNode;
     rootCss: CssNode;
+    setCss: (css: CssNode) => void;
+    setRootCss: (rootCss: CssNode) => void;
+    stylesheet: string;
+}
+
+export type ResumeWrapperProps = Partial<Omit<ResumeProps, 'selectedNodeId' | 'isEditingSelected'>>;
+
+export interface ResumeState {
     activeTemplate?: string;
     clipboard?: ResumeNode;
 }
 
 class Resume extends React.Component<ResumeProps, ResumeState> {
-    private css: CssNode;
-    private rootCss: CssNode;
     private style = document.createElement("style");
     private resumeRef = React.createRef<HTMLDivElement>();
-    private unsubscribeStores?: () => void;
 
     constructor(props: ResumeProps) {
         super(props);
@@ -74,9 +77,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         // Custom CSS
         const head = document.getElementsByTagName("head")[0];
         head.appendChild(this.style);
-
-        this.css = props.css || new CssNode("Resume CSS", {}, "#resume");
-        this.rootCss = props.rootCss || new CssNode(":root", {}, ":root");
         
         // Initialize stores with props if provided
         if (props.nodes) {
@@ -86,10 +86,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             useEditorStore.getState().setMode(props.mode);
         }
         
-        this.state = {
-            css: this.css,
-            rootCss: this.rootCss
-        };
+        this.state = {};
 
         /** Resume Nodes */
         this.addCssClasses = this.addCssClasses.bind(this);
@@ -123,32 +120,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         return uuid ? useResumeStore.getState().getNodeByUuid(uuid) : undefined;
     }
 
-    /** Return resume stylesheet */
-    get stylesheet() {
-        return `${this.state.rootCss.stylesheet()}\n\n${this.state.css.stylesheet()}`;
-    }
-
-    componentDidMount() {
-        // Subscribe to store changes to trigger re-renders
-        const unsubResume = useResumeStore.subscribe(() => this.forceUpdate());
-        const unsubHistory = useHistoryStore.subscribe(() => this.forceUpdate());
-        
-        this.unsubscribeStores = () => {
-            unsubResume();
-            unsubHistory();
-        };
-    }
-
-    /**
-     * Update stylesheets
-     * @param prevProps
-     */
-    componentDidUpdate(_prevProps, prevState: ResumeState) {
-        if (this.state.css !== prevState.css || this.state.rootCss !== prevState.css) {
-            this.style.innerHTML = this.stylesheet;
-        }
-    }
-
     //#region Changing Templates
     loadTemplate(key = 'Integrity') {
         const template: ResumeSaveData = ResumeTemplates.templates[key];
@@ -178,8 +149,9 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         const currentNode = this.selectedNode as ResumeNode;
         const uuid = useEditorStore.getState().selectedNodeId;
         if (currentNode && uuid) {
+            const css = this.props.css;
             let root = new CssNode(`#${htmlId}`, {}, `#${htmlId}`);
-            let copyTree = this.css.findNode(
+            let copyTree = css.findNode(
                 ComponentTypes.instance.cssName(currentNode.type)) as CssNode;
 
             if (copyTree) {
@@ -189,9 +161,8 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             recordHistory();
             useResumeStore.getState().updateNodeByUuid(uuid, 'htmlId', htmlId);
             
-            this.css.addNode(root);
-            this.setState({
-                css: this.css.deepCopy()
+            useCssStore.getState().updateCss((css) => {
+                css.addNode(root);
             });
         }
     }
@@ -322,7 +293,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     exportHtml() {
         // TODO: Make this user defineable
         const filename = 'resume.html';
-        exportResumeAsHtml(this.resumeRef.current, this.stylesheet, filename);
+        exportResumeAsHtml(this.resumeRef.current, this.props.stylesheet ?? '', filename);
     }
 
     loadData(data: object, mode: EditorMode = 'normal') {
@@ -331,14 +302,9 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         useResumeStore.getState().setNodes(nodes);
         useHistoryStore.getState().clear(); // Clear history when loading new data
         
-        this.css = CssNode.load(savedData.builtinCss);
-        this.rootCss = CssNode.load(savedData.rootCss);
+        useCssStore.getState().loadCss(savedData.builtinCss, savedData.rootCss);
 
         useEditorStore.getState().setMode(mode);
-        this.setState({
-            css: this.css.deepCopy(),
-            rootCss: this.rootCss.deepCopy()
-        });
     }
 
     loadLocal() {
@@ -355,10 +321,11 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     }
 
     dump(): ResumeSaveData {
+        const { css, rootCss } = this.props;
         return {
             childNodes: useResumeStore.getState().tree.childNodes,
-            builtinCss: this.css.dump(),
-            rootCss: this.rootCss.dump()
+            builtinCss: css.dump(),
+            rootCss: rootCss.dump()
         };
     }
 
@@ -437,7 +404,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             <div key="Raw CSS">
                 <pre>
                     <code>
-                        {this.stylesheet}
+                        {this.props.stylesheet}
                     </code>
                 </pre>
             </div>
@@ -447,8 +414,9 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     /** Gather all variable declarations in :root */
     makeCssEditorVarSuggestions(): Array<string> {
         let suggestions = new Array<string>();
+        const rootCss = useCssStore.getState().rootCss;
 
-        for (let k of this.rootCss.properties.keys()) {
+        for (let k of rootCss.properties.keys()) {
             if (k.slice(0, 2) === '--') {
                 suggestions.push(`var(${k})`);
             }
@@ -458,28 +426,29 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     }
 
     private renderCssEditor() {
-        const cssUpdateCallback = () => this.setState({ css: this.css.deepCopy() });
-        const rootCssUpdateCallback = () => this.setState({ rootCss: this.rootCss.deepCopy() });
+        const { css, rootCss } = this.props;
+        const cssUpdateCallback = () => useCssStore.getState().updateCss(() => {});
+        const rootCssUpdateCallback = () => useCssStore.getState().updateRootCss(() => {});
 
         if (this.selectedNode) {
             let generalCssEditor = <></>
             let specificCssEditor = <></>
 
-            const rootNode = this.state.css.findNode(
+            const rootNode = css.findNode(
                 ComponentTypes.instance.cssName(this.selectedNode.type)) as CssNode;
             if (rootNode) {
                 generalCssEditor = <CssEditor
                     cssNode={new ReadonlyCssNode(rootNode)}
                     isOpen={true}
-                    {...makeCssEditorProps(this.css, cssUpdateCallback)}
+                    {...makeCssEditorProps(css, cssUpdateCallback)}
                 />
             }
 
-            if (this.selectedNode.htmlId && this.state.css.findNode([`#${this.selectedNode.htmlId}`])) {
-                const specificRoot = this.state.css.findNode([`#${this.selectedNode.htmlId}`]) as CssNode;
+            if (this.selectedNode.htmlId && css.findNode([`#${this.selectedNode.htmlId}`])) {
+                const specificRoot = css.findNode([`#${this.selectedNode.htmlId}`]) as CssNode;
                 specificCssEditor = <CssEditor cssNode={new ReadonlyCssNode(specificRoot)}
                     isOpen={true}
-                    {...makeCssEditorProps(this.css, cssUpdateCallback)} />
+                    {...makeCssEditorProps(css, cssUpdateCallback)} />
             }
 
             return <>
@@ -490,14 +459,14 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
  
         return <>
             <CssEditor
-                cssNode={new ReadonlyCssNode(this.state.rootCss)}
+                cssNode={new ReadonlyCssNode(rootCss)}
                 isOpen={true}
-                {...makeCssEditorProps(this.rootCss, rootCssUpdateCallback)} />
+                {...makeCssEditorProps(rootCss, rootCssUpdateCallback)} />
             <CssEditor
-                cssNode={new ReadonlyCssNode(this.state.css)}
+                cssNode={new ReadonlyCssNode(css)}
                 isOpen={true}
                 varSuggestions={this.makeCssEditorVarSuggestions()}
-                {...makeCssEditorProps(this.css, cssUpdateCallback)} />
+                {...makeCssEditorProps(css, cssUpdateCallback)} />
         </>
     }
 
@@ -584,7 +553,9 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
  * Functional wrapper that subscribes to mode and selection state.
  * Provides these as props to the Resume class component for selective re-rendering.
  */
-function ResumeContainer(props: ResumeProps) {
+function ResumeContainer(props: ResumeWrapperProps) {
+    const { css, rootCss, setCss, setRootCss } = useCssStore();
+    const stylesheet = useTreeStylesheet();
     const storeMode = useMode();
     const selectedNodeId = useSelectedNodeId();
     const isEditingSelected = useIsEditingSelected();
@@ -592,13 +563,29 @@ function ResumeContainer(props: ResumeProps) {
     // Use prop mode if provided (for tests), otherwise use store mode
     const mode = props.mode || storeMode;
 
+    // Initialize stores with props if provided
+    useEffect(() => {
+        if (props.css) {
+            setCss(props.css);
+        }
+        if (props.rootCss) {
+            setRootCss(props.rootCss);
+        }
+    }, []); // Run once on mount
+
     useHandlePrint();
+    useStylesheet(stylesheet);
     
     return <Resume 
         {...props}
         mode={mode}
         selectedNodeId={selectedNodeId}
         isEditingSelected={isEditingSelected}
+        css={css}
+        rootCss={rootCss}
+        setCss={setCss}
+        setRootCss={setRootCss}
+        stylesheet={stylesheet}
     />
 }
 

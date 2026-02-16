@@ -2,6 +2,8 @@ import React from "react";
 import { GlobalHotKeys, KeyMap, ExtendedKeyMapOptions } from "react-hotkeys";
 import { SelectedNodeActions } from "./SelectedNodeActions";
 import { Action } from "@/types";
+import useUndoRedoProps from "@/shared/hooks/useUndoRedoProps";
+import { useEditorStore } from "@/shared/stores/editorStore";
 
 export interface ResumeHotKeysProps extends SelectedNodeActions {
     /** Editor Modes */
@@ -11,61 +13,61 @@ export interface ResumeHotKeysProps extends SelectedNodeActions {
     redo?: Action;
 };
 
-export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
-    public static readonly keyMap: KeyMap = {
-        COPY_SELECTED: {
-            name: 'Copy Node',
-            description: 'Copy the selected node',
-            sequence: "ctrl+c"
-        } as ExtendedKeyMapOptions,
+export const ResumeHotKeyMap: KeyMap = {
+    COPY_SELECTED: {
+        name: 'Copy Node',
+        description: 'Copy the selected node',
+        sequence: "ctrl+c"
+    } as ExtendedKeyMapOptions,
 
-        CUT_SELECTED: {
-            name: 'Cut Node',
-            description: 'Cut the selected node',
-            sequence: "ctrl+x"
-        } as ExtendedKeyMapOptions,
+    CUT_SELECTED: {
+        name: 'Cut Node',
+        description: 'Cut the selected node',
+        sequence: "ctrl+x"
+    } as ExtendedKeyMapOptions,
 
-        EDIT_SELECTED: {
-            name: 'Edit Node',
-            description: 'Edit the selected node',
-            sequence: "enter"
-        } as ExtendedKeyMapOptions,
+    EDIT_SELECTED: {
+        name: 'Edit Node',
+        description: 'Edit the selected node',
+        sequence: "enter"
+    } as ExtendedKeyMapOptions,
 
-        PASTE_SELECTED: {
-            name: 'Paste Node',
-            description: 'Paste the clipboard as a child of the currently selected node',
-            sequence: 'ctrl+v'
-        } as ExtendedKeyMapOptions,
+    PASTE_SELECTED: {
+        name: 'Paste Node',
+        description: 'Paste the clipboard as a child of the currently selected node',
+        sequence: 'ctrl+v'
+    } as ExtendedKeyMapOptions,
 
-        DELETE_SELECTED: {
-            name: 'Deleted Node',
-            description: 'Delete the currently selected node',
-            sequence: 'del'
-        } as ExtendedKeyMapOptions,
+    DELETE_SELECTED: {
+        name: 'Deleted Node',
+        description: 'Delete the currently selected node',
+        sequence: 'del'
+    } as ExtendedKeyMapOptions,
 
-        UNDO: {
-            name: 'Undo',
-            sequence: 'ctrl+z'
-        } as ExtendedKeyMapOptions,
+    UNDO: {
+        name: 'Undo',
+        sequence: 'ctrl+z'
+    } as ExtendedKeyMapOptions,
 
-        REDO: {
-            name: 'Redo',
-            sequence: 'ctrl+y'
-        } as ExtendedKeyMapOptions,
+    REDO: {
+        name: 'Redo',
+        sequence: 'ctrl+y'
+    } as ExtendedKeyMapOptions,
 
-        ESCAPE: {
-            name: 'Escape',
-            description: 'Unselect the selected node and return to normal editing mode',
-            sequence: "esc"
-        } as ExtendedKeyMapOptions,
+    ESCAPE: {
+        name: 'Escape',
+        description: 'Unselect the selected node and return to normal editing mode',
+        sequence: "esc"
+    } as ExtendedKeyMapOptions,
 
-        PRINT_MODE: {
-            name: 'Print Mode',
-            description: 'Toggle between normal and print mode',
-            sequence: "shift+p"
-        } as ExtendedKeyMapOptions
-    };
+    PRINT_MODE: {
+        name: 'Print Mode',
+        description: 'Toggle between normal and print mode',
+        sequence: "shift+p"
+    } as ExtendedKeyMapOptions
+};
 
+export class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
     getHandlers() {
         const handlers = {
             COPY_SELECTED: (event) => {
@@ -112,8 +114,26 @@ export default class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
 
     render() {
         return <GlobalHotKeys
-            keyMap={ResumeHotKeys.keyMap}
+            keyMap={ResumeHotKeyMap}
             handlers={this.getHandlers()}
         />
     }
+}
+
+export default function ResumeHotKeysWrapper(props: 
+    Omit<ResumeHotKeysProps, 'undo' | 'redo' | 'reset' | 'togglePrintMode'>
+) {
+    const undoRedoProps = useUndoRedoProps();
+    const { unselectNode, setMode, toggleMode } = useEditorStore.getState();
+    const togglePrintMode = () => toggleMode('printing');
+    
+    return <ResumeHotKeys
+        {...props}
+        {...undoRedoProps}
+        togglePrintMode={togglePrintMode}
+        reset={() => {
+            unselectNode();
+            setMode('normal');
+        }}
+    />
 }

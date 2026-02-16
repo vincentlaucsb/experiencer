@@ -8,13 +8,17 @@ import Section from "@/resume/Section";
 import { Action, IdType, NodeProperty, ResumeNode, AddChild } from "@/types";
 import Toolbar, { ToolbarSection } from "./toolbar/ToolbarMaker";
 import Column from "@/resume/Column";
-import ResumeHotKeys from "./ResumeHotkeys";
+import ResumeHotKeys, { ResumeHotKeyMap } from "./ResumeHotkeys";
 
 // Lazy-load HtmlIdAdder since it's only shown when user clicks the ID/Classes button
 const HtmlIdAdder = React.lazy(() => import("./HtmlIdAdder"));
 import { ToolbarItemData } from "./toolbar/ToolbarButton";
 import { useEditorStore } from "@/shared/stores/editorStore";
 import { useResumeStore } from "@/shared/stores/resumeStore";
+import { useHistoryStore } from "@/shared/stores/historyStore";
+import updateSelected from "@/shared/stores/resumeStore/updateSelectedNode";
+import { saveLocal } from "@/shared/stores/saveResume";
+import addChildNode from "@/shared/stores/resumeStore/addChildNode";
 
 interface AddOptionProps {
     options: string | Array<string>;
@@ -64,7 +68,7 @@ function ClipboardMenu(data: EditingBarProps): ToolbarItemData[] {
      * @param key Resume hotkey key
      */
     const getShortcut = (key: string): string => {
-        return ResumeHotKeys.keyMap[key]['sequence'];
+        return  ResumeHotKeyMap[key]['sequence'];
     }
 
     return [
@@ -218,7 +222,7 @@ function getEditingSection(props: EditingBarProps): ToolbarItemData[] {
 }
 
 /** A responsive top editing bar */
-export default function TopEditingBar(props: EditingBarProps) {
+export function TopEditingBar(props: EditingBarProps) {
     const toolbarRef = useRef<HTMLDivElement>(null);
     const [isOverflowing, setIsOverflowing] = useState(false);
     const [overflowWidth, setOverflowWidth] = useState(-1);
@@ -310,4 +314,32 @@ export default function TopEditingBar(props: EditingBarProps) {
     const children = <Toolbar data={data} collapse={isOverflowing} />;
     const className = isOverflowing ? "toolbar-collapsed" : "";
     return <div ref={toolbarRef} id="toolbar" className={className}>{children}</div>;
+}
+
+export type TopEditingBarWrapperProps = Omit<EditingBarProps,
+    'addChild' | 'undo' | 'unselect' | 'updateSelected' | 'redo' | 'saveLocal'
+>;
+
+export default function TopEditingBarWrapper(props: TopEditingBarWrapperProps) {
+    const { canUndo, canRedo, undo, redo } = useHistoryStore.getState();
+    const { unselectNode, selectedNodeId } = useEditorStore.getState();
+    const { unsavedChanges } = useResumeStore.getState();
+
+    const undoRedoProps =  {
+        undo: canUndo() ? undo : undefined,
+        redo: canRedo() ? redo : undefined
+    };
+
+    const wrappedProps = {
+        ...props,
+        ...undoRedoProps,
+        addChild: addChildNode,
+        unselect: unselectNode,
+        updateSelected: (key: string, data: NodeProperty) => {
+            updateSelected(selectedNodeId, key, data);
+        },
+        saveLocal: unsavedChanges ? saveLocal : undefined,
+    };
+
+    return <TopEditingBar {...wrappedProps} />
 }

@@ -30,6 +30,12 @@ Use `useState` for component-specific state:
 
 ## Usage Patterns
 
+### Store Utilities vs Hooks
+
+- Store-specific utility functions that mutate or orchestrate a single store live under `src/shared/stores/<storeName>/`.
+- Reusable React hooks (even if they call stores) live under `src/shared/hooks/`.
+- Avoid calling React hooks inside `src/shared/stores/<storeName>/` utilities.
+
 ### Function Components with Zustand
 
 **Check if node is editing:**

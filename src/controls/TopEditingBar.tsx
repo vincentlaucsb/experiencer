@@ -14,11 +14,14 @@ import ResumeHotKeys, { ResumeHotKeyMap } from "./ResumeHotkeys";
 const HtmlIdAdder = React.lazy(() => import("./HtmlIdAdder"));
 import { ToolbarItemData } from "./toolbar/ToolbarButton";
 import { useEditorStore } from "@/shared/stores/editorStore";
-import { useResumeStore } from "@/shared/stores/resumeStore";
+import { useResumeStore } from "@/shared/stores/resumeStore/store";
 import { useHistoryStore } from "@/shared/stores/historyStore";
 import updateSelected from "@/shared/stores/resumeStore/updateSelectedNode";
 import { saveLocal } from "@/shared/stores/saveResume";
 import addChildNode from "@/shared/stores/resumeStore/addChildNode";
+import addCssClasses from "@/shared/stores/resumeStore/addCssClasses";
+import useSelectedNodeActions from "@/shared/hooks/useSelectedNodeActions";
+import addHtmlId from "@/shared/stores/addHtmlId";
 
 interface AddOptionProps {
     options: string | Array<string>;
@@ -316,14 +319,13 @@ export function TopEditingBar(props: EditingBarProps) {
     return <div ref={toolbarRef} id="toolbar" className={className}>{children}</div>;
 }
 
-export type TopEditingBarWrapperProps = Omit<EditingBarProps,
-    'addChild' | 'undo' | 'unselect' | 'updateSelected' | 'redo' | 'saveLocal'
->;
+export type TopEditingBarWrapperProps = Record<string, never>;
 
 export default function TopEditingBarWrapper(props: TopEditingBarWrapperProps) {
     const { canUndo, canRedo, undo, redo } = useHistoryStore.getState();
     const { unselectNode, selectedNodeId } = useEditorStore.getState();
-    const { unsavedChanges } = useResumeStore.getState();
+    const { unsavedChanges, tree } = useResumeStore.getState();
+    const selectedNodeActions = useSelectedNodeActions();
 
     const undoRedoProps =  {
         undo: canUndo() ? undo : undefined,
@@ -332,7 +334,13 @@ export default function TopEditingBarWrapper(props: TopEditingBarWrapperProps) {
 
     const wrappedProps = {
         ...props,
+        ...selectedNodeActions,
         ...undoRedoProps,
+        addHtmlId,
+        addCssClasses: (classes: string) => {
+            const selectedNode = selectedNodeId ? tree.getNodeByUuid(selectedNodeId) : undefined;
+            addCssClasses(selectedNode, classes);
+        },
         addChild: addChildNode,
         unselect: unselectNode,
         updateSelected: (key: string, data: NodeProperty) => {

@@ -1,4 +1,3 @@
-import { saveAs } from 'file-saver';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 
@@ -7,30 +6,28 @@ import '@/shared/scss/index.scss';
 import 'purecss/build/pure-min.css';
 
 // Utilities
-import { createContainer, deepCopy } from '@/shared/utils/Helpers';
-import { printResume, exportResumeAsHtml } from '@/shared/utils/PrintHelpers';
+import { createContainer } from '@/shared/utils/Helpers';
+import { exportResumeAsHtml } from '@/shared/utils/PrintHelpers';
 
 // Components
 import { Button } from '@/controls/Buttons';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from '@/controls/Layouts';
 import ResumeHotKeys from '@/controls/ResumeHotkeys';
-import { SelectedNodeActions } from '@/controls/SelectedNodeActions';
-import TopEditingBar, { EditingBarProps, TopEditingBarWrapperProps } from '@/controls/TopEditingBar';
-import TopNavBar, { TopNavBarProps } from '@/controls/TopNavBar';
+import TopEditingBar from '@/controls/TopEditingBar';
+import TopNavBar, { TopNavBarWrapperProps } from '@/controls/TopNavBar';
 import Tabs from '@/controls/Tabs';
 import PureMenu, { PureMenuLink, PureMenuItem } from '@/controls/menus/PureMenu';
 import NodeTreeVisualizer from '@/editor/NodeTreeVisualizer';
 import Help from '@/help/Help';
 import Landing from '@/help/Landing';
 import ResumeComponentFactory from '@/resume/ResumeComponent';
-import ComponentTypes from '@/resume/schema/ComponentTypes';
 import ResumeTemplates from '@/templates/ResumeTemplates';
 import ResumeCssEditor from '@/app/ResumeCssEditor';
 
 // Stores
 import { useEditorStore, useMode, useSelectedNodeId, useIsEditingSelected } from '@/shared/stores/editorStore';
-import { useHistoryStore, recordHistory } from '@/shared/stores/historyStore';
-import { addCssClasses, useResumeStore } from '@/shared/stores/resumeStore';
+import { recordHistory } from '@/shared/stores/historyStore';
+import { useResumeStore } from '@/shared/stores/resumeStore/store';
 import { useCssStore, useTreeStylesheet } from '@/shared/stores/cssStore';
 
 // Types
@@ -40,10 +37,7 @@ import useHandlePrint from '@/shared/hooks/useHandlePrint';
 import useStylesheet from '@/shared/hooks/useStylesheet';
 import { useEffect } from 'react';
 import loadData, { loadLocal } from '@/shared/stores/loadData';
-import useMoveSelectedProps from '@/shared/hooks/useMoveSelectedProps';
-import deleteSelectedNode from '@/shared/stores/resumeStore/deleteSelectedNode';
 import { saveFile, saveLocal } from '@/shared/stores/saveResume';
-import addChildNode from '@/shared/stores/resumeStore/addChildNode';
 
 // Dynamic imports (lazy-loaded on-demand)
 const ResumeContextMenuConnected = React.lazy(
@@ -57,7 +51,6 @@ export interface ResumeProps {
     mode?: EditorMode;
     selectedNodeId?: string;
     isEditingSelected?: boolean;
-    moveSelectedProps?: ReturnType<typeof useMoveSelectedProps>;
     nodes?: Array<ResumeNode>;
     css: CssNode;
     rootCss: CssNode;
@@ -70,7 +63,6 @@ export type ResumeWrapperProps = Partial<Omit<ResumeProps, 'selectedNodeId' | 'i
 
 export interface ResumeState {
     activeTemplate?: string;
-    clipboard?: ResumeNode;
 }
 
 class Resume extends React.Component<ResumeProps, ResumeState> {
@@ -90,7 +82,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         this.state = {};
 
         /** Resume Nodes */
-        this.addHtmlId = this.addHtmlId.bind(this);
         this.updateData = this.updateData.bind(this);
 
         /** Templates and Styling **/
@@ -116,7 +107,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     //#region Changing Templates
     loadTemplate(key = 'Integrity') {
         const template: ResumeSaveData = ResumeTemplates.templates[key];
-        this.setState({ activeTemplate: key});
+        this.setState({ activeTemplate: key });
         loadData(template, 'changingTemplate');
     };
 
@@ -138,28 +129,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
     //#endregion
 
     //#region Creating/Editing Nodes
-    addHtmlId(htmlId: string) {
-        const currentNode = this.selectedNode as ResumeNode;
-        const uuid = useEditorStore.getState().selectedNodeId;
-        if (currentNode && uuid) {
-            const css = this.props.css;
-            let root = new CssNode(`#${htmlId}`, {}, `#${htmlId}`);
-            let copyTree = css.findNode(
-                ComponentTypes.instance.cssName(currentNode.type)) as CssNode;
-
-            if (copyTree) {
-                root = copyTree.copySkeleton(`#${htmlId}`, `#${htmlId}`);
-            }
-
-            recordHistory();
-            useResumeStore.getState().updateNodeByUuid(uuid, 'htmlId', htmlId);
-            
-            useCssStore.getState().updateCss((css) => {
-                css.addNode(root);
-            });
-        }
-    }
-
     updateData(id: IdType, key: string, data: any) {
         recordHistory();
         useResumeStore.getState().updateNode(id, key, data);
@@ -173,31 +142,6 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             }
         });
     }
-
-    get clipboardProps() {
-        const copyClipboard = () => {
-            if (this.selectedNode) {
-                this.setState({ clipboard: deepCopy(this.selectedNode) });
-            }
-        };
-
-        return {
-            copyClipboard: copyClipboard,
-            cutClipboard: () => {
-                if (this.selectedNode) {
-                    copyClipboard();
-                    deleteSelectedNode(this.selectedNode.uuid);
-                }
-            },
-            pasteClipboard: this.state.clipboard as ResumeNode ? () => {
-                // Default target: root UUID
-                if (this.selectedNode) {
-                    // UUIDs will be added in the method below
-                    addChildNode(this.selectedNode.uuid, deepCopy(this.state.clipboard as ResumeNode));
-                }
-            } : undefined
-        }
-    }
     //#endregion
     
     //#region Serialization
@@ -207,45 +151,12 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         exportResumeAsHtml(this.resumeRef.current, this.props.stylesheet ?? '', filename);
     }
     //#endregion
-
     //#region Helper Component Props
-    private get selectedNodeActions() : SelectedNodeActions {
+    private get topMenuProps(): TopNavBarWrapperProps {
         return {
-            ...this.clipboardProps,
-            ...this.props.moveSelectedProps,
-            delete: () => deleteSelectedNode(this.selectedNode?.uuid),
-        }
-    }
-
-    private get topMenuProps(): TopNavBarProps {
-        let props = {
             exportHtml: this.exportHtml,
-            isEditing: this.isEditing,
-            loadData: loadData,
-            mode: this.props.mode || 'landing',
-            new: this.loadTemplate,
-            print: printResume,
-            saveLocal: saveLocal,
-            saveFile: saveFile,
-            toggleHelp: () => useEditorStore.getState().toggleMode('help'),
-            toggleLanding: () => useEditorStore.getState().setMode('landing')
-        }
-                    
-        return props;
-    }
-
-    private get editingBarProps() : TopEditingBarWrapperProps {
-        return {
-            ...this.selectedNodeActions,
-            addHtmlId: this.addHtmlId,
-            addCssClasses: (classes) => addCssClasses(this.selectedNode, classes)
-        }
-    }
-
-    private get resumeHotKeysProps() {
-        return {
-            ...this.selectedNodeActions
-        }
+            new: this.loadTemplate
+        };
     }
     //#endregion
 
@@ -272,7 +183,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         const resume = (
             <>
                 <div id="resume" ref={this.resumeRef}>
-                    <ResumeHotKeys {...this.resumeHotKeysProps} />
+                    <ResumeHotKeys />
                     {useResumeStore.getState().tree.childNodes.map((elem, idx, arr) => {
                         const uniqueId = elem.uuid;
                         const props = {
@@ -306,7 +217,7 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
         const editingTop = mode === 'printing' ? <></> : (
             <header id="app-header" className="no-print">
                 <TopNavBar {...this.topMenuProps} />
-                {this.isEditing ? <TopEditingBar {...this.editingBarProps} /> : <></>}
+                {this.isEditing ? <TopEditingBar /> : <></>}
             </header>
         );
 
@@ -371,7 +282,6 @@ function ResumeContainer(props: ResumeWrapperProps) {
 
     useHandlePrint();
     useStylesheet(stylesheet);
-    const moveSelectedProps = useMoveSelectedProps();
     
     return <Resume 
         {...props}
@@ -383,7 +293,6 @@ function ResumeContainer(props: ResumeWrapperProps) {
         setCss={setCss}
         setRootCss={setRootCss}
         stylesheet={stylesheet}
-        moveSelectedProps={moveSelectedProps}
     />
 }
 

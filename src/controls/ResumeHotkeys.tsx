@@ -4,6 +4,7 @@ import { SelectedNodeActions } from "./SelectedNodeActions";
 import { Action } from "@/types";
 import useUndoRedoProps from "@/shared/hooks/useUndoRedoProps";
 import { useEditorStore } from "@/shared/stores/editorStore";
+import useSelectedNodeActions from "@/shared/hooks/useSelectedNodeActions";
 
 export interface ResumeHotKeysProps extends SelectedNodeActions {
     /** Editor Modes */
@@ -120,15 +121,14 @@ export class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
     }
 }
 
-export default function ResumeHotKeysWrapper(props: 
-    Omit<ResumeHotKeysProps, 'undo' | 'redo' | 'reset' | 'togglePrintMode'>
-) {
+export default function ResumeHotKeysWrapper() {
     const undoRedoProps = useUndoRedoProps();
     const { unselectNode, setMode, toggleMode } = useEditorStore.getState();
+    const selectedNodeActions = useSelectedNodeActions();
     const togglePrintMode = () => toggleMode('printing');
     
     return <ResumeHotKeys
-        {...props}
+        {...selectedNodeActions}
         {...undoRedoProps}
         togglePrintMode={togglePrintMode}
         reset={() => {

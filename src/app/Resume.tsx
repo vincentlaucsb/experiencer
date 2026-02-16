@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { createPortal } from 'react-dom';
+import { useRef, useCallback } from 'react';
 
 import '@/assets/fonts/icofont.min.css';
 import '@/shared/scss/index.scss';
@@ -61,63 +62,34 @@ export interface ResumeProps {
 
 export type ResumeWrapperProps = Partial<Omit<ResumeProps, 'selectedNodeId' | 'isEditingSelected'>>;
 
-export interface ResumeState {
-    activeTemplate?: string;
-}
+function Resume(props: ResumeProps) {
+    const resumeRef = useRef<HTMLDivElement>(null);
 
-class Resume extends React.Component<ResumeProps, ResumeState> {
-    private resumeRef = React.createRef<HTMLDivElement>();
-
-    constructor(props: ResumeProps) {
-        super(props);
-
-        // Initialize stores with props if provided (unit tests only)
-        if (props.nodes) {
-            useResumeStore.getState().setNodes(props.nodes);
-        }
-        if (props.mode) {
-            useEditorStore.getState().setMode(props.mode);
-        }
-        
-        this.state = {};
-
-        /** Resume Nodes */
-        this.updateData = this.updateData.bind(this);
-
-        /** Templates and Styling **/
-        this.loadTemplate = this.loadTemplate.bind(this);
-        this.renderSidebar = this.renderSidebar.bind(this);
-
-        /** Load & Save */
-        this.exportHtml = this.exportHtml.bind(this);
-    }
-
-    /** Returns true if we are actively editing a resume */
-    get isEditing(): boolean {
-        const mode = this.props.mode || 'landing';
+    // Returns true if we are actively editing a resume
+    const isEditing = (() => {
+        const mode = props.mode || 'landing';
         return mode === 'normal' || mode === 'help';
-    }
+    })();
 
-    /** Retrieve the selected node **/
-    get selectedNode(): ResumeNode | undefined {
-        const uuid = this.props.selectedNodeId;
+    // Retrieve the selected node
+    const selectedNode = (() => {
+        const uuid = props.selectedNodeId;
         return uuid ? useResumeStore.getState().getNodeByUuid(uuid) : undefined;
-    }
+    })();
 
-    //#region Changing Templates
-    loadTemplate(key = 'Integrity') {
+    // Change Templates
+    const loadTemplate = useCallback((key = 'Integrity') => {
         const template: ResumeSaveData = ResumeTemplates.templates[key];
-        this.setState({ activeTemplate: key });
         loadData(template, 'changingTemplate');
-    };
+    }, []);
 
-    private renderTemplateChanger() {
+    const renderTemplateChanger = () => {
         const templateNames = Object.keys(ResumeTemplates.templates);
         return (
             <div id="template-selector">
                 <PureMenu>
                     {templateNames.map((key: string) =>
-                        <PureMenuItem key={key} onClick={() => this.loadTemplate(key)}>
+                        <PureMenuItem key={key} onClick={() => loadTemplate(key)}>
                             <PureMenuLink>{key}</PureMenuLink>
                         </PureMenuItem>
                     )}
@@ -125,42 +97,37 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
                 <Button onClick={() => useEditorStore.getState().toggleMode('normal')}>Use this Template</Button>
             </div>
         );
-    }
-    //#endregion
+    };
 
-    //#region Creating/Editing Nodes
-    updateData(id: IdType, key: string, data: any) {
+    // Creating/Editing Nodes
+    const updateData = useCallback((id: IdType, key: string, data: any) => {
         recordHistory();
         useResumeStore.getState().updateNode(id, key, data);
-    }
+    }, []);
 
-    updateDataFields(id: IdType, patch: Partial<Record<string, NodeProperty>>) {
+    const updateDataFields = useCallback((id: IdType, patch: Partial<Record<string, NodeProperty>>) => {
         recordHistory();
         Object.entries(patch).forEach(([key, value]) => {
             if (value !== undefined) {
                 useResumeStore.getState().updateNode(id, key, value);
             }
         });
-    }
-    //#endregion
-    
-    //#region Serialization
-    exportHtml() {
+    }, []);
+
+    // Serialization
+    const exportHtml = useCallback(() => {
         // TODO: Make this user defineable
         const filename = 'resume.html';
-        exportResumeAsHtml(this.resumeRef.current, this.props.stylesheet ?? '', filename);
-    }
-    //#endregion
-    //#region Helper Component Props
-    private get topMenuProps(): TopNavBarWrapperProps {
-        return {
-            exportHtml: this.exportHtml,
-            new: this.loadTemplate
-        };
-    }
-    //#endregion
+        exportResumeAsHtml(resumeRef.current, props.stylesheet ?? '', filename);
+    }, [props.stylesheet]);
 
-    private renderSidebar() {
+    // Helper Component Props
+    const topMenuProps: TopNavBarWrapperProps = {
+        exportHtml: exportHtml,
+        new: loadTemplate
+    };
+
+    const renderSidebar = () => {
         return <Tabs>
             <NodeTreeVisualizer key="Tree" childNodes={useResumeStore.getState().tree.childNodes}
                 selectNode={(uuid) => useEditorStore.getState().selectNode(uuid)}
@@ -170,95 +137,94 @@ class Resume extends React.Component<ResumeProps, ResumeState> {
             <div key="Raw CSS">
                 <pre>
                     <code>
-                        {this.props.stylesheet}
+                        {props.stylesheet}
                     </code>
                 </pre>
             </div>
         </Tabs>
-    }
+    };
 
-    render() {
-        const { mode } = this.props;
-        const hlBoxContainer = createContainer("hl-box-container");
-        const resume = (
-            <>
-                <div id="resume" ref={this.resumeRef}>
-                    <ResumeHotKeys />
-                    {useResumeStore.getState().tree.childNodes.map((elem, idx, arr) => {
-                        const uniqueId = elem.uuid;
-                        const props = {
-                            ...elem,
-                            updateResumeData: this.updateData,
-                            updateResumeDataFields: this.updateDataFields,
-                            index: idx,
-                            numSiblings: arr.length
-                        };
+    // Main Render Logic
+    const { mode } = props;
+    const hlBoxContainer = createContainer("hl-box-container");
+    const resume = (
+        <>
+            <div id="resume" ref={resumeRef}>
+                <ResumeHotKeys />
+                {useResumeStore.getState().tree.childNodes.map((elem, idx, arr) => {
+                    const uniqueId = elem.uuid;
+                    const elementProps = {
+                        ...elem,
+                        updateResumeData: updateData,
+                        updateResumeDataFields: updateDataFields,
+                        index: idx,
+                        numSiblings: arr.length
+                    };
 
-                        return (
-                            <ResumeComponentFactory
-                                key={uniqueId}
-                                {...props}
-                            />
-                        );
-                    })}
-                </div>
+                    return (
+                        <ResumeComponentFactory
+                            key={uniqueId}
+                            {...elementProps}
+                        />
+                    );
+                })}
+            </div>
+            <React.Suspense fallback={null}>
+                <ResumeContextMenuConnected />
+            </React.Suspense>
+            {createPortal(
                 <React.Suspense fallback={null}>
-                    <ResumeContextMenuConnected />
-                </React.Suspense>
-                {createPortal(
-                    <React.Suspense fallback={null}>
-                        <SelectedNodeHighlightBox />
-                    </React.Suspense>,
-                    hlBoxContainer
-                )}
-            </>
-        );
-        
-        const editingTop = mode === 'printing' ? <></> : (
-            <header id="app-header" className="no-print">
-                <TopNavBar {...this.topMenuProps} />
-                {this.isEditing ? <TopEditingBar /> : <></>}
-            </header>
-        );
+                    <SelectedNodeHighlightBox />
+                </React.Suspense>,
+                hlBoxContainer
+            )}
+        </>
+    );
+    
+    const editingTop = mode === 'printing' ? <></> : (
+        <header id="app-header" className="no-print">
+            <TopNavBar {...topMenuProps} />
+            {isEditing ? <TopEditingBar /> : <></>}
+        </header>
+    );
 
-        // Render the final layout based on editor mode
-        switch (mode) {
-            case 'help':
-                return <ResizableSidebarLayout
-                    topNav={editingTop}
-                    main={resume}
-                    sidebar={<Help close={() => useEditorStore.getState().toggleMode('help')} />}
-                />
-            case 'changingTemplate':
-                return <StaticSidebarLayout
-                    topNav={editingTop}
-                    main={resume}
-                    sidebar={this.renderTemplateChanger()}
-                />
-            case 'landing':
-                return <DefaultLayout
-                    topNav={editingTop}
-                    main={<Landing
-                        loadLocal={() => { loadLocal() }}
-                        new={this.loadTemplate}
-                        loadData={loadData}
-                    />
-                    } />
-            case 'printing':
-                return resume;
-            default:
-                return <ResizableSidebarLayout
-                    topNav={editingTop}
-                    main={resume}
-                    sidebar={this.renderSidebar()}
+    // Render the final layout based on editor mode
+    switch (mode) {
+        case 'help':
+            return <ResizableSidebarLayout
+                topNav={editingTop}
+                main={resume}
+                sidebar={<Help close={() => useEditorStore.getState().toggleMode('help')} />}
             />
-        }
+        case 'changingTemplate':
+            return <StaticSidebarLayout
+                topNav={editingTop}
+                main={resume}
+                sidebar={renderTemplateChanger()}
+            />
+        case 'landing':
+            return <DefaultLayout
+                topNav={editingTop}
+                main={<Landing
+                    loadLocal={() => { loadLocal() }}
+                    new={loadTemplate}
+                    loadData={loadData}
+                />
+                } />
+        case 'printing':
+            return resume;
+        default:
+            return <ResizableSidebarLayout
+                topNav={editingTop}
+                main={resume}
+                sidebar={renderSidebar()}
+            />
     }
 }
 
 /**
  * Functional wrapper that subscribes to mode and selection state.
- * Provides these as props to the Resume class component for selective re-rendering.
+ * Provides these as props to the Resume component for selective re-rendering.
  */
 function ResumeContainer(props: ResumeWrapperProps) {
     const { css, rootCss, setCss, setRootCss } = useCssStore();
@@ -272,6 +238,12 @@ function ResumeContainer(props: ResumeWrapperProps) {
 
     // Initialize stores with props if provided (unit tests only)
     useEffect(() => {
+        if (props.nodes) {
+            useResumeStore.getState().setNodes(props.nodes);
+        }
+        if (props.mode) {
+            useEditorStore.getState().setMode(props.mode);
+        }
         if (props.css) {
             setCss(props.css);
         }

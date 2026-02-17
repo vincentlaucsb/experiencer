@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import CssNode from '@/shared/utils/CssTree';
+import CssNode from '@/shared/CssTree';
 import { CssNodeDump } from '@/types';
 
 interface CssState {

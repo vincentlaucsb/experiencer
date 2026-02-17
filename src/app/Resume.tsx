@@ -32,13 +32,12 @@ import { useResumeStore } from '@/shared/stores/resumeStore/store';
 import { useCssStore, useTreeStylesheet } from '@/shared/stores/cssStore';
 
 // Types
-import CssNode from '@/shared/utils/CssTree';
+import CssNode from '@/shared/CssTree';
 import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode, Globals } from '@/types';
 import useHandlePrint from '@/shared/hooks/useHandlePrint';
 import useStylesheet from '@/shared/hooks/useStylesheet';
 import { useEffect } from 'react';
 import loadData, { loadLocal } from '@/shared/stores/loadData';
-import { saveFile, saveLocal } from '@/shared/stores/saveResume';
 
 // Dynamic imports (lazy-loaded on-demand)
 const ResumeContextMenuConnected = React.lazy(
@@ -69,12 +68,6 @@ function Resume(props: ResumeProps) {
     const isEditing = (() => {
         const mode = props.mode || 'landing';
         return mode === 'normal' || mode === 'help';
-    })();
-
-    // Retrieve the selected node
-    const selectedNode = (() => {
-        const uuid = props.selectedNodeId;
-        return uuid ? useResumeStore.getState().getNodeByUuid(uuid) : undefined;
     })();
 
     // Change Templates

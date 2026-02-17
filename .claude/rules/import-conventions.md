@@ -56,7 +56,7 @@ import { useResumeStore } from '@/shared/stores/resumeStore';
 ### 6. Types
 TypeScript interfaces, types, type utilities
 ```typescript
-import CssNode, { ReadonlyCssNode } from '@/shared/utils/CssTree';
+import CssNode, { ReadonlyCssNode } from '@/shared/CssTree';
 import { IdType, NodeProperty, ResumeSaveData, ResumeNode } from '@/types';
 ```
 

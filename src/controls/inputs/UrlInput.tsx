@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useEffect } from "react";
 
 interface UrlInputProps {
     url?: string;
@@ -8,6 +9,11 @@ interface UrlInputProps {
 export default function UrlInput(props: UrlInputProps) {
     let [url, setUrl] = React.useState(props.url || "");
     const inputRef = React.useRef<HTMLInputElement>(null);
+
+    // Sync internal state when prop changes (e.g., when switching between links)
+    useEffect(() => {
+        setUrl(props.url || "");
+    }, [props.url]);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setUrl(event.target.value);

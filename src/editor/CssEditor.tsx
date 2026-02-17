@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { useEditorStore } from '@/shared/stores/editorStore';
 import MappedTextFields, { ContainerProps } from "@/controls/inputs/MappedTextFields";
 import TextField from "@/controls/inputs/TextField";
-import CssNode, { ReadonlyCssNode } from "@/shared/utils/CssTree";
+import CssNode, { ReadonlyCssNode } from "@/shared/CssTree";
 import { createContainer } from "@/shared/utils/Helpers";
 import CssSuggestions from "./CssSuggestions";
 import { HighlightBox } from "./HighlightBox";
@@ -12,13 +12,13 @@ import { HighlightBox } from "./HighlightBox";
 const CssEditorToolbar = React.lazy(() => import("./CssEditorToolbar"));
 
 export interface CssUpdateProps {
-    addSelector: (path: string[], name: string, selector: string) => void;
-    updateName: (path: string[], value: string) => void;
-    updateProperty: (path: string[], key: string, value: string) => void;
-    updateDescription: (path: string[], data: string) => void;
-    updateSelector: (path: string[], selector: string) => void;
-    deleteKey: (path: string[], key: string) => void;
-    deleteNode: (path: string[]) => void;
+    addSelector: (path: ReadonlyArray<string>, name: string, selector: string) => void;
+    updateName: (path: ReadonlyArray<string>, value: string) => void;
+    updateProperty: (path: ReadonlyArray<string>, key: string, value: string) => void;
+    updateDescription: (path: ReadonlyArray<string>, data: string) => void;
+    updateSelector: (path: ReadonlyArray<string>, selector: string) => void;
+    deleteKey: (path: ReadonlyArray<string>, key: string) => void;
+    deleteNode: (path: ReadonlyArray<string>) => void;
 }
 
 export interface CssEditorProps extends CssUpdateProps {
@@ -44,43 +44,43 @@ export function makeCssEditorProps(
     return {
         addSelector: (path, name, selector) => {
             updateTree((cssTreeRoot) => {
-                cssTreeRoot.mustFindNode(path).add(name, {}, selector);
+                cssTreeRoot.mustFindNode(Array.from(path)).add(name, {}, selector);
             });
         },
 
         updateName: (path, value) => {
             updateTree((cssTreeRoot) => {
-                cssTreeRoot.mustFindNode(path).name = value;
+                cssTreeRoot.mustFindNode(Array.from(path)).name = value;
             });
         },
 
         updateProperty: (path, key, value) => {
             updateTree((cssTreeRoot) => {
-                cssTreeRoot.setProperty(path, key, value);
+                cssTreeRoot.setProperty(Array.from(path), key, value);
             });
         },
 
         updateDescription: (path, value) => {
             updateTree((cssTreeRoot) => {
-                cssTreeRoot.mustFindNode(path).description = value;
+                cssTreeRoot.mustFindNode(Array.from(path)).description = value;
             });
         },
 
         updateSelector: (path, value) => {
             updateTree((cssTreeRoot) => {
-                cssTreeRoot.mustFindNode(path).selector = value;
+                cssTreeRoot.mustFindNode(Array.from(path)).selector = value;
             });
         },
 
         deleteKey: (path, key) => {
             updateTree((cssTreeRoot) => {
-                cssTreeRoot.deleteProperty(path, key);
+                cssTreeRoot.deleteProperty(Array.from(path), key);
             });
         },
 
         deleteNode: (path) => {
             updateTree((cssTreeRoot) => {
-                cssTreeRoot.delete(path);
+                cssTreeRoot.delete(Array.from(path));
             });
         }
     };
@@ -186,7 +186,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
     /** Highlight all DOM nodes matching the current selector */
     renderHighlightBoxes() {
-        const cssHlCalcStyle = (bounds: ClientRect | DOMRect, computedStyle: CSSStyleDeclaration) => {
+        const cssHlCalcStyle = (bounds: DOMRect, computedStyle: CSSStyleDeclaration) => {
             return {
                 left: `calc(${bounds.left}px - ${computedStyle.marginLeft})`,
                 top: `calc(${bounds.top}px - ${computedStyle.marginTop})`,
@@ -236,7 +236,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         genericValueSuggestions.concat(['initial', 'inherit', 'unset']);
         
         return (
-            <MappedTextFields value={cssProperties}
+            <MappedTextFields value={cssProperties as Map<string, string>}
                 container={(props) => this.mapContainer(props)}
                 updateValue={this.props.updateProperty.bind(this, this.path)}
                 deleteKey={this.props.deleteKey.bind(this, this.path)}

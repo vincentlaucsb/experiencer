@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Confirm } from "@/controls/Buttons";
-import { ReadonlyCssNode } from "@/shared/utils/CssTree";
+import { ReadonlyCssNode } from "@/shared/CssTree";
 import { Popover } from "react-tiny-popover";
 import { TrashIcon, AddIcon } from "@/controls/InterfaceIcons";
 import ButtonGroup from "@/controls/ButtonGroup";

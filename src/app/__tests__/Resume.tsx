@@ -4,7 +4,7 @@
 import { render, fireEvent, getByText, getAllByText, act } from "@testing-library/react";
 import Resume from "@/app/Resume";
 import ResumeTemplates from "@/templates/ResumeTemplates";
-import CssNode from "@/shared/utils/CssTree";
+import CssNode from "@/shared/CssTree";
 import registerNodes from "@/resume/schema";
 
 // Initialize the schema registry

@@ -1,4 +1,4 @@
-import CssNode from "./CssTree";
+import CssNode from "@/shared/CssTree";
 
 /**
  * Given the root CSS node, generate suggestions for CSS variable usage

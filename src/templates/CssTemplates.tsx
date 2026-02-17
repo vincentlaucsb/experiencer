@@ -1,4 +1,4 @@
-import CssNode from "@/shared/utils/CssTree";
+import CssNode from "@/shared/CssTree";
 import Entry from "@/resume/Entry";
 import Section from "@/resume/Section";
 import MarkdownText from "@/resume/Markdown";

@@ -9,7 +9,6 @@ import { Button } from "./Buttons";
 import ToolbarButton, { ToolbarButtonProps } from "./toolbar/ToolbarButton";
 import { useEditorStore, useMode } from "@/shared/stores/editorStore";
 import loadData from "@/shared/stores/loadData";
-import { printResume } from "@/shared/utils/PrintHelpers";
 import { saveFile, saveLocal } from "@/shared/stores/saveResume";
 
 export interface TopNavBarProps {
@@ -99,7 +98,7 @@ export default function TopNavBarWrapper(props: TopNavBarWrapperProps) {
         isEditing,
         toggleHelp: () => toggleMode('help'),
         toggleLanding: () => setMode('landing'),
-        print: printResume,
+        print: () => toggleMode('printing'),
         saveLocal,
         saveFile
     };

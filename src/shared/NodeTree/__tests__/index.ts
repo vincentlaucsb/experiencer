@@ -1,4 +1,4 @@
-import ResumeNodeTree from "../NodeTree";
+import ResumeNodeTree from "..";
 import { assignIds } from "@/shared/utils/Helpers";
 import { BasicResumeNode } from "@/types";
 

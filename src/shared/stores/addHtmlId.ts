@@ -1,4 +1,4 @@
-import CssNode from "@/shared/utils/CssTree";
+import CssNode from "@/shared/CssTree";
 import { useEditorStore } from "./editorStore";
 import { useResumeStore } from "./resumeStore/store";
 import { useCssStore } from "./cssStore";

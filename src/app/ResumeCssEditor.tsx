@@ -1,7 +1,7 @@
 import { useCss, useCssStore, useRootCss } from "@/shared/stores/cssStore";
 import { useSelectedNodeId } from "@/shared/stores/editorStore";
 import { useResumeStore } from "@/shared/stores/resumeStore";
-import CssNode, { ReadonlyCssNode } from "@/shared/utils/CssTree";
+import CssNode, { ReadonlyCssNode } from "@/shared/CssTree";
 import type { ResumeNode } from "@/types";
 import CssEditor, { makeCssEditorProps } from "@/editor/CssEditor";
 

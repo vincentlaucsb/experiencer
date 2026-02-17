@@ -120,13 +120,21 @@ Located in `src/components/controls/`:
 - **Layouts**: Layout switcher (resizable sidebar, static, default)
 - **Tabs**: Tab navigation component
 
-### Utility Components
-Located in `src/components/utility/`:
+### Core Data Structures
 
-- **NodeTree**: Tree data structure for resume nodes
-- **ObservableResumeNodeTree**: Observable wrapper for state changes
+Located in dedicated folders reflecting their architectural importance:
+
+- **`src/shared/NodeTree/`**: Tree data structure for resume nodes with UUID indexing and hierarchical navigation
+- **`src/shared/CssTree/`**: CSS rule management with stylesheet generation and tree operations
+
+These foundational data structures are placed at the root of `/shared` rather than in `/shared/utils/` because they:
+- Form the core of the application's data model
+- Are used across multiple stores and utilities
+- Deserve dedicated test suites (`__tests__/` subdirectories)
+- Represent foundational architecture rather than utility functions
+
+### Editor & Visualization Components
 - **NodeTreeVisualizer**: Visual tree view of resume structure
-- **CssTree**: CSS rule management
 - **CssEditor**: Visual CSS editor
 - **CssEditorToolbar**: Toolbar for CSS editor
 - **GenerateHtml**: Export resume as standalone HTML

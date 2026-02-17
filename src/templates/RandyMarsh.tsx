@@ -1,6 +1,6 @@
 import Column from "@/resume/Column";
 import Header, { BasicHeaderProps } from "@/resume/Header";
-import CssNode from "@/shared/utils/CssTree";
+import CssNode from "@/shared/CssTree";
 import Section from "@/resume/Section";
 import Entry, { BasicEntryProps } from "@/resume/Entry";
 import Image from "@/resume/Image";

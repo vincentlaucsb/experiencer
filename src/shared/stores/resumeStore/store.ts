@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import ResumeNodeTree from '@/shared/utils/NodeTree';
+import ResumeNodeTree from '@/shared/NodeTree';
 import { ResumeNode, IdType } from '@/types';
 
 interface ResumeState {

@@ -104,21 +104,3 @@ export function process(text?: string) {
 
     return "";
 }
-
-/**
- * Convert URLs to <a href="" />
- * @param text
- */
-export function toUrl(text?: string) {
-    if (text) {
-        var expression = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
-        const regex = new RegExp(expression);
-        if (text.match(regex)) {
-            return `[${text}](${text})`;
-        }
-
-        return text;
-    }
-
-    return "";
-}

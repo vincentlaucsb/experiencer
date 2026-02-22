@@ -1,21 +1,21 @@
 import { saveAs } from "file-saver";
 import { resumeNodeStore } from "./resumeNodeStore";
 import { ResumeSaveData } from "@/types";
-import { useCssStore } from "./cssStore";
+import { cssStore, rootCssStore } from "./cssStoreHooks";
 
 function dump(): ResumeSaveData {
-    const { css, rootCss } = useCssStore.getState();
-    
     return {
-        childNodes: resumeNodeStore.getTree().childNodes,
-        builtinCss: css.dump(),
-        rootCss: rootCss.dump()
+        childNodes: resumeNodeStore.data.childNodes,
+        builtinCss: cssStore.data.dump(),
+        rootCss: rootCssStore.data.dump()
     };
 }
 
 // Save data to localStorage
 export function saveLocal() {
     resumeNodeStore.clearUnsavedChanges();
+    cssStore.clearUnsavedChanges();
+    rootCssStore.clearUnsavedChanges();
     localStorage.setItem('experiencer', JSON.stringify(dump()));
 }
 

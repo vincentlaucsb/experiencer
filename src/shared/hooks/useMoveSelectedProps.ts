@@ -13,7 +13,7 @@ export default function useMoveSelectedProps() {
         return { moveUp: undefined, moveDown: undefined };
     }
 
-    const tree = resumeNodeStore.getTree();
+    const tree = resumeNodeStore.data;
     const id = tree.getHierarchicalId(uuid);
     if (!id) {
         return { moveUp: undefined, moveDown: undefined };

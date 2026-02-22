@@ -1,4 +1,4 @@
-import { useCss, useCssStore, useRootCss } from "@/shared/stores/cssStore";
+import { useCss, useCssStore, useRootCss } from "@/shared/stores/cssStoreHooks";
 import { useSelectedNodeId } from "@/shared/stores/editorStore";
 import { resumeNodeStore } from "@/shared/stores/resumeNodeStore";
 import CssNode, { ReadonlyCssNode } from "@/shared/CssTree";

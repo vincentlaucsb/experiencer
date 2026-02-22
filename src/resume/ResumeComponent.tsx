@@ -36,8 +36,6 @@ export default function ResumeComponentFactory(props: FactoryProps) {
         isLast: index === props.numSiblings - 1
     } as ResumeComponentProps;
 
-    console.log("Rendering node", props.type, "with props", newProps);
-
     const ResumeComponent = ComponentTypes.instance.getComponent(props.type);
     if (!ResumeComponent) 
         return <React.Fragment></React.Fragment>

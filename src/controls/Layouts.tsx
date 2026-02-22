@@ -21,7 +21,9 @@ export function StaticSidebarLayout(props: SidebarLayoutProps) {
     return <React.Fragment>
         {props.topNav}
         <div id="main-grid">
-            {props.main}
+            <div>
+                {props.main}
+            </div>
             {props.sidebar}
         </div>
     </React.Fragment>

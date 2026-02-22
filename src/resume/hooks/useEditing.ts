@@ -18,6 +18,7 @@ export default function useEditing<T>(
 ) {
     const [editValue, setEditValue] = useState(initialValue);
     const prevEditingRef = useRef(isEditing);
+    const initialValueRef = useRef(initialValue);
     
     useEffect(() => {
         const wasEditing = prevEditingRef.current;
@@ -25,10 +26,13 @@ export default function useEditing<T>(
         const isExitingEditMode = wasEditing && !isEditing;
         
         if (isEnteringEditMode) {
-            // Entering edit mode - sync from parent
+            // Entering edit mode - sync from parent and capture initial value
+            initialValueRef.current = initialValue;
             setEditValue(initialValue);
         } else if (isExitingEditMode) {
             // Exiting edit mode - save to parent
+            // (Note: if useEditingHotkeys called onChange with original value,
+            //  editValue will already be the restored value)
             onChange(editValue);
         } else if (!isEditing) {
             // Not editing - keep synced with parent (e.g., undo/redo)

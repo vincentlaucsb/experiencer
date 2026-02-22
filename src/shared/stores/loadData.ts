@@ -1,6 +1,6 @@
 import { EditorMode, Globals, ResumeSaveData } from "@/types";
 import { useEditorStore } from "./editorStore";
-import { useCssStore } from "./cssStore";
+import { cssStore, rootCssStore } from "./cssStoreHooks";
 import { resumeNodeStore } from "./resumeNodeStore";
 import { useHistoryStore } from "./historyStore";
 import { assignIds } from "../utils/Helpers";
@@ -19,7 +19,8 @@ export default function loadData(data: object, mode: EditorMode = 'normal') {
     // Clear history when loading new data
     useHistoryStore.getState().clear();
     
-    useCssStore.getState().loadCss(savedData.builtinCss, savedData.rootCss);
+    cssStore.loadCss(savedData.builtinCss);
+    rootCssStore.loadCss(savedData.rootCss);
 
     useEditorStore.getState().setMode(mode);
 }

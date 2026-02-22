@@ -23,8 +23,6 @@ function Link(props: LinkProps) {
     const displayText = process(props.value) as string || "Link text";
     const url = props.url || "#";
 
-    console.log("Display Text:", displayText);
-
     const [editValue, setEditValue] = useEditing(
         props.value || '',
         isEditing,

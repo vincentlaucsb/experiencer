@@ -14,10 +14,11 @@ import ResumeHotKeys, { ResumeHotKeyMap } from "./ResumeHotkeys";
 const HtmlIdAdder = React.lazy(() => import("./HtmlIdAdder"));
 import { ToolbarItemData } from "./toolbar/ToolbarButton";
 import { useEditorStore } from "@/shared/stores/editorStore";
-import { resumeNodeStore, useResumeNodeByUuid } from "@/shared/stores/resumeNodeStore";
+import { resumeNodeStore, useResumeNodeByUuid, useHasUnsavedChanges as useHasUnsavedNodeChanges } from "@/shared/stores/resumeNodeStore";
 import { useHistoryStore } from "@/shared/stores/historyStore";
 import updateSelected from "@/shared/stores/resumeStore/updateSelectedNode";
 import { saveLocal } from "@/shared/stores/saveResume";
+import { useHasUnsavedChanges as useHasUnsavedCssChanges } from "@/shared/stores/cssStoreHooks";
 import addChildNode from "@/shared/stores/resumeStore/addChildNode";
 import addCssClasses from "@/shared/stores/resumeStore/addCssClasses";
 import useSelectedNodeActions from "@/shared/hooks/useSelectedNodeActions";
@@ -322,8 +323,10 @@ export type TopEditingBarWrapperProps = Record<string, never>;
 export default function TopEditingBarWrapper(props: TopEditingBarWrapperProps) {
     const { canUndo, canRedo, undo, redo } = useHistoryStore.getState();
     const { unselectNode, selectedNodeId } = useEditorStore.getState();
-    const unsavedChanges = resumeNodeStore.hasUnsavedChanges();
-    const tree = resumeNodeStore.getTree();
+    const hasUnsavedNodeChanges = useHasUnsavedNodeChanges();
+    const hasUnsavedCssChanges = useHasUnsavedCssChanges();
+    const unsavedChanges = hasUnsavedNodeChanges || hasUnsavedCssChanges;
+    const tree = resumeNodeStore.data;
     const selectedNodeActions = useSelectedNodeActions();
 
     const undoRedoProps =  {

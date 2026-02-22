@@ -45,7 +45,7 @@ export default function MarkdownText(props: ResumeComponentProps) {
         isEditing,
         ctrlEnter: true,
         value: textValue,
-        onChange: (newValue) => props.updateData("value", newValue),
+        onChange: setEditValue, // Use setEditValue to update local state, not props.updateData
         toggleEditing: toggleEdit,
     });
 

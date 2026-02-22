@@ -100,7 +100,8 @@ export default function useEditingHotkeys<TValue extends EditingValue = string>(
             }
             else if (e.key === 'Escape') {
                 e.preventDefault();
-                // Restore original value and exit editing
+                // Restore original value, then exit
+                // This updates the local state so useEditing saves the restored value
                 onChange(valueRef.current);
                 toggleEditing();
             }

@@ -28,8 +28,8 @@ import ResumeCssEditor from '@/app/ResumeCssEditor';
 // Stores
 import { useEditorStore, useMode, useSelectedNodeId, useIsEditingSelected } from '@/shared/stores/editorStore';
 import { recordHistory } from '@/shared/stores/historyStore';
-import { useResumeTree, useResumeActions, resumeNodeStore } from '@/shared/stores/resumeNodeStore';
-import { useCssStore, useTreeStylesheet } from '@/shared/stores/cssStore';
+import { useResumeTree, resumeNodeStore } from '@/shared/stores/resumeNodeStore';
+import { useCssStore, useTreeStylesheet } from '@/shared/stores/cssStoreHooks';
 
 // Types
 import CssNode from '@/shared/CssTree';
@@ -65,9 +65,6 @@ export type ResumeWrapperProps = Partial<Omit<ResumeProps, 'selectedNodeId' | 'i
 function Resume(props: ResumeProps) {
     const resumeRef = useRef<HTMLDivElement>(null);
     const resumeNodes = props.tree.childNodes || [];
-    useEffect(() => {
-        console.log("Nodes", resumeNodes);
-    }, [resumeNodes]);
 
     // Returns true if we are actively editing a resume
     const isEditing = (() => {
@@ -159,8 +156,6 @@ function Resume(props: ResumeProps) {
                         numSiblings: arr.length
                     };
 
-                    console.log("Rendering node", JSON.stringify(elementProps));
-
                     return (
                         <ResumeComponentFactory
                             key={uniqueId}
@@ -233,10 +228,6 @@ function ResumeContainer(props: ResumeWrapperProps) {
     const selectedNodeId = useSelectedNodeId();
     const isEditingSelected = useIsEditingSelected();
     const tree = useResumeTree();
-    
-    useEffect(() => {
-        console.log("Tree changed", tree);
-    }, [tree]);
     
     // Use prop mode if provided (for tests), otherwise use store mode
     const mode = props.mode || storeMode;

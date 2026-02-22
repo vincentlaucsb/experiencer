@@ -9,39 +9,12 @@ import { IdType, ResumeNode } from '@/types';
  * All mutation methods modify the tree in place and notify React subscribers.
  */
 export default class NodeStore extends ClassStore<ResumeNodeTree> {
-    protected data: ResumeNodeTree;
-    private _unsavedChanges: boolean = false;
+    protected _data: ResumeNodeTree;
 
     constructor(initialTree?: ResumeNodeTree) {
         super();
-        this.data = initialTree || new ResumeNodeTree();
+        this._data = initialTree || new ResumeNodeTree();
     }
-
-    // #region State Access
-
-    /**
-     * Get the current tree instance.
-     */
-    getTree(): ResumeNodeTree {
-        return this.data;
-    }
-
-    /**
-     * Check if there are unsaved changes.
-     */
-    hasUnsavedChanges(): boolean {
-        return this._unsavedChanges;
-    }
-
-    /**
-     * Clear the unsaved changes flag (typically after save).
-     */
-    clearUnsavedChanges(): void {
-        this._unsavedChanges = false;
-        this.notifyListeners();
-    }
-
-    // #endregion
 
     // #region Tree Manipulation (IdType-based)
 
@@ -51,9 +24,9 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
      * @param nodes - Array of root-level nodes
      */
     setNodes(nodes: ResumeNode[]): void {
-        this.data = new ResumeNodeTree(nodes);
-        this._unsavedChanges = true;
-        this.notifyListeners();
+        this.withMutation(() => {
+            this.data = new ResumeNodeTree(nodes);
+        });
     }
 
     /**
@@ -63,9 +36,7 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
      * @param node - The node to add
      */
     addNode(parentId: IdType, node: ResumeNode): void {
-        this.data.addNestedChild(parentId, node);
-        this._unsavedChanges = true;
-        this.notifyListeners();
+        this.withMutation(() => this.data.addNestedChild(parentId, node));
     }
 
     /**
@@ -74,9 +45,7 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
      * @param id - Hierarchical ID of the node to delete
      */
     deleteNode(id: IdType): void {
-        this.data.deleteChild(id);
-        this._unsavedChanges = true;
-        this.notifyListeners();
+        this.withMutation(() => this.data.deleteChild(id));
     }
 
     /**
@@ -87,9 +56,7 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
      * @param data - New value for the property
      */
     updateNode(id: IdType, key: string, data: any): void {
-        this.data.updateChild(id, key, data);
-        this._unsavedChanges = true;
-        this.notifyListeners();
+        this.withMutation(() => this.data.updateChild(id, key, data));
     }
 
     /**
@@ -99,10 +66,7 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
      * @returns The new hierarchical ID after moving
      */
     moveNodeUp(id: IdType): IdType {
-        const newId = this.data.moveUp(id);
-        this._unsavedChanges = true;
-        this.notifyListeners();
-        return newId;
+        return this.withMutation(() => this.data.moveUp(id));
     }
 
     /**
@@ -112,10 +76,7 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
      * @returns The new hierarchical ID after moving
      */
     moveNodeDown(id: IdType): IdType {
-        const newId = this.data.moveDown(id);
-        this._unsavedChanges = true;
-        this.notifyListeners();
-        return newId;
+        return this.withMutation(() => this.data.moveDown(id));
     }
 
     // #endregion

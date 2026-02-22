@@ -43,7 +43,7 @@ export const useHistoryStore = create<HistoryStore>()(
                 const newPast = past.slice(0, -1);
                 
                 // Save current state to future before changing
-                const current = resumeNodeStore.getTree().childNodes;
+                const current = resumeNodeStore.data.childNodes;
                 
                 set(
                     {
@@ -70,7 +70,7 @@ export const useHistoryStore = create<HistoryStore>()(
                 const newFuture = future.slice(1);
                 
                 // Save current state to past before changing
-                const current = resumeNodeStore.getTree().childNodes;
+                const current = resumeNodeStore.data.childNodes;
                 
                 set(
                     {
@@ -104,7 +104,7 @@ export const useHistoryStore = create<HistoryStore>()(
  * This is a regular function (not a hook) so it can be called from anywhere.
  */
 export const recordHistory = () => {
-    const current = resumeNodeStore.getTree().childNodes;
+    const current = resumeNodeStore.data.childNodes;
     const { past } = useHistoryStore.getState();
     
     // Deep clone to prevent reference issues

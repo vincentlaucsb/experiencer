@@ -33,8 +33,18 @@ export default abstract class ClassStore<T> {
     private listeners = new Set<() => void>();
     protected version = 0;
     private cachedSnapshot: { data: T; version: number } | null = null;
+    private _initialLoad = false;
+    private _unsavedChanges = false;
 
-    protected abstract data: T;
+    protected abstract _data: T;
+
+    get data() {
+        return this._data;
+    }
+
+    protected set data(newData: T) {
+        this._data = newData;
+    }
 
     /**
      * Subscribe to store changes. Compatible with useSyncExternalStore.
@@ -67,5 +77,40 @@ export default abstract class ClassStore<T> {
     protected notifyListeners(): void {
         this.version++;
         this.listeners.forEach(fn => fn());
+    }
+
+    /**
+     * Helper to wrap mutations with unsaved flag and notification.
+     * Reduces boilerplate in subclass mutation methods.
+     * 
+     * @param operation - Function that performs the mutation
+     * @returns The result of the operation
+     */
+    protected withMutation<R>(operation: () => R): R {
+        const result = operation();
+        if (this._initialLoad) {
+            this._unsavedChanges = true;
+        }
+        else {
+            this._initialLoad = true;
+        }
+
+        this.notifyListeners();
+        return result;
+    }
+
+    /**
+     * Check if there are unsaved changes.
+     */
+    hasUnsavedChanges(): boolean {
+        return this._unsavedChanges;
+    }
+
+    /**
+     * Clear the unsaved changes flag (typically after save).
+     */
+    clearUnsavedChanges(): void {
+        this._unsavedChanges = false;
+        this.notifyListeners();
     }
 }

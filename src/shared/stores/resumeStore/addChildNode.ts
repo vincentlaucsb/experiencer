@@ -10,7 +10,7 @@ import { resumeNodeStore } from "../resumeNodeStore";
 export default function addChildNode(parentUuid: string | undefined, node: ResumeNode) {
     recordHistory();
     if (parentUuid) {
-        resumeNodeStore.addNodeByUuid(parentUuid, node);
+        resumeNodeStore.addNode(parentUuid, node);
     } else {
         // Add to root
         resumeNodeStore.addNode([], node);

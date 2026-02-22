@@ -26,14 +26,14 @@ export default function useMoveSelectedProps() {
         moveUp: moveSelectedUpEnabled ?
             () => {
                 recordHistory();
-                const newUuid = resumeNodeStore.moveNodeUpByUuid(uuid);
+                const newUuid = resumeNodeStore.moveNodeUp(uuid) as string;
                 useEditorStore.getState().selectNode(newUuid);
             } :
             undefined,
         moveDown: moveSelectedDownEnabled ?
             () => {
                 recordHistory();
-                const newUuid = resumeNodeStore.moveNodeDownByUuid(uuid);
+                const newUuid = resumeNodeStore.moveNodeDown(uuid) as string;
                 useEditorStore.getState().selectNode(newUuid);
             } :
             undefined

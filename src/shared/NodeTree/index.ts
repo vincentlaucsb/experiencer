@@ -208,15 +208,18 @@ export default class ResumeNodeTree implements ResumeNode {
      * @param id - Hierarchical ID of the parent node
      * @param node - The node to add as a child
      */
-    addNestedChild(id: IdType, node: ResumeNode): void {
-        let targetNode = this.getNodeById(id);
+    addNestedChild(id: string | IdType, node: ResumeNode): void {
+        const hierarchicalId = typeof id === 'string' ? this.getHierarchicalId(id) : id;
+        if (!hierarchicalId) return;
+
+        let targetNode = this.getNodeById(hierarchicalId);
         if (!targetNode.childNodes) {
             targetNode.childNodes = new Array<ResumeNode>();
         }
 
         const newNode = assignIds(deepCopy(node));
         targetNode.childNodes.push(newNode);
-        const path = [...id, targetNode.childNodes.length - 1];
+        const path = [...hierarchicalId, targetNode.childNodes.length - 1];
         this.addToIndex(newNode, path);
     }
 
@@ -227,15 +230,18 @@ export default class ResumeNodeTree implements ResumeNode {
      * @param id - Hierarchical ID of the node to delete
      * @throws Error if parent has no children
      */
-    deleteChild(id: IdType): void {
-        let parentNode = this.getParentOfId(id);
+    deleteChild(id: string | IdType): void {
+        const hierarchicalId = typeof id === 'string' ? this.getHierarchicalId(id) : id;
+        if (!hierarchicalId) return;
+        
+        let parentNode = this.getParentOfId(hierarchicalId);
 
         if (parentNode.childNodes) {
-            const childElem = parentNode.childNodes[id[id.length - 1]];
+            const childElem = parentNode.childNodes[hierarchicalId[hierarchicalId.length - 1]];
             this.removeFromIndex(childElem);
-            deleteAt(parentNode.childNodes, id[id.length - 1]);
+            deleteAt(parentNode.childNodes, hierarchicalId[hierarchicalId.length - 1]);
             // Rebuild index only for parent's children (siblings shifted positions)
-            const parentPath = id.slice(0, -1);
+            const parentPath = hierarchicalId.slice(0, -1);
             if (parentPath.length === 0) {
                 // Parent is root, rebuild entire tree
                 this.rebuildIndex();
@@ -248,40 +254,47 @@ export default class ResumeNodeTree implements ResumeNode {
 
     /**
      * Update a property value on a node.
+     * Accepts either a UUID string or hierarchical ID.
      * 
-     * @param id - Hierarchical ID of the node to update
+     * @param id - UUID or hierarchical ID of the node to update
      * @param key - The property name to update
      * @param data - The new value for the property
      */
-    updateChild(id: IdType, key: string, data: any): void {
-        let targetNode = this.getNodeById(id);
+    updateChild(id: string | IdType, key: string, data: any): void {
+        const hierarchicalId = typeof id === 'string' ? this.getHierarchicalId(id) : id;
+        if (!hierarchicalId) return;
+        let targetNode = this.getNodeById(hierarchicalId);
         targetNode[key] = data;
     }
     
     /**
      * Move a node up one position in its parent's children array.
+     * Accepts either a UUID string or hierarchical ID.
      * Swaps the node with its preceding sibling.
      * 
-     * @param id - Hierarchical ID of the node to move
-     * @returns The new hierarchical ID after moving
+     * @param id - UUID or hierarchical ID of the node to move
+     * @returns The new hierarchical ID or UUID after moving
      * @throws Error if node is already first or parent has no children
      */
-    moveUp(id: IdType): IdType {
-        let parentNode = this.getParentOfId(id);
+    moveUp(id: string | IdType): string | IdType {
+        const hierarchicalId = typeof id === 'string' ? this.getHierarchicalId(id) : id;
+        if (!hierarchicalId) return id;
+        
+        let parentNode = this.getParentOfId(hierarchicalId);
 
         if (!parentNode.childNodes) {
             throw new Error("Parent has no children");
         }
 
-        moveUp(parentNode.childNodes, id[id.length - 1]);
+        moveUp(parentNode.childNodes, hierarchicalId[hierarchicalId.length - 1]);
 
         const newId = [
-            ...id.slice(0, id.length - 1),
-            id[id.length - 1] - 1
+            ...hierarchicalId.slice(0, hierarchicalId.length - 1),
+            hierarchicalId[hierarchicalId.length - 1] - 1
         ];
 
         // Rebuild index only for parent's children (two nodes swapped)
-        const parentPath = id.slice(0, -1);
+        const parentPath = hierarchicalId.slice(0, -1);
         if (parentPath.length === 0) {
             // Parent is root, rebuild entire tree
             this.rebuildIndex();
@@ -290,33 +303,37 @@ export default class ResumeNodeTree implements ResumeNode {
             this.rebuildIndex(parentNode, parentPath);
         }
 
-        return newId;
+        return typeof id === 'string' ? id : newId;
     }
 
     /**
      * Move a node down one position in its parent's children array.
+     * Accepts either a UUID string or hierarchical ID.
      * Swaps the node with its following sibling.
      * 
-     * @param id - Hierarchical ID of the node to move
-     * @returns The new hierarchical ID after moving
+     * @param id - UUID or hierarchical ID of the node to move
+     * @returns The new hierarchical ID or UUID after moving
      * @throws Error if node is already last or parent has no children
      */
-    moveDown(id: IdType): IdType {
-        let parentNode = this.getParentOfId(id);
+    moveDown(id: string | IdType): string | IdType {
+        const hierarchicalId = typeof id === 'string' ? this.getHierarchicalId(id) : id;
+        if (!hierarchicalId) return id;
+        
+        let parentNode = this.getParentOfId(hierarchicalId);
 
         if (!parentNode.childNodes) {
             throw new Error("Parent has no children");
         }
 
-        moveDown(parentNode.childNodes, id[id.length - 1]);
+        moveDown(parentNode.childNodes, hierarchicalId[hierarchicalId.length - 1]);
 
         const newId = [
-            ...id.slice(0, id.length - 1),
-            id[id.length - 1] + 1
+            ...hierarchicalId.slice(0, hierarchicalId.length - 1),
+            hierarchicalId[hierarchicalId.length - 1] + 1
         ];
 
         // Rebuild index only for parent's children (two nodes swapped)
-        const parentPath = id.slice(0, -1);
+        const parentPath = hierarchicalId.slice(0, -1);
         if (parentPath.length === 0) {
             // Parent is root, rebuild entire tree
             this.rebuildIndex();
@@ -325,7 +342,7 @@ export default class ResumeNodeTree implements ResumeNode {
             this.rebuildIndex(parentNode, parentPath);
         }
 
-        return newId;
+        return typeof id === 'string' ? id : newId;
     }
 
     // #endregion

@@ -35,7 +35,7 @@ export function ResumeContextMenuConnected() {
     
     const getNodeByUuid = (uuid: string) => tree.getNodeByUuid(uuid);
     const getParentUuids = (uuid: string) => resumeNodeStore.getParentUuids(uuid);
-    const updateNodeByUuid = (uuid: string, key: string, data: any) => resumeNodeStore.updateNodeByUuid(uuid, key, data);
+    const updateNode = (uuid: string, key: string, data: any) => resumeNodeStore.updateNode(uuid, key, data);
 
     let header = <></>;
     let menu = <></>;
@@ -91,7 +91,7 @@ export function ResumeContextMenuConnected() {
             const rawCustomOptions = contextMenuOptions(
                 currentNode,
                 (key: string, data: any) => {
-                    updateNodeByUuid(selectedNodeId, key, data);
+                    updateNode(selectedNodeId, key, data);
                 }
             );
             if (rawCustomOptions) {

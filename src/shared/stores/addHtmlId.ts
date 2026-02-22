@@ -25,7 +25,7 @@ export default function addHtmlId(htmlId: string) {
     }
 
     recordHistory();
-    resumeNodeStore.updateNodeByUuid(selectedNodeId, 'htmlId', htmlId);
+    resumeNodeStore.updateNode(selectedNodeId, 'htmlId', htmlId);
     
     cssStore.updateCss((css) => {
         css.addNode(root);

@@ -8,5 +8,5 @@ export default function updateSelected(
     if (!uuid) return;
 
     recordHistory();
-    resumeNodeStore.updateNodeByUuid(uuid, key, data);
+    resumeNodeStore.updateNode(uuid, key, data);
 }

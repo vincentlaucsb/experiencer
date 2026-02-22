@@ -67,20 +67,13 @@ export const useResumeNodeByUuid = (uuid: string): ResumeNode | undefined => {
  */
 export const useResumeActions = () => {
     return {
-        // Tree manipulation (IdType-based)
+        // Tree manipulation (accepts UUID or hierarchical ID)
         setNodes: (nodes: ResumeNode[]) => resumeNodeStore.setNodes(nodes),
-        addNode: (parentId: IdType, node: ResumeNode) => resumeNodeStore.addNode(parentId, node),
-        deleteNode: (id: IdType) => resumeNodeStore.deleteNode(id),
-        updateNode: (id: IdType, key: string, data: any) => resumeNodeStore.updateNode(id, key, data),
-        moveNodeUp: (id: IdType) => resumeNodeStore.moveNodeUp(id),
-        moveNodeDown: (id: IdType) => resumeNodeStore.moveNodeDown(id),
-        
-        // Tree manipulation (UUID-based - preferred)
-        addNodeByUuid: (parentUuid: string, node: ResumeNode) => resumeNodeStore.addNodeByUuid(parentUuid, node),
-        deleteNodeByUuid: (uuid: string) => resumeNodeStore.deleteNodeByUuid(uuid),
-        updateNodeByUuid: (uuid: string, key: string, data: any) => resumeNodeStore.updateNodeByUuid(uuid, key, data),
-        moveNodeUpByUuid: (uuid: string) => resumeNodeStore.moveNodeUpByUuid(uuid),
-        moveNodeDownByUuid: (uuid: string) => resumeNodeStore.moveNodeDownByUuid(uuid),
+        addNode: (parentId: string | IdType, node: ResumeNode) => resumeNodeStore.addNode(parentId, node),
+        deleteNode: (id: string | IdType) => resumeNodeStore.deleteNode(id),
+        updateNode: (id: string | IdType, key: string, data: any) => resumeNodeStore.updateNode(id, key, data),
+        moveNodeUp: (id: string | IdType) => resumeNodeStore.moveNodeUp(id),
+        moveNodeDown: (id: string | IdType) => resumeNodeStore.moveNodeDown(id),
         
         // Utility
         getNode: (id: IdType) => resumeNodeStore.getNode(id),

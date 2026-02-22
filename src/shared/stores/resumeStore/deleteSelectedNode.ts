@@ -6,6 +6,6 @@ export default function deleteSelectedNode(uuid?: string) {
     if (!uuid) return;
 
     recordHistory();
-    resumeNodeStore.deleteNodeByUuid(uuid);
+    resumeNodeStore.deleteNode(uuid);
     useEditorStore.getState().unselectNode();
 }

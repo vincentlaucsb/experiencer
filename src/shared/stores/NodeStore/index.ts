@@ -30,124 +30,57 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
     }
 
     /**
-     * Add a node as a nested child to a parent node.
+     * Add a node as a nested child using either UUID or hierarchical ID.
      * 
-     * @param parentId - Hierarchical ID of the parent node
+     * @param parentId - UUID or hierarchical ID of the parent node
      * @param node - The node to add
      */
-    addNode(parentId: IdType, node: ResumeNode): void {
+    addNode(parentId: string | IdType, node: ResumeNode): void {
         this.withMutation(() => this.data.addNestedChild(parentId, node));
     }
 
     /**
      * Delete a node from the tree.
+     * Accepts either a UUID string or hierarchical ID.
      * 
-     * @param id - Hierarchical ID of the node to delete
+     * @param id - UUID or hierarchical ID of the node to delete
      */
-    deleteNode(id: IdType): void {
+    deleteNode(id: string | IdType): void {
         this.withMutation(() => this.data.deleteChild(id));
     }
 
     /**
      * Update a property on a node.
+     * Accepts either a UUID string or hierarchical ID.
      * 
-     * @param id - Hierarchical ID of the node
+     * @param id - UUID or hierarchical ID of the node
      * @param key - Property name to update
      * @param data - New value for the property
      */
-    updateNode(id: IdType, key: string, data: any): void {
+    updateNode(id: string | IdType, key: string, data: any): void {
         this.withMutation(() => this.data.updateChild(id, key, data));
     }
 
     /**
      * Move a node up in its parent's children array.
+     * Accepts either a UUID string or hierarchical ID.
      * 
-     * @param id - Hierarchical ID of the node to move
-     * @returns The new hierarchical ID after moving
+     * @param id - UUID or hierarchical ID of the node to move
+     * @returns The new hierarchical ID or UUID after moving
      */
-    moveNodeUp(id: IdType): IdType {
+    moveNodeUp(id: string | IdType): string | IdType {
         return this.withMutation(() => this.data.moveUp(id));
     }
 
     /**
      * Move a node down in its parent's children array.
+     * Accepts either a UUID string or hierarchical ID.
      * 
-     * @param id - Hierarchical ID of the node to move
-     * @returns The new hierarchical ID after moving
+     * @param id - UUID or hierarchical ID of the node to move
+     * @returns The new hierarchical ID or UUID after moving
      */
-    moveNodeDown(id: IdType): IdType {
+    moveNodeDown(id: string | IdType): string | IdType {
         return this.withMutation(() => this.data.moveDown(id));
-    }
-
-    // #endregion
-
-    // #region Tree Manipulation (UUID-based - Preferred API)
-
-    /**
-     * Add a node as a nested child using parent UUID.
-     * 
-     * @param parentUuid - UUID of the parent node
-     * @param node - The node to add
-     */
-    addNodeByUuid(parentUuid: string, node: ResumeNode): void {
-        const parentId = this.data.getHierarchicalId(parentUuid);
-        if (parentId) {
-            this.addNode(parentId, node);
-        }
-    }
-
-    /**
-     * Delete a node by UUID.
-     * 
-     * @param uuid - UUID of the node to delete
-     */
-    deleteNodeByUuid(uuid: string): void {
-        const id = this.data.getHierarchicalId(uuid);
-        if (id) {
-            this.deleteNode(id);
-        }
-    }
-
-    /**
-     * Update a node property by UUID.
-     * 
-     * @param uuid - UUID of the node
-     * @param key - Property name to update
-     * @param data - New value for the property
-     */
-    updateNodeByUuid(uuid: string, key: string, data: any): void {
-        const id = this.data.getHierarchicalId(uuid);
-        if (id) {
-            this.updateNode(id, key, data);
-        }
-    }
-
-    /**
-     * Move a node up by UUID.
-     * 
-     * @param uuid - UUID of the node to move
-     * @returns UUID of the node after moving (same UUID, new position)
-     */
-    moveNodeUpByUuid(uuid: string): string {
-        const id = this.data.getHierarchicalId(uuid);
-        if (id) {
-            this.moveNodeUp(id);
-        }
-        return uuid;
-    }
-
-    /**
-     * Move a node down by UUID.
-     * 
-     * @param uuid - UUID of the node to move
-     * @returns UUID of the node after moving (same UUID, new position)
-     */
-    moveNodeDownByUuid(uuid: string): string {
-        const id = this.data.getHierarchicalId(uuid);
-        if (id) {
-            this.moveNodeDown(id);
-        }
-        return uuid;
     }
 
     // #endregion

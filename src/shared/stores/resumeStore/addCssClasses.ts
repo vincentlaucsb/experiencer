@@ -15,5 +15,5 @@ export default function addCssClasses(
     if (!uuid) return; // If there's no UUID, we can't proceed
     
     recordHistory();
-    resumeNodeStore.updateNodeByUuid(uuid, 'classNames', classes);
+    resumeNodeStore.updateNode(uuid, 'classNames', classes);
 }

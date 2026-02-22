@@ -1,6 +1,6 @@
 import Column from "@/resume/Column";
 import Header, { BasicHeaderProps } from "@/resume/Header";
-import CssNode from "@/shared/utils/CssTree";
+import CssNode from "@/shared/CssTree";
 import Section from "@/resume/Section";
 import Entry, { BasicEntryProps } from "@/resume/Entry";
 import Image from "@/resume/Image";
@@ -52,11 +52,11 @@ export function randyMarshCss() {
             ], 'Title'
             ).add('Grid', {
                 'grid-template-columns': 'var(--year-column-width) 1fr'
-            }, 'div.grid-container'
+            }, 'resume-grid'
             ).add('Entry', {
                 'border-left': '1px solid var(--text-color)',
                 'padding-left': 'var(--large-spacing)',
-            }, 'div.entry');
+            }, 'resume-entry');
 
     /** Entry CSS */
     randyCss.mustFindNode("Entry").setProperties(

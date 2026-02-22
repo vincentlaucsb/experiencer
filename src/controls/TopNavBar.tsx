@@ -7,6 +7,9 @@ import GitHubLight from "@/assets/icons/GitHub-Mark-Light-120px-plus.png";
 import { Action, EditorMode } from "@/types";
 import { Button } from "./Buttons";
 import ToolbarButton, { ToolbarButtonProps } from "./toolbar/ToolbarButton";
+import { useEditorStore, useMode } from "@/shared/stores/editorStore";
+import loadData from "@/shared/stores/loadData";
+import { saveFile, saveLocal } from "@/shared/stores/saveResume";
 
 export interface TopNavBarProps {
     isEditing: boolean;
@@ -26,7 +29,7 @@ export interface TopNavBarProps {
 }
 
 /** The top nav bar for the resume editor */
-export default function TopNavBar(props: TopNavBarProps) {
+export function TopNavBar(props: TopNavBarProps) {
     let [isOpen, setOpen] = React.useState(false);
     const Item = PureMenuItem;
     const IconicItem = (props: ToolbarButtonProps) => (
@@ -76,4 +79,29 @@ export default function TopNavBar(props: TopNavBarProps) {
             </div>
         </>
     );
+}
+
+export type TopNavBarWrapperProps = Omit<
+    TopNavBarProps,
+    'loadData' | 'mode' | 'isEditing' | 'print' |
+    'saveLocal' | 'saveFile' | 'toggleHelp' | 'toggleLanding'
+>;
+
+export default function TopNavBarWrapper(props: TopNavBarWrapperProps) {
+    const { toggleMode, mode, setMode } = useEditorStore();
+    const isEditing = mode !== 'printing';
+
+    const wrappedProps = {
+        ...props,
+        loadData: loadData,
+        mode,
+        isEditing,
+        toggleHelp: () => toggleMode('help'),
+        toggleLanding: () => setMode('landing'),
+        print: () => toggleMode('printing'),
+        saveLocal,
+        saveFile
+    };
+    
+    return <TopNavBar {...wrappedProps} />;
 }

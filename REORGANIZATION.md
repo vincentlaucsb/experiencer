@@ -77,22 +77,46 @@ src/
 │   └── StartHelp.tsx
 │
 ├── shared/              # Shared utilities and state
-│   ├── stores/
-│   │   └── editorStore.ts  # Zustand state management
+│   ├── CssTree/         # Core CSS data structure
+│   │   ├── index.tsx    # CssNode class and ReadonlyCssNode
+│   │   └── __tests__/   # CssTree unit tests
+│   │
+│   ├── NodeTree/        # Core resume node tree data structure
+│   │   ├── index.ts     # ResumeNodeTree class with UUID indexing
+│   │   └── __tests__/   # NodeTree unit tests
+│   │
+│   ├── stores/          # Zustand state management
+│   │   ├── editorStore.ts
+│   │   ├── cssStore.ts
+│   │   ├── historyStore.ts
+│   │   ├── resumeStore/
+│   │   ├── clipboardStore/
+│   │   ├── loadData.ts
+│   │   ├── saveResume.ts
+│   │   └── addHtmlId.ts
+│   │
+│   ├── hooks/           # React hooks
+│   │   ├── useSelectedNodeActions.ts
+│   │   ├── useMoveSelectedProps.ts
+│   │   ├── useClipboardProps.ts
+│   │   ├── useHandlePrint.ts
+│   │   └── useStylesheet.ts
+│   │
 │   ├── utils/
-│   │   ├── Helpers.tsx     # Utility functions
-│   │   ├── ResumeContext.tsx
-│   │   ├── Types.tsx       # TypeScript types
-│   │   ├── NodeTree.tsx    # Resume data structure
-│   │   ├── ObservableResumeNodeTree.tsx
-│   │   ├── CssTree.tsx     # CSS data structure
-│   │   └── __tests__/      # Utility tests
-│   ├── schema/
-│   │   ├── ComponentTypes.tsx
-│   │   ├── ContextMenuOptions.tsx
-│   │   └── ToolbarOptions.tsx
-│   └── scss/               # Global SCSS
-│       ├── index.scss      # Main SCSS entry
+│   │   ├── Helpers.tsx           # General utility functions
+│   │   ├── makeCssVarSuggestions.ts
+│   │   ├── PrintHelpers.ts
+│   │   └── __tests__/            # Utility tests
+│   │
+│   ├── schema/          # Component type registry and metadata
+│   │   ├── index.ts
+│   │   ├── ComponentTypes.ts
+│   │   ├── ResumeNodeDefinition.ts
+│   │   ├── ContextMenuOptions.ts
+│   │   └── ToolbarOptions.ts
+│   │
+│   └── scss/            # Global SCSS
+│       ├── index.scss
 │       ├── variables.scss
 │       ├── context-menu.scss
 │       ├── css-editor.scss
@@ -179,6 +203,47 @@ import { assignIds } from "@/shared/utils/Helpers";
 - IDE autocomplete works better with absolute paths
 - Shorter import statements
 - Consistent import style across codebase
+
+## Foundational Data Structures
+
+### CssTree (`src/shared/CssTree/`) and NodeTree (`src/shared/NodeTree/`)
+
+These core data structures have been moved to dedicated folders at the root of `/shared` rather than remaining in `/shared/utils/` because they:
+
+1. **Form the foundation of the application's data model**
+   - `CssTree`: Manages CSS rules, stylesheet generation, and tree operations
+   - `NodeTree`: Manages resume node hierarchy with UUID indexing
+
+2. **Are used across multiple stores and utilities**
+   - Imported by `cssStore`, `resumeStore`, and numerous template helpers
+   - Central to resume data manipulation and CSS management
+
+3. **Deserve dedicated test suites**
+   - Each has a `__tests__/` subdirectory with comprehensive unit tests
+   - CssTree: 13 integrated tests for tree operations and stylesheet generation
+   - NodeTree: 20+ tests covering UUID indexing, tree navigation, and mutations
+
+4. **Represent foundational architecture, not utility functions**
+   - Occupying dedicated folders signals their importance to new developers
+   - Clearly separates "foundational data structures" from "utility helpers"
+   - Enables future enhancements (e.g., extracting ReadonlyCssNode to separate file)
+
+### Migration Details
+
+**Files Created:**
+- `src/shared/CssTree/index.tsx` - CssNode class with ReadonlyCssNode wrapper
+- `src/shared/CssTree/__tests__/index.tsx` - 13 test cases
+- `src/shared/NodeTree/index.ts` - ResumeNodeTree class with UUID indexing
+- `src/shared/NodeTree/__tests__/index.ts` - 20+ test cases
+
+**Files Deleted:**
+- `src/shared/utils/CssTree.tsx`
+- `src/shared/utils/NodeTree.ts`
+- `src/shared/utils/__tests__/CssTree.tsx`
+- `src/shared/utils/__tests__/NodeTree.ts`
+- `src/shared/utils/NodeTree.test.ts`
+
+**Import Updates:** 16 files updated with new import paths from `@/shared/utils/CssTree` → `@/shared/CssTree` and `@/shared/utils/NodeTree` → `@/shared/NodeTree`
 
 ## Testing
 

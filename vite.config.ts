@@ -4,7 +4,7 @@ import checker from 'vite-plugin-checker';
 import path from 'path';
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     react({
       jsxImportSource: 'react',
@@ -57,6 +57,6 @@ export default defineConfig({
     open: true,
   },
   
-  // For GitHub Pages deployment
-  base: '/'
-});
+  // For production deployment under mywebsite.com/experiencer
+  base: mode === 'production' ? '/experiencer/' : '/'
+}));

@@ -12,7 +12,7 @@ import Section from "@/resume/Section";
 
 // Stores
 import { useEditorStore } from "@/shared/stores/editorStore";
-import { useResumeStore } from "@/shared/stores/resumeStore";
+import { resumeNodeStore, useResumeTree } from "@/shared/stores/resumeNodeStore";
 
 /**
  * Connected Context Menu for Resume nodes
@@ -23,7 +23,7 @@ import { useResumeStore } from "@/shared/stores/resumeStore";
  * - Edit option (if node is editable)
  * - Custom options from the node's schema
  * 
- * Automatically connects to Zustand stores to track the selected node.
+ * Automatically connects to stores to track the selected node.
  * The Container component triggers this menu with right-click; this
  * component provides the menu content.
  */
@@ -31,9 +31,11 @@ export function ResumeContextMenuConnected() {
     const selectedNodeId = useEditorStore((state) => state.selectedNodeId);
     const editNode = useEditorStore((state) => state.editNode);
     const selectNode = useEditorStore((state) => state.selectNode);
-    const getNodeByUuid = useResumeStore((state) => state.getNodeByUuid);
-    const getParentUuids = useResumeStore((state) => state.getParentUuids);
-    const updateNodeByUuid = useResumeStore((state) => state.updateNodeByUuid);
+    const tree = useResumeTree();
+    
+    const getNodeByUuid = (uuid: string) => tree.getNodeByUuid(uuid);
+    const getParentUuids = (uuid: string) => resumeNodeStore.getParentUuids(uuid);
+    const updateNode = (uuid: string, key: string, data: any) => resumeNodeStore.updateNode(uuid, key, data);
 
     let header = <></>;
     let menu = <></>;
@@ -89,7 +91,7 @@ export function ResumeContextMenuConnected() {
             const rawCustomOptions = contextMenuOptions(
                 currentNode,
                 (key: string, data: any) => {
-                    updateNodeByUuid(selectedNodeId, key, data);
+                    updateNode(selectedNodeId, key, data);
                 }
             );
             if (rawCustomOptions) {

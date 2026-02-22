@@ -1,0 +1,139 @@
+
+> experiencer@0.1.3 test:coverage
+> jest --coverage
+
+---------------------------------------|---------|----------|---------|---------|----------------------------------------------------------------
+File                                   | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                                              
+---------------------------------------|---------|----------|---------|---------|----------------------------------------------------------------
+All files                              |   61.05 |    43.58 |   42.34 |   61.49 |                                                                
+ app                                   |   73.14 |       32 |    42.3 |   72.81 |                                                                
+  Resume.tsx                           |   79.31 |    44.44 |   47.82 |   79.51 | 75-76,80-90,97-98,102-105,113-114,126,190-208                  
+  ResumeCssEditor.tsx                  |   47.61 |        0 |       0 |      45 | 21-66                                                          
+ controls                              |   62.63 |    53.33 |   40.94 |   62.88 |                                                                
+  ButtonGroup.tsx                      |       0 |        0 |       0 |       0 | 10-15                                                          
+  Buttons.tsx                          |   61.11 |       50 |      25 |   58.82 | 12,42-60                                                       
+  ContextMenu.tsx                      |   57.35 |    29.62 |   44.44 |   59.09 | 35-40,44-46,66-67,72-73,80-81,87-90,97,105-120,133-138,179,188 
+  FileLoader.tsx                       |    5.88 |        0 |       0 |    5.88 | 14-59                                                          
+  FileSaver.tsx                        |   22.22 |      100 |       0 |      25 | 10-27                                                          
+  HtmlIdAdder.tsx                      |   44.11 |       60 |   16.66 |   45.45 | 21-28,33-41,46-56,87                                           
+  InterfaceIcons.tsx                   |      25 |      100 |       0 |      25 | 3-7,15-27                                                      
+  Layouts.tsx                          |      60 |      100 |       0 |      60 | 13-20                                                          
+  Modal.tsx                            |      80 |      100 |      50 |      80 | 21                                                             
+  ResumeContextMenuConnected.tsx       |   88.67 |    88.88 |   66.66 |   88.88 | 30,69,82,92,97                                                 
+  ResumeHotkeys.tsx                    |   48.27 |        0 |   23.07 |   48.14 | 71,75-109,135-136                                              
+  SplitPane.tsx                        |   56.36 |       50 |   53.84 |      58 | 60-62,76-96,101,120,122-134                                    
+  Tabs.tsx                             |      80 |      100 |      75 |   85.71 | 15,44                                                          
+  TopEditingBar.tsx                    |   82.97 |    68.96 |      72 |   82.41 | 42,55-63,116-117,183,228,256,299-309,341-347                   
+  TopNavBar.tsx                        |   63.63 |      100 |   18.18 |   63.63 | 32,45-47,51-65,99-101                                          
+ controls/inputs                       |   25.39 |    22.22 |   16.66 |   25.39 |                                                                
+  MappedTextFields.tsx                 |    2.85 |        0 |       0 |    2.85 | 18-257                                                         
+  TextField.tsx                        |   69.04 |    51.61 |      60 |   69.04 | 50,56,62-74,94-101,117,133                                     
+  UrlInput.tsx                         |    7.14 |        0 |       0 |    7.14 | 9-30                                                           
+ controls/menus                        |   68.75 |    42.85 |      50 |   72.41 |                                                                
+  PureMenu.tsx                         |   68.75 |    42.85 |      50 |   72.41 | 45,57,77-79,84,88,96                                           
+ controls/toolbar                      |   71.11 |    77.77 |   53.84 |   70.45 |                                                                
+  ToolbarButton.tsx                    |     100 |      100 |     100 |     100 |                                                                
+  ToolbarItemFactory.tsx               |   88.88 |    85.71 |     100 |   88.88 | 20                                                             
+  ToolbarMaker.tsx                     |   88.88 |        0 |      75 |   88.88 | 33                                                             
+  ToolbarSectionDropdown.tsx           |   31.25 |        0 |       0 |   31.25 | 17-50                                                          
+ editor                                |   31.45 |    37.83 |    7.14 |    31.7 |                                                                
+  CssEditor.tsx                        |   13.23 |        0 |       0 |   13.43 | 41-283                                                         
+  CssEditorToolbar.tsx                 |       0 |        0 |       0 |       0 | 14-71                                                          
+  CssSuggestions.tsx                   |      10 |        0 |       0 |      10 | 1,6-124                                                        
+  GenerateHtml.tsx                     |       0 |      100 |       0 |       0 | 1-2                                                            
+  NodeTreeVisualizer.tsx               |   90.62 |     87.5 |   66.66 |   90.62 | 19,74-75                                                       
+ editor/HighlightBox                   |   81.48 |       80 |   71.42 |   85.71 |                                                                
+  HighlightBox.tsx                     |   78.94 |       80 |   63.63 |   85.29 | 33-37,42                                                       
+  index.tsx                            |    87.5 |       80 |     100 |   86.66 | 22,41                                                          
+ help                                  |   46.66 |        0 |       0 |   46.66 |                                                                
+  Help.tsx                             |   42.85 |      100 |       0 |   42.85 | 15-40                                                          
+  HelpPage.tsx                         |      50 |        0 |       0 |      50 | 16-17                                                          
+  HotkeysHelp.tsx                      |    37.5 |      100 |       0 |    37.5 | 5-9                                                            
+  Landing.tsx                          |   46.15 |        0 |       0 |   46.15 | 28-50                                                          
+  SavingHelp.tsx                       |   66.66 |      100 |       0 |   66.66 | 4                                                              
+  StartHelp.tsx                        |   66.66 |      100 |       0 |   66.66 | 4                                                              
+ resume                                |   81.81 |       55 |   41.17 |   81.25 |                                                                
+  Divider.tsx                          |     100 |      100 |       0 |     100 |                                                                
+  Image.tsx                            |      80 |       50 |      40 |   78.94 | 57-87                                                          
+  Markdown.tsx                         |   68.75 |       60 |   33.33 |   66.66 | 40-56                                                          
+  ResumeComponent.tsx                  |   83.33 |       75 |      50 |   83.33 | 31-32,41                                                       
+  Section.tsx                          |     100 |    33.33 |     100 |     100 | 14-21                                                          
+ resume/Column                         |   88.23 |       60 |      80 |   88.23 |                                                                
+  index.tsx                            |   93.33 |       60 |     100 |   93.33 | 29                                                             
+  toolbarOptions.ts                    |      50 |      100 |       0 |      50 | 4                                                              
+ resume/Entry                          |   55.73 |    33.33 |   33.33 |   55.73 |                                                                
+  index.tsx                            |   75.67 |       50 |   55.55 |   75.67 | 42-43,47-51,69,77-88,96                                        
+  toolbarOptions.ts                    |      25 |        0 |   11.11 |      25 | 8-13,17-20,24-26,30-32,41-53                                   
+ resume/Grid                           |      80 |       60 |      75 |      80 |                                                                
+  index.tsx                            |   84.61 |       60 |     100 |   84.61 | 16-17                                                          
+  toolbarOptions.ts                    |      50 |      100 |       0 |      50 | 4                                                              
+ resume/Header                         |    67.5 |    33.33 |      30 |   68.42 |                                                                
+  index.tsx                            |   73.33 |    33.33 |      50 |   72.41 | 56-63,75-84                                                    
+  toolbarOptions.ts                    |      50 |      100 |   16.66 |   55.55 | 13-25                                                          
+ resume/Icon                           |   37.93 |        0 |       0 |   35.71 |                                                                
+  index.tsx                            |   38.46 |        0 |       0 |      36 | 25-48                                                          
+  toolbarOptions.ts                    |   33.33 |      100 |       0 |   33.33 | 7-10                                                           
+ resume/Link                           |   83.33 |    91.66 |   33.33 |   81.81 |                                                                
+  index.tsx                            |      90 |    91.66 |      50 |   88.88 | 28,39                                                          
+  toolbarOptions.tsx                   |      50 |      100 |       0 |      50 | 9-13                                                           
+ resume/List                           |   26.66 |        0 |       0 |    23.8 |                                                                
+  DescriptionListItemToolbarOptions.ts |   14.28 |        0 |       0 |   14.28 | 9-18                                                           
+  index.tsx                            |   28.94 |        0 |       0 |   25.71 | 20-76,80-84                                                    
+ resume/Row                            |      28 |        0 |       0 |      28 |                                                                
+  index.tsx                            |   26.31 |        0 |       0 |   26.31 | 19-59                                                          
+  toolbarOptions.ts                    |   33.33 |        0 |       0 |   33.33 | 10-16                                                          
+ resume/helpers                        |   41.66 |      100 |   22.22 |   45.45 |                                                                
+  InlineMarkdown.tsx                   |     100 |      100 |     100 |     100 |                                                                
+  getJustifyContentOptions.ts          |      30 |      100 |    12.5 |   33.33 | 9-29                                                           
+ resume/hooks                          |   59.18 |    28.57 |   71.42 |   58.69 |                                                                
+  useAutoExpandInput.ts                |   55.55 |      100 |   57.14 |   56.25 | 16-17,25-31,36                                                 
+  useEditingHotkeys.ts                 |   61.29 |    23.07 |   85.71 |      60 | 69,90-105                                                      
+ resume/infrastructure                 |      78 |    85.71 |   72.72 |   76.08 |                                                                
+  Container.tsx                        |     100 |      100 |     100 |     100 |                                                                
+  OverlayEditor.tsx                    |   47.61 |       60 |      40 |    42.1 | 37-55,61-72                                                    
+ resume/schema                         |   54.16 |    40.62 |   52.94 |   54.92 |                                                                
+  ComponentTypes.ts                    |      90 |       75 |   88.88 |      90 | 49,67,118-119                                                  
+  ComponentTypes.tsx                   |       0 |        0 |       0 |       0 | 20-119                                                         
+  ContextMenuOptions.tsx               |     100 |      100 |     100 |     100 |                                                                
+ shared/CssTree                        |   88.59 |    82.05 |   84.44 |   89.11 |                                                                
+  ReadonlyCssNode.ts                   |     100 |      100 |     100 |     100 |                                                                
+  index.tsx                            |   87.59 |    82.05 |   79.41 |   88.14 | 47-51,67-82,171,330-331,339-343,372                            
+ shared/hooks                          |   73.33 |       32 |   57.89 |   73.97 |                                                                
+  useClipboardProps.ts                 |   58.33 |       25 |      25 |   58.33 | 11-23                                                          
+  useHandlePrint.ts                    |   66.66 |        0 |      60 |   66.66 | 14-16,21-23                                                    
+  useMoveSelectedProps.ts              |   66.66 |    66.66 |      50 |      65 | 19,28-37                                                       
+  useSelectedNodeActions.ts            |      90 |      100 |      50 |      90 | 15                                                             
+  useStylesheet.ts                     |      90 |        0 |     100 |     100 | 15                                                             
+  useUndoRedoProps.ts                  |     100 |       50 |     100 |     100 | 8-9                                                            
+ shared/stores                         |   55.49 |    11.76 |   57.81 |   52.05 |                                                                
+  addHtmlId.ts                         |   30.43 |        0 |       0 |   33.33 | 9-31                                                           
+  cssStore.ts                          |   65.71 |      100 |    62.5 |      60 | 41-62                                                          
+  editorStore.ts                       |   82.22 |    28.57 |   79.16 |      80 | 46,52-53,60,75                                                 
+  historyStore.ts                      |    27.9 |        0 |      25 |   32.35 | 36-89,107-118,129                                              
+  loadData.ts                          |   36.84 |        0 |       0 |   36.84 | 14-35                                                          
+  printStore.ts                        |   93.75 |        0 |     100 |   91.66 | 30                                                             
+  saveResume.ts                        |      50 |      100 |       0 |      50 | 7-9,18-19,24                                                   
+ shared/stores/clipboardStore          |   44.11 |        0 |    37.5 |   46.15 |                                                                
+  copyToClipboard.ts                   |   33.33 |        0 |       0 |      40 | 5-8                                                            
+  cutToClipboard.ts                    |   28.57 |        0 |       0 |   33.33 | 5-9                                                            
+  pasteFromClipboard.ts                |      30 |        0 |       0 |    37.5 | 5-11                                                           
+  store.ts                             |   72.72 |      100 |      60 |   71.42 | 17-18                                                          
+ shared/stores/resumeStore             |   28.46 |    21.42 |   12.19 |   32.14 |                                                                
+  addChildNode.ts                      |    37.5 |        0 |       0 |    37.5 | 11-18                                                          
+  addCssClasses.ts                     |   22.22 |        0 |       0 |      25 | 10-20                                                          
+  deleteSelectedNode.ts                |   33.33 |        0 |       0 |    37.5 | 5-10                                                           
+  store.ts                             |   27.83 |    33.33 |   13.51 |    31.7 | 56-118,128-202,227,238,240                                     
+  updateSelectedNode.ts                |   28.57 |        0 |       0 |   33.33 | 5-11                                                           
+ shared/utils                          |   66.07 |       56 |   66.66 |   66.97 |                                                                
+  Helpers.tsx                          |   83.67 |    81.81 |      90 |   83.67 | 35-44,117,123                                                  
+  PrintHelpers.ts                      |   15.78 |        0 |       0 |   15.78 | 9-50                                                           
+  arrayHelpers.ts                      |   78.94 |       50 |   83.33 |   82.85 | 17,70,74,100-102                                               
+  makeCssVarSuggestions.ts             |       0 |        0 |       0 |       0 | 9-18                                                           
+ templates                             |     100 |      100 |     100 |     100 |                                                                
+  Assured.tsx                          |     100 |      100 |     100 |     100 |                                                                
+  AssuredCoveredLetter.tsx             |     100 |      100 |     100 |     100 |                                                                
+  CssTemplates.tsx                     |     100 |      100 |     100 |     100 |                                                                
+  RandyMarsh.tsx                       |     100 |      100 |     100 |     100 |                                                                
+  ResumeTemplates.tsx                  |     100 |      100 |     100 |     100 |                                                                
+  TemplateHelper.tsx                   |     100 |      100 |     100 |     100 |                                                                
+---------------------------------------|---------|----------|---------|---------|----------------------------------------------------------------

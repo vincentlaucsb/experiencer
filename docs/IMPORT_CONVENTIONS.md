@@ -51,7 +51,7 @@ import { useHistoryStore, recordHistory } from '@/shared/stores/historyStore';
 TypeScript interfaces, types, type utilities
 ```typescript
 import { IdType, NodeProperty, ResumeSaveData, ResumeNode } from '@/types';
-import CssNode, { ReadonlyCssNode } from '@/shared/utils/CssTree';
+import CssNode, { ReadonlyCssNode } from '@/shared/CssTree';
 ```
 
 ### 7. Dynamic Imports (Always Last)

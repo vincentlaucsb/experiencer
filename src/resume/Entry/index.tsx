@@ -1,10 +1,11 @@
 import * as React from "react";
 import TextField from "@/controls/inputs/TextField";
-import { process, toUrl } from "@/shared/utils/Helpers";
+import Container from "@/resume/infrastructure/Container";
+import { process } from "@/shared/utils/Helpers";
+import toUrl from "@/shared/utils/toUrl";
 import { deleteAt } from "@/shared/utils/arrayHelpers";
 import ResumeComponentProps, { BasicResumeNode } from "@/types";
 import { useIsNodeEditing, useIsNodeSelected } from "@/shared/stores/editorStore";
-import Container from "@/resume/infrastructure/Container";
 
 interface EntryBase {
     title?: string[];
@@ -90,7 +91,7 @@ export default function Entry(props: EntryProps) {
 
     /** hgroup onclick stops event from bubbling up to resume */
     return (
-        <Container {...props} className="entry">
+        <Container {...props} className="entry" displayAs="resume-entry">
             <hgroup onClick={(event) => {
                 if (isEditing) {
                     event.stopPropagation();

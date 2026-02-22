@@ -4,11 +4,27 @@
 import { render, fireEvent, getByText, getAllByText, act } from "@testing-library/react";
 import Resume from "@/app/Resume";
 import ResumeTemplates from "@/templates/ResumeTemplates";
-import CssNode from "@/shared/utils/CssTree";
+import CssNode from "@/shared/CssTree";
 import registerNodes from "@/resume/schema";
+import { useEditorStore } from "@/shared/stores/editorStore";
+import { resumeNodeStore } from "@/shared/stores/resumeNodeStore";
+import { cssStore, rootCssStore } from "@/shared/stores/cssStoreHooks";
+import type { ResumeSaveData } from "@/types";
 
 // Initialize the schema registry
 registerNodes();
+
+/**
+ * Helper to load template data into stores for unit testing.
+ * Initializes resumeNodeStore, cssStore, and rootCssStore directly.
+ */
+function setupResumeForTest(template: ResumeSaveData) {
+    act(() => {
+        resumeNodeStore.setNodes(template.childNodes);
+        rootCssStore.setCss(CssNode.load(template.rootCss));
+        cssStore.setCss(CssNode.load(template.builtinCss));
+    });
+}
 
 /**
  * Simulate selecting a resume node
@@ -26,19 +42,15 @@ const selectNode = async (next: HTMLElement) => {
 // Test selecting an node
 test('Resume Select Test', async () => {
     const tegridy = ResumeTemplates.templates.Integrity;
+    setupResumeForTest(tegridy);
 
-    const { container } = render(<Resume
-        mode="normal"
-        nodes={tegridy.childNodes}
-        css={CssNode.load(tegridy.builtinCss)}
-        rootCss={CssNode.load(tegridy.rootCss)}
-    />);
+    const { container } = render(<Resume mode="normal" />);
 
     // Test Selection
     const header = getByText(container, 'Randy Marsh');
     await selectNode(header);
 
-    const selected = container.querySelector("[data-selected='true']");
+    const selected = container.querySelector("[data-selected]");
     expect(selected).not.toBeNull();
 
     if (selected) {
@@ -53,23 +65,31 @@ test('Resume Select Test', async () => {
 /** Select a node, and then select the node's parent */
 test('Resume Select Parent + Child Test', async () => {
     const tegridy = ResumeTemplates.templates.Integrity;
+    setupResumeForTest(tegridy);
 
-    const { container } = render(<Resume
-        mode="normal"
-        nodes={tegridy.childNodes}
-        css={CssNode.load(tegridy.builtinCss)}
-        rootCss={CssNode.load(tegridy.rootCss)}
-    />);
+    const { container } = render(<Resume mode="normal" />);
 
     // Select entry
     const entries = getAllByText(container, 'Tegridy Farms');
-    let entry = entries.filter((elem) => {
+    const entryText = entries.filter((elem) => {
         return elem.classList.contains('field');
     })[0];
 
-    await selectNode(entry);
+    const entry = entryText.closest('resume-entry');
+    expect(entry).not.toBeNull();
 
-    let selected = container.querySelector("[data-selected='true']");
+    if (!entry) {
+        throw new Error('Expected resume-entry node to exist');
+    }
+
+    const entryUuid = entry.getAttribute('data-uuid');
+    expect(entryUuid).not.toBeNull();
+
+    await act(async () => {
+        useEditorStore.getState().selectNode(entryUuid as string);
+    });
+
+    let selected = container.querySelector("[data-selected]");
     expect(selected).not.toBeNull();
 
     if (selected) {
@@ -89,7 +109,7 @@ test('Resume Select Parent + Child Test', async () => {
     // Select section
     await selectNode(section);
     
-    selected = container.querySelector("[data-selected='true']");
+    selected = container.querySelector("[data-selected]");
     expect(selected).not.toBeNull();
 
     if (selected) {

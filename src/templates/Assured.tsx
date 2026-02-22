@@ -3,7 +3,7 @@ import { BasicEntryProps } from "@/resume/Entry";
 import { makeList } from "./TemplateHelper";
 import { BasicIconProps } from "@/resume/Icon";
 import getDefaultCss, { getRootCss } from "./CssTemplates";
-import CssNode from "@/shared/utils/CssTree";
+import CssNode from "@/shared/CssTree";
 import { BasicResumeNode } from "@/types";
 import MarkdownText from "@/resume/Markdown";
 import Link from "@/resume/Link";
@@ -79,7 +79,7 @@ export function assuredCss() {
     const sidebar = css.add('#sidebar', {});
     sidebar.add('Last Subtitle Field', {
         'margin-left': '0'
-    }, 'div.entry > hgroup > h4 span.field-last');
+    }, 'resume-entry > hgroup > h4 span.field-last');
 
     const subtitleFields = css.findNode(["Entry", "Title Block", "Subtitle"]);
     if (subtitleFields) {

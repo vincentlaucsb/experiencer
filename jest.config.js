@@ -36,5 +36,27 @@ module.exports = {
     transformIgnorePatterns: [
         'node_modules/(?!(react-markdown|micromark|character-entities|decode-named-character-reference|unist-|unified|ccount|rehype-|hast-|vfile|web-namespaces|comma-separated-tokens|property-information|space-separated-tokens)/)'
     ],
-    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node']
+    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+    collectCoverageFrom: [
+        'src/**/*.{ts,tsx}',
+        '!src/**/*.d.ts',
+        '!src/**/index.ts',
+        '!src/**/__tests__/**',
+        '!src/app/index.tsx',
+        '!src/app/react-app-env.d.ts',
+        '!src/app/serviceWorker.js',
+        '!src/app/vite-env.d.ts'
+    ],
+    coveragePathIgnorePatterns: [
+        '/node_modules/',
+        '/__tests__/'
+    ],
+    coverageThreshold: {
+        global: {
+            branches: 40,
+            functions: 40,
+            lines: 40,
+            statements: 40
+        }
+    }
 };

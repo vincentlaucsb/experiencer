@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import Markdown from "react-markdown";
 
 // Utilities
@@ -11,6 +12,7 @@ import { useEditorStore, useIsNodeEditing } from "@/shared/stores/editorStore";
 
 // Types
 import ResumeComponentProps from "@/types";
+import useEditing from "./hooks/useEditing";
 
 /**
  * Markdown component - Freeform text with Markdown formatting support
@@ -32,12 +34,18 @@ export default function MarkdownText(props: ResumeComponentProps) {
     const isEditing = useIsNodeEditing(props.uuid);
     const toggleEdit = useEditorStore((state) => state.toggleEdit);
     const textValue = props.value || "";
-
+    
+    // Local state for editing to prevent input reverting on every keystroke
+    const [editValue, setEditValue] = useEditing(
+        textValue, isEditing, 
+        (newValue) => props.updateData("value", newValue)
+    );
+    
     useEditingHotkeys({
         isEditing,
         ctrlEnter: true,
         value: textValue,
-        onChange: (newValue) => props.updateData("value", newValue),
+        onChange: setEditValue, // Use setEditValue to update local state, not props.updateData
         toggleEditing: toggleEdit,
     });
 
@@ -46,8 +54,8 @@ export default function MarkdownText(props: ResumeComponentProps) {
             <textarea
                 className="markdown-textarea"
                 id={props.uuid}
-                value={textValue}
-                onChange={(e) => props.updateData("value", e.target.value)}
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
                 placeholder={`# Markdown supported\n\n- Lists\n- **Bold** *italic* ~~strikethrough~~\n- [Links](url)\n- \`code\` or \`\`\`code blocks\`\`\``}
                 autoFocus
             />

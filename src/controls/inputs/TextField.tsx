@@ -47,6 +47,10 @@ export default class TextField extends React.Component<TextFieldProps, TextField
     componentDidUpdate(prevProps: TextFieldProps) {
         /** Top level node gave us new data */
         if (this.props.static && this.state.isEditing) {
+            // Save local changes before stopping edit mode
+            if (this.state.value !== this.props.value) {
+                this.props.onChange(this.state.value);
+            }
             this.setState({ isEditing: false });
         }
 

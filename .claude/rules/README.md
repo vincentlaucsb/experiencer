@@ -7,7 +7,7 @@ This directory contains coding standards, conventions, and best practices for th
 - [Component Development](./component-development.md) - How to write components
 - [Imports](./imports.md) - Import patterns and rules
 - [Coding Standards](./coding-standards.md) - TypeScript, naming, file organization
-- [State Management](./state-management.md) - Current patterns and planned changes
+- [State Management](./state-management.md) - Current patterns, planned changes, and store utilities vs hooks
 - [Testing](./testing.md) - How to write and run tests
 - [Performance](./performance.md) - Optimization guidelines
 - [CSS/SCSS](./css-scss.md) - Modern SCSS syntax and conventions

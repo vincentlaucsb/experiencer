@@ -79,6 +79,27 @@ export default class ResumeNodeTree implements ResumeNode {
     }
 
     /**
+     * Update UUID index paths for siblings that shift after a deletion.
+     * Only reindexes the affected siblings (and their descendants).
+     * 
+     * @param parentNode - The parent whose children shifted
+     * @param parentPath - Hierarchical path to the parent
+     * @param deletedIndex - The index that was removed
+     */
+    private deleteIndex(parentNode: ResumeNode, parentPath: IdType, deletedIndex: number) {
+        if (!parentNode.childNodes || parentNode.childNodes.length === 0) {
+            return;
+        }
+
+        for (let index = deletedIndex; index < parentNode.childNodes.length; index += 1) {
+            const childNode = parentNode.childNodes[index];
+            const updatedPath = [...parentPath, index];
+            // Reindex this shifted subtree with its new path
+            this.addToIndex(childNode, updatedPath);
+        }
+    }
+
+    /**
      * Navigate the tree using a hierarchical ID and return both target and parent nodes.
      * Helper method for tree traversal operations.
      * 
@@ -237,18 +258,13 @@ export default class ResumeNodeTree implements ResumeNode {
         let parentNode = this.getParentOfId(hierarchicalId);
 
         if (parentNode.childNodes) {
-            const childElem = parentNode.childNodes[hierarchicalId[hierarchicalId.length - 1]];
+            const deletedIndex = hierarchicalId[hierarchicalId.length - 1];
+            const childElem = parentNode.childNodes[deletedIndex];
             this.removeFromIndex(childElem);
-            deleteAt(parentNode.childNodes, hierarchicalId[hierarchicalId.length - 1]);
-            // Rebuild index only for parent's children (siblings shifted positions)
+            deleteAt(parentNode.childNodes, deletedIndex);
+            // Reindex only shifted siblings (and their descendants)
             const parentPath = hierarchicalId.slice(0, -1);
-            if (parentPath.length === 0) {
-                // Parent is root, rebuild entire tree
-                this.rebuildIndex();
-            } else {
-                // Rebuild parent's subtree
-                this.rebuildIndex(parentNode, parentPath);
-            }
+            this.deleteIndex(parentNode, parentPath, deletedIndex);
         }
     }
 
@@ -272,8 +288,11 @@ export default class ResumeNodeTree implements ResumeNode {
      * Accepts either a UUID string or hierarchical ID.
      * Swaps the node with its preceding sibling.
      * 
+     * @overload moveUp(id: string): string
+     * @overload moveUp(id: IdType): IdType
+     * 
      * @param id - UUID or hierarchical ID of the node to move
-     * @returns The new hierarchical ID or UUID after moving
+     * @returns The new UUID if input was UUID, new hierarchical ID if input was IdType
      * @throws Error if node is already first or parent has no children
      */
     moveUp(id: string | IdType): string | IdType {
@@ -311,8 +330,11 @@ export default class ResumeNodeTree implements ResumeNode {
      * Accepts either a UUID string or hierarchical ID.
      * Swaps the node with its following sibling.
      * 
+     * @overload moveDown(id: string): string
+     * @overload moveDown(id: IdType): IdType
+     * 
      * @param id - UUID or hierarchical ID of the node to move
-     * @returns The new hierarchical ID or UUID after moving
+     * @returns The new UUID if input was UUID, new hierarchical ID if input was IdType
      * @throws Error if node is already last or parent has no children
      */
     moveDown(id: string | IdType): string | IdType {

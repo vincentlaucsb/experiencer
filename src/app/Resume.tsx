@@ -29,7 +29,7 @@ import ResumeCssEditor from '@/app/ResumeCssEditor';
 import { useEditorStore, useMode, useSelectedNodeId, useIsEditingSelected } from '@/shared/stores/editorStore';
 import { recordHistory } from '@/shared/stores/historyStore';
 import { useResumeTree, resumeNodeStore } from '@/shared/stores/resumeNodeStore';
-import { useCssStore, useTreeStylesheet } from '@/shared/stores/cssStoreHooks';
+import { useTreeStylesheet } from '@/shared/stores/cssStoreHooks';
 
 // Types
 import CssNode from '@/shared/CssTree';
@@ -52,10 +52,6 @@ export interface ResumeProps {
     selectedNodeId?: string;
     isEditingSelected?: boolean;
     nodes?: Array<ResumeNode>;
-    css: CssNode;
-    rootCss: CssNode;
-    setCss: (css: CssNode) => void;
-    setRootCss: (rootCss: CssNode) => void;
     stylesheet: string;
     tree: ResumeNode;
 }
@@ -222,7 +218,6 @@ function Resume(props: ResumeProps) {
  * Provides these as props to the Resume component for selective re-rendering.
  */
 function ResumeContainer(props: ResumeWrapperProps) {
-    const { css, rootCss, setCss, setRootCss } = useCssStore();
     const stylesheet = useTreeStylesheet();
     const storeMode = useMode();
     const selectedNodeId = useSelectedNodeId();
@@ -240,12 +235,6 @@ function ResumeContainer(props: ResumeWrapperProps) {
         if (props.mode) {
             useEditorStore.getState().setMode(props.mode);
         }
-        if (props.css) {
-            setCss(props.css);
-        }
-        if (props.rootCss) {
-            setRootCss(props.rootCss);
-        }
     }, []); // Run once on mount
 
     useHandlePrint();
@@ -256,10 +245,6 @@ function ResumeContainer(props: ResumeWrapperProps) {
         mode={mode}
         selectedNodeId={selectedNodeId}
         isEditingSelected={isEditingSelected}
-        css={css}
-        rootCss={rootCss}
-        setCss={setCss}
-        setRootCss={setRootCss}
         stylesheet={stylesheet}
         tree={tree}
     />

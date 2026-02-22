@@ -63,10 +63,12 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
 
     /**
      * Move a node up in its parent's children array.
-     * Accepts either a UUID string or hierarchical ID.
+     * 
+     * @overload moveNodeUp(id: string): string
+     * @overload moveNodeUp(id: IdType): IdType
      * 
      * @param id - UUID or hierarchical ID of the node to move
-     * @returns The new hierarchical ID or UUID after moving
+     * @returns The UUID if input was UUID, hierarchical ID if input was IdType
      */
     moveNodeUp(id: string | IdType): string | IdType {
         return this.withMutation(() => this.data.moveUp(id));
@@ -74,10 +76,12 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
 
     /**
      * Move a node down in its parent's children array.
-     * Accepts either a UUID string or hierarchical ID.
+     * 
+     * @overload moveNodeDown(id: string): string
+     * @overload moveNodeDown(id: IdType): IdType
      * 
      * @param id - UUID or hierarchical ID of the node to move
-     * @returns The new hierarchical ID or UUID after moving
+     * @returns The UUID if input was UUID, hierarchical ID if input was IdType
      */
     moveNodeDown(id: string | IdType): string | IdType {
         return this.withMutation(() => this.data.moveDown(id));

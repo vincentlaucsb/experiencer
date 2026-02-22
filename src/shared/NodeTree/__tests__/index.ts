@@ -165,6 +165,47 @@ describe('UUID Index', () => {
         expect(tree.getHierarchicalId(entry2Uuid)).toEqual([0, 0]); // shifted from [0, 1]
     });
 
+    test('deleteChild only shifts siblings under same parent', () => {
+        const resumeData = [{
+            type: 'Section',
+            childNodes: [
+                {
+                    type: 'Entry',
+                    childNodes: [
+                        { type: 'RichText', value: 'A' },
+                        { type: 'RichText', value: 'B' },
+                        { type: 'RichText', value: 'C' }
+                    ]
+                },
+                {
+                    type: 'Entry',
+                    childNodes: [
+                        { type: 'RichText', value: 'D' }
+                    ]
+                }
+            ]
+        }] as BasicResumeNode[];
+        const tree = new ResumeNodeTree(assignIds(resumeData));
+
+        const unaffectedEntry = tree.getNodeById([0, 1]);
+        const unaffectedChild = tree.getNodeById([0, 1, 0]);
+        const unaffectedEntryUuid = unaffectedEntry.uuid;
+        const unaffectedChildUuid = unaffectedChild.uuid;
+
+        // Delete middle child under the first entry
+        tree.deleteChild([0, 0, 1]);
+
+        // Unaffected branch should keep the same paths
+        expect(tree.getHierarchicalId(unaffectedEntryUuid)).toEqual([0, 1]);
+        expect(tree.getHierarchicalId(unaffectedChildUuid)).toEqual([0, 1, 0]);
+
+        // Siblings under the deleted parent should shift
+        const childA = tree.getNodeById([0, 0, 0]);
+        const childC = tree.getNodeById([0, 0, 1]);
+        expect(childA.value).toBe('A');
+        expect(childC.value).toBe('C');
+    });
+
     test('updates index when deleting last child', () => {
         const resumeData = [{
             type: 'Section',

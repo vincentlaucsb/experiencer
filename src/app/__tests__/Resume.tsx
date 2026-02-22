@@ -7,9 +7,24 @@ import ResumeTemplates from "@/templates/ResumeTemplates";
 import CssNode from "@/shared/CssTree";
 import registerNodes from "@/resume/schema";
 import { useEditorStore } from "@/shared/stores/editorStore";
+import { resumeNodeStore } from "@/shared/stores/resumeNodeStore";
+import { cssStore, rootCssStore } from "@/shared/stores/cssStoreHooks";
+import type { ResumeSaveData } from "@/types";
 
 // Initialize the schema registry
 registerNodes();
+
+/**
+ * Helper to load template data into stores for unit testing.
+ * Initializes resumeNodeStore, cssStore, and rootCssStore directly.
+ */
+function setupResumeForTest(template: ResumeSaveData) {
+    act(() => {
+        resumeNodeStore.setNodes(template.childNodes);
+        rootCssStore.setCss(CssNode.load(template.rootCss));
+        cssStore.setCss(CssNode.load(template.builtinCss));
+    });
+}
 
 /**
  * Simulate selecting a resume node
@@ -27,13 +42,9 @@ const selectNode = async (next: HTMLElement) => {
 // Test selecting an node
 test('Resume Select Test', async () => {
     const tegridy = ResumeTemplates.templates.Integrity;
+    setupResumeForTest(tegridy);
 
-    const { container } = render(<Resume
-        mode="normal"
-        nodes={tegridy.childNodes}
-        css={CssNode.load(tegridy.builtinCss)}
-        rootCss={CssNode.load(tegridy.rootCss)}
-    />);
+    const { container } = render(<Resume mode="normal" />);
 
     // Test Selection
     const header = getByText(container, 'Randy Marsh');
@@ -54,13 +65,9 @@ test('Resume Select Test', async () => {
 /** Select a node, and then select the node's parent */
 test('Resume Select Parent + Child Test', async () => {
     const tegridy = ResumeTemplates.templates.Integrity;
+    setupResumeForTest(tegridy);
 
-    const { container } = render(<Resume
-        mode="normal"
-        nodes={tegridy.childNodes}
-        css={CssNode.load(tegridy.builtinCss)}
-        rootCss={CssNode.load(tegridy.rootCss)}
-    />);
+    const { container } = render(<Resume mode="normal" />);
 
     // Select entry
     const entries = getAllByText(container, 'Tegridy Farms');

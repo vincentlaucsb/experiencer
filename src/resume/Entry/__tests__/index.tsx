@@ -20,6 +20,9 @@ test('Entry Class Names Test', async () => {
         subtitle={subtitle}
     />);
 
+    const entryRoot = container.querySelector('resume-entry');
+    expect(entryRoot).not.toBeNull();
+
     const subtitleContainer = container.querySelector('.subtitle') as Element;
 
     const allSubtitleFields = subtitleContainer.querySelectorAll('.field');

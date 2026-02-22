@@ -1,6 +1,6 @@
 import { ResumeNode } from "@/types";
 import { recordHistory } from "../historyStore";
-import { useResumeStore } from "./store";
+import { resumeNodeStore } from "../resumeNodeStore";
 
 /**
  * Add node as a child to the node identified by UUID
@@ -8,13 +8,11 @@ import { useResumeStore } from "./store";
  * @param node Node to be added
  */
 export default function addChildNode(parentUuid: string | undefined, node: ResumeNode) {
-    const { addNodeByUuid, addNode } = useResumeStore.getState();
-
     recordHistory();
     if (parentUuid) {
-        addNodeByUuid(parentUuid, node);
+        resumeNodeStore.addNodeByUuid(parentUuid, node);
     } else {
         // Add to root
-        addNode([], node);
+        resumeNodeStore.addNode([], node);
     }
 }

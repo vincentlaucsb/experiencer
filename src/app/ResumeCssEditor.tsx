@@ -1,6 +1,6 @@
 import { useCss, useCssStore, useRootCss } from "@/shared/stores/cssStore";
 import { useSelectedNodeId } from "@/shared/stores/editorStore";
-import { useResumeStore } from "@/shared/stores/resumeStore";
+import { resumeNodeStore } from "@/shared/stores/resumeNodeStore";
 import CssNode, { ReadonlyCssNode } from "@/shared/CssTree";
 import type { ResumeNode } from "@/types";
 import CssEditor, { makeCssEditorProps } from "@/editor/CssEditor";
@@ -63,7 +63,7 @@ function ResumeCssEditorWrapper() {
     const selectedNodeId = useSelectedNodeId();
 
     const selectedNode = useMemo(() => {
-        return selectedNodeId ? useResumeStore.getState().getNodeByUuid(selectedNodeId) : undefined;
+        return selectedNodeId ? resumeNodeStore.getNodeByUuid(selectedNodeId) : undefined;
     }, [selectedNodeId]);
 
     return (

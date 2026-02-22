@@ -5,6 +5,7 @@ import { useIsNodeEditing, useEditorStore } from "@/shared/stores/editorStore";
 import { useIsPrinting } from "@/shared/stores/printStore";
 import ResumeComponentProps from "@/types";
 import useEditingHotkeys from "../hooks/useEditingHotkeys";
+import useEditing from "../hooks/useEditing";
 
 interface LinkBase {
     url?: string;
@@ -22,9 +23,17 @@ function Link(props: LinkProps) {
     const displayText = process(props.value) as string || "Link text";
     const url = props.url || "#";
 
+    console.log("Display Text:", displayText);
+
+    const [editValue, setEditValue] = useEditing(
+        props.value || '',
+        isEditing,
+        (newValue) => props.updateData("value", newValue)
+    );
+
     useEditingHotkeys({
         isEditing,
-        value: props.value || '',
+        value: editValue,
         onChange: (originalValue) => props.updateData("value", originalValue),
         toggleEditing: toggleEdit,
         ctrlEnter: false
@@ -35,8 +44,8 @@ function Link(props: LinkProps) {
             <Container displayAs="span" className="link-editing" {...props}>
                 <input
                     type="text"
-                    value={props.value || ''}
-                    onChange={(e) => props.updateData("value", e.target.value)}
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
                     placeholder="Enter link text"
                     autoFocus
                 />

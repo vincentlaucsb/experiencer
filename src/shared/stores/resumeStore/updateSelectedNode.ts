@@ -1,6 +1,6 @@
 import { NodeProperty } from "@/types";
 import { recordHistory } from "../historyStore";
-import { useResumeStore } from "./store";
+import { resumeNodeStore } from "../resumeNodeStore";
 
 export default function updateSelected(
     uuid: string | undefined, key: string, data: NodeProperty
@@ -8,5 +8,5 @@ export default function updateSelected(
     if (!uuid) return;
 
     recordHistory();
-    useResumeStore.getState().updateNodeByUuid(uuid, key, data);
+    resumeNodeStore.updateNodeByUuid(uuid, key, data);
 }

@@ -149,7 +149,7 @@ describe('CssNode - Serialization', () => {
     });
 
     test('load with complex properties preserves all entries', () => {
-        const props = [
+        const props: Array<[string, string]> = [
             ['color', 'red'],
             ['background-color', '#fff'],
             ['font-family', 'Arial, sans-serif'],

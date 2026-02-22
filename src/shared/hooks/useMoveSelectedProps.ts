@@ -1,6 +1,6 @@
 import { useEditorStore } from "../stores/editorStore";
 import { recordHistory } from "../stores/historyStore";
-import { useResumeStore } from "../stores/resumeStore";
+import { resumeNodeStore } from "../stores/resumeNodeStore";
 
 /**
  * Hook with functions to move the selected node up or down in the resume tree.
@@ -13,7 +13,7 @@ export default function useMoveSelectedProps() {
         return { moveUp: undefined, moveDown: undefined };
     }
 
-    const tree = useResumeStore.getState().tree;
+    const tree = resumeNodeStore.getTree();
     const id = tree.getHierarchicalId(uuid);
     if (!id) {
         return { moveUp: undefined, moveDown: undefined };
@@ -26,14 +26,14 @@ export default function useMoveSelectedProps() {
         moveUp: moveSelectedUpEnabled ?
             () => {
                 recordHistory();
-                const newUuid = useResumeStore.getState().moveNodeUpByUuid(uuid);
+                const newUuid = resumeNodeStore.moveNodeUpByUuid(uuid);
                 useEditorStore.getState().selectNode(newUuid);
             } :
             undefined,
         moveDown: moveSelectedDownEnabled ?
             () => {
                 recordHistory();
-                const newUuid = useResumeStore.getState().moveNodeDownByUuid(uuid);
+                const newUuid = resumeNodeStore.moveNodeDownByUuid(uuid);
                 useEditorStore.getState().selectNode(newUuid);
             } :
             undefined

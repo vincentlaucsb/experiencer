@@ -194,7 +194,7 @@ export default class ResumeNodeTree implements ResumeNode {
      * 
      * @param node - The node to add
      */
-    addChild(node: ResumeNode) {
+    addChild(node: ResumeNode): void {
         this.childNodes.push(node);
         const path = [this.childNodes.length - 1];
         this.addToIndex(node, path);
@@ -208,7 +208,7 @@ export default class ResumeNodeTree implements ResumeNode {
      * @param id - Hierarchical ID of the parent node
      * @param node - The node to add as a child
      */
-    addNestedChild(id: IdType, node: ResumeNode) {
+    addNestedChild(id: IdType, node: ResumeNode): void {
         let targetNode = this.getNodeById(id);
         if (!targetNode.childNodes) {
             targetNode.childNodes = new Array<ResumeNode>();
@@ -227,7 +227,7 @@ export default class ResumeNodeTree implements ResumeNode {
      * @param id - Hierarchical ID of the node to delete
      * @throws Error if parent has no children
      */
-    deleteChild(id: IdType) {
+    deleteChild(id: IdType): void {
         let parentNode = this.getParentOfId(id);
 
         if (parentNode.childNodes) {
@@ -253,7 +253,7 @@ export default class ResumeNodeTree implements ResumeNode {
      * @param key - The property name to update
      * @param data - The new value for the property
      */
-    updateChild(id: IdType, key: string, data: any) {
+    updateChild(id: IdType, key: string, data: any): void {
         let targetNode = this.getNodeById(id);
         targetNode[key] = data;
     }
@@ -263,10 +263,10 @@ export default class ResumeNodeTree implements ResumeNode {
      * Swaps the node with its preceding sibling.
      * 
      * @param id - Hierarchical ID of the node to move
-     * @returns The new hierarchical ID of the node after the move
+     * @returns The new hierarchical ID after moving
      * @throws Error if node is already first or parent has no children
      */
-    moveUp(id: IdType) {
+    moveUp(id: IdType): IdType {
         let parentNode = this.getParentOfId(id);
 
         if (!parentNode.childNodes) {
@@ -298,10 +298,10 @@ export default class ResumeNodeTree implements ResumeNode {
      * Swaps the node with its following sibling.
      * 
      * @param id - Hierarchical ID of the node to move
-     * @returns The new hierarchical ID of the node after the move
+     * @returns The new hierarchical ID after moving
      * @throws Error if node is already last or parent has no children
      */
-    moveDown(id: IdType) {
+    moveDown(id: IdType): IdType {
         let parentNode = this.getParentOfId(id);
 
         if (!parentNode.childNodes) {

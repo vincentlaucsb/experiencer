@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { useResumeStore } from './resumeStore';
+import { resumeNodeStore } from './resumeNodeStore';
 import { ResumeNode } from '@/types';
 
 interface HistoryState {
@@ -43,7 +43,7 @@ export const useHistoryStore = create<HistoryStore>()(
                 const newPast = past.slice(0, -1);
                 
                 // Save current state to future before changing
-                const current = useResumeStore.getState().tree.childNodes;
+                const current = resumeNodeStore.getTree().childNodes;
                 
                 set(
                     {
@@ -55,7 +55,7 @@ export const useHistoryStore = create<HistoryStore>()(
                 );
 
                 // Update resume store with previous state
-                useResumeStore.getState().setNodes(previous);
+                resumeNodeStore.setNodes(previous);
             },
 
             // Redo - restore next state
@@ -70,7 +70,7 @@ export const useHistoryStore = create<HistoryStore>()(
                 const newFuture = future.slice(1);
                 
                 // Save current state to past before changing
-                const current = useResumeStore.getState().tree.childNodes;
+                const current = resumeNodeStore.getTree().childNodes;
                 
                 set(
                     {
@@ -82,7 +82,7 @@ export const useHistoryStore = create<HistoryStore>()(
                 );
 
                 // Update resume store with next state
-                useResumeStore.getState().setNodes(next);
+                resumeNodeStore.setNodes(next);
             },
 
             // Clear history (useful after loading a new file)
@@ -104,7 +104,7 @@ export const useHistoryStore = create<HistoryStore>()(
  * This is a regular function (not a hook) so it can be called from anywhere.
  */
 export const recordHistory = () => {
-    const current = useResumeStore.getState().tree.childNodes;
+    const current = resumeNodeStore.getTree().childNodes;
     const { past } = useHistoryStore.getState();
     
     // Deep clone to prevent reference issues

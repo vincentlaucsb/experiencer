@@ -168,6 +168,8 @@ export function ContextMenuTrigger({
     onContextMenu?: (e: ReactMouseEvent) => void;
     disabled?: boolean;
 }) {
+    const tagRef = useRef<HTMLElement | null>(null);
+
     const handleContextMenu = (e: ReactMouseEvent) => {
         if (disabled) {
             return;
@@ -190,9 +192,46 @@ export function ContextMenuTrigger({
     };
 
     const Tag = renderTag as any;
+    const { onClick: onClickAttr, ref: attributesRef, ...passthroughAttributes } = attributes;
+
+    const setTagRef = (node: HTMLElement | null) => {
+        tagRef.current = node;
+
+        if (typeof attributesRef === 'function') {
+            attributesRef(node);
+        }
+        else if (attributesRef && typeof attributesRef === 'object') {
+            attributesRef.current = node;
+        }
+    };
+
+    useEffect(() => {
+        const element = tagRef.current;
+        if (!element) {
+            return;
+        }
+
+        const handleClick = (event: MouseEvent) => {
+            if (onClickAttr) {
+                onClickAttr(event as unknown as ReactMouseEvent);
+            }
+        };
+
+        const handleNativeContextMenu = (event: MouseEvent) => {
+            handleContextMenu(event as unknown as ReactMouseEvent);
+        };
+
+        element.addEventListener('click', handleClick);
+        element.addEventListener('contextmenu', handleNativeContextMenu);
+
+        return () => {
+            element.removeEventListener('click', handleClick);
+            element.removeEventListener('contextmenu', handleNativeContextMenu);
+        };
+    }, [disabled, id, onClickAttr, onContextMenu]);
 
     return (
-        <Tag {...attributes} onContextMenu={handleContextMenu}>
+        <Tag {...passthroughAttributes} ref={setTagRef}>
             {children}
         </Tag>
     );

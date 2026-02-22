@@ -1,7 +1,7 @@
 import { EditorMode, Globals, ResumeSaveData } from "@/types";
 import { useEditorStore } from "./editorStore";
 import { useCssStore } from "./cssStore";
-import { useResumeStore } from "./resumeStore";
+import { resumeNodeStore } from "./resumeNodeStore";
 import { useHistoryStore } from "./historyStore";
 import { assignIds } from "../utils/Helpers";
 
@@ -14,7 +14,7 @@ export default function loadData(data: object, mode: EditorMode = 'normal') {
     let savedData = data as ResumeSaveData;
     const nodes = assignIds(savedData.childNodes);
 
-    useResumeStore.getState().setNodes(nodes);
+    resumeNodeStore.setNodes(nodes);
 
     // Clear history when loading new data
     useHistoryStore.getState().clear();

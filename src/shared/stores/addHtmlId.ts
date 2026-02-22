@@ -1,13 +1,13 @@
 import CssNode from "@/shared/CssTree";
 import { useEditorStore } from "./editorStore";
-import { useResumeStore } from "./resumeStore/store";
+import { resumeNodeStore } from "./resumeNodeStore";
 import { useCssStore } from "./cssStore";
 import { recordHistory } from "./historyStore";
 import ComponentTypes from "@/resume/schema/ComponentTypes";
 
 export default function addHtmlId(htmlId: string) {
     const selectedNodeId = useEditorStore.getState().selectedNodeId;
-    const tree = useResumeStore.getState().tree;
+    const tree = resumeNodeStore.getTree();
     const css = useCssStore.getState().css;
 
     if (!selectedNodeId) return;
@@ -25,7 +25,7 @@ export default function addHtmlId(htmlId: string) {
     }
 
     recordHistory();
-    useResumeStore.getState().updateNodeByUuid(selectedNodeId, 'htmlId', htmlId);
+    resumeNodeStore.updateNodeByUuid(selectedNodeId, 'htmlId', htmlId);
     
     useCssStore.getState().updateCss((css) => {
         css.addNode(root);

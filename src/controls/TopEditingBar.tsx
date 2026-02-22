@@ -14,7 +14,7 @@ import ResumeHotKeys, { ResumeHotKeyMap } from "./ResumeHotkeys";
 const HtmlIdAdder = React.lazy(() => import("./HtmlIdAdder"));
 import { ToolbarItemData } from "./toolbar/ToolbarButton";
 import { useEditorStore } from "@/shared/stores/editorStore";
-import { useResumeStore } from "@/shared/stores/resumeStore/store";
+import { resumeNodeStore, useResumeNodeByUuid } from "@/shared/stores/resumeNodeStore";
 import { useHistoryStore } from "@/shared/stores/historyStore";
 import updateSelected from "@/shared/stores/resumeStore/updateSelectedNode";
 import { saveLocal } from "@/shared/stores/saveResume";
@@ -232,9 +232,7 @@ export function TopEditingBar(props: EditingBarProps) {
     
     // Subscribe to store changes - these will cause re-renders
     const selectedNodeId = useEditorStore(state => state.selectedNodeId);
-    const selectedNode = useResumeStore(state => 
-        selectedNodeId ? state.getNodeByUuid(selectedNodeId) : undefined
-    );
+    const selectedNode = useResumeNodeByUuid(selectedNodeId || '');
 
     const updateResizer = useCallback(() => {
         const container = toolbarRef.current;
@@ -324,7 +322,8 @@ export type TopEditingBarWrapperProps = Record<string, never>;
 export default function TopEditingBarWrapper(props: TopEditingBarWrapperProps) {
     const { canUndo, canRedo, undo, redo } = useHistoryStore.getState();
     const { unselectNode, selectedNodeId } = useEditorStore.getState();
-    const { unsavedChanges, tree } = useResumeStore.getState();
+    const unsavedChanges = resumeNodeStore.hasUnsavedChanges();
+    const tree = resumeNodeStore.getTree();
     const selectedNodeActions = useSelectedNodeActions();
 
     const undoRedoProps =  {

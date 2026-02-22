@@ -90,7 +90,7 @@ export default function Entry(props: EntryProps) {
 
     /** hgroup onclick stops event from bubbling up to resume */
     return (
-        <Container {...props} className="entry">
+        <Container {...props} className="entry" displayAs="resume-entry">
             <hgroup onClick={(event) => {
                 if (isEditing) {
                     event.stopPropagation();

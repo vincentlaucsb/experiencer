@@ -1,2 +1,4 @@
 export { default as addCssClasses } from "./addCssClasses";
-export * from "./store";
+
+// New ClassStore-based exports (preferred)
+export { resumeNodeStore, useResumeTree, useResumeNodes, useHasUnsavedChanges, useResumeNode, useResumeNodeByUuid, useResumeActions } from "../resumeNodeStore";

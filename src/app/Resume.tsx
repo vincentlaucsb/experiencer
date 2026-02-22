@@ -28,7 +28,7 @@ import ResumeCssEditor from '@/app/ResumeCssEditor';
 // Stores
 import { useEditorStore, useMode, useSelectedNodeId, useIsEditingSelected } from '@/shared/stores/editorStore';
 import { recordHistory } from '@/shared/stores/historyStore';
-import { useResumeStore } from '@/shared/stores/resumeStore/store';
+import { useResumeTree, useResumeActions, resumeNodeStore } from '@/shared/stores/resumeNodeStore';
 import { useCssStore, useTreeStylesheet } from '@/shared/stores/cssStore';
 
 // Types
@@ -57,12 +57,17 @@ export interface ResumeProps {
     setCss: (css: CssNode) => void;
     setRootCss: (rootCss: CssNode) => void;
     stylesheet: string;
+    tree: ResumeNode;
 }
 
 export type ResumeWrapperProps = Partial<Omit<ResumeProps, 'selectedNodeId' | 'isEditingSelected'>>;
 
 function Resume(props: ResumeProps) {
     const resumeRef = useRef<HTMLDivElement>(null);
+    const resumeNodes = props.tree.childNodes || [];
+    useEffect(() => {
+        console.log("Nodes", resumeNodes);
+    }, [resumeNodes]);
 
     // Returns true if we are actively editing a resume
     const isEditing = (() => {
@@ -95,14 +100,14 @@ function Resume(props: ResumeProps) {
     // Creating/Editing Nodes
     const updateData = useCallback((id: IdType, key: string, data: any) => {
         recordHistory();
-        useResumeStore.getState().updateNode(id, key, data);
+        resumeNodeStore.updateNode(id, key, data);
     }, []);
 
     const updateDataFields = useCallback((id: IdType, patch: Partial<Record<string, NodeProperty>>) => {
         recordHistory();
         Object.entries(patch).forEach(([key, value]) => {
             if (value !== undefined) {
-                useResumeStore.getState().updateNode(id, key, value);
+                resumeNodeStore.updateNode(id, key, value);
             }
         });
     }, []);
@@ -122,7 +127,7 @@ function Resume(props: ResumeProps) {
 
     const renderSidebar = () => {
         return <Tabs>
-            <NodeTreeVisualizer key="Tree" childNodes={useResumeStore.getState().tree.childNodes}
+            <NodeTreeVisualizer key="Tree" childNodes={resumeNodes}
                 selectNode={(uuid) => useEditorStore.getState().selectNode(uuid)}
                 selectedNode={useEditorStore.getState().selectedNodeId}
             />
@@ -144,7 +149,7 @@ function Resume(props: ResumeProps) {
         <>
             <div id="resume" ref={resumeRef}>
                 <ResumeHotKeys />
-                {useResumeStore.getState().tree.childNodes.map((elem, idx, arr) => {
+                {resumeNodes.map((elem, idx, arr) => {
                     const uniqueId = elem.uuid;
                     const elementProps = {
                         ...elem,
@@ -153,6 +158,8 @@ function Resume(props: ResumeProps) {
                         index: idx,
                         numSiblings: arr.length
                     };
+
+                    console.log("Rendering node", JSON.stringify(elementProps));
 
                     return (
                         <ResumeComponentFactory
@@ -225,6 +232,11 @@ function ResumeContainer(props: ResumeWrapperProps) {
     const storeMode = useMode();
     const selectedNodeId = useSelectedNodeId();
     const isEditingSelected = useIsEditingSelected();
+    const tree = useResumeTree();
+    
+    useEffect(() => {
+        console.log("Tree changed", tree);
+    }, [tree]);
     
     // Use prop mode if provided (for tests), otherwise use store mode
     const mode = props.mode || storeMode;
@@ -232,7 +244,7 @@ function ResumeContainer(props: ResumeWrapperProps) {
     // Initialize stores with props if provided (unit tests only)
     useEffect(() => {
         if (props.nodes) {
-            useResumeStore.getState().setNodes(props.nodes);
+            resumeNodeStore.setNodes(props.nodes);
         }
         if (props.mode) {
             useEditorStore.getState().setMode(props.mode);
@@ -258,6 +270,7 @@ function ResumeContainer(props: ResumeWrapperProps) {
         setCss={setCss}
         setRootCss={setRootCss}
         stylesheet={stylesheet}
+        tree={tree}
     />
 }
 

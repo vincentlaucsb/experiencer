@@ -61,11 +61,13 @@ function getSectionCss(): CssNode {
 }
 
 function getEntryCss(): CssNode {
-    let entryCss = new CssNode(Entry.type, {}, 'div.entry');
+    let entryCss = new CssNode(Entry.type, {
+        'display': 'block'
+    }, 'resume-entry');
 
     entryCss.add('Adjacent Entries', {
         'margin-top': 'var(--large-spacing)'
-    }, '+ div.entry');
+    }, '+ resume-entry');
 
     let entryTitleCss = entryCss.add('Title Block',
         { 'margin-bottom': 'var(--small-spacing)' }, '> hgroup');
@@ -149,9 +151,9 @@ export default function getDefaultCss(): CssNode {
     let dlCss = defaultCss.add('Description List', { }, 'dl');
     dlCss.add('Definitions', { 'padding-left': '0.5rem' }, 'dd');
 
-    defaultCss.add('Row', {}, 'div.row');
-    defaultCss.add('Column', {}, 'div.column');
-    defaultCss.add('Grid', {}, 'div.grid-container');
+    defaultCss.add('Row', {}, 'resume-row');
+    defaultCss.add('Column', {}, 'resume-column');
+    defaultCss.add('Grid', {}, 'resume-grid');
     defaultCss.addNode(getHeaderCss());
     defaultCss.addNode(getSectionCss());
     defaultCss.addNode(getEntryCss());

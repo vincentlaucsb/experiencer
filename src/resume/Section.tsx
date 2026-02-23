@@ -12,7 +12,6 @@ export default class Section extends React.PureComponent<ResumeComponentProps> {
         const title = <TextField
             onChange={this.props.updateData.bind(this, "value")}
             value={this.props.value || ''}
-            label="Title"
             defaultText="Enter a title"
             displayProcessors={[process]}
         />

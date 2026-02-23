@@ -5,6 +5,7 @@ import { Action } from "@/types";
 import useUndoRedoProps from "@/shared/hooks/useUndoRedoProps";
 import { useEditorStore } from "@/shared/stores/editorStore";
 import useSelectedNodeActions from "@/shared/hooks/useSelectedNodeActions";
+import { saveLocal } from "@/shared/stores/saveResume";
 
 export interface ResumeHotKeysProps extends SelectedNodeActions {
     /** Editor Modes */
@@ -43,6 +44,12 @@ export const ResumeHotKeyMap: KeyMap = {
         name: 'Deleted Node',
         description: 'Delete the currently selected node',
         sequence: 'del'
+    } as ExtendedKeyMapOptions,
+
+    SAVE: {
+        name: 'Save',
+        description: 'Save the current document',
+        sequence: 'ctrl+s'
     } as ExtendedKeyMapOptions,
 
     UNDO: {
@@ -99,6 +106,12 @@ export class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
                 if (this.props.redo) {
                     this.props.redo();
                 }
+            },
+
+            SAVE: (e) => {
+                // For now, just trigger print mode as a placeholder for "exporting"
+                saveLocal();
+                e.preventDefault();
             },
 
             DELETE_SELECTED: (event) => {

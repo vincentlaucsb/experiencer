@@ -1,74 +1,20 @@
 # Experiencer TODO
 
-## Recently Completed
+## Scratchpad
 
-### ✅ Vite Migration (COMPLETED)
-**Goal**: Migrate from Webpack to Vite for faster development and better DX
+### Misc
+ - [ ] Add "Exit Print Preview" to print preview mode
+ - [ ] Add way to enter Print Preview from menu (perhaps under File)
+ - [ ] When "File" menu is activated, clicking outside should close it
 
-**Completed**:
-- ✅ Installed Vite 7.3.1 + @vitejs/plugin-react + vite-plugin-svgr
-- ✅ Created vite.config.ts with optimized settings
-- ✅ Moved index.html to root with script tag
-- ✅ Updated package.json scripts (dev, build, preview)
-- ✅ Removed 346 webpack packages (babel-loader, css-loader, webpack, etc.)
-- ✅ Added vite-env.d.ts for TypeScript support
-- ✅ All tests passing (23/23)
-- ✅ Dev server starts in 364ms (vs ~3-5s with webpack)
+### CSS Editor
+ - [ ] Raw CSS view should have button next to each section that goes to corresponding section in CSS
+ - [ ] In scoped view, consider showing `:root` styles
+ - [ ] Consider adding color picker
 
-**Results**:
-- ⚡ **10x faster dev server startup** - 364ms vs 3-5 seconds
-- 🔥 **Instant HMR** - Changes appear in ~50ms
-- 📦 **346 fewer packages** - Leaner dependency tree
-- 🎯 **Native ESM** - Modern approach, better tree-shaking
-- 🚀 **Better DX** - Cleaner config, faster iteration
-
-### ✅ Zustand State Management Migration (COMPLETED)
-**Goal**: Replace Context API for frequently-changing editor state with Zustand for better performance
-
-**Completed**:
-- ✅ Installed Zustand 5.x with `--legacy-peer-deps`
-- ✅ Created `src/stores/editorStore.ts` with selectedNodeId, isEditingSelected state
-- ✅ Added actions: selectNode, editNode, unselectNode, toggleEdit
-- ✅ Updated Resume.tsx to use store for selection handling
-- ✅ Removed selectedUuid/isEditingSelected from ResumeContext
-- ✅ Updated 6 components: Link, Container, RichText, Header, List, Entry
-- ✅ Created selector hooks: useIsNodeEditing, useIsNodeSelected, useIsEditingSelected
-- ✅ All tests passing (23/23)
-- ✅ Updated ARCHITECTURE.md with Zustand patterns
-- ✅ Updated .claude/rules/state-management.md with comprehensive examples
-
-**Results**:
-- ⚡ Selective re-renders: Only selected/unselected components update
-- 🐛 Redux DevTools integrated for debugging
-- 📦 Simpler component logic with hooks (function components) and getState() (class components)
-- 🔧 Can access/update state outside React components
-
-### ✅ Print Mode State in Zustand (COMPLETED)
-**Goal**: Move print/export state out of React context into a lightweight Zustand store
-
-**Completed**:
-- ✅ Added `printStore` with `isPrinting` state + selector hook
-- ✅ Removed `ResumeContext` provider usage from render tree
-- ✅ Updated Link component + tests to consume Zustand state
-- ✅ Synced print mode changes with before/after print events
-
-### ✅ Centralized Editor Mode State (COMPLETED)
-**Goal**: Move all editor modes into Zustand for better separation of concerns
-
-**Completed**:
-- ✅ Added mode state to `editorStore` with `setMode()` and `toggleMode()` actions
-- ✅ Created `useMode()`, `useIsEditing()` selector hooks
-- ✅ Moved `print()` and `exportHtml()` into utility functions (`PrintHelpers.ts`)
-- ✅ Removed mode from `Resume` component state (now purely presentational)
-- ✅ `printStore` auto-syncs with editor mode via subscription
-
-**Benefits**:
-- 📦 All UI state centralized in stores (mode, selection, printing)
-- 🔧 Utilities can access state without component instance
-- 🧪 Mode transitions testable independently
-- 📉 ~60 lines removed from Resume.tsx
-
----
+### Nodes
+ - [ ] Finish semantic HTML migrations
+ - [ ] Fix Image component editing mode
 
 ### Markdown Component (Replace RichText) - IN PROGRESS
 **Goal**: Move away from react-quill (React 18 compatibility issues) to Markdown-based text editing
@@ -235,6 +181,76 @@ Similar situation to react-contextmenu - type compatibility issues with modern R
 - [ ] PWA support for offline editing
 - [ ] GitHub Pages deployment automation
 - [ ] Docker container for local development
+
+---
+
+## Recently Completed
+
+### ✅ Vite Migration (COMPLETED)
+**Goal**: Migrate from Webpack to Vite for faster development and better DX
+
+**Completed**:
+- ✅ Installed Vite 7.3.1 + @vitejs/plugin-react + vite-plugin-svgr
+- ✅ Created vite.config.ts with optimized settings
+- ✅ Moved index.html to root with script tag
+- ✅ Updated package.json scripts (dev, build, preview)
+- ✅ Removed 346 webpack packages (babel-loader, css-loader, webpack, etc.)
+- ✅ Added vite-env.d.ts for TypeScript support
+- ✅ All tests passing (23/23)
+- ✅ Dev server starts in 364ms (vs ~3-5s with webpack)
+
+**Results**:
+- ⚡ **10x faster dev server startup** - 364ms vs 3-5 seconds
+- 🔥 **Instant HMR** - Changes appear in ~50ms
+- 📦 **346 fewer packages** - Leaner dependency tree
+- 🎯 **Native ESM** - Modern approach, better tree-shaking
+- 🚀 **Better DX** - Cleaner config, faster iteration
+
+### ✅ Zustand State Management Migration (COMPLETED)
+**Goal**: Replace Context API for frequently-changing editor state with Zustand for better performance
+
+**Completed**:
+- ✅ Installed Zustand 5.x with `--legacy-peer-deps`
+- ✅ Created `src/stores/editorStore.ts` with selectedNodeId, isEditingSelected state
+- ✅ Added actions: selectNode, editNode, unselectNode, toggleEdit
+- ✅ Updated Resume.tsx to use store for selection handling
+- ✅ Removed selectedUuid/isEditingSelected from ResumeContext
+- ✅ Updated 6 components: Link, Container, RichText, Header, List, Entry
+- ✅ Created selector hooks: useIsNodeEditing, useIsNodeSelected, useIsEditingSelected
+- ✅ All tests passing (23/23)
+- ✅ Updated ARCHITECTURE.md with Zustand patterns
+- ✅ Updated .claude/rules/state-management.md with comprehensive examples
+
+**Results**:
+- ⚡ Selective re-renders: Only selected/unselected components update
+- 🐛 Redux DevTools integrated for debugging
+- 📦 Simpler component logic with hooks (function components) and getState() (class components)
+- 🔧 Can access/update state outside React components
+
+### ✅ Print Mode State in Zustand (COMPLETED)
+**Goal**: Move print/export state out of React context into a lightweight Zustand store
+
+**Completed**:
+- ✅ Added `printStore` with `isPrinting` state + selector hook
+- ✅ Removed `ResumeContext` provider usage from render tree
+- ✅ Updated Link component + tests to consume Zustand state
+- ✅ Synced print mode changes with before/after print events
+
+### ✅ Centralized Editor Mode State (COMPLETED)
+**Goal**: Move all editor modes into Zustand for better separation of concerns
+
+**Completed**:
+- ✅ Added mode state to `editorStore` with `setMode()` and `toggleMode()` actions
+- ✅ Created `useMode()`, `useIsEditing()` selector hooks
+- ✅ Moved `print()` and `exportHtml()` into utility functions (`PrintHelpers.ts`)
+- ✅ Removed mode from `Resume` component state (now purely presentational)
+- ✅ `printStore` auto-syncs with editor mode via subscription
+
+**Benefits**:
+- 📦 All UI state centralized in stores (mode, selection, printing)
+- 🔧 Utilities can access state without component instance
+- 🧪 Mode transitions testable independently
+- 📉 ~60 lines removed from Resume.tsx
 
 ---
 

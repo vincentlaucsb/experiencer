@@ -9,6 +9,7 @@ import 'purecss/build/pure-min.css';
 // Utilities
 import { createContainer } from '@/shared/utils/Helpers';
 import { exportResumeAsHtml } from '@/shared/utils/PrintHelpers';
+import { exportResumeToPng } from '@/shared/utils/ExportPng';
 
 // Components
 import { Button } from '@/controls/Buttons';
@@ -112,9 +113,14 @@ function Resume(props: ResumeProps) {
         exportResumeAsHtml(resumeRef.current, props.stylesheet ?? '', filename);
     }, [props.stylesheet]);
 
+    const exportToPng = useCallback(() => {
+        exportResumeToPng(resumeRef.current);
+    }, []);
+
     // Helper Component Props
     const topMenuProps: TopNavBarWrapperProps = {
         exportHtml: exportHtml,
+        exportToPng: exportToPng,
         new: loadTemplate
     };
 

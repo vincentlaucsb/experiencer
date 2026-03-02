@@ -1,7 +1,8 @@
 ﻿import React from "react";
 
+import Dropdown from "../menus/Dropdown";
 import ToolbarButton, { ToolbarItemData } from "./ToolbarButton";
-import { PureDropdown, PureMenuItem } from "../menus/PureMenu";
+import { PureMenuItem } from "../menus/PureMenu";
 
 export interface ToolbarItemProps extends ToolbarItemData {
     dropdownChild?: boolean;
@@ -23,12 +24,12 @@ export default function ToolbarItemFactory(props: ToolbarItemProps) {
     /** Group of buttons */
     if (props.items) {
         return (
-            <PureDropdown
+            <Dropdown
                 trigger={<ToolbarButton icon={props.icon} text={props.text} />}>
                 {props.items.map((value, index) =>
                     <ToolbarItemFactory key={index} dropdownChild={true} {...value} />
                 )}
-            </PureDropdown>
+            </Dropdown>
         );
     }
 

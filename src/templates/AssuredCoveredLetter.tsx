@@ -68,17 +68,17 @@ Joe Blow`
 }
 
 export function assuredCoverLetterCss() {
-    let css = getDefaultCss().setProperties([
-        ["font-family", "var(--sans-serif)"],
-        ["font-size", "11pt"]
-    ]);
+    let css = getDefaultCss().setProperties({
+        "font-family": "var(--sans-serif)",
+        "font-size": "11pt"
+    });
 
     /** Header */
-    const header = css.mustFindNode("Header").setProperties([
-        ["background", "#eeeeee"],
-        ["padding", "var(--edge-margin)"],
-        ["padding-bottom", "var(--large-spacing)"],
-    ]).setProperties([["margin-right", "auto"]], 'Title Group'
+    const header = css.mustFindNode("Header").setProperties({
+        "background": "#eeeeee",
+        "padding": "var(--edge-margin)",
+        "padding-bottom": "var(--large-spacing)",
+    }).setProperties({"margin-right": "auto"}, 'Title Group'
     ).add('Markdown', {
         'text-align': 'right',
         'font-size': '10pt'

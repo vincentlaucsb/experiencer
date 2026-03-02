@@ -8,11 +8,11 @@ import MarkdownText from "@/resume/Markdown";
 import Link from "@/resume/Link";
 
 export function streamlineCss() {
-    let css = getDefaultCss().setProperties([
-        ["font-family", "var(--sans-serif)"],
-        ["font-size", "11pt"],
-        ["line-height", "1.4"]
-    ]);
+    let css = getDefaultCss().setProperties({
+        "font-family": "var(--sans-serif)",
+        "font-size": "11pt",
+        "line-height": "1.4"
+    });
 
     css.add('Markdown Lists', {
         'padding-left': '20px',
@@ -25,23 +25,27 @@ export function streamlineCss() {
     }, '.text-content li');
 
     /** Header */
-    const header = css.mustFindNode("Header").setProperties([
-        ["border-bottom", "1.5px solid var(--accent)"],
-        ["margin-bottom", "0.5em"],
-        ["padding-bottom", "0.5em"],
-        ["padding-top", "var(--edge-margin)"],
-        ["padding-left", "var(--edge-margin)"],
-        ["padding-right", "var(--edge-margin)"],
-        ["margin-left", "0"],
-        ["margin-right", "0"],
-        ["margin-top", "0"]
-    ]).setProperties([["margin-right", "auto"]], 'Title Group'
+    const header = css.mustFindNode("Header").setProperties({
+        "border-bottom": "1.5px solid var(--accent)",
+        "margin-bottom": "0.5em",
+        "padding-bottom": "0.5em",
+        "padding-top": "var(--edge-margin)",
+        "padding-left": "var(--edge-margin)",
+        "padding-right": "var(--edge-margin)",
+        "margin-left": "0",
+        "margin-right": "0",
+        "margin-top": "0"
+    }).setProperties({"margin-right": "auto"}, 'Title Group'
     );
+
+    header.mustFindNode('Title Group').mustFindNode('Title').setProperties((props) => (new Map<string, string>([
+        ...props,
+        ['font-family', 'var(--sans-serif)']
+    ])));
 
     header.add('Title', {
         'margin': '0 0 0.2em 0',
         'font-size': '28pt',
-        'text-align': 'center'
     }, 'h1');
 
     header.add('Subtitle', {
@@ -71,56 +75,61 @@ export function streamlineCss() {
     }, '#social-media .text-content, #social-media p');
 
     /** Section */
-    css.mustFindNode('Section').setProperties([
-        ['margin-bottom', '0.5em'],
-        ['margin-top', '0.5em']
-    ]).setProperties([
-        ['padding-top', '0'],
-        ['padding-bottom', '0.2em']
-    ], 'Content'
-    ).setProperties([
-        ["font-family", "var(--sans-serif)"],
-        ["font-weight", "700"],
-        ["font-size", "12pt"],
-        ["color", "var(--accent)"],
-        ["border-bottom", "1px solid #d0d0d0"],
-        ["margin-bottom", "0.35em"],
-        ["padding-bottom", "0.15em"],
-        ["margin-top", "0"]
-    ], 'Title');
+    css.mustFindNode('Section').setProperties({
+        'margin-bottom': '0.5em',
+        'margin-top': '0.5em'
+    }).setProperties({
+        'padding-top': '0',
+        'padding-bottom': '0.2em'
+    }, 'Content'
+    ).setProperties({
+        "font-family": "var(--sans-serif)",
+        "font-weight": "700",
+        "font-size": "12pt",
+        "color": "var(--accent)",
+        "border-bottom": "1px solid #d0d0d0",
+        "margin-bottom": "0.35em",
+        "padding-bottom": "0.15em",
+        "margin-top": "0"
+    }, 'Title');
 
     /** Entry */
-    css.mustFindNode('Entry').setProperties([
-        ['display', 'block'], // TODO: Create setProperties that merges with existing properties instead of overwriting
-        ['margin-bottom', '0.4em'],
-        ['margin-top', '0']
-    ]);
+    const entry = css.mustFindNode('Entry').setProperties({
+        'display': 'block',
+        'margin-bottom': '0.4em',
+        'margin-top': '0'
+    });
+
+    entry.mustFindNode('Title Block').mustFindNode('Title').setProperties((props) => (new Map<string, string>([
+        ...props,
+        ['font-family', 'var(--sans-serif)'],
+    ])));
 
     const titleBlock = css.findNode(["Entry", "Title Block"]);
     if (titleBlock) {
-        titleBlock.setProperties([
-            ["margin-bottom", "0.1em"],
-            ["margin-top", "0"]
-        ]);
+        titleBlock.setProperties({
+            "margin-bottom": "0.1em",
+            "margin-top": "0"
+        });
 
-        titleBlock.mustFindNode('Title').setProperties([
-            ["font-weight", "700"],
-            ["font-size", "11pt"],
-            ["margin", "0"],
-            ["display", "inline"]
-        ], 'h3');
+        titleBlock.mustFindNode('Title').setProperties({
+            "font-weight": "700",
+            "font-size": "11pt",
+            "margin": "0",
+            "display": "inline"
+        }, 'h3');
 
-        titleBlock.mustFindNode('Subtitle').setProperties([
-            ["font-size", "10pt"],
-            ["color", "#444444"],
-            ["margin", "0"],
-            ["display", "flex"],
-            ["gap", "1em"],
-            ["margin-top", "0.05em"],
-            ["font-weight", "500"],
-            ["flex-wrap", "wrap"],
-            ["justify-content", "space-between"]
-        ]);
+        titleBlock.mustFindNode('Subtitle').setProperties({
+            "font-size": "10pt",
+            "color": "#444444",
+            "margin": "0",
+            "display": "flex",
+            "gap": "1em",
+            "margin-top": "0.05em",
+            "font-weight": "500",
+            "flex-wrap": "wrap",
+            "justify-content": "space-between"
+        });
 
         titleBlock.add('Subtitle Fields', {
             'display': 'inline-block'
@@ -140,14 +149,17 @@ export function streamlineCss() {
 }
 
 export function streamlineRootCss(): CssNode {
-    return getRootCss().updateProperties([
-        ['--accent', '#2c3e50'],
-        ['--edge-margin', '0.4in'],
-        ['--large-spacing', '0.4em'],
-        ['--x-large-spacing', '0.6em'],
-        ['--xx-large-spacing', '0.8em'],
-        ['--spacing', '0.4em']
-    ]);
+    return getRootCss().setProperties((current) => {
+        const next = new Map<string, string>(current);
+        next.set('--accent', '#2c3e50');
+        next.set('--edge-margin', '0.4in');
+        next.set('--large-spacing', '0.4em');
+        next.set('--x-large-spacing', '0.6em');
+        next.set('--xx-large-spacing', '0.8em');
+        next.set('--sans-serif', 'Inter, sans-serif');
+        next.set('--spacing', '0.4em');
+        return next;
+    });
 }
 
 export function streamlineHeader() {
@@ -195,7 +207,7 @@ export function streamlineHeader() {
         "childNodes": [contact, socialMedia],
         "subtitle": "Platform Engineer & Blockchain Enthusiast",
         "justifyContent": "flex-start",
-        "distribution": "top-to-bottom"
+        "distribution": "left-to-right"
     } as BasicHeaderProps;
 }
 

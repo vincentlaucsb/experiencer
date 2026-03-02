@@ -4,6 +4,19 @@ import { ReadonlyCssNode } from './ReadonlyCssNode';
 
 export const DEFAULT_INDENT = '  ';
 
+type SetPropertiesObject = Record<string, string>;
+type SetPropertiesValue = Map<string, string> | SetPropertiesObject;
+type SetPropertiesUpdater = (current: Map<string, string>) => SetPropertiesValue;
+type SetPropertiesInput = SetPropertiesValue | SetPropertiesUpdater;
+
+function toPropertiesMap(value: SetPropertiesValue): Map<string, string> {
+    if (value instanceof Map) {
+        return value;
+    }
+
+    return new Map<string, string>(Object.entries(value));
+}
+
 export default class CssNode {
     /**
      * A mapping of child node names to CSS nodes.
@@ -298,10 +311,18 @@ export default class CssNode {
         this.findNode(path)?.properties.set(key, value);
     }
 
-    setProperties(properties: Array<[string, string]>, path?: string | string[]) {
+    setProperties(input: SetPropertiesInput, path?: string | string[]) {
         const targetNode = path ? this.findNode(path) : this;
         if (targetNode) {
-            targetNode.properties = new Map<string, string>(properties);
+            const nextValue = typeof input === 'function'
+                ? input(new Map<string, string>(targetNode.properties))
+                : input;
+
+            if (!(nextValue instanceof Map) && (typeof nextValue !== 'object' || nextValue === null)) {
+                throw new Error('setProperties input must be a Map<string, string> or a plain object');
+            }
+
+            targetNode.properties = toPropertiesMap(nextValue);
         }
 
         return this;
@@ -327,17 +348,6 @@ export default class CssNode {
         }
 
         return finalStylesheet.join('\n\n');
-    }
-
-    updateProperties(properties: Array<[string, string]>, path?: string | string[]) {
-        const targetNode = path ? this.findNode(path) : this;
-        if (targetNode) {
-            properties.forEach((pair) => {
-                targetNode.properties.set(pair[0], pair[1]);
-            })
-        }
-
-        return this;
     }
 
     // #endregion Public Methods

@@ -67,7 +67,7 @@ describe('CssNode - Property Management', () => {
         const root = new CssNode('Root', {}, 'body');
         const child = root.add('Child', { old1: 'value1', old2: 'value2' }, 'div');
         
-        root.setProperties([['new1', 'value1'], ['new2', 'value2']], ['Child']);
+        root.setProperties(new Map<string, string>([['new1', 'value1'], ['new2', 'value2']]), ['Child']);
         
         expect(child.properties.size).toBe(2);
         expect(child.properties.get('new1')).toBe('value1');
@@ -78,7 +78,7 @@ describe('CssNode - Property Management', () => {
     test('setProperties on root node', () => {
         const root = new CssNode('Root', { old: 'value' }, 'body');
         
-        root.setProperties([['new', 'value']]);
+        root.setProperties(new Map<string, string>([['new', 'value']]));
         
         expect(root.properties.size).toBe(1);
         expect(root.properties.get('new')).toBe('value');
@@ -89,16 +89,35 @@ describe('CssNode - Property Management', () => {
         const root = new CssNode('Root', {}, 'body');
         const child = root.add('Child', { color: 'red', margin: '10px' }, 'div');
         
-        root.setProperties([], ['Child']);
+        root.setProperties(new Map<string, string>(), ['Child']);
         
         expect(child.properties.size).toBe(0);
     });
 
-    test('updateProperties adds new properties', () => {
+    test('setProperties accepts plain object input', () => {
+        const root = new CssNode('Root', { old: 'value' }, 'body');
+
+        root.setProperties({
+            color: 'red',
+            margin: '10px'
+        });
+
+        expect(root.properties.size).toBe(2);
+        expect(root.properties.get('color')).toBe('red');
+        expect(root.properties.get('margin')).toBe('10px');
+        expect(root.properties.has('old')).toBe(false);
+    });
+
+    test('setProperties callback adds new properties', () => {
         const root = new CssNode('Root', {}, 'body');
         const child = root.add('Child', { color: 'red' }, 'div');
         
-        root.updateProperties([['margin', '10px'], ['padding', '5px']], ['Child']);
+        root.setProperties((current) => {
+            const next = new Map<string, string>(current);
+            next.set('margin', '10px');
+            next.set('padding', '5px');
+            return next;
+        }, ['Child']);
         
         expect(child.properties.size).toBe(3);
         expect(child.properties.get('color')).toBe('red');
@@ -106,11 +125,16 @@ describe('CssNode - Property Management', () => {
         expect(child.properties.get('padding')).toBe('5px');
     });
 
-    test('updateProperties overwrites existing properties', () => {
+    test('setProperties callback overwrites existing properties', () => {
         const root = new CssNode('Root', {}, 'body');
         const child = root.add('Child', { color: 'red', margin: '10px' }, 'div');
         
-        root.updateProperties([['color', 'blue'], ['padding', '5px']], ['Child']);
+        root.setProperties((current) => {
+            const next = new Map<string, string>(current);
+            next.set('color', 'blue');
+            next.set('padding', '5px');
+            return next;
+        }, ['Child']);
         
         expect(child.properties.size).toBe(3);
         expect(child.properties.get('color')).toBe('blue');
@@ -118,22 +142,43 @@ describe('CssNode - Property Management', () => {
         expect(child.properties.get('padding')).toBe('5px');
     });
 
-    test('updateProperties on root node', () => {
+    test('setProperties callback on root node', () => {
         const root = new CssNode('Root', { color: 'black' }, 'body');
         
-        root.updateProperties([['margin', '0']]);
+        root.setProperties((current) => {
+            const next = new Map<string, string>(current);
+            next.set('margin', '0');
+            return next;
+        });
         
         expect(root.properties.size).toBe(2);
         expect(root.properties.get('color')).toBe('black');
         expect(root.properties.get('margin')).toBe('0');
     });
 
-    test('updateProperties on deeply nested node', () => {
+    test('setProperties callback may return plain object', () => {
+        const root = new CssNode('Root', { color: 'black' }, 'body');
+
+        root.setProperties((current) => ({
+            color: current.get('color') ?? 'black',
+            padding: '5px'
+        }));
+
+        expect(root.properties.size).toBe(2);
+        expect(root.properties.get('color')).toBe('black');
+        expect(root.properties.get('padding')).toBe('5px');
+    });
+
+    test('setProperties callback on deeply nested node', () => {
         const root = new CssNode('Root', {}, 'body');
         const level1 = root.add('Level1', {}, 'section');
         const level2 = level1.add('Level2', { old: 'value' }, 'article');
         
-        root.updateProperties([['new', 'value']], ['Level1', 'Level2']);
+        root.setProperties((current) => {
+            const next = new Map<string, string>(current);
+            next.set('new', 'value');
+            return next;
+        }, ['Level1', 'Level2']);
         
         expect(level2.properties.size).toBe(2);
         expect(level2.properties.get('old')).toBe('value');
@@ -157,9 +202,14 @@ describe('CssNode - Property Management', () => {
         expect(stylesheet).toContain('margin: 10px;');
     });
 
-    test('updateProperties affects stylesheet output', () => {
+    test('setProperties callback affects stylesheet output', () => {
         const root = new CssNode('Test', {}, 'div');
-        root.updateProperties([['color', 'red'], ['margin', '10px']]);
+        root.setProperties((current) => {
+            const next = new Map<string, string>(current);
+            next.set('color', 'red');
+            next.set('margin', '10px');
+            return next;
+        });
         
         const stylesheet = root.stylesheet();
         expect(stylesheet).toContain('color: red;');

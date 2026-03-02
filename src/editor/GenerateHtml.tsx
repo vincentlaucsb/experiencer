@@ -1,4 +1,12 @@
-﻿export default function generateHtml(stylesheet: string, bodyHtml: string) {
+﻿import { extractFontFamiliesFromCss, getGoogleFontsUrl } from "@/shared/utils/fonts";
+
+export default function generateHtml(stylesheet: string, bodyHtml: string) {
+    const fontFamilies = extractFontFamiliesFromCss(stylesheet);
+    const googleFontsUrl = getGoogleFontsUrl(fontFamilies);
+    const fontsLinkTag = googleFontsUrl
+        ? `\n        <link href="${googleFontsUrl}" rel="stylesheet">`
+        : '';
+
     return `<!doctype html>
 
 <html lang="en">
@@ -8,7 +16,7 @@
         <style>
             ${stylesheet}
         </style>
-        <link href="https://fonts.googleapis.com/css?family=Merriweather|Open+Sans&display=swap" rel="stylesheet">
+        ${fontsLinkTag}
     </head>
     <body style="margin: 0">
         ${bodyHtml}

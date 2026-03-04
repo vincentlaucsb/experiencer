@@ -7,6 +7,7 @@ import MarkdownText from "@/resume/Markdown";
 
 import type { BasicEntryProps } from "@/resume/Entry";
 import type { BasicHeaderProps } from "@/resume/Header";
+import type { LinkProps } from "@/resume/Link";
 import type { RowProps } from "@/resume/Row";
 import type { BasicResumeNode } from "@/types";
 
@@ -227,18 +228,22 @@ export function streamlineHeader() {
                     childNodes: [
                         {
                             type: Link.type,
-                            value: "github.com/dineshchugtai"
-                        },
+                            value: "github.com/dineshchugtai",
+                            url: "https://github.com/dineshchugtai"
+                        } as LinkProps,
                         {
                             type: Link.type,
-                            value: "linkedin.com/in/dineshchugtai"
-                        },
+                            value: "linkedin.com/in/dineshchugtai",
+                            url: "https://linkedin.com/in/dineshchugtai"
+                        } as LinkProps,
                         {
                             type: Link.type,
-                            value: "dineshchugtai.io"
-                        }
+                            value: "dineshchugtai.io",
+                            url: "https://dineshchugtai.io"
+                        } as LinkProps
                     ]
-                } as RowProps
+                // TODO: Create a template-facing Link node type (type/value/url) to avoid unknown row casts when childNodes use LinkProps.
+                } as unknown as RowProps
             ]
         }],
         "subtitle": "Platform Engineer & Blockchain Enthusiast",

@@ -9,10 +9,10 @@ import MarkdownText from "@/resume/Markdown";
 import Link from "@/resume/Link";
 
 export function assuredCss() {
-    let css = getDefaultCss().setProperties([
-        ["font-family", "var(--sans-serif)"],
-        ["font-size", "11pt"]
-    ]);
+    let css = getDefaultCss().setProperties({
+        "font-family": "var(--sans-serif)",
+        "font-size": "11pt"
+    });
 
     css.add('Icon', {
         'display': 'inline-block',
@@ -24,14 +24,14 @@ export function assuredCss() {
     }, '.text-content ul, .text-content ol');
 
     /** Header */
-    const header = css.mustFindNode("Header").setProperties([
-        ["background", "#e8e8e8"],
-        ["margin-bottom", "var(--large-spacing)"],
-        ["padding-left", "var(--edge-margin)"],
-        ["padding-right", "var(--edge-margin)"],
-        ["padding-top", "var(--x-large-spacing)"],
-        ["padding-bottom", "var(--large-spacing)"],
-    ]).setProperties([["margin-right", "auto"]], 'Title Group'
+    const header = css.mustFindNode("Header").setProperties({
+        "background": "#e8e8e8",
+        "margin-bottom": "var(--large-spacing)",
+        "padding-left": "var(--edge-margin)",
+        "padding-right": "var(--edge-margin)",
+        "padding-top": "var(--x-large-spacing)",
+        "padding-bottom": "var(--large-spacing)",
+    }).setProperties({"margin-right": "auto"}, 'Title Group'
     );
 
     /** Contact Information */
@@ -56,17 +56,17 @@ export function assuredCss() {
     }, 'svg.icon, img.icon');
 
     /** Section */
-    css.mustFindNode('Section').setProperties([
-        ['margin-bottom', 'var(--xx-large-spacing)']]
-        ).setProperties([
-            ['padding-top', 'var(--small-spacing)']
-        ], 'Content'
-        ).setProperties([
-            ["font-family", "var(--serif)"],
-            ["font-weight", "700"],
-            ["font-size", "18pt"],
-            ["color", "var(--accent)"]
-        ], 'Title');
+    css.mustFindNode('Section').setProperties({
+        'margin-bottom': 'var(--xx-large-spacing)'
+        }).setProperties({
+            'padding-top': 'var(--small-spacing)'
+        }, 'Content'
+        ).setProperties({
+            "font-family": "var(--serif)",
+            "font-weight": "700",
+            "font-size": "18pt",
+            "color": "var(--accent)"
+        }, 'Title');
 
     /** Grid */
     css.add('#main', {
@@ -88,17 +88,21 @@ export function assuredCss() {
             padding: "0 0.6em"
         });
 
-        subtitleFields.setProperties([
-            ["margin-left", "auto"],
-            ["text-align", "right"]
-        ], "Last Field");
+        subtitleFields.setProperties({
+            "margin-left": "auto",
+            "text-align": "right"
+        }, "Last Field");
     }
 
     return css;
 }
 
 export function assuredRootCss(): CssNode {
-    return getRootCss().updateProperties([['--accent', '#315eaa']]);
+    return getRootCss().setProperties((current) => {
+        const next = new Map<string, string>(current);
+        next.set('--accent', '#315eaa');
+        return next;
+    });
 }
 
 export function assuredHeader() {

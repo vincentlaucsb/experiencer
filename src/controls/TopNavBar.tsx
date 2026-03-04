@@ -1,7 +1,8 @@
 import React from "react";
 import FileLoader from "./FileLoader";
 import FileSaver from "./FileSaver";
-import PureMenu, { PureMenuItem, PureDropdown } from "./menus/PureMenu";
+import Dropdown from "./menus/Dropdown";
+import PureMenu, { PureMenuItem } from "./menus/PureMenu";
 import Modal from "./Modal";
 import GitHubLight from "@/assets/icons/GitHub-Mark-Light-120px-plus.png";
 import { Action, EditorMode } from "@/types";
@@ -17,6 +18,7 @@ export interface TopNavBarProps {
 
     /** Loading and Saving */
     exportHtml: Action;
+    exportToPng: Action;
     loadData: (data: object) => void;
     saveFile: (filename: string) => void;
     saveLocal: Action;
@@ -61,14 +63,15 @@ export function TopNavBar(props: TopNavBarProps) {
             <div id="brand">
                 <h1 onClick={props.toggleLanding}>Experiencer</h1>
                 <PureMenu id="top-menu" horizontal>
-                    <PureDropdown className="toolbar-dropdown" trigger={<Button>File</Button>}>
+                    <Dropdown className="toolbar-dropdown" trigger={<Button>File</Button>}>
                         <IconicItem icon="paper" action={() => props.new()} text="New" />
                         <IconicItem icon="folder-open" action={openLoader} text="Load" />
                         <IconicItem disabled={!props.isEditing} action={props.saveLocal} text="Save" />
                         <IconicItem disabled={!props.isEditing} icon="save" action={openSaver} text="Save As" />
                         <IconicItem disabled={!props.isEditing} icon="file-html5" action={props.exportHtml} text="Export to HTML/CSS" />
+                        <IconicItem disabled={!props.isEditing} icon="image" action={props.exportToPng} text="Export to PNG" />
                         <IconicItem disabled={!props.isEditing} icon="printer" action={props.print} text="Print" />
-                    </PureDropdown>
+                    </Dropdown>
                     <Item onClick={props.toggleHelp}>
                         <Button>Help</Button>
                     </Item>

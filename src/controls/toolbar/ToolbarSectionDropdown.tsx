@@ -1,7 +1,8 @@
 ﻿import React from "react";
 
+import Dropdown from "../menus/Dropdown";
 import ToolbarButton, { BasicToolbarItemData, ToolbarItemData, ToolbarButtonProps } from "./ToolbarButton";
-import { PureMenuItem, PureDropdown } from "../menus/PureMenu";
+import { PureMenuItem } from "../menus/PureMenu";
 import { Button } from "../Buttons";
 import ToolbarItemFactory from "./ToolbarItemFactory";
 
@@ -32,7 +33,7 @@ export default function ToolbarSectionDropdown(props: ToolbarSectionDropdownProp
     }
 
     return (
-        <PureDropdown
+        <Dropdown
             ulProps={{ className: "toolbar-collapsed-section" }}
             trigger={<ToolbarButton icon={props.icon} text={props.text} />}>
             {heading}
@@ -62,6 +63,6 @@ export default function ToolbarSectionDropdown(props: ToolbarSectionDropdownProp
                     dropdownChild={true}
                 />
             })}
-        </PureDropdown>
+        </Dropdown>
     );
 }

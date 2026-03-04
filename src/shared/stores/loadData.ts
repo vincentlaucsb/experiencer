@@ -5,6 +5,23 @@ import { resumeNodeStore } from "./resumeNodeStore";
 import { useHistoryStore } from "./historyStore";
 import { assignIds } from "../utils/Helpers";
 
+function normalizeLegacyNodeTypes(nodes: any[] | undefined): any[] {
+    if (!nodes) {
+        return [];
+    }
+
+    return nodes.map((node) => {
+        const childNodes = normalizeLegacyNodeTypes(node.childNodes);
+        const type = node.type === 'Divider' ? 'Group' : node.type;
+
+        return {
+            ...node,
+            type,
+            childNodes
+        };
+    });
+}
+
 /**
  * Load resume data into the stores
  * @param data Serialized resume data to load
@@ -12,7 +29,8 @@ import { assignIds } from "../utils/Helpers";
  */
 export default function loadData(data: object, mode: EditorMode = 'normal') {
     let savedData = data as ResumeSaveData;
-    const nodes = assignIds(savedData.childNodes);
+    const normalizedChildNodes = normalizeLegacyNodeTypes(savedData.childNodes as any[]);
+    const nodes = assignIds(normalizedChildNodes);
 
     resumeNodeStore.setNodes(nodes);
 

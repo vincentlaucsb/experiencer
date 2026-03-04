@@ -7,7 +7,7 @@ import Entry, { BasicEntryProps } from "@/resume/Entry";
 import MarkdownText from "@/resume/Markdown";
 import Link from "@/resume/Link";
 import Image from "@/resume/Image";
-import Divider from "@/resume/Divider";
+import Group from "@/resume/Group";
 import DescriptionList, { BasicDescriptionItemProps, DescriptionListType, DescriptionListItemType, DescriptionListItem } from "@/resume/List";
 import Icon, { IconType } from "@/resume/Icon";
 import Header from "@/resume/Header";
@@ -153,9 +153,9 @@ export default function registerNodes() {
     });
 
     schema.registerNodeType({
-        component: Divider,
-        type: Divider.type,
-        text: 'Divider',
+        component: Group,
+        type: Group.type,
+        text: 'Group',
         defaultValue: {}
     });
 

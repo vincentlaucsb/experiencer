@@ -1,134 +1,137 @@
-import { BasicHeaderProps } from "@/resume/Header";
-import { BasicEntryProps } from "@/resume/Entry";
-import { makeList } from "./TemplateHelper";
-import getDefaultCss, { getRootCss } from "./CssTemplates";
 import CssNode from "@/shared/CssTree";
-import { BasicResumeNode } from "@/types";
-import MarkdownText from "@/resume/Markdown";
+import getDefaultCss, { getRootCss } from "./CssTemplates";
+import { makeList } from "./TemplateHelper";
+
 import Link from "@/resume/Link";
+import MarkdownText from "@/resume/Markdown";
+
+import type { BasicEntryProps } from "@/resume/Entry";
+import type { BasicHeaderProps } from "@/resume/Header";
+import type { RowProps } from "@/resume/Row";
+import type { BasicResumeNode } from "@/types";
 
 export function streamlineCss() {
     let css = getDefaultCss().setProperties({
         "font-family": "var(--sans-serif)",
-        "font-size": "11pt",
-        "line-height": "1.4"
+        "font-size": "var(--body-font-size)",
+        "line-height": "var(--body-line-height)"
     });
 
     css.add('Markdown Lists', {
-        'padding-left': '20px',
-        'margin': '0.15em 0',
+        'padding-left': 'var(--list-indent)',
+        'margin': 'var(--xx-small-spacing) 0',
         'list-style-type': 'disc'
     }, '.text-content ul, .text-content ol');
 
     css.add('List Items', {
-        'margin': '0.1em 0'
+        'margin': 'var(--list-item-spacing) 0'
     }, '.text-content li');
+
+    css.add('List Markers', {
+        'font-size': 'var(--list-marker-size)'
+    }, '.text-content li::marker');
 
     /** Header */
     const header = css.mustFindNode("Header").setProperties({
-        "border-bottom": "1.5px solid var(--accent)",
-        "margin-bottom": "0.5em",
-        "padding-bottom": "0.5em",
+        "margin-bottom": "var(--small-spacing)",
+        "padding-bottom": "var(--small-spacing)",
         "padding-top": "var(--edge-margin)",
         "padding-left": "var(--edge-margin)",
         "padding-right": "var(--edge-margin)",
         "margin-left": "0",
         "margin-right": "0",
         "margin-top": "0"
-    }).setProperties({"margin-right": "auto"}, 'Title Group'
-    );
+    }).setProperties({"margin-right": "auto"}, 'Title Group');
+    
+    const titleGroup = header.mustFindNode('Title Group');
+    titleGroup.add('Headers', { 'margin': '0 !important' }, '> *');
+    titleGroup.mustFindNode('Title').setProperties({
+        'font-family': 'var(--sans-serif)',
+        'margin': '0 0 var(--x-small-spacing) 0',
+        'font-size': 'var(--header-title-size)',
+    });
+    titleGroup.mustFindNode('Subtitle').setProperties({
+        'margin': '0',
+        'font-size': 'var(--header-subtitle-size)',
+        'color': 'var(--header-subtitle-color)'
+    });
 
-    header.mustFindNode('Title Group').mustFindNode('Title').setProperties((props) => (new Map<string, string>([
-        ...props,
-        ['font-family', 'var(--sans-serif)']
-    ])));
+    const contact = header.add('#contact', {
+        'font-size': 'var(--contact-font-size)',
+        'margin-top': 'var(--x-small-spacing)',
+        'line-height': 'var(--contact-line-height)'
+    });
 
-    header.add('Title', {
-        'margin': '0 0 0.2em 0',
-        'font-size': '28pt',
-    }, 'h1');
+    const contactText = contact.add('Contact Text', {}, '.text-content');
+    contactText.add('Content', { margin: '0 !important' }, '> p');
 
-    header.add('Subtitle', {
-        'margin': '0 0 0.4em 0',
-        'font-size': '11pt',
-        'color': '#333333'
-    }, 'h2');
+    const contactRow = contact.add('Contact Row', {}, 'resume-row');
 
-    header.add('Contact Information', {
-        'font-size': '10pt',
-        'margin-top': '0.3em',
-        'line-height': '1.4'
-    }, '#contact, #social-media');
+    contactRow.add('Contact Row Items', {
+        'display': 'inline-flex !important',
+        'align-items': 'center'
+    }, '> .text-content, > .link');
 
-    header.add('Contact Text', {
-        'display': 'block',
-        'margin-bottom': '0.15em'
-    }, '#contact .text-content, #contact p');
-
-    header.add('Social Media', {
-        'display': 'inline',
-        'margin-right': '1em'
-    }, '#social-media .link');
-
-    header.add('Social Separator', {
-        'display': 'none'
-    }, '#social-media .text-content, #social-media p');
+    contactRow.add('Contact Row Separators', {
+        'content': '"•"',
+        'color': 'var(--accent)',
+        'font-size': 'var(--separator-size)',
+        'margin': '0 var(--separator-spacing)',
+        'opacity': 'var(--separator-opacity)'
+    }, '> .text-content + .text-content::before, > .link + .link::before');
 
     /** Section */
     css.mustFindNode('Section').setProperties({
-        'margin-bottom': '0.5em',
-        'margin-top': '0.5em'
+        'margin-bottom': 'var(--small-spacing)',
+        'margin-top': 'var(--small-spacing)'
     }).setProperties({
         'padding-top': '0',
-        'padding-bottom': '0.2em'
+        'padding-bottom': 'var(--x-small-spacing)'
     }, 'Content'
     ).setProperties({
         "font-family": "var(--sans-serif)",
         "font-weight": "700",
-        "font-size": "12pt",
+        "font-size": "var(--section-title-size)",
         "color": "var(--accent)",
-        "border-bottom": "1px solid #d0d0d0",
-        "margin-bottom": "0.35em",
-        "padding-bottom": "0.15em",
+        "border-bottom": "1px solid var(--section-rule-color)",
+        "margin-bottom": "calc(var(--small-spacing) - var(--xx-small-spacing))",
+        "padding-bottom": "var(--xx-small-spacing)",
         "margin-top": "0"
     }, 'Title');
 
     /** Entry */
     const entry = css.mustFindNode('Entry').setProperties({
         'display': 'block',
-        'margin-bottom': '0.4em',
+        'margin-bottom': 'var(--small-spacing)',
         'margin-top': '0'
     });
 
-    entry.mustFindNode('Title Block').mustFindNode('Title').setProperties((props) => (new Map<string, string>([
-        ...props,
-        ['font-family', 'var(--sans-serif)'],
-    ])));
+    entry.mustFindNode('Title Block').mustFindNode('Title').setProperty([], 'font-family', 'var(--sans-serif)');
 
     const titleBlock = css.findNode(["Entry", "Title Block"]);
     if (titleBlock) {
         titleBlock.setProperties({
-            "margin-bottom": "0.1em",
+            "margin-bottom": "var(--xx-small-spacing)",
             "margin-top": "0"
         });
 
         titleBlock.mustFindNode('Title').setProperties({
             "font-weight": "700",
-            "font-size": "11pt",
+            "font-size": "var(--entry-title-size)",
             "margin": "0",
             "display": "inline"
         }, 'h3');
 
         titleBlock.mustFindNode('Subtitle').setProperties({
-            "font-size": "10pt",
-            "color": "#444444",
+            "font-size": "var(--entry-subtitle-size)",
+            "color": "var(--meta-text-color)",
             "margin": "0",
             "display": "flex",
-            "gap": "1em",
-            "margin-top": "0.05em",
+            "gap": "var(--meta-gap)",
+            "margin-top": "var(--entry-subtitle-offset)",
             "font-weight": "500",
             "flex-wrap": "wrap",
-            "justify-content": "space-between"
+            "justify-content": "flex-start"
         });
 
         titleBlock.add('Subtitle Fields', {
@@ -136,9 +139,8 @@ export function streamlineCss() {
         }, '.field');
     }
 
-    /** Main Grid - Single Column */
+    /** Main Column */
     css.add('#main', {
-        'grid-template-columns': '1fr',
         'padding-left': 'var(--edge-margin)',
         'padding-right': 'var(--edge-margin)',
         'padding-top': '0',
@@ -151,63 +153,97 @@ export function streamlineCss() {
 export function streamlineRootCss(): CssNode {
     return getRootCss().setProperties((current) => {
         const next = new Map<string, string>(current);
-        next.set('--accent', '#2c3e50');
-        next.set('--edge-margin', '0.4in');
-        next.set('--large-spacing', '0.4em');
-        next.set('--x-large-spacing', '0.6em');
-        next.set('--xx-large-spacing', '0.8em');
         next.set('--sans-serif', 'Inter, sans-serif');
-        next.set('--spacing', '0.4em');
+        next.set('--body-font-size', '11pt');
+        next.set('--body-line-height', '1.4');
+
+        next.set('--small-spacing', '0.4em');
+        next.set('--x-small-spacing', 'calc(var(--small-spacing) / 2)');
+        next.set('--xx-small-spacing', 'calc(var(--small-spacing) / 4)');
+        next.set('--edge-margin', '0.4in');
+
+        next.set('--header-title-size', '28pt');
+        next.set('--header-subtitle-size', '11.5pt');
+        next.set('--header-subtitle-color', '#333333');
+
+        next.set('--contact-font-size', '10pt');
+        next.set('--contact-line-height', '1.4');
+
+        next.set('--accent', '#2c3e50');
+        next.set('--separator-size', '0.85em');
+        next.set('--separator-opacity', '0.7');
+
+        next.set('--section-title-size', '12pt');
+        next.set('--section-rule-color', '#d0d0d0');
+
+        next.set('--entry-title-size', '11pt');
+        next.set('--entry-subtitle-size', '10pt');
+        next.set('--meta-text-color', '#444444');
+        next.set('--entry-subtitle-offset', 'calc(var(--xx-small-spacing) / 2)');
+
+        next.set('--spacing', '0.8em');
+        next.set('--large-spacing', '1.2em');
+        next.set('--x-large-spacing', '1.6em');
+        next.set('--xx-large-spacing', '2.4em');
+
+        next.set('--list-indent', 'var(--large-spacing)');
+        next.set('--list-item-spacing', 'var(--x-small-spacing)');
+        next.set('--list-marker-size', '0.85em');
+        next.set('--meta-gap', 'var(--large-spacing)');
+        next.set('--separator-spacing', 'var(--spacing)');
         return next;
     });
 }
 
 export function streamlineHeader() {
-    let contact = {
-        "type": "Grid",
-        "htmlId": "contact",
-        childNodes: [
-            {
-                type: MarkdownText.type,
-                value: "(650) 253-0961"
-            },
-            {
-                type: MarkdownText.type,
-                value: "dinesh@piedpiper.com"
-            },
-            {
-                type: MarkdownText.type,
-                value: "Mountain View, CA"
-            }
-        ]
-    };
-
-    let socialMedia = {
-        "type": "Grid",
-        "htmlId": "social-media",
-        childNodes: [
-            {
-                type: Link.type,
-                value: "github.com/dineshchugtai"
-            },
-            {
-                type: Link.type,
-                value: "linkedin.com/in/dineshchugtai"
-            },
-            {
-                type: Link.type,
-                value: "dineshchugtai.io"
-            }
-        ]
-    };
-
     return {
         "type": "Header",
         "value": "**Dinesh** Chugtai",
-        "childNodes": [contact, socialMedia],
+        "childNodes": [{
+            "type": "Group",
+            "htmlId": "contact",
+            childNodes: [
+                {
+                    type: 'Row',
+                    justifyContent: 'flex-start',
+                    childNodes: [
+                        {
+                            type: MarkdownText.type,
+                            value: "(650) 253-0961"
+                        },
+                        {
+                            type: MarkdownText.type,
+                            value: "dinesh@piedpiper.com"
+                        },
+                        {
+                            type: MarkdownText.type,
+                            value: "Mountain View, CA"
+                        }
+                    ]
+                } as RowProps,
+                {
+                    type: 'Row',
+                    justifyContent: 'flex-start',
+                    childNodes: [
+                        {
+                            type: Link.type,
+                            value: "github.com/dineshchugtai"
+                        },
+                        {
+                            type: Link.type,
+                            value: "linkedin.com/in/dineshchugtai"
+                        },
+                        {
+                            type: Link.type,
+                            value: "dineshchugtai.io"
+                        }
+                    ]
+                } as RowProps
+            ]
+        }],
         "subtitle": "Platform Engineer & Blockchain Enthusiast",
         "justifyContent": "flex-start",
-        "distribution": "left-to-right"
+        "distribution": "top-to-bottom"
     } as BasicHeaderProps;
 }
 
@@ -273,17 +309,12 @@ export function streamlineNodes(): Array<BasicResumeNode> {
     return [
         streamlineHeader(),
         {
-            "type": "Grid",
+            "type": "Column",
             "htmlId": "main",
             childNodes: [
-                {
-                    "type": "Column",
-                    childNodes: [
-                        experience,
-                        education,
-                        skills
-                    ]
-                }
+                experience,
+                education,
+                skills
             ]
         }
     ];

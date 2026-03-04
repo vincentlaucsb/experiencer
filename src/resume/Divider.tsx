@@ -1,16 +1,6 @@
-import React from "react";
-import Container from "@/resume/infrastructure/Container";
-import ResumeComponentProps from "@/types";
+import Group from "@/resume/Group";
 
-/** Generic <div> element */
-export default class Divider extends React.PureComponent<ResumeComponentProps> {
+/** Legacy alias kept for backward compatibility with older saved resumes */
+export default class Divider extends Group {
     static readonly type: string = "Divider";
-
-    render() {
-        return (
-            <Container displayAs="div" {...this.props}>
-                {this.props.children}
-            </Container>
-        );
-    }
 }

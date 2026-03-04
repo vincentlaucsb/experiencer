@@ -229,17 +229,17 @@ export function streamlineHeader() {
                         {
                             type: Link.type,
                             value: "github.com/dineshchugtai",
-                            url: "https://github.com/dineshchugtai"
+                            url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
                         } as LinkProps,
                         {
                             type: Link.type,
                             value: "linkedin.com/in/dineshchugtai",
-                            url: "https://linkedin.com/in/dineshchugtai"
+                            url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
                         } as LinkProps,
                         {
                             type: Link.type,
                             value: "dineshchugtai.io",
-                            url: "https://dineshchugtai.io"
+                            url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
                         } as LinkProps
                     ]
                 // TODO: Create a template-facing Link node type (type/value/url) to avoid unknown row casts when childNodes use LinkProps.

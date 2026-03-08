@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { useRef, useCallback } from 'react';
 
 import '@/assets/fonts/icofont.min.css';
-import '@/shared/scss/index.scss';
+import '@/sass/index.scss';
 import 'purecss/build/pure-min.css';
 
 // Utilities

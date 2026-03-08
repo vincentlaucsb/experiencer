@@ -176,6 +176,11 @@ Similar situation to react-contextmenu - type compatibility issues with modern R
    - **Reason**: avoids high-complexity layout constraints and editor jank for a low-frequency edge case.
    - **Reevaluate if**: users repeatedly report confusing pagination or overlapping mental model between visual breaks and print output.
 
+- [ ] Resume host architecture: keep resume rendering in same-document `#resume` container rather than moving editing to an iframe.
+   - **Current approach**: render resume directly in app DOM for WYSIWYG interactions (selection, overlays, context menus, live CSS, print-preview parity).
+   - **Reason**: iframe isolation is cleaner for CSS boundaries, but significantly increases complexity for event routing, portals/highlight overlays, and editing fidelity.
+   - **Reevaluate if**: CSS collision issues become frequent/high-impact, or we introduce a dedicated read-only preview surface where iframe isolation provides clear value.
+
 ---
 
 Completed work is tracked in `CHANGELOG.md`.

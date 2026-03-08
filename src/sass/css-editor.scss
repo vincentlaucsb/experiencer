@@ -1,4 +1,3 @@
-@use "sass:math";
 @use "variables";
 
 .tabs-container {
@@ -39,10 +38,8 @@ section.css-category * {
 
 section.css-category {
     font-size: 11pt;
-    margin: variables.$spacing 0;
     /** || Heading */
     h2.css-title-heading {
-        margin: 0.3em 0;
         cursor: pointer;
         display: flex;
         align-items: center; /** Vertical alignment */
@@ -59,7 +56,6 @@ section.css-category {
 
     th {
         text-align: left;
-        padding-right: 0.5em;
     }
 
     /* || Controls */
@@ -89,17 +85,11 @@ section.css-category {
     }
 
     /* || Rulesets */
-    span.css-description {
-        margin-top: variables.$spacing;
-    }
     /* || Property Lists */
     div.css-ruleset {
         font-family: variables.$monospace;
-        margin-top: variables.$spacing;
 
         table.css-ruleset-table {
-            margin-left: variables.$spacing;
-
             th::after {
                 content: ':'
             }
@@ -121,22 +111,16 @@ section.css-category-1 {
 
         h2 {
             margin: 0;
-            padding: math.div(variables.$spacing, 2) variables.$spacing;
             color: variables.$light-shade;
         }
 
         div.css-category-content {
             background: variables.$light-shade;
-            padding: math.div(variables.$spacing, 2) variables.$spacing;
         }
 
         button {
             background: inherit;
             color: inherit;
-        }
-
-        button:hover {
-            /** TODO: Add gradient */
         }
     }
 

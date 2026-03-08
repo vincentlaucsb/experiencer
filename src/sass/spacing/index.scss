@@ -1,0 +1,91 @@
+@use "../variables";
+
+$app-spacing-unit: 0.25em;
+$app-spacing-scale: (
+    0: 0,
+    1: $app-spacing-unit,
+    2: $app-spacing-unit * 2,
+    3: $app-spacing-unit * 3,
+    4: $app-spacing-unit * 4,
+    5: $app-spacing-unit * 5,
+    6: $app-spacing-unit * 6,
+    8: $app-spacing-unit * 8,
+    10: $app-spacing-unit * 10,
+    12: $app-spacing-unit * 12,
+    14: $app-spacing-unit * 14,
+    16: $app-spacing-unit * 16,
+);
+
+$margin-padding-directions: (
+    "": (),
+    "x": (left, right),
+    "y": (top, bottom),
+    "t": (top),
+    "r": (right),
+    "b": (bottom),
+    "l": (left)
+);
+
+$gap-directions: (
+    "": gap,
+    "-x": column-gap,
+    "-y": row-gap
+);
+
+@mixin app-spacing-utility-set($variant-prefix: "") {
+    @each $step, $value in $app-spacing-scale {
+        @each $direction, $sides in $margin-padding-directions {
+            .app-#{$variant-prefix}m#{$direction}-#{$step} {
+                @if length($sides) == 0 {
+                    margin: $value !important;
+                }
+                @else {
+                    @each $side in $sides {
+                        margin-#{$side}: $value !important;
+                    }
+                }
+            }
+
+            .app-#{$variant-prefix}p#{$direction}-#{$step} {
+                @if length($sides) == 0 {
+                    padding: $value !important;
+                }
+                @else {
+                    @each $side in $sides {
+                        padding-#{$side}: $value !important;
+                    }
+                }
+            }
+        }
+
+        @each $gap-suffix, $gap-property in $gap-directions {
+            .app-#{$variant-prefix}gap#{$gap-suffix}-#{$step} {
+                #{$gap-property}: $value !important;
+            }
+        }
+    }
+
+    .app-#{$variant-prefix}mx-auto {
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    .app-#{$variant-prefix}my-auto {
+        margin-top: auto !important;
+        margin-bottom: auto !important;
+    }
+
+    .app-#{$variant-prefix}m-auto {
+        margin: auto !important;
+    }
+}
+
+@include app-spacing-utility-set();
+
+@media (min-width: variables.$screen-small) {
+    @include app-spacing-utility-set("sm-");
+}
+
+@media (min-width: variables.$screen-medium) {
+    @include app-spacing-utility-set("md-");
+}

@@ -173,8 +173,8 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
         return (
             <div className="css-ruleset" onClick={props.onClick}>
-                {selectorDisplay} {"{"}
-                <table className="css-ruleset-table">
+                <span className="css-description app-mt-4">{selectorDisplay}</span> {"{"}
+                <table className="css-ruleset-table app-ml-4">
                     <tbody>
                         {props.children}
                     </tbody>
@@ -264,10 +264,13 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     }
 
     render() {
+        const isNestedCategory = this.path.length > 1;
+        const headingSpacingClasses = isNestedCategory ? " app-my-0 app-py-2 app-px-5" : " app-my-1";
+        const contentSpacingClasses = isNestedCategory ? " app-py-3 app-px-5" : "";
         const caret = this.state.isOpen ? <i className="icofont-caret-up" /> :
             <i className="icofont-caret-down" />
         
-        const heading = <h2 className="css-title-heading" onClick={() => this.setState({ isOpen: !this.state.isOpen })}>
+        const heading = <h2 className={`css-title-heading${headingSpacingClasses}`} onClick={() => this.setState({ isOpen: !this.state.isOpen })}>
             <span className="css-title-trigger">{caret}</span>
             {this.sectionName}
             {this.highlighter}
@@ -280,14 +283,14 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
             </React.Suspense>
         </h2>
 
-        const content = this.state.isOpen ? <div className="css-category-content">
+        const content = this.state.isOpen ? <div className={`css-category-content${contentSpacingClasses}`}>
             {this.description}
             {this.renderProperties()}
             {this.renderChildren()}
         </div> : <></>
         
         return (
-            <section className={`css-category no-print css-category-${this.path.length}`}>
+            <section className={`css-category no-print css-category-${this.path.length} app-my-4`}>
                 {this.renderHighlightBoxes()}
                 {heading}
                 {content}

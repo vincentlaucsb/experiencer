@@ -111,6 +111,41 @@ div#toolbar {
             border-right: none;
         }
     }
+
+    .page-size-control {
+        @extend %flex-row;
+        align-items: center;
+        gap: math.div(variables.$spacing, 2);
+
+        .page-size-label {
+            color: variables.$light-accent;
+            font-size: 0.8em;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            user-select: none;
+        }
+
+        .page-size-toggle {
+            @extend %flex-row;
+            border: 1px solid color.adjust(variables.$light-accent, $alpha: -0.25);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .pure-button.page-size-option {
+            border-radius: 0;
+            font-size: 0.8em;
+            line-height: 1.2;
+            padding: 0.35em 0.65em;
+            color: variables.$light-shade;
+
+            &.active {
+                background: variables.$dark-accent;
+                font-weight: 600;
+            }
+        }
+    }
 }
 
 /** || Top Editing Bar: Collapsed */

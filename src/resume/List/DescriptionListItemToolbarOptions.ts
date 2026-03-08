@@ -15,7 +15,7 @@ export default function getDescriptionListItemToolbarOptions(
     return [
         {
             text: 'Add Definition',
-            action: () => updateNode('definitions', addDefinition(node as BasicDescriptionItemProps))
+            onClick: () => updateNode('definitions', addDefinition(node as BasicDescriptionItemProps))
         }
     ];
 }

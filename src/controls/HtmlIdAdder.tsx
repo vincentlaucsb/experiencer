@@ -84,7 +84,7 @@ export default function HtmlIdAdder(props: htmlIdAdderProps) {
             positions={"bottom"}
             content={expanded}>
             <ToolbarButton
-                action={() => setOpen(!isOpen)}
+                onClick={() => setOpen(!isOpen)}
                 icon="ui-tag"
                 text="Add ID/Classes"
             />

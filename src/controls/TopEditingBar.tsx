@@ -1,10 +1,12 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
+import { Button } from "./Buttons";
 import { SelectedNodeActions } from "./SelectedNodeActions";
 import { assignIds } from "@/shared/utils/Helpers";
 import ComponentTypes, { NodeInformation } from "@/resume/schema/ComponentTypes";
 import Grid from "@/resume/Grid";
 import Row from "@/resume/Row";
 import Section from "@/resume/Section";
+import PageBreak from "@/resume/PageBreak";
 import { Action, IdType, NodeProperty, ResumeNode, AddChild } from "@/types";
 import Toolbar, { ToolbarSection } from "./toolbar/ToolbarMaker";
 import Column from "@/resume/Column";
@@ -23,6 +25,8 @@ import addChildNode from "@/shared/stores/resumeStore/addChildNode";
 import addCssClasses from "@/shared/stores/resumeStore/addCssClasses";
 import useSelectedNodeActions from "@/shared/hooks/useSelectedNodeActions";
 import addHtmlId from "@/shared/stores/addHtmlId";
+import ensureCssNodeForType from "@/shared/stores/ensureCssNodeForType";
+import PageSize from "@/types/PageSize";
 
 interface AddOptionProps {
     options: string | Array<string>;
@@ -53,7 +57,7 @@ function addOptions(data: AddOptionProps): ToolbarItemData {
                 return {
                     icon: info.icon,
                     text: info.text,
-                    action: () => data.addChild(data.id, assignIds(node.node))
+                    onClick: () => data.addChild(data.id, assignIds(node.node))
                 } as ToolbarItemData
             })
         }
@@ -61,7 +65,7 @@ function addOptions(data: AddOptionProps): ToolbarItemData {
 
     const node: NodeInformation = nodeInfo(data.options as string);
     return {
-        action: () => data.addChild(data.id, assignIds(node.node)),
+        onClick: () => data.addChild(data.id, assignIds(node.node)),
         text: `Add ${node.text}`
     }
 }
@@ -79,19 +83,19 @@ function ClipboardMenu(data: EditingBarProps): ToolbarItemData[] {
         {
             text: 'Cut',
             icon: "ui-cut",
-            action: data.cutClipboard,
+            onClick: data.cutClipboard,
             shortcut: getShortcut('CUT_SELECTED')
         },
         {
             text: 'Copy',
             icon: "ui-copy",
-            action: data.copyClipboard,
+            onClick: data.copyClipboard,
             shortcut: getShortcut('COPY_SELECTED')
         },
         {
             text: 'Paste',
             icon: "ui-clip-board",
-            action: data.pasteClipboard,
+            onClick: data.pasteClipboard,
             shortcut: getShortcut('PASTE_SELECTED')
         }
     ];
@@ -128,7 +132,7 @@ function SelectedNodeToolbar(props: EditingBarSubProps) {
                         options: childTypes
                     }),
                     {
-                        action: props.delete,
+                        onClick: props.delete,
                         icon: 'ui-delete',
                         text: 'Delete',
                         condensedButton: true
@@ -141,7 +145,7 @@ function SelectedNodeToolbar(props: EditingBarSubProps) {
                     },
                     ...ComponentTypes.instance.toolbarOptions(selectedNode, props.updateSelected),
                     {
-                        action: props.unselect,
+                        onClick: props.unselect,
                         text: 'Unselect'
                     }
                 ]
@@ -150,13 +154,13 @@ function SelectedNodeToolbar(props: EditingBarSubProps) {
                 icon: "drag2",
                 items: [
                     {
-                        action: props.moveUp,
+                        onClick: props.moveUp,
                         icon: moveUpText,
                         text: 'Move Up',
                         condensedButton: true
                     },
                     {
-                        action: props.moveDown,
+                        onClick: props.moveDown,
                         icon: moveDownText,
                         text: 'Move Down',
                         condensedButton: true
@@ -190,6 +194,11 @@ interface EditingSectionProps {
     redo?: Action;
 }
 
+interface PageSizeControlsProps {
+    pageSize: PageSize;
+    setPageSize: (pageSize: PageSize) => void;
+}
+
 export interface EditingBarProps extends SelectedNodeActions, EditingSectionProps {
     addHtmlId: (htmlId: string) => void;
     addCssClasses: (classes: string) => void;
@@ -202,27 +211,82 @@ export interface EditingBarProps extends SelectedNodeActions, EditingSectionProp
 /** Screen width at which toolbar should shrink regardless of anything */
 const CLIP_WIDTH = 800;
 
-function getEditingSection(props: EditingBarProps): ToolbarItemData[] {
-    return [
+function PageSizeControls(props: PageSizeControlsProps) {
+    const { pageSize, setPageSize } = props;
+
+    return (
+        <div className="page-size-control" role="group" aria-label="Page size">
+            <span className="page-size-label">Page</span>
+            <div className="page-size-toggle">
+                <Button
+                    className={`page-size-option${pageSize === PageSize.Letter ? ' active' : ''}`}
+                    onClick={() => setPageSize(PageSize.Letter)}
+                >
+                    Letter
+                </Button>
+                <Button
+                    className={`page-size-option${pageSize === PageSize.A4 ? ' active' : ''}`}
+                    onClick={() => setPageSize(PageSize.A4)}
+                >
+                    A4
+                </Button>
+            </div>
+        </div>
+    );
+}
+
+function getEditingSection(
+    props: EditingBarProps,
+    pageSize: PageSize,
+    setPageSize: (pageSize: PageSize) => void,
+    isOverflowing: boolean
+): ToolbarItemData[] {
+    const items: ToolbarItemData[] = [
         {
-            action: props.saveLocal,
+            onClick: props.saveLocal,
             icon: "save",
             text: "Save",
             condensedButton: true
         },
         {
-            action: props.undo,
+            onClick: props.undo,
             icon: "undo",
             text: "Undo",
             condensedButton: true
         },
         {
-            action: props.redo,
+            onClick: props.redo,
             icon: "redo",
             text: "Redo",
             condensedButton: true
         }
     ];
+
+    if (isOverflowing) {
+        items.push({
+            icon: "ui-file",
+            text: "Page",
+            condensedButton: true,
+            items: [
+                {
+                    onClick: pageSize === PageSize.Letter ? undefined : () => setPageSize(PageSize.Letter),
+                    text: `Letter${pageSize === PageSize.Letter ? ' ✓' : ''}`
+                },
+                {
+                    onClick: pageSize === PageSize.A4 ? undefined : () => setPageSize(PageSize.A4),
+                    text: `A4${pageSize === PageSize.A4 ? ' ✓' : ''}`
+                }
+            ]
+        });
+
+        return items;
+    }
+
+    items.push({
+        content: <PageSizeControls pageSize={pageSize} setPageSize={setPageSize} />
+    });
+
+    return items;
 }
 
 /** A responsive top editing bar */
@@ -233,6 +297,8 @@ export function TopEditingBar(props: EditingBarProps) {
     
     // Subscribe to store changes - these will cause re-renders
     const selectedNodeId = useEditorStore(state => state.selectedNodeId);
+    const pageSize = useEditorStore(state => state.pageSize);
+    const setPageSize = useEditorStore(state => state.setPageSize);
     const selectedNode = useResumeNodeByUuid(selectedNodeId || '');
 
     const updateResizer = useCallback(() => {
@@ -276,7 +342,7 @@ export function TopEditingBar(props: EditingBarProps) {
     let data = new Map<string, ToolbarSection>([
         ["Editing", {
             icon: 'ui-edit',
-            items: getEditingSection(props)
+            items: getEditingSection(props, pageSize, setPageSize, isOverflowing)
         }],
     ]);
 
@@ -295,17 +361,30 @@ export function TopEditingBar(props: EditingBarProps) {
         data.set("Resume Components", {
             items: [
                 {
-                    action: () => props.addChild(undefined, assignIds({ type: Section.type })),
+                    onClick: () => props.addChild(undefined, assignIds({ type: Section.type })),
                     icon: "book-mark",
                     text: "Add Section"
                 },
                 {
-                    action: () => props.addChild(undefined, assignIds(ComponentTypes.instance.defaultValue(Row.type).node)),
-                    icon: "swoosh-right",
-                    text: "Add Rows & Columns"
+                    onClick: () => {
+                        props.addChild(undefined, assignIds(ComponentTypes.instance.defaultValue(PageBreak.type).node));
+                        ensureCssNodeForType(PageBreak.type);
+                    },
+                    icon: "page-break",
+                    text: "Add Page Break"
                 },
                 {
-                    action: () => props.addChild(undefined, assignIds(ComponentTypes.instance.defaultValue(Grid.type).node)),
+                    onClick: () => props.addChild(undefined, assignIds(ComponentTypes.instance.defaultValue(Row.type).node)),
+                    icon: "swoosh-right",
+                    text: "Add Rows"
+                },
+                {
+                    onClick: () => props.addChild(undefined, assignIds(ComponentTypes.instance.defaultValue(Column.type).node)),
+                    icon: "swoosh-down",
+                    text: "Add Columns"
+                },
+                {
+                    onClick: () => props.addChild(undefined, assignIds(ComponentTypes.instance.defaultValue(Grid.type).node)),
                     icon: "table",
                     text: "Add Grid"
                 }

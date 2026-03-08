@@ -29,6 +29,7 @@ export interface PureMenuItemProps {
     selected?: boolean;
 
     onClick?: (event: React.MouseEvent) => void;
+    onKeyDown?: (event: React.KeyboardEvent) => void;
     onMouseOver?: (event: React.MouseEvent) => void;
     onMouseOut?: (event: React.MouseEvent) => void;
 
@@ -55,6 +56,7 @@ export function PureMenuItem(props: PureMenuItemProps) {
     return <li
         className={classes.join(' ')}
         onClick={props.onClick}
+        onKeyDown={props.onKeyDown}
         onMouseOut={props.onMouseOut}
         onMouseOver={props.onMouseOver}
         ref={props.itemRef}>

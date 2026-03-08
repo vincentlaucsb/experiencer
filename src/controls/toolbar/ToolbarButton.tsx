@@ -6,11 +6,12 @@ import type { BasicToolbarItemData, ToolbarItemData } from "@/types/toolbar";
 export type { BasicToolbarItemData, ToolbarItemData };
 
 export interface ToolbarButtonProps {
-    action?: (() => void) | ((event: React.MouseEvent) => void);
+    ariaLabel?: string;
     condensedButton?: boolean;
     disabled?: boolean;
     icon?: string;
     dropdownChild ?: boolean;
+    onClick?: (event: React.MouseEvent) => void;
     text?: string;
     shortcut ?: string;
 }
@@ -21,10 +22,12 @@ export interface ToolbarButtonProps {
  */
 const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(
     (props, ref) => {
-        const text = props.condensedButton && !props.dropdownChild ?
-            <></> : <span className="button-text">{props.text}</span>
-        const icon = props.icon ? <i className={`icofont-${props.icon}`} /> : <></>
-        const shortcut = props.shortcut ? <span className="button-shortcut">{props.shortcut}</span> : <></>
+        const hideText = props.condensedButton && !props.dropdownChild;
+        const text = hideText ? <></> : <span className="button-text">{props.text}</span>
+        const icon = props.icon ? <i className={`icofont-${props.icon}`} aria-hidden="true" /> : <></>
+        const shortcut = props.shortcut ? <span className="button-shortcut" aria-hidden="true">{props.shortcut}</span> : <></>
+        const ariaLabel = props.ariaLabel || (hideText ? props.text : undefined);
+        const onClick = props.onClick;
 
         let Container: React.ComponentType<any> = Button;
         if (props.dropdownChild) {
@@ -44,7 +47,7 @@ const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(
         }
 
         return (
-            <Container ref={ref} disabled={props.disabled} onClick={props.action}>
+            <Container ref={ref} aria-label={ariaLabel} disabled={props.disabled} onClick={onClick}>
                 {icon} {text} {shortcut}
             </Container>
         );

@@ -8,7 +8,7 @@ import { createContainer, isNullOrUndefined } from "@/shared/utils/Helpers";
 
 interface ContextMenuOption {
     text: string;
-    action: () => void;
+    onClick: () => void;
 }
 
 interface TextFieldProps {
@@ -125,7 +125,7 @@ export default class TextField extends React.Component<TextFieldProps, TextField
         const contextMenuOptions = this.props.contextMenuOptions ?
             this.props.contextMenuOptions.map((option, index: number) => {
             return (
-                <MenuItem onClick={option.action} key={index}>{option.text}</MenuItem>
+                <MenuItem onClick={option.onClick} key={index}>{option.text}</MenuItem>
             )
         }) : <></>;
 

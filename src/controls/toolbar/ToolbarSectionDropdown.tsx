@@ -45,7 +45,7 @@ export default function ToolbarSectionDropdown(props: ToolbarSectionDropdownProp
                     return (
                         <PureMenuItem>
                             <ToolbarButton
-                                action={
+                                onClick={
                                     (event: React.MouseEvent) => {
                                         setActive(index);
                                         event.stopPropagation();

@@ -4,6 +4,7 @@
 import { fireEvent, render } from "@testing-library/react";
 
 import Dropdown from "@/controls/menus/Dropdown";
+import ToolbarButton from "@/controls/toolbar/ToolbarButton";
 
 describe("Dropdown", () => {
     test("toggles active class on trigger click", () => {
@@ -44,5 +45,21 @@ describe("Dropdown", () => {
 
         fireEvent.mouseDown(outside);
         expect(dropdown.classList.contains("pure-menu-active")).toBe(false);
+    });
+
+    test("toggles active class when trigger uses ToolbarButton click handling", () => {
+        const { container, getByText } = render(
+            <Dropdown trigger={<ToolbarButton text="Insert" icon="ui-add" />}>
+                <li>Item</li>
+            </Dropdown>
+        );
+
+        const trigger = getByText("Insert");
+        const dropdown = container.querySelector(".pure-menu-has-children") as HTMLElement;
+
+        expect(dropdown.classList.contains("pure-menu-active")).toBe(false);
+
+        fireEvent.click(trigger);
+        expect(dropdown.classList.contains("pure-menu-active")).toBe(true);
     });
 });

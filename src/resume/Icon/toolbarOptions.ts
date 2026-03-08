@@ -11,32 +11,32 @@ export default function getIconToolbarOptions(
                 {
                     icon: 'email',
                     text: 'Email',
-                    action: () => updateNode('icon', 'email')
+                    onClick: () => updateNode('icon', 'email')
                 },
                 {
                     icon: 'github',
                     text: 'GitHub',
-                    action: () => updateNode('icon', 'github')
+                    onClick: () => updateNode('icon', 'github')
                 },
                 {
                     icon: 'globe',
                     text: 'Globe',
-                    action: () => updateNode('icon', 'globe')
+                    onClick: () => updateNode('icon', 'globe')
                 },
                 {
                     icon: 'linkedin',
                     text: 'LinkedIn',
-                    action: () => updateNode('icon', 'linkedin')
+                    onClick: () => updateNode('icon', 'linkedin')
                 },
                 {
                     icon: 'location-pin',
                     text: 'Map Pin',
-                    action: () => updateNode('icon', 'map-pin')
+                    onClick: () => updateNode('icon', 'map-pin')
                 },
                 {
                     icon: 'phone',
                     text: 'Phone',
-                    action: () => updateNode('icon', 'phone')
+                    onClick: () => updateNode('icon', 'phone')
                 }
             ]
         }

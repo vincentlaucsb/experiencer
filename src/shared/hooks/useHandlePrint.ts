@@ -1,5 +1,13 @@
 import { useEffect } from "react";
+import PageSize from "@/types/PageSize";
 import { useEditorStore } from "../stores/editorStore";
+
+const PRINT_PAGE_SIZE_STYLE_ID = 'print-page-size-style';
+
+function getPageSizeCss(pageSize: PageSize) {
+    const cssSize = pageSize === PageSize.A4 ? 'A4' : 'Letter';
+    return `@page { size: ${cssSize}; }`;
+}
 
 /**
  * Custom hook to handle print mode toggling for the resume editor,
@@ -8,23 +16,36 @@ import { useEditorStore } from "../stores/editorStore";
  * Ensures that the editor switches to 'printing' mode during print preview and reverts back after printing.
  */
 export default function useHandlePrint() {
-    const { mode, setMode } = useEditorStore();
-
-    const handleBeforePrint = () => {
-        const currentMode = mode || 'landing';
-        if (currentMode !== 'printing') {
-            setMode('printing');
-        }
-    }
-
-    const handleAfterPrint = () => {
-        const currentMode = mode || 'landing';
-        if (currentMode === 'printing') {
-            setMode('normal');
-        }
-    };
+    const pageSize = useEditorStore((state) => state.pageSize);
 
     useEffect(() => {
+        let styleElement = document.getElementById(PRINT_PAGE_SIZE_STYLE_ID) as HTMLStyleElement | null;
+
+        if (!styleElement) {
+            styleElement = document.createElement('style');
+            styleElement.id = PRINT_PAGE_SIZE_STYLE_ID;
+            styleElement.media = 'print';
+            document.head.appendChild(styleElement);
+        }
+
+        styleElement.textContent = getPageSizeCss(pageSize);
+    }, [pageSize]);
+
+    useEffect(() => {
+        const handleBeforePrint = () => {
+            const currentMode = useEditorStore.getState().mode || 'landing';
+            if (currentMode !== 'printing') {
+                useEditorStore.getState().setMode('printing');
+            }
+        };
+
+        const handleAfterPrint = () => {
+            const currentMode = useEditorStore.getState().mode || 'landing';
+            if (currentMode === 'printing') {
+                useEditorStore.getState().setMode('normal');
+            }
+        };
+
         window.addEventListener('beforeprint', handleBeforePrint);
         window.addEventListener('afterprint', handleAfterPrint);
 

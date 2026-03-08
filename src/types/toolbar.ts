@@ -5,7 +5,7 @@ export interface BasicToolbarItemData {
 }
 
 export interface ToolbarItemData extends BasicToolbarItemData {
-    action?: (() => void) | ((event: React.MouseEvent) => void);
+    onClick?: (() => void) | ((event: React.MouseEvent) => void);
 
     /** Whether or not text should be hidden when displayed on toolbar */
     condensedButton?: boolean;

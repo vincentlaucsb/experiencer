@@ -4,6 +4,9 @@ import { BasicResumeNode, ResumeComponentProps, ResumeNode } from "@/types";
 
 /** Schema information for a resume node */
 type ResumeNodeDefinition = {
+    /** Optional CSS node path/name override used by the CSS editor */
+    cssName?: string | string[];
+
     /** Child node types that this node can contain */
     childTypes?: string | string[];
 

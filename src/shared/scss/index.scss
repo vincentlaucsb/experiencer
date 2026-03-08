@@ -82,6 +82,10 @@ button img {
         background: none;
     }
 
+    .no-print {
+        display: none !important;
+    }
+
     #resume {
         height: 100%;
         border: none;
@@ -89,6 +93,30 @@ button img {
 }
 
 @media screen {
+    #print-preview-actions {
+        position: sticky;
+        top: 0;
+        z-index: zindex.$header-z;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: variables.$spacing;
+        padding: variables.$spacing;
+        background: variables.$main;
+        border-bottom: 1px solid variables.$dark-accent;
+
+        .pure-button {
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 0.7em 1.2em;
+        }
+
+        .print-preview-exit {
+            background: variables.$light-shade;
+            color: variables.$dark-shade;
+        }
+    }
+
     #resume {
         background: #ffffff;
         width: 8.5in;
@@ -98,6 +126,39 @@ button img {
         margin-bottom: variables.$spacing;
         margin-left: auto;
         margin-right: auto;
+
+        &[data-page-size="a4"] {
+            width: 210mm;
+            min-height: 297mm;
+        }
+
+        resume-page-break.page-break-editing {
+            position: relative;
+            display: block;
+            width: calc(100% + (2 * var(--edge-margin)));
+            margin-left: calc(-1 * var(--edge-margin));
+            margin-top: var(--x-large-spacing);
+            margin-bottom: var(--x-large-spacing);
+            height: 0;
+            border-top: 3px dashed variables.$light-accent;
+
+            .page-break-label {
+                position: absolute;
+                top: 0;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                display: inline-block;
+                padding: 0 variables.$edge-horizontal-spacing;
+                background: variables.$light-shade;
+                color: variables.$dark-accent;
+                font-family: variables.$monospace;
+                font-size: 9pt;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                user-select: none;
+                white-space: nowrap;
+            }
+        }
     }
 }
 

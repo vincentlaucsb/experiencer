@@ -13,7 +13,7 @@ export default function getRowToolbarOptions(
     return [
         {
             text: 'Reverse Contents',
-            action: () => updateNode('reverseDirection', !rowNode.reverseDirection || false)
+            onClick: () => updateNode('reverseDirection', !rowNode.reverseDirection || false)
         },
         justifyContentOptions
     ];

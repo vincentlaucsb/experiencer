@@ -96,7 +96,7 @@ export function ResumeContextMenuConnected() {
             );
             if (rawCustomOptions) {
                 customOptions = rawCustomOptions.map((option, idx) => (
-                    <MenuItem key={idx} onClick={option.action}>
+                    <MenuItem key={idx} onClick={option.onClick}>
                         {option.text}
                     </MenuItem>
                 ));

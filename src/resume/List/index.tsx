@@ -48,15 +48,15 @@ function getDefinitions(props: DescriptionItemProps, isSelected: boolean) {
             const definitionOptions = [
                 {
                     text: 'Delete',
-                    action: () => deleteField(index)
+                    onClick: () => deleteField(index)
                 },
                 {
                     text: 'Move Up',
-                    action: () => moveFieldUp(index)
+                    onClick: () => moveFieldUp(index)
                 },
                 {
                     text: 'Move Down',
-                    action: () => moveFieldDown(index)
+                    onClick: () => moveFieldDown(index)
                 }
             ];
 

@@ -1,4 +1,4 @@
-@use "variables";
+@use "colors/semantic" as colors;
 
 /* Overlay-based editing styles */
 
@@ -18,87 +18,32 @@
 /* Link editing overlay */
 .link-editing-overlay {
     min-width: 200px;
-    padding: calc(variables.$spacing / 2);
-    background: white;
-    border: 2px solid variables.$main;
+    padding: 0.5rem;
+    background: colors.$white;
+    border: 2px solid colors.$main;
     border-radius: 4px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(colors.$dark-shade, 0.15);
     z-index: 1001;
 
     input {
         width: 100%;
-        padding: calc(variables.$spacing / 2);
-        border: 1px solid variables.$light-accent;
+        padding: 0.5rem;
+        border: 1px solid colors.$light-accent;
         border-radius: 3px;
         font-family: inherit;
         font-size: inherit;
 
         &:focus {
             outline: none;
-            border-color: variables.$main;
-            box-shadow: 0 0 0 2px rgba(variables.$main, 0.1);
-        }
-    }
-}
-
-/* Markdown editing overlay */
-.markdown-editor-overlay {
-    display: flex;
-    flex-direction: column;
-    gap: calc(variables.$spacing / 2);
-    min-width: 400px;
-    max-width: 600px;
-    padding: variables.$spacing;
-    margin-top: calc(-1 * variables.$spacing); /* Pull up to align with text content */
-    margin-left: calc(-1 * variables.$spacing); /* Pull left to align with text content */
-    background: rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 4px;
-    z-index: 1001;
-
-    .markdown-textarea {
-        field-sizing: content;
-        min-height: 150px;
-        padding: calc(variables.$spacing / 2);
-        border: 1px solid variables.$light-accent;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        border-radius: 3px;
-        font-family: inherit;
-        font-size: inherit;
-        line-height: inherit;
-        resize: vertical;
-
-        &:focus {
-            outline: none;
-            border-color: variables.$main;
-            box-shadow: 0 0 0 2px rgba(variables.$main, 0.1);
-        }
-    }
-
-    .markdown-save-button {
-        padding: 6px 12px;
-        background-color: variables.$main;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 12px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-
-        &:hover {
-            background-color: variables.$dark-accent;
-        }
-
-        &:active {
-            transform: translateY(1px);
+            border-color: colors.$main;
+            box-shadow: 0 0 0 2px rgba(colors.$main, 0.1);
         }
     }
 }
 
 /* Component state indicator (while editing via overlay) */
-.link.editing,
-.text-content.editing {
+.link.editing {
     opacity: 0.7;
-    border-bottom: 2px dashed variables.$main;
+    border-bottom: 2px dashed colors.$main;
     cursor: text;
 }

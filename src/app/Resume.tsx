@@ -197,7 +197,7 @@ function Resume(props: ResumeProps) {
     );
     
     const editingTop = mode === 'printing' ? <></> : (
-        <header id="app-header" className="no-print">
+        <header id="app-header" className="no-print app-mb-4">
             <TopNavBar {...topMenuProps} />
             {isEditing ? <TopEditingBar /> : <></>}
         </header>
@@ -229,7 +229,7 @@ function Resume(props: ResumeProps) {
         case 'printing':
             return (
                 <>
-                    <div id="print-preview-actions" className="no-print">
+                    <div id="print-preview-actions" className="no-print app-gap-4 app-p-4">
                         <Button className="print-preview-exit" onClick={exitPrintPreview}>
                             Exit Print Preview
                         </Button>

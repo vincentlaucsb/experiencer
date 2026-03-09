@@ -1,4 +1,7 @@
 ﻿import React, { ReactElement } from "react";
+
+import "./Tabs.scss";
+
 import { Button } from "./Buttons";
 
 export interface TabProps {
@@ -47,7 +50,7 @@ export default function Tabs(props: TabProps) {
                 })}
             </div>
 
-            <div className="tabs-children" aria-labelledby={activeTabId} id={activePanelId} role="tabpanel">
+            <div className="tabs-children app-p-4" aria-labelledby={activeTabId} id={activePanelId} role="tabpanel">
                 {props.children[activeIndex]}
             </div>
         </div>

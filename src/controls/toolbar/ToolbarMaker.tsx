@@ -40,13 +40,13 @@ export default function Toolbar(props: ToolbarProps) {
     return <React.Fragment>
         {Array.from(props.data).map(([key, section]) => {
             return (
-                <div className="toolbar-section" key={key}>
+                <div className="toolbar-section app-py-1-5 app-px-2" key={key}>
                     <PureMenu horizontal>
                         {section.items.map((item: ToolbarItemData, index: number) =>
                             <ToolbarItemFactory key={index} {...item} />
                         )}
                     </PureMenu>
-                    <span className="toolbar-label">{key}</span>
+                    <span className="toolbar-label app-text-light-accent">{key}</span>
                 </div>
             );
         })}

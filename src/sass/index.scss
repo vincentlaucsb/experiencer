@@ -1,14 +1,12 @@
 @use "context-menu";
+@use "colors/semantic" as colors;
+@use "colors/utilities";
 @use "spacing";
 @use "variables";
 @use "landing";
 @use "resume-hover";
 @use "modals";
-@use "node-tree";
 @use "forms";
-@use "css-editor";
-@use "markdown";
-@use "header";
 @use "hl-box";
 @use "inputs";
 @use "overlay-editing";
@@ -16,9 +14,9 @@
 
 /* App Stuff */
 body {
-    background: variables.$light-shade;
+    background: colors.$light-shade;
     font-family: variables.$sans-serif;
-    color: variables.$dark-shade;
+    color: colors.$dark-shade;
     margin: 0;
 }
 
@@ -32,7 +30,7 @@ body {
 
 /* || Resizer */
 .Resizer.vertical {
-    width: variables.$spacing;
+    width: 1rem;
     cursor: col-resize;
 }
 
@@ -46,6 +44,11 @@ button img {
     margin-right: 2px;
 }
 
+button,
+.pure-button {
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
 /** || Layouts */
 #main-grid {
     display: flex;
@@ -54,13 +57,13 @@ button img {
     overflow: auto;
 
     // Column Gap for flexbox is only supported in FF
-    // column-gap: variables.$spacing;
+    // column-gap: 1rem;
 
     /** Grid Children */
     > * {
         max-width: 100%;
         overflow: auto;
-        margin-right: variables.$spacing;
+        margin-right: 1rem;
     }
 
     > *:first-child {
@@ -101,10 +104,8 @@ button img {
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: variables.$spacing;
-        padding: variables.$spacing;
-        background: variables.$main;
-        border-bottom: 1px solid variables.$dark-accent;
+        background: colors.$main;
+        border-bottom: 1px solid colors.$dark-accent;
 
         .pure-button {
             font-size: 1rem;
@@ -113,18 +114,18 @@ button img {
         }
 
         .print-preview-exit {
-            background: variables.$light-shade;
-            color: variables.$dark-shade;
+            background: colors.$light-shade;
+            color: colors.$dark-shade;
         }
     }
 
     #resume {
-        background: #ffffff;
+        background: colors.$white;
         width: 8.5in;
         min-height: 11in;
         box-sizing: border-box;
-        border: 1px solid #dddddd;
-        margin-bottom: variables.$spacing;
+        border: 1px solid colors.$border-subtle;
+        margin-bottom: 1rem;
         margin-left: auto;
         margin-right: auto;
 
@@ -141,7 +142,7 @@ button img {
             margin-top: var(--x-large-spacing);
             margin-bottom: var(--x-large-spacing);
             height: 0;
-            border-top: 3px dashed variables.$light-accent;
+            border-top: 3px dashed colors.$light-accent;
 
             .page-break-label {
                 position: absolute;
@@ -149,9 +150,9 @@ button img {
                 left: 50%;
                 transform: translate(-50%, -50%);
                 display: inline-block;
-                padding: 0 variables.$edge-horizontal-spacing;
-                background: variables.$light-shade;
-                color: variables.$dark-accent;
+                padding: 0 0.5rem;
+                background: colors.$light-shade;
+                color: colors.$dark-accent;
                 font-family: variables.$monospace;
                 font-size: 9pt;
                 letter-spacing: 0.12em;

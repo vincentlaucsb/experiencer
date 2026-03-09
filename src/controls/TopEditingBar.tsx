@@ -1,4 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
+
+import "./TopEditingBar.scss";
+
 import { Button } from "./Buttons";
 import { SelectedNodeActions } from "./SelectedNodeActions";
 import { assignIds } from "@/shared/utils/Helpers";
@@ -215,8 +218,8 @@ function PageSizeControls(props: PageSizeControlsProps) {
     const { pageSize, setPageSize } = props;
 
     return (
-        <div className="page-size-control" role="group" aria-label="Page size">
-            <span className="page-size-label">Page</span>
+        <div className="page-size-control app-gap-1-5" role="group" aria-label="Page size">
+            <span className="page-size-label app-text-light-accent">Page</span>
             <div className="page-size-toggle">
                 <Button
                     className={`page-size-option${pageSize === PageSize.Letter ? ' active' : ''}`}

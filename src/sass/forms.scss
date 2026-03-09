@@ -1,10 +1,10 @@
-﻿@use "variables";
+﻿@use "colors/semantic" as colors;
 
 %file-form {
-    background: variables.$light-shade;
-    border: 1px solid variables.$dark-accent;
-    padding: variables.$spacing;
-    color: variables.$dark-shade;
+    background: colors.$light-shade;
+    border: 1px solid colors.$dark-accent;
+    padding: 1rem;
+    color: colors.$dark-shade;
 }
 
 form#html-id-adder {
@@ -12,7 +12,7 @@ form#html-id-adder {
 }
 
 input.invalid {
-    background: red;
+    background: colors.$danger;
 }
 
 #toolbar {
@@ -23,9 +23,9 @@ input.invalid {
 
 #link-url {
     width: 300px;
-    color: variables.$porcelain;
+    color: colors.$light-shade;
     padding: 6px 10px;
-    border: 1px solid #ccc;
+    border: 1px solid colors.$border-subtle;
     border-radius: 4px;
     font-size: 1rem;
 }

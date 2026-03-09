@@ -1,0 +1,23 @@
+@use "semantic";
+
+@mixin app-color-utilities($prefix: "") {
+    @each $name, $value in semantic.$utility-text-colors {
+        .app-#{$prefix}text-#{$name} {
+            color: $value !important;
+        }
+    }
+
+    @each $name, $value in semantic.$utility-background-colors {
+        .app-#{$prefix}bg-#{$name} {
+            background-color: $value !important;
+        }
+    }
+
+    @each $name, $value in semantic.$utility-border-colors {
+        .app-#{$prefix}border-#{$name} {
+            border-color: $value !important;
+        }
+    }
+}
+
+@include app-color-utilities();

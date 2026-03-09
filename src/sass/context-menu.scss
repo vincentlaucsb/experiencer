@@ -1,30 +1,28 @@
-﻿@use "sass:math";
-@use "sass:color";
-@use "variables";
+﻿@use "colors/semantic" as colors;
 
 .react-contextmenu {
-    background: variables.$light-shade;
-    border: 1px solid variables.$light-accent;
+    background: colors.$light-shade;
+    border: 1px solid colors.$light-accent;
     cursor: default;
     font-size: 10pt;
 
     h3 {
         margin: 0;
-        padding: math.div(variables.$spacing, 4) variables.$spacing;
+        padding: 0.25rem 1rem;
     }
 
     hr {
         border: 0;
-        border-top: 1px solid color.adjust(variables.$light-shade, $lightness: -20%);
+        border-top: 1px solid colors.$border-subtle-contrast;
     }
 
     .react-contextmenu-item {
         cursor: pointer;
-        padding: math.div(variables.$spacing, 4) variables.$spacing;
+        padding: 0.25rem 1rem;
 
         &:hover {
-            background: variables.$dark-accent;
-            color: variables.$light-shade;
+            background: colors.$dark-accent;
+            color: colors.$light-shade;
         }
     }
 }

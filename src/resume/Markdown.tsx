@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import Markdown from "react-markdown";
 
+import "./Markdown.scss";
+
 // Utilities
 import useEditingHotkeys from "./hooks/useEditingHotkeys";
 
@@ -50,16 +52,16 @@ export default function MarkdownText(props: ResumeComponentProps) {
     });
 
     const editContent = (
-        <div className="markdown-editor-overlay" onClick={(e) => e.stopPropagation()}>
+        <div className="markdown-editor-overlay app-gap-2 app-p-4" onClick={(e) => e.stopPropagation()}>
             <textarea
-                className="markdown-textarea"
+                className="markdown-textarea app-p-2"
                 id={props.uuid}
                 value={editValue}
                 onChange={(e) => setEditValue(e.target.value)}
                 placeholder={`# Markdown supported\n\n- Lists\n- **Bold** *italic* ~~strikethrough~~\n- [Links](url)\n- \`code\` or \`\`\`code blocks\`\`\``}
                 autoFocus
             />
-            <button className="markdown-save-button" onClick={(e) => {
+            <button className="markdown-save-button app-py-2 app-px-4 app-bg-main app-text-light-shade" onClick={(e) => {
                 e.stopPropagation();
                 toggleEdit();
             }}>
@@ -73,7 +75,7 @@ export default function MarkdownText(props: ResumeComponentProps) {
             {textValue ? (
                 <Markdown>{textValue}</Markdown>
             ) : (
-                <span className="empty-placeholder">Click to add content</span>
+                <span className="empty-placeholder app-text-light-accent">Click to add content</span>
             )}
         </>
     );

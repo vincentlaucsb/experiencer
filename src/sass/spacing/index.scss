@@ -1,19 +1,19 @@
+@use "sass:list";
+@use "scale";
 @use "../variables";
 
 $app-spacing-unit: 0.25em;
-$app-spacing-scale: (
-    0: 0,
-    1: $app-spacing-unit,
-    2: $app-spacing-unit * 2,
-    3: $app-spacing-unit * 3,
-    4: $app-spacing-unit * 4,
-    5: $app-spacing-unit * 5,
-    6: $app-spacing-unit * 6,
-    8: $app-spacing-unit * 8,
-    10: $app-spacing-unit * 10,
-    12: $app-spacing-unit * 12,
-    14: $app-spacing-unit * 14,
-    16: $app-spacing-unit * 16,
+$app-spacing-start: 0;
+$app-spacing-stop: 16;
+$app-half-step-stop: 3;
+$app-skip-odd-from: 8;
+
+$app-spacing-scale: scale.app-generate-spacing-scale(
+    $app-spacing-start,
+    $app-spacing-stop,
+    $app-half-step-stop,
+    $app-skip-odd-from,
+    $app-spacing-unit
 );
 
 $margin-padding-directions: (
@@ -36,7 +36,7 @@ $gap-directions: (
     @each $step, $value in $app-spacing-scale {
         @each $direction, $sides in $margin-padding-directions {
             .app-#{$variant-prefix}m#{$direction}-#{$step} {
-                @if length($sides) == 0 {
+                @if list.length($sides) == 0 {
                     margin: $value !important;
                 }
                 @else {
@@ -47,7 +47,7 @@ $gap-directions: (
             }
 
             .app-#{$variant-prefix}p#{$direction}-#{$step} {
-                @if length($sides) == 0 {
+                @if list.length($sides) == 0 {
                     padding: $value !important;
                 }
                 @else {

@@ -1,4 +1,7 @@
 import React from "react";
+
+import "./TopNavBar.scss";
+
 import FileLoader from "./FileLoader";
 import FileSaver from "./FileSaver";
 import Dropdown from "./menus/Dropdown";
@@ -67,9 +70,10 @@ export function TopNavBar(props: TopNavBarProps) {
             <Modal isOpen={isOpen} title={title} close={() => setOpen(false)} className="top-nav-modal">
                 {modalContent}
             </Modal>
-            <div id="brand">
+            <div id="brand" className="app-px-1">
                 <h1
                     aria-label="Go to landing page"
+                    className="app-m-3"
                     onClick={props.toggleLanding}
                     onKeyDown={onBrandKeyDown}
                     role="button"
@@ -77,7 +81,7 @@ export function TopNavBar(props: TopNavBarProps) {
                 >
                     Experiencer
                 </h1>
-                <PureMenu id="top-menu" horizontal>
+                <PureMenu id="top-menu" horizontal divProps={{ className: "app-ml-4" }}>
                     <Dropdown className="toolbar-dropdown" trigger={<Button>File</Button>}>
                         <IconicItem icon="paper" onClick={() => props.new()} text="New" />
                         <IconicItem icon="folder-open" onClick={openLoader} text="Load" />

@@ -1,0 +1,87 @@
+@use "sass:color";
+@use "../sass/colors/semantic" as colors;
+@use "../sass/variables";
+
+/** || Top Editing Bar */
+div#toolbar {
+    border-top: 1px solid colors.$light-accent;
+    color: colors.$light-shade;
+
+    div.toolbar-section {
+        @extend %flex-col;
+        border-right: 1px solid color.adjust(colors.$light-accent, $alpha: -0.5);
+        align-items: center;
+
+        .toolbar-label {
+            font-size: 0.8em;
+            cursor: default;
+        }
+
+        &:last-child {
+            border-right: none;
+        }
+    }
+
+    .page-size-control {
+        @extend %flex-row;
+        align-items: center;
+
+        .page-size-label {
+            font-size: 0.8em;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            user-select: none;
+        }
+
+        .page-size-toggle {
+            @extend %flex-row;
+            border: 1px solid color.adjust(colors.$light-accent, $alpha: -0.25);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .pure-button.page-size-option {
+            border-radius: 0;
+            font-size: 0.8em;
+            line-height: 1.2;
+            padding: 0.3em 0.55em;
+            color: colors.$light-shade;
+
+            &.active {
+                background: colors.$dark-accent;
+                font-weight: 600;
+            }
+        }
+    }
+}
+
+/** || Top Editing Bar: Collapsed */
+div#toolbar.toolbar-collapsed > .pure-menu > .pure-menu-list {
+    @extend %flex-row;
+    flex-wrap: wrap;
+
+    /** || Subsection Headings */
+    .toolbar-collapsed-section h3 {
+        @extend %flex-row;
+        align-items: center;
+        border-bottom: 1px solid colors.$light-accent;
+        margin: 0;
+
+        .pure-button.back-button {
+            width: auto;
+            padding-right: 0;
+
+            &::after {
+                content: "";
+                margin-left: 1em;
+                border-right: 1px solid color.adjust(colors.$light-accent, $alpha: -0.25);
+            }
+
+            &:hover::after {
+                border: none;
+                border-right: 1px solid colors.$dark-accent;
+            }
+        }
+    }
+}

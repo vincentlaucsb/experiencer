@@ -1,0 +1,33 @@
+@use "../sass/colors/semantic" as colors;
+@use "../sass/variables";
+
+.tabs-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .tabs {
+        .tabs-button {
+            background: inherit;
+            border: none;
+            border-radius: unset;
+        }
+
+        .tabs-button-active {
+            background: colors.$main;
+            color: colors.$light-shade;
+        }
+    }
+
+    .tabs-children {
+        border: solid colors.$main;
+        border-width: 2px 0px 0px 2px;
+        overflow-y: auto;
+        flex-grow: 2;
+    }
+
+    pre {
+        font-family: variables.$monospace;
+        font-size: 11pt;
+    }
+}

@@ -3,6 +3,8 @@ import React from "react";
 import Section from "@/resume/Section";
 import { ResumeNode } from "@/types";
 
+import "./NodeTreeVisualizer.scss";
+
 export interface NodeTreeVisualizerProps {
     childNodes: Array<ResumeNode>;
     selectNode: (uuid: string) => void;
@@ -40,7 +42,7 @@ function represent(node: ResumeNode) {
 
     return (
         <span className={classNames.join(' ')}>{text}
-            <span className="tree-item-selector">{htmlId}{cssClasses}</span>
+            <span className="tree-item-selector app-pl-2">{htmlId}{cssClasses}</span>
         </span>
     );
 }
@@ -49,9 +51,10 @@ interface TreeMapperProps {
     root: Array<ResumeNode> | ResumeNode;
     selectNode: (uuid: string) => void;
     selectedNode?: string;
+    depth?: number;
 }
 
-function TreeMapper({ root, selectNode, selectedNode }: TreeMapperProps) {
+function TreeMapper({ root, selectNode, selectedNode, depth = 0 }: TreeMapperProps) {
     let childNodes: Array<ResumeNode> | undefined = undefined;
     
     if (Array.isArray(root)) {
@@ -62,10 +65,12 @@ function TreeMapper({ root, selectNode, selectedNode }: TreeMapperProps) {
     }
 
     if (childNodes) {
-        return <ul className="node-tree">
+        const nestedMargin = depth > 0 ? " app-ml-4" : "";
+
+        return <ul className={`node-tree app-pl-4${nestedMargin}`}>
             {childNodes.map((node) => {
                 const isSelected = selectedNode === node.uuid;
-                const className = isSelected ? "tree-item-selected" : "";
+                const className = isSelected ? "tree-item-selected app-py-1" : "app-py-1";
 
                 return <li 
                     className={className} 
@@ -80,6 +85,7 @@ function TreeMapper({ root, selectNode, selectedNode }: TreeMapperProps) {
                         root={node} 
                         selectNode={selectNode} 
                         selectedNode={selectedNode} 
+                        depth={depth + 1}
                     />
                 </li>
             })}

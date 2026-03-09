@@ -1,5 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
+
+import "./CssEditor.scss";
+
 import { useEditorStore } from '@/shared/stores/editorStore';
 import MappedTextFields, { ContainerProps } from "@/controls/inputs/MappedTextFields";
 import TextField from "@/controls/inputs/TextField";

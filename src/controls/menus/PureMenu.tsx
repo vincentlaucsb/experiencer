@@ -14,10 +14,19 @@ export default function PureMenu(props: PureMenuProps) {
         classes.push('pure-menu-horizontal');
     }
 
+    const divClassName = [classes.join(' '), props.divProps?.className]
+        .filter(Boolean)
+        .join(' ');
+
+    const listClassName = ['pure-menu-list', props.listProps?.className]
+        .filter(Boolean)
+        .join(' ');
+
     return (
-        <div id={props.id} className={classes.join(' ')}
-            {...props.divProps}>
-            <ul className="pure-menu-list" {...props.listProps}>
+        <div id={props.id}
+            {...props.divProps}
+            className={divClassName}>
+            <ul {...props.listProps} className={listClassName}>
                 {props.children}
             </ul>
         </div>

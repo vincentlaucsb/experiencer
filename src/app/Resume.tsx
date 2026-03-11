@@ -7,7 +7,7 @@ import '@/sass/index.scss';
 import 'purecss/build/pure-min.css';
 
 // Utilities
-import { createContainer } from '@/shared/utils/Helpers';
+import { createContainer } from '@/shared/utils/createContainer';
 import { exportResumeAsHtml } from '@/shared/utils/PrintHelpers';
 import { exportResumeToPng } from '@/shared/utils/ExportPng';
 import getResumeMinHeight from '@/shared/utils/getResumeMinHeight';
@@ -141,9 +141,9 @@ function Resume(props: ResumeProps) {
         return <Tabs>
             <NodeTreeVisualizer key="Tree" childNodes={resumeNodes}
                 selectNode={(uuid) => useEditorStore.getState().selectNode(uuid)}
-                selectedNode={useEditorStore.getState().selectedNodeId}
+                selectedNode={props.selectedNodeId}
             />
-            <ResumeCssEditor key="CSS" />
+            <ResumeCssEditor key="CSS" selectedNodeId={props.selectedNodeId} />
             <div key="Raw CSS">
                 <pre>
                     <code>

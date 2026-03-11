@@ -4,7 +4,8 @@ import { ContextMenu, ContextMenuTrigger, MenuItem } from "@/controls/ContextMen
 import ReactDOM from "react-dom";
 import InlineMarkdown from "@/resume/helpers/InlineMarkdown";
 
-import { createContainer, isNullOrUndefined } from "@/shared/utils/Helpers";
+import { createContainer } from "@/shared/utils/createContainer";
+import { isNullOrUndefined } from "@/shared/utils/isNullOrUndefined";
 
 interface ContextMenuOption {
     text: string;

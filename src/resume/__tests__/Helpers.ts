@@ -1,4 +1,5 @@
-import { assignIds, process } from "@/shared/utils/Helpers";
+import { assignIds } from "@/shared/utils/assignIds";
+import { process } from "@/shared/utils/processText";
 import { arraysEqual } from "@/shared/utils/arrayHelpers";
 import { BasicResumeNode } from "@/types";
 

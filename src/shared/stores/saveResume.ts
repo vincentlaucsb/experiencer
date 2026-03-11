@@ -1,11 +1,12 @@
 import { saveAs } from "file-saver";
 import { resumeNodeStore } from "./resumeNodeStore";
 import { ResumeSaveData } from "@/types";
+import { stripNodeProperties } from "@/shared/utils/stripNodeProperties";
 import { cssStore, rootCssStore } from "./cssStoreHooks";
 
-function dump(): ResumeSaveData {
+export function dump(): ResumeSaveData {
     return {
-        childNodes: resumeNodeStore.data.childNodes,
+        childNodes: stripNodeProperties(resumeNodeStore.data.childNodes, ['uuid']),
         builtinCss: cssStore.data.dump(),
         rootCss: rootCssStore.data.dump()
     };

@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 // Utilities
-import { createContainer } from "@/shared/utils/Helpers";
+import { createContainer } from "@/shared/utils/createContainer";
 import contextMenuOptions from "@/resume/schema/ContextMenuOptions";
 import ComponentTypes from "@/resume/schema/ComponentTypes";
 

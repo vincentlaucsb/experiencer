@@ -3,7 +3,7 @@ import { useEditorStore } from "./editorStore";
 import { cssStore, rootCssStore } from "./cssStoreHooks";
 import { resumeNodeStore } from "./resumeNodeStore";
 import { useHistoryStore } from "./historyStore";
-import { assignIds } from "../utils/Helpers";
+import { assignIds } from "../utils/assignIds";
 
 function normalizeLegacyNodeTypes(nodes: any[] | undefined): any[] {
     if (!nodes) {

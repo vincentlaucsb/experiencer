@@ -11,6 +11,7 @@ div#toolbar {
         @extend %flex-col;
         border-right: 1px solid color.adjust(colors.$light-accent, $alpha: -0.5);
         align-items: center;
+        justify-content: space-between;
 
         .toolbar-label {
             font-size: 0.8em;

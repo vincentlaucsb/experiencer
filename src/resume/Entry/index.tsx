@@ -1,7 +1,7 @@
 import * as React from "react";
 import TextField from "@/controls/inputs/TextField";
 import Container from "@/resume/infrastructure/Container";
-import { process } from "@/shared/utils/Helpers";
+import { process } from "@/shared/utils/processText";
 import toUrl from "@/shared/utils/toUrl";
 import { deleteAt } from "@/shared/utils/arrayHelpers";
 import ResumeComponentProps, { BasicResumeNode } from "@/types";

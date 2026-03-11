@@ -9,6 +9,25 @@
 
 form#html-id-adder {
     @extend %file-form;
+
+    .html-id-input {
+        display: flex;
+        align-items: center;
+    }
+
+    .html-id-prefix {
+        background: colors.$light-accent;
+        border: 1px solid colors.$dark-accent;
+        border-right: none;
+        color: colors.$dark-shade;
+        line-height: 1;
+        padding: 0.55em 0.65em;
+    }
+
+    #html-id {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
 }
 
 input.invalid {

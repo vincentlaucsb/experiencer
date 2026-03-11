@@ -39,6 +39,16 @@ describe('CssNode - Navigation & Selectors', () => {
         expect(listItem?.name).toBe('List Item');
     });
 
+    test('findNode does not mutate the input path array', () => {
+        const root = makeCssTree();
+        const path = ['Lists', 'List Item'];
+
+        const result = root.findNode(path);
+
+        expect(result?.name).toBe('List Item');
+        expect(arraysEqual(path, ['Lists', 'List Item'])).toBe(true);
+    });
+
     test('findNode with string path (single level)', () => {
         const root = makeCssTree();
         const lists = root.findNode('Lists');

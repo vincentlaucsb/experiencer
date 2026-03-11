@@ -7,7 +7,7 @@ import { useEditorStore } from '@/shared/stores/editorStore';
 import MappedTextFields, { ContainerProps } from "@/controls/inputs/MappedTextFields";
 import TextField from "@/controls/inputs/TextField";
 import CssNode, { ReadonlyCssNode } from "@/shared/CssTree";
-import { createContainer } from "@/shared/utils/Helpers";
+import { createContainer } from "@/shared/utils/createContainer";
 import CssSuggestions from "./CssSuggestions";
 import { HighlightBox } from "./HighlightBox";
 

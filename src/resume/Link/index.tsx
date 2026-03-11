@@ -1,6 +1,6 @@
 import React from "react";
 import Container from "@/resume/infrastructure/Container";
-import { process } from "@/shared/utils/Helpers";
+import { process } from "@/shared/utils/processText";
 import { useIsNodeEditing, useEditorStore } from "@/shared/stores/editorStore";
 import { useIsPrinting } from "@/shared/stores/printStore";
 import ResumeComponentProps from "@/types";

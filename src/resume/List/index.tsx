@@ -1,6 +1,6 @@
 import TextField from "@/controls/inputs/TextField";
 import { deleteAt, moveUp, moveDown } from "@/shared/utils/arrayHelpers";
-import { process } from "@/shared/utils/Helpers";
+import { process } from "@/shared/utils/processText";
 import ResumeComponentProps, { BasicResumeNode } from "@/types";
 import { useEditorStore } from "@/shared/stores/editorStore";
 import Container from "@/resume/infrastructure/Container";

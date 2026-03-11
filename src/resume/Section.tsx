@@ -1,7 +1,7 @@
 import * as React from "react";
 import TextField from "@/controls/inputs/TextField";
 import Container from "@/resume/infrastructure/Container";
-import { process } from "@/shared/utils/Helpers";
+import { process } from "@/shared/utils/processText";
 import ResumeComponentProps from "@/types";
 
 /** Represents a section in a resume */

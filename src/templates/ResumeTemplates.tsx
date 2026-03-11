@@ -1,4 +1,4 @@
-import { assignIds } from "@/shared/utils/Helpers";
+import { assignIds } from "@/shared/utils/assignIds";
 import { randyMarshCss, randyMarsh, randyMarshRootCss } from "./RandyMarsh";
 import { assuredNodes, assuredCss, assuredRootCss } from "./Assured";
 import { streamlineNodes, streamlineCss, streamlineRootCss } from "./Streamline";

@@ -1,4 +1,4 @@
-import { isNullOrUndefined } from "@/shared/utils/Helpers";
+import { isNullOrUndefined } from "@/shared/utils/isNullOrUndefined";
 import { CssNodeDump } from "@/types";
 import { ReadonlyCssNode } from './ReadonlyCssNode';
 
@@ -254,26 +254,21 @@ export default class CssNode {
      * @param path A list of names ordered from higher up in the tree to lower
      */
     findNode(path: string | string[]): CssNode | undefined {
-        if (path.length === 0) return this;
-
-        let _normalizedPath = Array.isArray(path) ? path : [path];
-        _normalizedPath.reverse();
-
-        let currentNode: CssNode | undefined = this as CssNode;
-
-        while (currentNode != undefined) {
-            const nextName = _normalizedPath.pop();
-            
-            // If we've reached the end of the path, return the matching node
-            // if it exists, or undefined if it doesn't
-            if (_normalizedPath.length === 0) {
-                return currentNode._children.get(nextName!);
-            }
-
-            currentNode = currentNode._children.get(nextName!);
+        const normalizedPath = Array.isArray(path) ? path : [path];
+        if (normalizedPath.length === 0) {
+            return this;
         }
 
-        return undefined;
+        let currentNode: CssNode | undefined = this;
+
+        for (const nextName of normalizedPath) {
+            currentNode = currentNode?._children.get(nextName);
+            if (!currentNode) {
+                return undefined;
+            }
+        }
+
+        return currentNode;
     }
 
     /**

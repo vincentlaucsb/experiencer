@@ -4,7 +4,7 @@ import "./TopEditingBar.scss";
 
 import { Button } from "./Buttons";
 import { SelectedNodeActions } from "./SelectedNodeActions";
-import { assignIds } from "@/shared/utils/Helpers";
+import { assignIds } from "@/shared/utils/assignIds";
 import ComponentTypes, { NodeInformation } from "@/resume/schema/ComponentTypes";
 import Grid from "@/resume/Grid";
 import Row from "@/resume/Row";
@@ -219,7 +219,7 @@ function PageSizeControls(props: PageSizeControlsProps) {
 
     return (
         <div className="page-size-control app-gap-1-5" role="group" aria-label="Page size">
-            <span className="page-size-label app-text-light-accent">Page</span>
+            <span className="page-size-label app-text-light-accent">Size</span>
             <div className="page-size-toggle">
                 <Button
                     className={`page-size-option${pageSize === PageSize.Letter ? ' active' : ''}`}
@@ -236,10 +236,6 @@ function PageSizeControls(props: PageSizeControlsProps) {
             </div>
         </div>
     );
-}
-
-function getPageSizeLabel(pageSize: PageSize): string {
-    return pageSize === PageSize.Letter ? 'Letter' : 'A4';
 }
 
 function getEditingSection(
@@ -266,12 +262,6 @@ function getEditingSection(
             condensedButton: true
         }
     ];
-
-    if (pageSize) {
-        items.push({
-            content: <span className="page-size-current app-text-light-accent">Page: {getPageSizeLabel(pageSize)}</span>
-        });
-    }
 
     return items;
 }

@@ -37,8 +37,12 @@ export default class ComponentTypes {
      * @returns A string (single type) or array of strings (multiple types)
      */
     childTypes(type: string) : string | Array<string> {
-        return this._childTypes.get(type) ||
-            this._defaultChildTypes;
+        const childTypes = this._childTypes.get(type);
+        if (Array.isArray(childTypes)) {
+            return [...childTypes];
+        }
+
+        return childTypes || [...this._defaultChildTypes];
     }
 
     /**
@@ -47,7 +51,8 @@ export default class ComponentTypes {
      * @returns Array with the CSS path (typically just [type])
      */
     cssName(type: string) : string[] {
-        return this._cssNames.get(type) || [type];
+        const cssName = this._cssNames.get(type);
+        return cssName ? [...cssName] : [type];
     }
 
     /**

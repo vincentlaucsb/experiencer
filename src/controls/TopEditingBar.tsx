@@ -238,11 +238,13 @@ function PageSizeControls(props: PageSizeControlsProps) {
     );
 }
 
+function getPageSizeLabel(pageSize: PageSize): string {
+    return pageSize === PageSize.Letter ? 'Letter' : 'A4';
+}
+
 function getEditingSection(
     props: EditingBarProps,
-    pageSize: PageSize,
-    setPageSize: (pageSize: PageSize) => void,
-    isOverflowing: boolean
+    pageSize?: PageSize
 ): ToolbarItemData[] {
     const items: ToolbarItemData[] = [
         {
@@ -265,11 +267,23 @@ function getEditingSection(
         }
     ];
 
-    if (isOverflowing) {
+    if (pageSize) {
         items.push({
+            content: <span className="page-size-current app-text-light-accent">Page: {getPageSizeLabel(pageSize)}</span>
+        });
+    }
+
+    return items;
+}
+
+function getPageSetupSection(
+    pageSize: PageSize,
+    setPageSize: (pageSize: PageSize) => void,
+    isOverflowing: boolean
+): ToolbarSection {
+    if (isOverflowing) {
+        return {
             icon: "ui-file",
-            text: "Page",
-            condensedButton: true,
             items: [
                 {
                     onClick: pageSize === PageSize.Letter ? undefined : () => setPageSize(PageSize.Letter),
@@ -280,16 +294,17 @@ function getEditingSection(
                     text: `A4${pageSize === PageSize.A4 ? ' ✓' : ''}`
                 }
             ]
-        });
-
-        return items;
+        };
     }
 
-    items.push({
-        content: <PageSizeControls pageSize={pageSize} setPageSize={setPageSize} />
-    });
-
-    return items;
+    return {
+        icon: "ui-file",
+        items: [
+            {
+                content: <PageSizeControls pageSize={pageSize} setPageSize={setPageSize} />
+            }
+        ]
+    };
 }
 
 /** A responsive top editing bar */
@@ -345,7 +360,7 @@ export function TopEditingBar(props: EditingBarProps) {
     let data = new Map<string, ToolbarSection>([
         ["Editing", {
             icon: 'ui-edit',
-            items: getEditingSection(props, pageSize, setPageSize, isOverflowing)
+            items: getEditingSection(props, selectedNode ? pageSize : undefined)
         }],
     ]);
 
@@ -361,6 +376,8 @@ export function TopEditingBar(props: EditingBarProps) {
         });
     }
     else {
+        data.set("Page Setup", getPageSetupSection(pageSize, setPageSize, isOverflowing));
+
         data.set("Resume Components", {
             items: [
                 {

@@ -4,7 +4,7 @@ import InlineMarkdown from "../helpers/InlineMarkdown";
 import Container from "@/resume/infrastructure/Container";
 import { useEditorStore, useIsNodeEditing } from "@/shared/stores/editorStore";
 import { RowBase } from "../Row";
-import useEditingHotkeys from "../hooks/useEditingHotkeys";
+import useEditingControls from "../hooks/useEditingControls";
 import useAutoExpandInput from "../hooks/useAutoExpandInput";
 
 import "./index.scss";
@@ -35,7 +35,7 @@ export default function Header({ updateDataFields, ...props }: HeaderProps) {
         subtitle: props.subtitle || "",
     };
 
-    useEditingHotkeys({
+    useEditingControls({
         isEditing,
         ctrlEnter: false,
         value: editValue,

@@ -64,27 +64,29 @@ export default function MyComponent(props: ResumeComponentProps) {
 
 ### CSS Styling
 
-Create `.link-editing-overlay` and `.markdown-editor-overlay` classes:
+Use shared overlay classes from `src/resume/OverlayEditing.scss`:
 
 ```scss
-.my-editor-overlay {
-    min-width: 200px;
-    padding: variables.$spacing;
-    background: white;
-    border: 2px solid variables.$main;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    
-    input, textarea {
-        width: 100%;
-        padding: calc(variables.$spacing / 2);
-        border: 1px solid variables.$light-accent;
-        border-radius: 3px;
-        
-        &:focus {
-            border-color: variables.$main;
-            box-shadow: 0 0 0 2px rgba(variables.$main, 0.1);
-        }
-    }
+.resume-overlay-editor {
+    // Shared shell: surface, spacing, border, and shadow
+}
+
+.resume-overlay-field {
+    // Shared form layout
+}
+
+.resume-overlay-input,
+.resume-overlay-textarea,
+.resume-overlay-save-button {
+    // Shared controls and focus states
+}
+
+.resume-overlay-editor--markdown {
+    // Markdown-specific textarea sizing
+}
+
+.resume-overlay-editor--image {
+    // Image-specific width and monospace source textarea
 }
 
 /* Visual indicator that component is being edited */
@@ -107,6 +109,7 @@ Always use `stopPropagation()` in edit overlays to prevent Container click handl
 ## Used In
 
 - [Markdown.tsx](../../src/resume/Markdown.tsx) - Markdown content editing (overlay)
+- [Image.tsx](../../src/resume/Image.tsx) - Image src/alt editing (overlay)
 
 ## When to Use Overlay Editing
 
@@ -114,7 +117,7 @@ Use overlay editing only when inline input rendering would significantly distort
 
 ## Keyboard Shortcuts
 
-Edit components use `useEditingHotkeys` hook:
+Edit components use `useEditingControls` hook:
 - **Escape** - Cancel editing
 - **Ctrl+Enter** - Save (for multi-line text)
 - **Enter** - Save (for single-line text)

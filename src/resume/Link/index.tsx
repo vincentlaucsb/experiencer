@@ -4,7 +4,7 @@ import { process } from "@/shared/utils/Helpers";
 import { useIsNodeEditing, useEditorStore } from "@/shared/stores/editorStore";
 import { useIsPrinting } from "@/shared/stores/printStore";
 import ResumeComponentProps from "@/types";
-import useEditingHotkeys from "../hooks/useEditingHotkeys";
+import useEditingControls from "../hooks/useEditingControls";
 import useEditing from "../hooks/useEditing";
 
 interface LinkBase {
@@ -29,7 +29,7 @@ function Link(props: LinkProps) {
         (newValue) => props.updateData("value", newValue)
     );
 
-    useEditingHotkeys({
+    useEditingControls({
         isEditing,
         value: editValue,
         onChange: (originalValue) => props.updateData("value", originalValue),

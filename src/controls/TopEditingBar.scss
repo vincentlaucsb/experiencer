@@ -54,6 +54,14 @@ div#toolbar {
             }
         }
     }
+
+    .page-size-current {
+        font-size: 0.8em;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        user-select: none;
+    }
 }
 
 /** || Top Editing Bar: Collapsed */

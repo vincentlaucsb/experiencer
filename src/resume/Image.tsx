@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+
+import "./OverlayEditing.scss";
 
 // Components
 import Container from "@/resume/infrastructure/Container";
 
 // Hooks
-import useEditingHotkeys from "./hooks/useEditingHotkeys";
+import useEditingControls from "./hooks/useEditingControls";
 import { useEditorStore, useIsNodeEditing } from "@/shared/stores/editorStore";
 
 // Types
@@ -45,7 +47,7 @@ export default function Image({ updateDataFields, ...props }: ImageProps) {
         altText: altText,
     };
 
-    useEditingHotkeys({
+    const { cancel, save } = useEditingControls({
         isEditing,
         ctrlEnter: true,
         value: editValue,
@@ -55,42 +57,57 @@ export default function Image({ updateDataFields, ...props }: ImageProps) {
 
     const handleSave = () => {
         updateDataFields({ value: tempSrc, altText: tempAlt });
-        toggleEdit();
+        save();
     };
 
+    const handleCancel = () => {
+        setTempSrc(src);
+        setTempAlt(altText);
+        cancel();
+    };
+
+    useEffect(() => {
+        if (isEditing) {
+            setTempSrc(src);
+            setTempAlt(altText);
+        }
+    }, [isEditing, src, altText]);
+
     const editContent = (
-        <div className="resume-image-editor" style={{ padding: '10px' }}>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+        <div className="resume-overlay-editor resume-overlay-editor--image app-gap-2 app-p-4" onClick={(e) => e.stopPropagation()}>
+            <div className="resume-overlay-field app-gap-1">
+                <label className="resume-overlay-label" htmlFor={`${props.uuid}-image-src`}>
                     Image Source (URL or Data URI):
                 </label>
                 <textarea
+                    className="resume-overlay-input resume-overlay-textarea app-p-2"
+                    id={`${props.uuid}-image-src`}
                     value={tempSrc}
                     onChange={(e) => setTempSrc(e.target.value)}
                     placeholder="https://example.com/image.png or data:image/png;base64,..."
-                    style={{ 
-                        width: '100%', 
-                        minHeight: '80px', 
-                        fontFamily: 'monospace',
-                        fontSize: '12px',
-                        padding: '5px'
-                    }}
+                    autoFocus
                 />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+            <div className="resume-overlay-field app-gap-1">
+                <label className="resume-overlay-label" htmlFor={`${props.uuid}-image-alt`}>
                     Alt Text:
                 </label>
                 <input
+                    className="resume-overlay-input app-p-2"
+                    id={`${props.uuid}-image-alt`}
                     type="text"
                     value={tempAlt}
                     onChange={(e) => setTempAlt(e.target.value)}
                     placeholder="Image description"
-                    style={{ width: '100%', padding: '5px' }}
                 />
             </div>
-            <div>
-                <button onClick={handleSave} style={{ padding: '5px 15px' }}>Save</button>
+            <div className="resume-overlay-actions app-gap-2">
+                <button className="resume-overlay-cancel-button app-py-2 app-px-4" onClick={handleCancel}>
+                    Cancel
+                </button>
+                <button className="resume-overlay-save-button app-py-2 app-px-4" onClick={handleSave}>
+                    Save (Ctrl + Enter)
+                </button>
             </div>
         </div>
     );

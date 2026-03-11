@@ -1,53 +1,6 @@
 @use "../sass/colors/semantic" as colors;
 @use "../sass/variables";
 
-/* Markdown editing overlay */
-.markdown-editor-overlay {
-    display: flex;
-    flex-direction: column;
-    min-width: 400px;
-    max-width: 600px;
-    margin-top: -1rem; /* Pull up to align with text content */
-    margin-left: -1rem; /* Pull left to align with text content */
-    background: colors.$subtle-overlay;
-    border: 1px solid rgba(colors.$dark-shade, 0.08);
-    border-radius: 4px;
-    z-index: 1001;
-
-    .markdown-textarea {
-        field-sizing: content;
-        min-height: 150px;
-        border: 1px solid colors.$light-accent;
-        box-shadow: 0 4px 12px rgba(colors.$dark-shade, 0.15);
-        border-radius: 3px;
-        font-family: inherit;
-        font-size: inherit;
-        line-height: inherit;
-        resize: vertical;
-
-        &:focus {
-            outline: none;
-            border-color: colors.$main;
-            box-shadow: 0 0 0 2px rgba(colors.$main, 0.1);
-        }
-    }
-
-    .markdown-save-button {
-        border: none;
-        border-radius: 4px;
-        font-size: 12px;
-        cursor: pointer;
-
-        &:hover {
-            background-color: colors.$dark-accent !important;
-        }
-
-        &:active {
-            transform: translateY(1px);
-        }
-    }
-}
-
 /* Markdown component state indicator (while editing via overlay) */
 .text-content.editing {
     opacity: 0.7;

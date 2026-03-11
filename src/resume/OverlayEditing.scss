@@ -1,0 +1,100 @@
+@use "../sass/colors/semantic" as colors;
+@use "../sass/variables";
+
+.resume-overlay-editor {
+    display: flex;
+    flex-direction: column;
+    min-width: 320px;
+    max-width: 600px;
+    margin-top: -1rem;
+    margin-left: -1rem;
+    background: colors.$subtle-overlay;
+    border: 1px solid rgba(colors.$dark-shade, 0.08);
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(colors.$dark-shade, 0.15);
+}
+
+.resume-overlay-editor--image {
+    min-width: 400px;
+}
+
+.resume-overlay-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.resume-overlay-label {
+    font-weight: 600;
+}
+
+.resume-overlay-input {
+    width: 100%;
+    border: 1px solid colors.$light-accent;
+    border-radius: 3px;
+    box-sizing: border-box;
+
+    &:focus {
+        outline: none;
+        border-color: colors.$main;
+        box-shadow: 0 0 0 2px rgba(colors.$main, 0.1);
+    }
+}
+
+.resume-overlay-textarea {
+    resize: vertical;
+}
+
+.resume-overlay-editor--markdown .resume-overlay-textarea {
+    field-sizing: content;
+    min-height: 150px;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+.resume-overlay-editor--image .resume-overlay-textarea {
+    min-height: 80px;
+    font-family: variables.$monospace;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.resume-overlay-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.resume-overlay-save-button {
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    color: colors.$light-shade;
+    background-color: colors.$main;
+
+    &:hover {
+        background-color: colors.$dark-accent;
+    }
+
+    &:active {
+        transform: translateY(1px);
+    }
+}
+
+.resume-overlay-cancel-button {
+    border: 1px solid colors.$light-accent;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    color: colors.$dark-shade;
+    background-color: colors.$light-shade;
+
+    &:hover {
+        background-color: colors.$subtle-overlay;
+        border-color: colors.$dark-accent;
+    }
+
+    &:active {
+        transform: translateY(1px);
+    }
+}

@@ -1,0 +1,28 @@
+﻿@use "colors/semantic" as colors;
+
+.react-contextmenu {
+    background: colors.$light-shade;
+    border: 1px solid colors.$light-accent;
+    cursor: default;
+    font-size: 10pt;
+
+    h3 {
+        margin: 0;
+        padding: 0.25rem 1rem;
+    }
+
+    hr {
+        border: 0;
+        border-top: 1px solid colors.$border-subtle-contrast;
+    }
+
+    .react-contextmenu-item {
+        cursor: pointer;
+        padding: 0.25rem 1rem;
+
+        &:hover {
+            background: colors.$dark-accent;
+            color: colors.$light-shade;
+        }
+    }
+}

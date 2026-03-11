@@ -1,11 +1,9 @@
-import { useCss, useCssStore, useRootCss } from "@/shared/stores/cssStoreHooks";
-import { useSelectedNodeId } from "@/shared/stores/editorStore";
-import { resumeNodeStore } from "@/shared/stores/resumeNodeStore";
+import { useCssStore } from "@/shared/stores/cssStoreHooks";
+import { useResumeNodeByUuid } from "@/shared/stores/resumeNodeStore";
 import CssNode, { ReadonlyCssNode } from "@/shared/CssTree";
 import type { ResumeNode } from "@/types";
 import CssEditor, { makeCssEditorProps } from "@/editor/CssEditor";
 
-import { useMemo } from "react";
 import ComponentTypes from "@/resume/schema/ComponentTypes";
 import makeCssVarSuggestions from "@/shared/utils/makeCssVarSuggestions";
 
@@ -17,6 +15,10 @@ interface ResumeCssEditorProps {
     updateRootCss: (updater: (rootCss: CssNode) => void) => void;
 }
 
+interface ResumeCssEditorWrapperProps {
+    selectedNodeId?: string;
+}
+
 function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss }: ResumeCssEditorProps) {
     if (selectedNode) {
         let generalCssEditor = <></>
@@ -24,8 +26,10 @@ function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss 
 
         const rootNode = css.findNode(
             ComponentTypes.instance.cssName(selectedNode.type)) as CssNode;
+
         if (rootNode) {
             generalCssEditor = <CssEditor
+                key={`${selectedNode.uuid}-${rootNode.fullPath.join('-')}`}
                 cssNode={new ReadonlyCssNode(rootNode)}
                 isOpen={true}
                 {...makeCssEditorProps(updateCss)}
@@ -34,7 +38,9 @@ function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss 
 
         if (selectedNode.htmlId && css.findNode([`#${selectedNode.htmlId}`])) {
             const specificRoot = css.findNode([`#${selectedNode.htmlId}`]) as CssNode;
-            specificCssEditor = <CssEditor cssNode={new ReadonlyCssNode(specificRoot)}
+            specificCssEditor = <CssEditor
+                key={`${selectedNode.uuid}-#${selectedNode.htmlId}`}
+                cssNode={new ReadonlyCssNode(specificRoot)}
                 isOpen={true}
                 {...makeCssEditorProps(updateCss)} />
         }
@@ -58,13 +64,9 @@ function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss 
     </>
 }
 
-function ResumeCssEditorWrapper() {
+function ResumeCssEditorWrapper({ selectedNodeId }: ResumeCssEditorWrapperProps) {
     const { css, rootCss, updateCss, updateRootCss } = useCssStore();
-    const selectedNodeId = useSelectedNodeId();
-
-    const selectedNode = useMemo(() => {
-        return selectedNodeId ? resumeNodeStore.getNodeByUuid(selectedNodeId) : undefined;
-    }, [selectedNodeId]);
+    const selectedNode = useResumeNodeByUuid(selectedNodeId || '');
 
     return (
         <ResumeCssEditor

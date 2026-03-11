@@ -24,10 +24,10 @@ export default function ToolbarSectionDropdown(props: ToolbarSectionDropdownProp
         items = props.items[activeIndex].items as ToolbarItemData[]
         heading = <PureMenuItem onClick={(event) => event.stopPropagation()}>
             <h3>
-                <Button className="back-button" onClick={() => setActive(-1)}>
+                <Button className="back-button app-py-1 app-px-3" onClick={() => setActive(-1)}>
                     <i className="icofont-rounded-left" />
                 </Button>
-                <span>{props.items[activeIndex].text}</span>
+                <span className="app-py-1 app-px-3">{props.items[activeIndex].text}</span>
             </h3>
         </PureMenuItem>
     }
@@ -45,7 +45,7 @@ export default function ToolbarSectionDropdown(props: ToolbarSectionDropdownProp
                     return (
                         <PureMenuItem>
                             <ToolbarButton
-                                action={
+                                onClick={
                                     (event: React.MouseEvent) => {
                                         setActive(index);
                                         event.stopPropagation();

@@ -1,0 +1,97 @@
+@use "../sass/colors/semantic" as colors;
+@use "../sass/variables";
+
+/* Markdown component state indicator (while editing via overlay) */
+.text-content.editing {
+    opacity: 0.7;
+    border-bottom: 2px dashed colors.$main;
+    cursor: text;
+}
+
+#resume {
+    .text-content {
+        h1, h2, h3, h4, h5, h6 {
+            margin: 1rem 0 0.5rem 0;
+            font-weight: 600;
+        }
+
+        h1 { font-size: 2em; }
+        h2 { font-size: 1.75em; }
+        h3 { font-size: 1.5em; }
+        h4 { font-size: 1.25em; }
+        h5 { font-size: 1.1em; }
+        h6 { font-size: 1em; }
+
+        p {
+            margin: 0.5rem 0;
+            line-height: 1.6;
+        }
+
+        li {
+            margin-bottom: 0.25rem;
+        }
+
+        code {
+            background-color: rgba(colors.$dark-shade, 0.05);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: variables.$monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background-color: rgba(colors.$dark-shade, 0.05);
+            border-left: 3px solid colors.$main;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            border-radius: 4px;
+
+            code {
+                background: none;
+                padding: 0;
+                color: inherit;
+            }
+        }
+
+        blockquote {
+            border-left: 4px solid colors.$main;
+            padding-left: 1rem;
+            margin-left: 0;
+            color: colors.$dark-shade;
+            font-style: italic;
+        }
+
+        a {
+            color: colors.$main;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+
+        strong {
+            font-weight: 600;
+        }
+
+        em {
+            font-style: italic;
+        }
+
+        del {
+            text-decoration: line-through;
+            color: rgba(colors.$dark-shade, 0.6);
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid colors.$light-accent;
+            margin: 1rem 0;
+        }
+    }
+
+    .empty-placeholder {
+        font-style: italic;
+    }
+}

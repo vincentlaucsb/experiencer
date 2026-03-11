@@ -9,6 +9,7 @@ import registerNodes from "@/resume/schema";
 import { useEditorStore } from "@/shared/stores/editorStore";
 import { resumeNodeStore } from "@/shared/stores/resumeNodeStore";
 import { cssStore, rootCssStore } from "@/shared/stores/cssStoreHooks";
+import { assignIds } from "@/shared/utils/assignIds";
 import type { ResumeSaveData } from "@/types";
 
 // Initialize the schema registry
@@ -20,7 +21,7 @@ registerNodes();
  */
 function setupResumeForTest(template: ResumeSaveData) {
     act(() => {
-        resumeNodeStore.setNodes(template.childNodes);
+        resumeNodeStore.setNodes(assignIds(template.childNodes));
         rootCssStore.setCss(CssNode.load(template.rootCss));
         cssStore.setCss(CssNode.load(template.builtinCss));
     });
@@ -116,3 +117,43 @@ test('Resume Select Parent + Child Test', async () => {
         expect(selected.tagName.toLowerCase()).toBe('section');
     }
 })
+
+test('CSS editor reopens for a new selected node of the same type', async () => {
+    const tegridy = ResumeTemplates.templates.Integrity;
+    setupResumeForTest(tegridy);
+
+    const { container } = render(<Resume mode="normal" />);
+
+    const experience = getAllByText(container, 'Experience').filter((elem) => {
+        return !elem.classList.contains('tree-item-section');
+    })[0];
+    const education = getAllByText(container, 'Education').filter((elem) => {
+        return !elem.classList.contains('tree-item-section');
+    })[0];
+
+    expect(experience).toBeTruthy();
+    expect(education).toBeTruthy();
+
+    await selectNode(experience);
+    await selectNode(getByText(container, 'CSS'));
+
+    const firstHeading = container.querySelector('.css-title-heading') as HTMLElement | null;
+    expect(firstHeading).not.toBeNull();
+
+    if (!firstHeading) {
+        throw new Error('Expected CSS editor heading to exist');
+    }
+
+    await act(async () => {
+        fireEvent.click(firstHeading, {
+            bubbles: true,
+            cancelable: true,
+        });
+    });
+
+    expect(container.querySelector('.css-category-content')).toBeNull();
+
+    await selectNode(education);
+
+    expect(container.querySelector('.css-category-content')).not.toBeNull();
+});

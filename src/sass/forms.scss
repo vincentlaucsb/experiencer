@@ -1,0 +1,50 @@
+﻿@use "colors/semantic" as colors;
+
+%file-form {
+    background: colors.$light-shade;
+    border: 1px solid colors.$dark-accent;
+    padding: 1rem;
+    color: colors.$dark-shade;
+}
+
+form#html-id-adder {
+    @extend %file-form;
+
+    .html-id-input {
+        display: flex;
+        align-items: center;
+    }
+
+    .html-id-prefix {
+        background: colors.$light-accent;
+        border: 1px solid colors.$dark-accent;
+        border-right: none;
+        color: colors.$dark-shade;
+        line-height: 1;
+        padding: 0.55em 0.65em;
+    }
+
+    #html-id {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+}
+
+input.invalid {
+    background: colors.$danger;
+}
+
+#toolbar {
+    fieldset {
+        padding: 0;
+    }
+}
+
+#link-url {
+    width: 300px;
+    color: colors.$light-shade;
+    padding: 6px 10px;
+    border: 1px solid colors.$border-subtle;
+    border-radius: 4px;
+    font-size: 1rem;
+}

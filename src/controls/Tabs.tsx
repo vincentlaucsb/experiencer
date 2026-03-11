@@ -1,4 +1,7 @@
 ﻿import React, { ReactElement } from "react";
+
+import "./Tabs.scss";
+
 import { Button } from "./Buttons";
 
 export interface TabProps {
@@ -18,24 +21,36 @@ export default function Tabs(props: TabProps) {
         let [activeKey, setKey] = React.useState(keys[0]);
 
         const activeIndex = keys.indexOf(activeKey);
+        const normalizeKey = (key: React.Key) => String(key).toLowerCase().replace(/\s+/g, '-');
+        const getTabId = (key: React.Key) => `tabs-tab-${normalizeKey(key)}`;
+        const getPanelId = (key: React.Key) => `tabs-panel-${normalizeKey(key)}`;
+
+        const activeTabId = getTabId(activeKey);
+        const activePanelId = getPanelId(activeKey);
 
         return <div className="tabs-container">
-            <div className="tabs pure-button-group" role="group">
+            <div className="tabs pure-button-group" role="tablist" aria-label="Editor tabs">
                 {keys.map((key) => {
                     const onClick = () => { setKey(key); }
+                    const isActive = key === activeKey;
                     const className = (key === activeKey) ? "tabs-button tabs-button-active" : "tabs-button";
 
                     return (
                         <Button
+                            aria-controls={getPanelId(key)}
+                            aria-selected={isActive}
                             className={className}
+                            id={getTabId(key)}
                             key={key}
                             onClick={onClick}
+                            role="tab"
+                            tabIndex={isActive ? 0 : -1}
                         >{key}</Button>
                     );
                 })}
             </div>
 
-            <div className="tabs-children">
+            <div className="tabs-children app-p-4" aria-labelledby={activeTabId} id={activePanelId} role="tabpanel">
                 {props.children[activeIndex]}
             </div>
         </div>

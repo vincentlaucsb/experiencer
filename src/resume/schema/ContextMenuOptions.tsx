@@ -2,7 +2,7 @@ import { ResumeNode, NodeProperty } from "@/types";
 
 interface ContextMenuOption {
     text: string;
-    action: () => void;
+    onClick: () => void;
 }
 
 /**

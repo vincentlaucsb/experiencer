@@ -3,11 +3,17 @@ import { Popover } from 'react-tiny-popover';
 import { Button } from "./Buttons";
 import ToolbarButton from "./toolbar/ToolbarButton";
 
+import "./HtmlIdAdder.scss";
+
 interface htmlIdAdderProps {
     htmlId?: string;
     cssClasses?: string;
     addHtmlId: (htmlId: string) => void;
     addCssClasses: (classes: string) => void;
+}
+
+function sanitizeHtmlId(value: string) {
+    return value.replace(/#/g, '').replace(/\s+/g, '');
 }
 
 export default function HtmlIdAdder(props: htmlIdAdderProps) {
@@ -18,10 +24,16 @@ export default function HtmlIdAdder(props: htmlIdAdderProps) {
     let [classesValid, setClassesValid] = React.useState(true);
 
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setHtmlId(event.target.value);
+        const nextHtmlId = sanitizeHtmlId(event.target.value);
+        setHtmlId(nextHtmlId);
+
+        if (nextHtmlId.length === 0) {
+            setIdValid(true);
+            return;
+        }
 
         try {
-            document.querySelector(`#${event.target.value}`);
+            document.querySelector(`#${nextHtmlId}`);
             setIdValid(true);
         }
         catch {
@@ -60,19 +72,41 @@ export default function HtmlIdAdder(props: htmlIdAdderProps) {
     const classNameInputClass = classesValid ? "" : "invalid";
 
     const expanded = (
-        <form className="pure-form pure-form-aligned" id="html-id-adder" onSubmit={handleSubmit}>
-            <div className="pure-control-group">
+        <form
+            className="pure-form pure-form-aligned"
+            data-testid="html-id-adder-form"
+            id="html-id-adder"
+            onSubmit={handleSubmit}
+        >
+            <div className="pure-control-group" id="html-id-group">
                 <label htmlFor="html-id">ID</label>
-                <input id="html-id" className={htmlIdInputClass} type="text" onChange={onChange} value={htmlId} />
+                <div className="html-id-input">
+                    <span className="html-id-prefix" data-testid="html-id-prefix" aria-hidden="true">#</span>
+                    <input
+                        data-testid="html-id-input"
+                        id="html-id"
+                        className={htmlIdInputClass}
+                        type="text"
+                        onChange={onChange}
+                        value={htmlId}
+                    />
+                </div>
             </div>
 
-            <div className="pure-control-group">
+            <div className="pure-control-group" id="css-classes-group">
                 <label htmlFor="css-classes">Classes</label>
-                <input id="css-classes" className={classNameInputClass} type="text" onChange={onCssChange} value={cssClasses} />
+                <input
+                    data-testid="css-classes-input"
+                    id="css-classes"
+                    className={classNameInputClass}
+                    type="text"
+                    onChange={onCssChange}
+                    value={cssClasses}
+                />
             </div>
 
             <div className="pure-controls">
-                <Button type="submit">Save</Button>
+                <Button data-testid="html-id-save" type="submit">Save</Button>
             </div>
         </form>
     );
@@ -83,11 +117,13 @@ export default function HtmlIdAdder(props: htmlIdAdderProps) {
             isOpen={isOpen}
             positions={"bottom"}
             content={expanded}>
-            <ToolbarButton
-                action={() => setOpen(!isOpen)}
-                icon="ui-tag"
-                text="Add ID/Classes"
-            />
+            <span data-testid="html-id-adder-trigger">
+                <ToolbarButton
+                    onClick={() => setOpen(!isOpen)}
+                    icon="ui-tag"
+                    text="Add ID/Classes"
+                />
+            </span>
         </Popover>
     );
 }

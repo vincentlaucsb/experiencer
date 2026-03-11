@@ -218,7 +218,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
         let keyAdder = <></>
         if (this.state.isAddingKey) {
             keyAdder = <tr>
-                <th scope="row" {...this.inputContainerProps()}>
+                <th scope="row" className="app-pr-3" {...this.inputContainerProps()}>
                     <ValueField
                         isEditing={this.state.isAddingKey}
                         updateText={this.addNewKey}
@@ -247,7 +247,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                     return (
                         <tr className="property"
                             key={key} {...this.inputContainerProps(key)}>
-                            <th className="property-key">{key}</th>
+                            <th className="property-key app-pr-3">{key}</th>
                             <td className="property-value">
                                 <ValueField
                                     isEditing={this.state.activeKey === key}

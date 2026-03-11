@@ -1,5 +1,5 @@
 import ResumeNodeTree from "..";
-import { assignIds } from "@/shared/utils/Helpers";
+import { assignIds } from "@/shared/utils/assignIds";
 import { BasicResumeNode } from "@/types";
 
 test('getNodeById Test', () => {

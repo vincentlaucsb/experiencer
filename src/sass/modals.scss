@@ -1,5 +1,4 @@
-﻿@use "sass:math";
-@use "variables";
+﻿@use "colors/semantic" as colors;
 
 /** All modals */
 div[class*='ReactModal__Content'] {
@@ -7,28 +6,22 @@ div[class*='ReactModal__Content'] {
         display: flex;
         align-items: center;
         margin: 0;
-        background: variables.$main;
-        color: variables.$light-shade;
-        padding: math.div(variables.$spacing, 2) variables.$spacing;
+        background: colors.$main;
+        color: colors.$light-shade;
 
         .modal-close {
             border: none;
             background: inherit;
             margin-left: auto;
-            padding: 0;
 
             &:hover {
-                color: variables.$light-accent;
+                color: colors.$light-accent;
             }
         }
     }
 
-    .modal-content {
-        padding: variables.$spacing;
-    }
-
-    border: 1px solid variables.$dark-shade;
-    background: variables.$light-shade;
+    border: 1px solid colors.$dark-shade;
+    background: colors.$light-shade;
     overflow: auto;
     border-radius: 4px;
     outline: none;

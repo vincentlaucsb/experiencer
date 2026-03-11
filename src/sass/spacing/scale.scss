@@ -1,0 +1,46 @@
+@use "sass:map";
+@use "sass:math";
+
+@function app-generate-spacing-scale(
+    $start,
+    $stop,
+    $half-step-stop,
+    $skip-odd-from,
+    $unit
+) {
+    @if not math.is-unitless($start) or not math.is-unitless($stop) {
+        @error "Spacing scale start/stop must be unitless numbers.";
+    }
+
+    @if $start > $stop {
+        @error "Spacing scale start must be less than or equal to stop.";
+    }
+
+    @if not math.is-unitless($half-step-stop) or not math.is-unitless($skip-odd-from) {
+        @error "Spacing scale half-step stop and skip-odd-from must be unitless numbers.";
+    }
+
+    $scale: ();
+    $odd-skip-start: $skip-odd-from;
+
+    @if ($skip-odd-from % 2) == 0 {
+        $odd-skip-start: $skip-odd-from - 1;
+    }
+
+    @for $step from $start through $stop {
+        $is-odd: ($step % 2) != 0;
+        $skip-odd-size: $step >= $odd-skip-start and $is-odd;
+
+        @if not $skip-odd-size {
+            $scale: map.set($scale, $step, $unit * $step);
+        }
+
+        @if $step >= 1 and $step <= $half-step-stop {
+            $half-key: "#{$step}-5";
+            $half-value: $unit * ($step + 0.5);
+            $scale: map.set($scale, $half-key, $half-value);
+        }
+    }
+
+    @return $scale;
+}

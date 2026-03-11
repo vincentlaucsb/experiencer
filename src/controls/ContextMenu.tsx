@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, MouseEvent as ReactMouseEvent, ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { createContainer } from "@/shared/utils/Helpers";
+import { createContainer } from "@/shared/utils/createContainer";
 
 interface Position {
     x: number;

@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 // Utilities
-import { createContainer } from "@/shared/utils/Helpers";
+import { createContainer } from "@/shared/utils/createContainer";
 import contextMenuOptions from "@/resume/schema/ContextMenuOptions";
 import ComponentTypes from "@/resume/schema/ComponentTypes";
 
@@ -96,7 +96,7 @@ export function ResumeContextMenuConnected() {
             );
             if (rawCustomOptions) {
                 customOptions = rawCustomOptions.map((option, idx) => (
-                    <MenuItem key={idx} onClick={option.action}>
+                    <MenuItem key={idx} onClick={option.onClick}>
                         {option.text}
                     </MenuItem>
                 ));

@@ -1,8 +1,12 @@
-import { useState, useEffect } from "react";
+import type { MouseEvent } from "react";
 import Markdown from "react-markdown";
 
+import "./OverlayEditing.scss";
+import "./Markdown.scss";
+
 // Utilities
-import useEditingHotkeys from "./hooks/useEditingHotkeys";
+import useEditing from "./hooks/useEditing";
+import useEditingControls from "./hooks/useEditingControls";
 
 // Components
 import Container from "@/resume/infrastructure/Container";
@@ -12,7 +16,6 @@ import { useEditorStore, useIsNodeEditing } from "@/shared/stores/editorStore";
 
 // Types
 import ResumeComponentProps from "@/types";
-import useEditing from "./hooks/useEditing";
 
 /**
  * Markdown component - Freeform text with Markdown formatting support
@@ -41,7 +44,7 @@ export default function MarkdownText(props: ResumeComponentProps) {
         (newValue) => props.updateData("value", newValue)
     );
     
-    useEditingHotkeys({
+    const { cancel, save } = useEditingControls({
         isEditing,
         ctrlEnter: true,
         value: textValue,
@@ -49,22 +52,37 @@ export default function MarkdownText(props: ResumeComponentProps) {
         toggleEditing: toggleEdit,
     });
 
+    const handleCancel = (e: MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        cancel();
+    };
+
+    const handleSave = (e: MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        save();
+    };
+
     const editContent = (
-        <div className="markdown-editor-overlay" onClick={(e) => e.stopPropagation()}>
-            <textarea
-                className="markdown-textarea"
-                id={props.uuid}
-                value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
-                placeholder={`# Markdown supported\n\n- Lists\n- **Bold** *italic* ~~strikethrough~~\n- [Links](url)\n- \`code\` or \`\`\`code blocks\`\`\``}
-                autoFocus
-            />
-            <button className="markdown-save-button" onClick={(e) => {
-                e.stopPropagation();
-                toggleEdit();
-            }}>
-                Save (Ctrl + Enter)
-            </button>
+        <div className="resume-overlay-editor resume-overlay-editor--markdown app-gap-2 app-p-4" onClick={(e) => e.stopPropagation()}>
+            <div className="resume-overlay-field app-gap-1">
+                <textarea
+                    className="resume-overlay-input resume-overlay-textarea app-p-2"
+                    id={`${props.uuid}-markdown-input`}
+                    aria-label="Markdown content"
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    placeholder={`# Markdown supported\n\n- Lists\n- **Bold** *italic* ~~strikethrough~~\n- [Links](url)\n- \`code\` or \`\`\`code blocks\`\`\``}
+                    autoFocus
+                />
+            </div>
+            <div className="resume-overlay-actions app-gap-2">
+                <button className="resume-overlay-cancel-button app-py-2 app-px-4" onClick={handleCancel}>
+                    Cancel
+                </button>
+                <button className="resume-overlay-save-button app-py-2 app-px-4" onClick={handleSave}>
+                    Save (Ctrl + Enter)
+                </button>
+            </div>
         </div>
     );
 
@@ -73,7 +91,7 @@ export default function MarkdownText(props: ResumeComponentProps) {
             {textValue ? (
                 <Markdown>{textValue}</Markdown>
             ) : (
-                <span className="empty-placeholder">Click to add content</span>
+                <span className="empty-placeholder app-text-light-accent">Click to add content</span>
             )}
         </>
     );

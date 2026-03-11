@@ -6,27 +6,27 @@ export default function getJustifyContentOptions(updateNode: (key: string, value
         items: [
             {
                 text: 'Space between',
-                action: () => justifyContent('space-between')
+                onClick: () => justifyContent('space-between')
             },
             {
                 text: 'Stack at beginning',
-                action: () => justifyContent('flex-start')
+                onClick: () => justifyContent('flex-start')
             },
             {
                 text: 'Stack at end',
-                action: () => justifyContent('flex-end')
+                onClick: () => justifyContent('flex-end')
             },
             {
                 text: 'Stack center',
-                action: () => justifyContent('center')
+                onClick: () => justifyContent('center')
             },
             {
                 text: 'Space around',
-                action: () => justifyContent('space-around')
+                onClick: () => justifyContent('space-around')
             },
             {
                 text: 'Space evenly',
-                action: () => justifyContent('space-evenly')
+                onClick: () => justifyContent('space-evenly')
             }
         ]
     };

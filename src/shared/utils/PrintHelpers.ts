@@ -1,6 +1,7 @@
 import { saveAs } from 'file-saver';
 import { useEditorStore } from '@/shared/stores/editorStore';
 import generateHtml from '@/editor/GenerateHtml';
+import PageSize from '@/types/PageSize';
 
 /**
  * Print the resume using browser's print dialog.
@@ -33,14 +34,20 @@ export function exportResumeAsHtml(
     filename: string = 'resume.html'
 ) {
     const prevMode = useEditorStore.getState().mode;
+    const pageSize = useEditorStore.getState().pageSize;
+    const pageSizeRule = pageSize === PageSize.A4
+        ? '@page { size: A4; }'
+        : '@page { size: Letter; }';
+
     useEditorStore.getState().unselectNode();
     useEditorStore.getState().setMode('printing');
 
     // Wait for render to complete before capturing HTML
     requestAnimationFrame(() => {
         const resumeHtml = resumeElement ? resumeElement.outerHTML : '';
+        const stylesheetWithPageSize = `${pageSizeRule}\n${stylesheet}`;
         const blob = new Blob(
-            [generateHtml(stylesheet, resumeHtml)],
+            [generateHtml(stylesheetWithPageSize, resumeHtml)],
             { type: "text/html;charset=utf-8" }
         );
 

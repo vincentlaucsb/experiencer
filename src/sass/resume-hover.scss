@@ -1,12 +1,12 @@
-@use "variables";
+@use "colors/semantic" as colors;
 
 .resume-selected {
-    background: variables.$light-shade;
+    background: colors.$light-shade;
 }
 
 #resume {
     div.resume-selected, .resume-selected {
-        border: 2px solid variables.$dark-shade;
+        border: 2px solid colors.$dark-shade;
         cursor: auto;
     }
 }

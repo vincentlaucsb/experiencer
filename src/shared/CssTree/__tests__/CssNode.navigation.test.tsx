@@ -39,6 +39,16 @@ describe('CssNode - Navigation & Selectors', () => {
         expect(listItem?.name).toBe('List Item');
     });
 
+    test('findNode does not mutate the input path array', () => {
+        const root = makeCssTree();
+        const path = ['Lists', 'List Item'];
+
+        const result = root.findNode(path);
+
+        expect(result?.name).toBe('List Item');
+        expect(arraysEqual(path, ['Lists', 'List Item'])).toBe(true);
+    });
+
     test('findNode with string path (single level)', () => {
         const root = makeCssTree();
         const lists = root.findNode('Lists');
@@ -165,5 +175,64 @@ describe('CssNode - Navigation & Selectors', () => {
         
         expect(pseudo.fullSelector).toBe('div p::before');
         expect(pseudo2.fullSelector).toBe('div p::after');
+    });
+
+    describe('findOrCreateNode', () => {
+        test('returns existing node when path already exists', () => {
+            const root = makeCssTree();
+            const existing = root.findNode(['Lists']) as CssNode;
+            const result = root.findOrCreateNode(['Lists']);
+
+            expect(result).toBe(existing);
+        });
+
+        test('creates a missing leaf node', () => {
+            const root = makeCssTree();
+            const result = root.findOrCreateNode(['New Node']);
+
+            expect(result).toBeDefined();
+            expect(result.name).toBe('New Node');
+            expect(root.findNode(['New Node'])).toBe(result);
+        });
+
+        test('creates missing intermediate nodes', () => {
+            const root = makeCssTree();
+            const result = root.findOrCreateNode(['A', 'B', 'C']);
+
+            expect(result.name).toBe('C');
+            expect(root.findNode(['A', 'B', 'C'])).toBe(result);
+            expect(root.findNode(['A', 'B'])?.name).toBe('B');
+            expect(root.findNode(['A'])?.name).toBe('A');
+        });
+
+        test('reuses existing intermediate and creates only missing tail', () => {
+            const root = makeCssTree();
+            const result = root.findOrCreateNode(['Lists', 'New Child']);
+
+            expect(result.name).toBe('New Child');
+            // Existing 'Lists' node is reused, not replaced
+            expect(root.findNode(['Lists', 'List Item'])).toBeDefined();
+            expect(root.findNode(['Lists', 'New Child'])).toBe(result);
+        });
+
+        test('empty path returns this', () => {
+            const root = makeCssTree();
+            expect(root.findOrCreateNode([])).toBe(root);
+        });
+
+        test('created node has no properties', () => {
+            const root = makeCssTree();
+            const result = root.findOrCreateNode(['Brand New']);
+
+            expect(result.properties.size).toBe(0);
+        });
+
+        test('supports names with spaces', () => {
+            const root = new CssNode('Root', {}, '.root');
+            const result = root.findOrCreateNode(['Page Break']);
+
+            expect(result.name).toBe('Page Break');
+            expect(root.findNode(['Page Break'])).toBe(result);
+        });
     });
 });

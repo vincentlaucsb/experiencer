@@ -19,6 +19,7 @@ type ToolbarOptionsFunction = (
 /** Stores schema information */
 export default class ComponentTypes {
     private _childTypes: Map<string, Array<string> | undefined> = new Map();
+    private _cssNames: Map<string, Array<string>> = new Map();
     private _components: Map<string, typeof React.Component | React.FC<ResumeComponentProps>> = new Map();
     private _defaultChildTypes: string[] = [];
     private _defaultValues: Map<string, DefaultNodeValue> = new Map();
@@ -36,8 +37,12 @@ export default class ComponentTypes {
      * @returns A string (single type) or array of strings (multiple types)
      */
     childTypes(type: string) : string | Array<string> {
-        return this._childTypes.get(type) ||
-            this._defaultChildTypes;
+        const childTypes = this._childTypes.get(type);
+        if (Array.isArray(childTypes)) {
+            return [...childTypes];
+        }
+
+        return childTypes || [...this._defaultChildTypes];
     }
 
     /**
@@ -46,7 +51,8 @@ export default class ComponentTypes {
      * @returns Array with the CSS path (typically just [type])
      */
     cssName(type: string) : string[] {
-        return [type];
+        const cssName = this._cssNames.get(type);
+        return cssName ? [...cssName] : [type];
     }
 
     /**
@@ -123,6 +129,7 @@ export default class ComponentTypes {
 
         this._childTypes.set(def.type, def.childTypes ? 
             arrayNormalize(def.childTypes) : undefined);
+        this._cssNames.set(def.type, def.cssName ? arrayNormalize(def.cssName) : [def.type]);
         this._components.set(def.type, def.component);
         const defaultValue = { ...def.defaultValue, type: def.type };
         this._defaultValues.set(def.type, defaultValue);

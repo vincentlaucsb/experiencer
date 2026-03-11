@@ -1,7 +1,7 @@
 import React from "react";
 
 // Utilities
-import { isNullOrUndefined } from "@/shared/utils/Helpers";
+import { isNullOrUndefined } from "@/shared/utils/isNullOrUndefined";
 
 // Components
 import { ContextMenuTrigger } from "@/controls/ContextMenu";

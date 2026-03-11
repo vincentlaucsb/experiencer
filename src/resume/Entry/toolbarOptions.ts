@@ -38,19 +38,19 @@ export default function getEntryToolbarOptions(
             items: [
                 {
                     text: 'Add title field',
-                    action: () => updateNode('title', addTitleField(node))
+                    onClick: () => updateNode('title', addTitleField(node))
                 },
                 {
                     text: 'Add subtitle field',
-                    action: () => updateNode('subtitle', addSubtitleField(node))
+                    onClick: () => updateNode('subtitle', addSubtitleField(node))
                 },
                 {
                     text: 'Add subtitle line break',
-                    action: () => updateNode('subtitleBreaks', addLineBreak(node))
+                    onClick: () => updateNode('subtitleBreaks', addLineBreak(node))
                 },
                 {
                     text: 'Remove subtitle line break (from right)',
-                    action: () => updateNode('subtitleBreaks', removeLineBreak(node))
+                    onClick: () => updateNode('subtitleBreaks', removeLineBreak(node))
                 }
             ]
         }

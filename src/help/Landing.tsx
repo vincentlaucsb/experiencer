@@ -18,8 +18,8 @@ function MenuItem (props: {
     onClick: Action;
 }) {
     return <PureMenuItem>
-        <Button onClick={props.onClick}>
-            <i className={`icofont-${props.icon}`} />
+        <Button className="app-p-2" onClick={props.onClick}>
+            <i className={`icofont-${props.icon} app-mr-4`} />
             {props.children}
         </Button>
     </PureMenuItem>
@@ -39,7 +39,7 @@ export default function Landing(props: LandingProps) {
             <Modal title="Load File" isOpen={isOpen} close={() => setOpen(false)} className="landing-modal">
                 {modalContent}
             </Modal>
-            <div id="landing">
+            <div id="landing" className="app-px-2">
                 <h2>Getting Started</h2>
                 <p>Welcome to Experiencer, a powerful tool that can help you create attractive resumes.</p>
                 <p>Click on the <strong>New</strong> button in the top left to get started. Once you start

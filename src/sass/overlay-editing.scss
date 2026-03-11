@@ -1,0 +1,49 @@
+@use "colors/semantic" as colors;
+
+/* Overlay-based editing styles */
+
+/* Popover containers - ensure proper positioning context */
+.link-popover,
+.markdown-popover {
+    position: relative;
+    z-index: 1000;
+    
+    /* Ensure popover content is visible above other elements */
+    & > div {
+        position: relative;
+        z-index: 1001;
+    }
+}
+
+/* Link editing overlay */
+.link-editing-overlay {
+    min-width: 200px;
+    padding: 0.5rem;
+    background: colors.$white;
+    border: 2px solid colors.$main;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(colors.$dark-shade, 0.15);
+    z-index: 1001;
+
+    input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid colors.$light-accent;
+        border-radius: 3px;
+        font-family: inherit;
+        font-size: inherit;
+
+        &:focus {
+            outline: none;
+            border-color: colors.$main;
+            box-shadow: 0 0 0 2px rgba(colors.$main, 0.1);
+        }
+    }
+}
+
+/* Component state indicator (while editing via overlay) */
+.link.editing {
+    opacity: 0.7;
+    border-bottom: 2px dashed colors.$main;
+    cursor: text;
+}

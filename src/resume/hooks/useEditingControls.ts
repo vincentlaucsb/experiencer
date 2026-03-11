@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 type EditingValue = string | Record<string, string>;
 
-export interface useEditingHotkeysOptions<TValue extends EditingValue = string> {
+export interface useEditingControlsOptions<TValue extends EditingValue = string> {
     /** Whether the component is currently being edited */
     isEditing: boolean;
 
@@ -20,36 +20,41 @@ export interface useEditingHotkeysOptions<TValue extends EditingValue = string> 
 }
 
 /**
- * Hook for managing keyboard shortcuts in editing contexts
+ * Hook for managing editing controls (keyboard shortcuts and cancel/save handlers)
  * 
- * Provides two keyboard behaviors while editing:
- * - **Enter/Ctrl+Enter**: Save changes and exit editing mode
- * - **Escape**: Cancel changes and restore the original value
+ * Provides:
+ * - **Keyboard shortcuts**: 
+ *   - **Enter/Ctrl+Enter**: Save changes and exit editing mode
+ *   - **Escape**: Cancel changes and restore the original value
+ * - **Cancel handler**: Preconfigured function that cancels edits and exits edit mode
  * 
  * The hook attaches a global keydown listener that only activates while `isEditing` is true.
  * 
  * @param options - Configuration for keyboard behavior
  * @param options.isEditing - Whether the component is currently in edit mode
- * @param options.onChange - Called with original value when Escape is pressed
+ * @param options.onChange - Called with original value when Escape is pressed or cancel is clicked
  * @param options.value - Current value; captured when editing starts for rollback
- * @param options.toggleEditing - Called when save hotkey is pressed (Enter/Ctrl+Enter)
+ * @param options.toggleEditing - Called when save hotkey is pressed (Enter/Ctrl+Enter) or cancel is clicked
  * @param options.ctrlEnter - Save key behavior:
  *   - `true` (default): Requires Ctrl+Enter to save (good for multiline textareas)
  *   - `false`: Enter alone saves (good for single-line inputs)
  * 
+ * @returns Object with `cancel` handler ready to use in UI buttons
+ * 
  * @example
  * // Multiline textarea - Ctrl+Enter to save
- * useEditingHotkeys({
+ * const { cancel } = useEditingControls({
  *   isEditing,
  *   value: content,
  *   onChange: (original) => reset(original),
  *   toggleEditing: () => exitEditMode(),
  *   ctrlEnter: true
  * });
+ * // Use cancel in button: onClick={cancel}
  * 
  * @example
  * // Single line input - Enter to save
- * useEditingHotkeys({
+ * const { cancel } = useEditingControls({
  *   isEditing,
  *   value: title,
  *   onChange: (original) => reset(original),
@@ -57,7 +62,7 @@ export interface useEditingHotkeysOptions<TValue extends EditingValue = string> 
  *   ctrlEnter: false
  * });
  */
-export default function useEditingHotkeys<TValue extends EditingValue = string>(options: useEditingHotkeysOptions<TValue>) {
+export default function useEditingControls<TValue extends EditingValue = string>(options: useEditingControlsOptions<TValue>) {
     const valueRef = useRef<TValue>(options.value);
 
     const isRecordValue = (value: EditingValue): value is Record<string, string> => {
@@ -113,4 +118,13 @@ export default function useEditingHotkeys<TValue extends EditingValue = string>(
             document.removeEventListener('keydown', onKeyDown);
         };
     }, [options]);
+
+    const cancel = () => {
+        options.onChange(valueRef.current);
+        options.toggleEditing();
+    };
+
+    const save = options.toggleEditing;
+
+    return { cancel, save };
 }

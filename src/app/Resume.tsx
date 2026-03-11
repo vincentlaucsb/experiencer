@@ -3,13 +3,14 @@ import { createPortal } from 'react-dom';
 import { useRef, useCallback } from 'react';
 
 import '@/assets/fonts/icofont.min.css';
-import '@/shared/scss/index.scss';
+import '@/sass/index.scss';
 import 'purecss/build/pure-min.css';
 
 // Utilities
-import { createContainer } from '@/shared/utils/Helpers';
+import { createContainer } from '@/shared/utils/createContainer';
 import { exportResumeAsHtml } from '@/shared/utils/PrintHelpers';
 import { exportResumeToPng } from '@/shared/utils/ExportPng';
+import getResumeMinHeight from '@/shared/utils/getResumeMinHeight';
 
 // Components
 import { Button } from '@/controls/Buttons';
@@ -25,9 +26,10 @@ import Landing from '@/help/Landing';
 import ResumeComponentFactory from '@/resume/ResumeComponent';
 import ResumeTemplates from '@/templates/ResumeTemplates';
 import ResumeCssEditor from '@/app/ResumeCssEditor';
+import PageSize from '@/types/PageSize';
 
 // Stores
-import { useEditorStore, useMode, useSelectedNodeId, useIsEditingSelected } from '@/shared/stores/editorStore';
+import { useEditorStore, useMode, usePageSize, useSelectedNodeId, useIsEditingSelected } from '@/shared/stores/editorStore';
 import { recordHistory } from '@/shared/stores/historyStore';
 import { useResumeTree, resumeNodeStore } from '@/shared/stores/resumeNodeStore';
 import { useTreeStylesheet } from '@/shared/stores/cssStoreHooks';
@@ -52,6 +54,7 @@ export interface ResumeProps {
     mode?: EditorMode;
     selectedNodeId?: string;
     isEditingSelected?: boolean;
+    pageSize?: PageSize;
     nodes?: Array<ResumeNode>;
     stylesheet: string;
     tree: ResumeNode;
@@ -62,6 +65,8 @@ export type ResumeWrapperProps = Partial<Omit<ResumeProps, 'selectedNodeId' | 'i
 function Resume(props: ResumeProps) {
     const resumeRef = useRef<HTMLDivElement>(null);
     const resumeNodes = props.tree.childNodes || [];
+    const pageSize = props.pageSize || PageSize.Letter;
+    const minHeight = getResumeMinHeight(resumeNodes, pageSize);
 
     // Returns true if we are actively editing a resume
     const isEditing = (() => {
@@ -117,6 +122,14 @@ function Resume(props: ResumeProps) {
         exportResumeToPng(resumeRef.current);
     }, []);
 
+    const exitPrintPreview = useCallback(() => {
+        useEditorStore.getState().setMode('normal');
+    }, []);
+
+    const openPrintDialog = useCallback(() => {
+        window.print();
+    }, []);
+
     // Helper Component Props
     const topMenuProps: TopNavBarWrapperProps = {
         exportHtml: exportHtml,
@@ -128,9 +141,9 @@ function Resume(props: ResumeProps) {
         return <Tabs>
             <NodeTreeVisualizer key="Tree" childNodes={resumeNodes}
                 selectNode={(uuid) => useEditorStore.getState().selectNode(uuid)}
-                selectedNode={useEditorStore.getState().selectedNodeId}
+                selectedNode={props.selectedNodeId}
             />
-            <ResumeCssEditor key="CSS" />
+            <ResumeCssEditor key="CSS" selectedNodeId={props.selectedNodeId} />
             <div key="Raw CSS">
                 <pre>
                     <code>
@@ -146,7 +159,12 @@ function Resume(props: ResumeProps) {
     const hlBoxContainer = createContainer("hl-box-container");
     const resume = (
         <>
-            <div id="resume" ref={resumeRef}>
+            <div
+                id="resume"
+                data-page-size={pageSize}
+                style={{ minHeight }}
+                ref={resumeRef}
+            >
                 <ResumeHotKeys />
                 {resumeNodes.map((elem, idx, arr) => {
                     const uniqueId = elem.uuid;
@@ -179,7 +197,7 @@ function Resume(props: ResumeProps) {
     );
     
     const editingTop = mode === 'printing' ? <></> : (
-        <header id="app-header" className="no-print">
+        <header id="app-header" className="no-print app-mb-4">
             <TopNavBar {...topMenuProps} />
             {isEditing ? <TopEditingBar /> : <></>}
         </header>
@@ -209,7 +227,23 @@ function Resume(props: ResumeProps) {
                 />
                 } />
         case 'printing':
-            return resume;
+            return (
+                <>
+                    <div id="print-preview-actions" className="no-print app-gap-4 app-p-4">
+                        <Button className="print-preview-exit" onClick={exitPrintPreview}>
+                            Exit Print Preview
+                        </Button>
+                        <Button
+                            className="print-preview-print"
+                            primary
+                            onClick={openPrintDialog}
+                        >
+                            Print
+                        </Button>
+                    </div>
+                    {resume}
+                </>
+            );
         default:
             return <ResizableSidebarLayout
                 topNav={editingTop}
@@ -226,6 +260,7 @@ function Resume(props: ResumeProps) {
 function ResumeContainer(props: ResumeWrapperProps) {
     const stylesheet = useTreeStylesheet();
     const storeMode = useMode();
+    const pageSize = usePageSize();
     const selectedNodeId = useSelectedNodeId();
     const isEditingSelected = useIsEditingSelected();
     const tree = useResumeTree();
@@ -249,6 +284,7 @@ function ResumeContainer(props: ResumeWrapperProps) {
     return <Resume 
         {...props}
         mode={mode}
+        pageSize={pageSize}
         selectedNodeId={selectedNodeId}
         isEditingSelected={isEditingSelected}
         stylesheet={stylesheet}

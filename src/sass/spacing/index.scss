@@ -1,0 +1,91 @@
+@use "sass:list";
+@use "scale";
+@use "../variables";
+
+$app-spacing-unit: 0.25em;
+$app-spacing-start: 0;
+$app-spacing-stop: 16;
+$app-half-step-stop: 3;
+$app-skip-odd-from: 8;
+
+$app-spacing-scale: scale.app-generate-spacing-scale(
+    $app-spacing-start,
+    $app-spacing-stop,
+    $app-half-step-stop,
+    $app-skip-odd-from,
+    $app-spacing-unit
+);
+
+$margin-padding-directions: (
+    "": (),
+    "x": (left, right),
+    "y": (top, bottom),
+    "t": (top),
+    "r": (right),
+    "b": (bottom),
+    "l": (left)
+);
+
+$gap-directions: (
+    "": gap,
+    "-x": column-gap,
+    "-y": row-gap
+);
+
+@mixin app-spacing-utility-set($variant-prefix: "") {
+    @each $step, $value in $app-spacing-scale {
+        @each $direction, $sides in $margin-padding-directions {
+            .app-#{$variant-prefix}m#{$direction}-#{$step} {
+                @if list.length($sides) == 0 {
+                    margin: $value !important;
+                }
+                @else {
+                    @each $side in $sides {
+                        margin-#{$side}: $value !important;
+                    }
+                }
+            }
+
+            .app-#{$variant-prefix}p#{$direction}-#{$step} {
+                @if list.length($sides) == 0 {
+                    padding: $value !important;
+                }
+                @else {
+                    @each $side in $sides {
+                        padding-#{$side}: $value !important;
+                    }
+                }
+            }
+        }
+
+        @each $gap-suffix, $gap-property in $gap-directions {
+            .app-#{$variant-prefix}gap#{$gap-suffix}-#{$step} {
+                #{$gap-property}: $value !important;
+            }
+        }
+    }
+
+    .app-#{$variant-prefix}mx-auto {
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    .app-#{$variant-prefix}my-auto {
+        margin-top: auto !important;
+        margin-bottom: auto !important;
+    }
+
+    .app-#{$variant-prefix}m-auto {
+        margin: auto !important;
+    }
+}
+
+@include app-spacing-utility-set();
+
+@media (min-width: variables.$screen-small) {
+    @include app-spacing-utility-set("sm-");
+}
+
+@media (min-width: variables.$screen-medium) {
+    @include app-spacing-utility-set("md-");
+}

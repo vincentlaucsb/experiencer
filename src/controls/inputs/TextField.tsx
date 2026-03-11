@@ -4,11 +4,12 @@ import { ContextMenu, ContextMenuTrigger, MenuItem } from "@/controls/ContextMen
 import ReactDOM from "react-dom";
 import InlineMarkdown from "@/resume/helpers/InlineMarkdown";
 
-import { createContainer, isNullOrUndefined } from "@/shared/utils/Helpers";
+import { createContainer } from "@/shared/utils/createContainer";
+import { isNullOrUndefined } from "@/shared/utils/isNullOrUndefined";
 
 interface ContextMenuOption {
     text: string;
-    action: () => void;
+    onClick: () => void;
 }
 
 interface TextFieldProps {
@@ -125,7 +126,7 @@ export default class TextField extends React.Component<TextFieldProps, TextField
         const contextMenuOptions = this.props.contextMenuOptions ?
             this.props.contextMenuOptions.map((option, index: number) => {
             return (
-                <MenuItem onClick={option.action} key={index}>{option.text}</MenuItem>
+                <MenuItem onClick={option.onClick} key={index}>{option.text}</MenuItem>
             )
         }) : <></>;
 

@@ -1,0 +1,113 @@
+@use "sass:color";
+@use "../sass/colors/semantic" as colors;
+@use "../sass/variables";
+
+/** || Header */
+header#app-header {
+    background: colors.$main;
+    color: colors.$light-shade;
+
+    #brand, #toolbar {
+        @extend %flex-row;
+        align-content: center;
+    }
+
+    .pure-menu-active {
+        &, :focus {
+            background: colors.$dark-accent;
+        }
+    }
+
+    .pure-button {
+        background: inherit;
+        color: inherit;
+
+        > i[class*="icofont"] + .button-text {
+            margin-left: 0.5rem;
+        }
+
+        &:hover {
+            background: colors.$dark-accent;
+        }
+    }
+
+    /** || Toolbar Dropdowns */
+    .pure-menu-has-children {
+        /** || Caret */
+        > button::after {
+            content: "\25BE";
+            font-size: small;
+            padding-left: 0.5rem;
+        }
+
+        /** || Dropdown Items */
+        .pure-menu-children {
+            box-shadow: color.adjust(colors.$dark-shade, $alpha: -0.5) 2px 2px 5px;
+
+            .pure-menu-item {
+                background: colors.$dark-shade;
+                color: colors.$light-shade;
+                padding: 0;
+            }
+
+            .pure-button {
+                width: 100%;
+
+                div {
+                    /** Workaround due to a Chrome bug where <button> elements can't be
+                        grid containers
+
+                        See: https://github.com/rachelandrew/gridbugs#10-some-html-elements-cant-be-grid-containers
+                    */
+                    display: grid;
+                    text-align: left;
+                    align-items: center;
+                    /** icon, label, shortcut (if applicable) */
+                    grid-template-columns: 16px 1fr 0.5fr;
+                    grid-column-gap: 1rem;
+                    width: 100%;
+
+                    .button-text {
+                        grid-column-start: 2;
+                        white-space: nowrap;
+                    }
+                }
+
+                i[class*="icofont"] {
+                    color: colors.$light-accent;
+                }
+
+                &:hover {
+                    background: colors.$dark-accent;
+
+                    i[class*="icofont"] {
+                        color: colors.$light-accent-hover;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** || Top Nav Bar */
+#brand {
+    align-items: center;
+
+    h1 {
+        font-size: 20pt;
+        cursor: pointer;
+    }
+
+    .pure-menu-horizontal {
+        display: flex;
+        flex-direction: column;
+        align-self: center;
+    }
+
+    // GitHub Icon
+    .github-mark {
+        vertical-align: middle;
+        color: colors.$light-accent;
+        width: 32px;
+    }
+}

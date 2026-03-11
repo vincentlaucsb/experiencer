@@ -1,10 +1,8 @@
-﻿@use "sass:math";
-@use "sass:color";
-@use "variables";
+﻿@use "sass:color";
+@use "colors/semantic" as colors;
 
 #landing {
     max-width: 75ch;
-    padding: 0 variables.$edge-horizontal-spacing;
     margin-left: auto;
     margin-right: auto;
 }
@@ -15,7 +13,7 @@
 
         /** || Adjacent Menu Items */
         + .pure-menu-item {
-            margin-top: math.div(variables.$spacing, 2);
+            margin-top: 0.5rem;
         }
 
         /** || Buttons */
@@ -23,19 +21,17 @@
             display: flex;
             align-items: center;
             background: inherit;
-            padding: math.div(variables.$spacing, 2);
             font-size: large;
             width: 100%;
 
             &:hover {
-                background: color.adjust(variables.$light-accent, $lightness: 20%);
+                background: color.adjust(colors.$light-accent, $lightness: 20%);
             }
         }
 
         i[class*="icofont"] {
             font-size: 40px;
-            color: variables.$main;
-            margin-right: variables.$spacing;
+            color: colors.$main;
         }
     }
 }

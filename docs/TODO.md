@@ -3,9 +3,7 @@
 ## Scratchpad
 
 ### Misc
- - [ ] Add "Exit Print Preview" to print preview mode
- - [ ] Add way to enter Print Preview from menu (perhaps under File)
- - [ ] When "File" menu is activated, clicking outside should close it
+ - (Moved to CHANGELOG)
 
 ### CSS Editor
  - [ ] Raw CSS view should have button next to each section that goes to corresponding section in CSS
@@ -14,34 +12,19 @@
 
 ### Nodes
  - [ ] Finish semantic HTML migrations
- - [ ] Fix Image component editing mode
+ - [ ] Fix Image component editing mode (partially improved on mar-5-2026)
 
-### Markdown Component (Replace RichText) - IN PROGRESS
+### Markdown Component (Replace RichText) - COMPLETE
 **Goal**: Move away from react-quill (React 18 compatibility issues) to Markdown-based text editing
 
-**Architecture**:
-- **Markdown RichText**: General-purpose freeform text (intro paragraphs, summaries, formatted content)
-- **BulletedList** (Phase 1): Markdown RichText with `- ` prefix pre-populated, `hideBullets` toggle
-- **BulletedList** (Phase 2): Dedicated component with array structure (when feature demands justify refactor)
-
-**Phase 1 - Markdown RichText (CURRENT)**:
-1. ✅ Install dependencies: `react-markdown` + plain textarea (no WYSIWYG for now)
-2. ⏳ Create `src/resume/Markdown.tsx`:
-   - Function component with hooks
-   - Edit mode: Plain textarea with markdown syntax hints
-   - View mode: Rendered markdown via react-markdown
-   - Uses isPrinting context for export
-3. ⏳ Update ComponentTypes.tsx:
-   - Add Markdown to childTypes for Grid, Column, Entry, Section, Header
-   - Keep RichText for backward compatibility initially
-   - Add defaultValue for Markdown type ("# " for headers, "- " for lists)
-   - Add cssName mapping
-4. ⏳ Add Markdown to ResumeComponent.tsx factory
-5. ⏳ Update CssTemplates.tsx:
-   - Styles for rendered markdown (headings, lists, code blocks, blockquotes)
-6. ⏳ Update templates to use Markdown instead of RichText
-7. ⏳ Test rendering, editing, export, print
-8. ⏳ Remove/deprecate RichText component
+**Phase 1 - COMPLETE** (see `CHANGELOG.md`):
+1. ✅ Created `src/resume/Markdown.tsx` — function component with textarea edit mode, `react-markdown` view mode
+2. ✅ Updated `ComponentTypes.tsx` — Markdown registered in schema with childTypes, defaultValue, cssName
+3. ✅ Added Markdown to `ResumeComponent.tsx` factory
+4. ✅ Updated `CssTemplates.tsx` and added `src/resume/Markdown.scss` (97 lines)
+5. ✅ Templates updated to use Markdown
+6. ✅ Rendering, editing, export, print verified
+7. ✅ RichText deprecated and removed from active use
 
 **Phase 2 - Bulleted List Refactor** (Backlog):
 - Create dedicated `src/resume/BulletedList.tsx` component
@@ -87,8 +70,8 @@
 **Goal**: Professional-grade export capabilities
 - [ ] PDF export with print CSS optimization
 - [ ] Multiple format support: JSON, YAML, plain text
-- [ ] Custom page size options (A4, Letter, Legal)
-- [ ] Print preview mode with margin guides
+- ✅ ~~Custom page size options (A4, Letter)~~ — Letter/A4 toggle in editing bar; `@page { size }` injected on HTML export
+- ✅ ~~Print preview mode~~ — dedicated print-preview bar with Exit/Print buttons
 - [ ] Mobile preview: Real-time preview on mobile while editing on desktop
 **Estimated effort**: 3-5 hours
 
@@ -113,12 +96,6 @@
 - Add to ComponentTypes and ResumeComponent factory
 **Estimated effort**: 1-2 hours
 
-### react-contextmenu
-✅ **COMPLETED** - Created custom ContextMenu component at `src/controls/ContextMenu.tsx`
-- Replaced react-contextmenu (last updated 2020) with custom implementation
-- Provides ContextMenu and ContextMenuTrigger components
-- Resolves TypeScript type compatibility issues
-
 ### react-resizable-and-movable (SplitPane)
 Similar situation to react-contextmenu - type compatibility issues with modern React
 - **Issue**: `children` prop type mismatch in SplitPane component
@@ -128,11 +105,6 @@ Similar situation to react-contextmenu - type compatibility issues with modern R
 - **Status**: Backlog - working component but TypeScript errors
 
 ### Improve Link Component
-- [x] Create Link component
-- [x] Add to schema and templates
-- [x] URL input in toolbar
-- [x] Edit mode context menu
-- [x] Export with proper href attributes
 - [ ] Add keyboard shortcut (Ctrl+K?) to create link from selected text
 - [ ] Validate URL format with visual feedback
 - [ ] Support for email links (mailto:)
@@ -154,7 +126,7 @@ Similar situation to react-contextmenu - type compatibility issues with modern R
 ## Low Priority
 
 ### Testing
-- [ ] Increase test coverage (currently minimal)
+- [ ] Increase test coverage (significant new tests added on mar-5-2026 branch; global ~71% statements)
 - [ ] Add E2E tests with Playwright/Cypress
 - [ ] Visual regression testing for templates
 - [ ] Performance benchmarks
@@ -171,97 +143,32 @@ Similar situation to react-contextmenu - type compatibility issues with modern R
 - [ ] Image upload and optimization
 - [ ] Font family selector in CSS editor
 - [ ] Spell check integration
-- [ ] Accessibility audit and improvements
+- [~] Accessibility — initial ARIA pass complete (see `docs/ARIA-TODO.md` for remaining work)
 - [ ] Dark mode for editor UI (not resume)
 - [ ] Collaborative editing (WebRTC?)
 - [ ] Resume versioning/history
 
 ### Build & Deploy
-- [ ] Consider migration to Vite (faster builds)
 - [ ] PWA support for offline editing
 - [ ] GitHub Pages deployment automation
 - [ ] Docker container for local development
 
 ---
 
-## Recently Completed
+## Documented Tradeoffs to Reevaluate
 
-### ✅ Vite Migration (COMPLETED)
-**Goal**: Migrate from Webpack to Vite for faster development and better DX
+- [ ] Page break spacing enforcement: currently we do not enforce a full-page minimum gap between consecutive `PageBreak` nodes in editing mode.
+   - **Current approach**: dynamic `#resume` min-height based on `pageBreakCount + 1`, with natural content flow.
+   - **Reason**: avoids high-complexity layout constraints and editor jank for a low-frequency edge case.
+   - **Reevaluate if**: users repeatedly report confusing pagination or overlapping mental model between visual breaks and print output.
 
-**Completed**:
-- ✅ Installed Vite 7.3.1 + @vitejs/plugin-react + vite-plugin-svgr
-- ✅ Created vite.config.ts with optimized settings
-- ✅ Moved index.html to root with script tag
-- ✅ Updated package.json scripts (dev, build, preview)
-- ✅ Removed 346 webpack packages (babel-loader, css-loader, webpack, etc.)
-- ✅ Added vite-env.d.ts for TypeScript support
-- ✅ All tests passing (23/23)
-- ✅ Dev server starts in 364ms (vs ~3-5s with webpack)
-
-**Results**:
-- ⚡ **10x faster dev server startup** - 364ms vs 3-5 seconds
-- 🔥 **Instant HMR** - Changes appear in ~50ms
-- 📦 **346 fewer packages** - Leaner dependency tree
-- 🎯 **Native ESM** - Modern approach, better tree-shaking
-- 🚀 **Better DX** - Cleaner config, faster iteration
-
-### ✅ Zustand State Management Migration (COMPLETED)
-**Goal**: Replace Context API for frequently-changing editor state with Zustand for better performance
-
-**Completed**:
-- ✅ Installed Zustand 5.x with `--legacy-peer-deps`
-- ✅ Created `src/stores/editorStore.ts` with selectedNodeId, isEditingSelected state
-- ✅ Added actions: selectNode, editNode, unselectNode, toggleEdit
-- ✅ Updated Resume.tsx to use store for selection handling
-- ✅ Removed selectedUuid/isEditingSelected from ResumeContext
-- ✅ Updated 6 components: Link, Container, RichText, Header, List, Entry
-- ✅ Created selector hooks: useIsNodeEditing, useIsNodeSelected, useIsEditingSelected
-- ✅ All tests passing (23/23)
-- ✅ Updated ARCHITECTURE.md with Zustand patterns
-- ✅ Updated .claude/rules/state-management.md with comprehensive examples
-
-**Results**:
-- ⚡ Selective re-renders: Only selected/unselected components update
-- 🐛 Redux DevTools integrated for debugging
-- 📦 Simpler component logic with hooks (function components) and getState() (class components)
-- 🔧 Can access/update state outside React components
-
-### ✅ Print Mode State in Zustand (COMPLETED)
-**Goal**: Move print/export state out of React context into a lightweight Zustand store
-
-**Completed**:
-- ✅ Added `printStore` with `isPrinting` state + selector hook
-- ✅ Removed `ResumeContext` provider usage from render tree
-- ✅ Updated Link component + tests to consume Zustand state
-- ✅ Synced print mode changes with before/after print events
-
-### ✅ Centralized Editor Mode State (COMPLETED)
-**Goal**: Move all editor modes into Zustand for better separation of concerns
-
-**Completed**:
-- ✅ Added mode state to `editorStore` with `setMode()` and `toggleMode()` actions
-- ✅ Created `useMode()`, `useIsEditing()` selector hooks
-- ✅ Moved `print()` and `exportHtml()` into utility functions (`PrintHelpers.ts`)
-- ✅ Removed mode from `Resume` component state (now purely presentational)
-- ✅ `printStore` auto-syncs with editor mode via subscription
-
-**Benefits**:
-- 📦 All UI state centralized in stores (mode, selection, printing)
-- 🔧 Utilities can access state without component instance
-- 🧪 Mode transitions testable independently
-- 📉 ~60 lines removed from Resume.tsx
+- [ ] Resume host architecture: keep resume rendering in same-document `#resume` container rather than moving editing to an iframe.
+   - **Current approach**: render resume directly in app DOM for WYSIWYG interactions (selection, overlays, context menus, live CSS, print-preview parity).
+   - **Reason**: iframe isolation is cleaner for CSS boundaries, but significantly increases complexity for event routing, portals/highlight overlays, and editing fidelity.
+   - **Reevaluate if**: CSS collision issues become frequent/high-impact, or we introduce a dedicated read-only preview surface where iframe isolation provides clear value.
 
 ---
 
-## Completed
+Completed work is tracked in `CHANGELOG.md`.
 
-- ✅ React 16 → 18 upgrade (pragmatic choice vs. 19)
-- ✅ Remove react-scripts, migrate to Webpack 5
-- ✅ TypeScript 3.7 → 5.7 upgrade
-- ✅ Modern SCSS syntax (@use, math.div, color.adjust)
-- ✅ Jest test suite setup and fixes
-- ✅ Create Link component with proper export
-- ✅ Add isPrinting to ResumeContext
-- ✅ Create AI-friendly documentation (CLAUDE.md, ARCHITECTURE.md, MIGRATION.md)
-- ✅ Establish function component preference for new code
+Accessibility/ARIA completed + future work is tracked in `ARIA-TODO.md`.

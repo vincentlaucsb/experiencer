@@ -37,7 +37,7 @@ export default function ToolbarItemFactory(props: ToolbarItemProps) {
         <PureMenuItem>
             <ToolbarButton
                 {...props}
-                disabled={!props.action && !props.items}
+                disabled={!props.onClick && !props.items}
             />
         </PureMenuItem>
     );

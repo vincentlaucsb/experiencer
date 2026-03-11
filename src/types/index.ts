@@ -72,7 +72,7 @@ export type ResumeNode<TExtra extends Record<string, any> = Record<string, any>>
 export interface ResumeSaveData {
     builtinCss: CssNodeDump;
     rootCss: CssNodeDump;
-    childNodes: Array<ResumeNode>;
+    childNodes: Array<BasicResumeNode>;
 }
 
 /**

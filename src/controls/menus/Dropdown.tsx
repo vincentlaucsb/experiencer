@@ -2,8 +2,17 @@ import React from "react";
 
 import { PureMenuItem, PureMenuItemProps } from "./PureMenu";
 
+type TriggerHandler = ((event: React.MouseEvent) => void) | (() => void);
+
+interface DropdownTriggerProps {
+    onClick?: TriggerHandler;
+    'aria-haspopup'?: 'menu';
+    'aria-controls'?: string;
+    'aria-expanded'?: boolean;
+}
+
 export interface DropdownProps extends PureMenuItemProps {
-    trigger: any;
+    trigger: React.ReactElement<DropdownTriggerProps>;
     hover?: boolean;
     ulProps?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLUListElement>, HTMLUListElement>;
 }
@@ -12,6 +21,7 @@ export default function Dropdown(props: DropdownProps) {
     /** See: https://purecss.io/js/menus.js */
     let [active, setActive] = React.useState(false);
     const dropdownRef = React.useRef<HTMLLIElement | null>(null);
+    const menuId = React.useId();
     let classes = ['pure-menu-has-children'];
 
     const onMouseOver = props.hover ? () => setActive(true) : props.onMouseOver;
@@ -52,30 +62,49 @@ export default function Dropdown(props: DropdownProps) {
     }, [active]);
 
     const toggler = (event: React.MouseEvent) => {
+        event.stopPropagation();
         setActive(!active);
     }
 
-    let newUlProps = {
-        className: childClasses.join(' ')
+    const onTriggerClick = (event: React.MouseEvent) => {
+        toggler(event);
+
+        const triggerOnClick = props.trigger?.props?.onClick;
+        if (typeof triggerOnClick === 'function') {
+            triggerOnClick(event);
+        }
     };
 
-    if (props.ulProps) {
-        newUlProps = {
-            ...props.ulProps,
-            className: `${props.ulProps.className} ${childClasses.join(' ')}`
+    const onKeyDown = (event: React.KeyboardEvent) => {
+        if (event.key === 'Escape') {
+            setActive(false);
         }
-    }
+    };
+
+    const newUlProps: React.DetailedHTMLProps<React.HTMLAttributes<HTMLUListElement>, HTMLUListElement> = {
+        ...props.ulProps,
+        className: [props.ulProps?.className, ...childClasses].filter(Boolean).join(' '),
+        id: props.ulProps?.id || menuId,
+        role: 'menu'
+    };
+
+    const trigger = React.cloneElement(props.trigger, {
+        'aria-haspopup': 'menu',
+        'aria-controls': newUlProps.id,
+        'aria-expanded': active,
+        onClick: props.hover ? props.trigger.props?.onClick : onTriggerClick
+    });
 
     // TODO: Rework onBlur handler
     return (
         <PureMenuItem
             {...props}
             itemRef={dropdownRef}
-            onClick={toggler}
+            onKeyDown={onKeyDown}
             onMouseOut={onMouseOut}
             onMouseOver={onMouseOver}
             classNames={classes}>
-            {props.trigger}
+            {trigger}
             <ul {...newUlProps}>
                 {props.children}
             </ul>

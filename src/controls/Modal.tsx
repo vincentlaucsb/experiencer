@@ -14,15 +14,15 @@ export interface ModalProps {
 export default function Modal(props: ModalProps) {
     return (
         <ReactModal isOpen={props.isOpen} className={props.className}>
-            <h3 className="modal-heading">
+            <h3 className="modal-heading app-py-2 app-px-4">
                 {props.title}
                 <button
-                    className="modal-close"
+                    className="modal-close app-p-0"
                     onClick={() => props.close()}>
                     <CloseIcon />
                 </button>
             </h3>
-            <div className="modal-content">
+            <div className="modal-content app-p-4">
                 {props.children}
             </div>
         </ReactModal>

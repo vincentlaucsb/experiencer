@@ -1,48 +1,14 @@
-@use "sass:math";
-@use "variables";
+@use "../sass/colors/semantic" as colors;
+@use "../sass/variables";
 
-.tabs-container {
-    @extend %flex-col;
-    height: 100%;
-
-    .tabs {
-        .tabs-button {
-            background: inherit;
-            border: none;
-            border-radius: unset;
-        }
-
-        .tabs-button-active {
-            background: variables.$main;
-            color: variables.$light-shade;
-        }
-    }
-
-    .tabs-children {
-        border: solid variables.$main;
-        border-width: 2px 0px 0px 2px;
-        padding: variables.$spacing;
-        overflow-y: auto;
-        flex-grow: 2;
-    }
-}
-
-pre {
-    font-family: variables.$monospace;
-    font-size: 11pt;
-}
-
-/* || CSS Style Categories */
 section.css-category * {
     margin: 0;
 }
 
 section.css-category {
     font-size: 11pt;
-    margin: variables.$spacing 0;
     /** || Heading */
     h2.css-title-heading {
-        margin: 0.3em 0;
         cursor: pointer;
         display: flex;
         align-items: center; /** Vertical alignment */
@@ -59,47 +25,39 @@ section.css-category {
 
     th {
         text-align: left;
-        padding-right: 0.5em;
     }
 
     /* || Controls */
     .css-title-toolbar {
         font-size: initial;
+        text-align: right;
 
         button {
             font-size: 9pt;
         }
-
-        text-align: right;
     }
 
     input {
-        padding: variables.$light-spacing;
+        padding: 2px;
     }
 
     /** || Highlighting Button */
     button.hl {
         background: inherit;
         border: none;
-        color: variables.$light-accent;
+        color: colors.$light-accent;
 
         &:hover, &.hl-active {
-            color: variables.$dark-shade;
+            color: colors.$dark-shade;
         }
     }
 
     /* || Rulesets */
-    span.css-description {
-        margin-top: variables.$spacing;
-    }
     /* || Property Lists */
     div.css-ruleset {
         font-family: variables.$monospace;
-        margin-top: variables.$spacing;
 
         table.css-ruleset-table {
-            margin-left: variables.$spacing;
-
             th::after {
                 content: ':'
             }
@@ -117,55 +75,55 @@ section.css-category {
 section.css-category-1 {
     /** All nested categories */
     section.css-category {
-        border: 1px solid variables.$main;
+        border: 1px solid colors.$main;
 
         h2 {
             margin: 0;
-            padding: math.div(variables.$spacing, 2) variables.$spacing;
-            color: variables.$light-shade;
+            
+            // Make sure inputs, text and buttons inside the heading
+            // are visible on dark backgrounds
+            &, * {
+                color: colors.$light-shade;
+            }
         }
 
         div.css-category-content {
-            background: variables.$light-shade;
-            padding: math.div(variables.$spacing, 2) variables.$spacing;
+            background: colors.$light-shade;
         }
 
         button {
             background: inherit;
             color: inherit;
         }
-
-        button:hover {
-            /** TODO: Add gradient */
-        }
     }
 
     /** First nested category */
     section.css-category-2 h2 {
-        background: variables.$dark-shade;
+        background: colors.$dark-shade;
         font-size: large;
     }
 
     section.css-category-3 {
         h2 {
-            background: variables.$dark-accent;
+            background: colors.$dark-accent;
             font-size: medium;
         }
     }
 
     section.css-category-4 h2 {
-        background: variables.$main;
+        background: colors.$main;
         font-size: small;
     }
 
     section.css-category-5 h2 {
-        background: variables.$light-accent;
+        background: colors.$light-accent;
     }
 }
 
 /** || Popovers */
 .pseudo-options {
-    @extend %flex-row;
+    display: flex;
+    flex-direction: row;
     max-width: 250px;
     flex-wrap: wrap;
     justify-content: space-between;

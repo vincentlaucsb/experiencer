@@ -8,6 +8,7 @@ import MarkdownText from "@/resume/Markdown";
 import Link from "@/resume/Link";
 import Image from "@/resume/Image";
 import Group from "@/resume/Group";
+import PageBreak from "@/resume/PageBreak";
 import DescriptionList, { BasicDescriptionItemProps, DescriptionListType, DescriptionListItemType, DescriptionListItem } from "@/resume/List";
 import Icon, { IconType } from "@/resume/Icon";
 import Header from "@/resume/Header";
@@ -156,6 +157,15 @@ export default function registerNodes() {
         component: Group,
         type: Group.type,
         text: 'Group',
+        defaultValue: {}
+    });
+
+    schema.registerNodeType({
+        component: PageBreak,
+        type: PageBreak.type,
+        cssName: 'Page Break',
+        text: 'Page Break',
+        icon: 'line-block',
         defaultValue: {}
     });
 

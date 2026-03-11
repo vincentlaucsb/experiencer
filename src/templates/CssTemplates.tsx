@@ -3,6 +3,7 @@ import Entry from "@/resume/Entry";
 import Section from "@/resume/Section";
 import MarkdownText from "@/resume/Markdown";
 import Link from "@/resume/Link";
+import PageBreak from "@/resume/PageBreak";
 
 function getMarkdownCss(): CssNode {
     let markdownCss = new CssNode(MarkdownText.type, {}, '.text-content');
@@ -131,6 +132,18 @@ function getLinkCss(): CssNode {
     return linkCss;
 }
 
+function getPageBreakCss(): CssNode {
+    const pageBreakCss = new CssNode('Page Break', {
+        'display': 'block',
+        'break-after': 'page',
+        'page-break-after': 'always',
+        'break-inside': 'avoid',
+        'page-break-inside': 'avoid'
+    }, 'resume-page-break');
+
+    return pageBreakCss;
+}
+
 /** Return the default CSS template */
 export default function getDefaultCss(): CssNode {
     let defaultCss = new CssNode('Resume CSS', {
@@ -159,6 +172,7 @@ export default function getDefaultCss(): CssNode {
     defaultCss.addNode(getEntryCss());
     defaultCss.addNode(getMarkdownCss());
     defaultCss.addNode(getLinkCss());
+    defaultCss.addNode(getPageBreakCss());
     return defaultCss;
 }
 
@@ -166,6 +180,7 @@ export function getRootCss(): CssNode {
     return new CssNode(':root', {
         '--serif': 'Merriweather, serif',
         '--sans-serif': 'Open Sans, sans-serif',
+        '--monospace': 'Source Code Pro, monospace',
         '--edge-margin': '0.5in',
         '--small-spacing': '4px',
         '--spacing': '8px',

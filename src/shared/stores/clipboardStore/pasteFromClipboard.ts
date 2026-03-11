@@ -1,4 +1,4 @@
-import { deepCopy } from '@/shared/utils/Helpers';
+import { deepCopy } from '@/shared/utils/deepCopy';
 import addChildNode from '@/shared/stores/resumeStore/addChildNode';
 import { useClipboardStore } from './store';
 

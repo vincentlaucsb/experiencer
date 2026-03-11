@@ -14,10 +14,19 @@ export default function PureMenu(props: PureMenuProps) {
         classes.push('pure-menu-horizontal');
     }
 
+    const divClassName = [classes.join(' '), props.divProps?.className]
+        .filter(Boolean)
+        .join(' ');
+
+    const listClassName = ['pure-menu-list', props.listProps?.className]
+        .filter(Boolean)
+        .join(' ');
+
     return (
-        <div id={props.id} className={classes.join(' ')}
-            {...props.divProps}>
-            <ul className="pure-menu-list" {...props.listProps}>
+        <div id={props.id}
+            {...props.divProps}
+            className={divClassName}>
+            <ul {...props.listProps} className={listClassName}>
                 {props.children}
             </ul>
         </div>
@@ -29,6 +38,7 @@ export interface PureMenuItemProps {
     selected?: boolean;
 
     onClick?: (event: React.MouseEvent) => void;
+    onKeyDown?: (event: React.KeyboardEvent) => void;
     onMouseOver?: (event: React.MouseEvent) => void;
     onMouseOut?: (event: React.MouseEvent) => void;
 
@@ -55,6 +65,7 @@ export function PureMenuItem(props: PureMenuItemProps) {
     return <li
         className={classes.join(' ')}
         onClick={props.onClick}
+        onKeyDown={props.onKeyDown}
         onMouseOut={props.onMouseOut}
         onMouseOver={props.onMouseOver}
         ref={props.itemRef}>

@@ -10,7 +10,7 @@ The `src/resume/schema/` directory is the **single source of truth** for all res
 
 ### Key Files
 
-- **`index.ts`**: Central registration point - registers all 13 node types
+- **`index.ts`**: Central registration point - registers all node types (14 as of mar-5-2026)
 - **`ComponentTypes.ts`**: `ComponentTypes` singleton class that stores and retrieves node metadata
 - **`ResumeNodeDefinition.ts`**: TypeScript interface defining node registration schema
 
@@ -23,7 +23,10 @@ Each node type registration includes:
 - **childTypes**: Array of valid child node types
 - **defaultValue**: Default node structure when created
 - **toolbarOptions**: Available editing options (imported from individual node folders)
+- **cssName** (optional): Override for the CSS tree path (e.g., `'Page Break'`). Defaults to `[type]`.
 - **isDefaultChildType** (optional): Whether this is default when adding children
+
+> **Important**: `ComponentTypes.childTypes()` and `ComponentTypes.cssName()` return defensive copies so callers cannot mutate the stored arrays.
 
 ### Example Registration
 
@@ -85,9 +88,10 @@ Resume (Main App)
 - **Header**: Resume header with name/title
 - **Entry**: Job/education entry (title, date, location, description)
 - **List**: Unordered or ordered lists
-- **RichText**: Rich text content via Quill
+- **Markdown**: Markdown text editor (replaced RichText/Quill)
 - **Icon**: Social media and contact icons
 - **Divider**: Visual separator
+- **PageBreak**: Explicit page break marker — shows a labelled divider in editor mode, invisible in print; forces a CSS `page-break-before` at that point; registered with `cssName: 'Page Break'`
 
 ### Control Components
 Located in `src/components/controls/`:
@@ -132,6 +136,29 @@ These foundational data structures are placed at the root of `/shared` rather th
 - Are used across multiple stores and utilities
 - Deserve dedicated test suites (`__tests__/` subdirectories)
 - Represent foundational architecture rather than utility functions
+
+### Utility Modules (`src/shared/utils/`)
+
+`Helpers.tsx` was removed. Each function is now a single-export module for clean imports and independent testing:
+
+| File | Exports | Purpose |
+|---|---|---|
+| `assignIds.ts` | `assignIds(node)` | Assign `uuid` fields to a node tree |
+| `createContainer.ts` | `createContainer(id)` | Find or create a DOM container by ID |
+| `deepCopy.ts` | `deepCopy(obj)` | JSON round-trip deep clone |
+| `isNullOrUndefined.ts` | `isNullOrUndefined(v)` | Type guard for `null \| undefined` |
+| `processText.ts` | `process(text)` | Replace `--`/`---` with en/em dash |
+| `stripNodeProperties.ts` | `stripNodeProperties(nodes, keys)` | Recursively remove keys from a node tree (non-mutating); returns `BasicResumeNode[]` |
+| `getResumeMinHeight.ts` | `getResumeMinHeight(nodes, pageSize)` | Compute `#resume` min-height from page-break count |
+| `PrintHelpers.ts` | `exportResumeAsHtml`, `printResume` | HTML export and print utilities |
+
+### Store Utilities (`src/shared/stores/`)
+
+Beyond the main Zustand/ClassStore stores, there are action modules for complex mutations:
+
+- **`ensureCssNodeForType.ts`**: Checks if a CSS node for a given component type exists in the live CSS tree; if not, copies a skeleton from the default template. Called when adding a new component type (e.g., `PageBreak`) to guarantee the CSS editor has a node for it.
+- **`addHtmlId.ts`**: Sets the `htmlId` on the selected node and manages the corresponding CSS subtree — renames the existing `#old-id` node if present, creates a skeleton copy, or deletes the CSS node when the ID is cleared.
+- **`saveResume.ts`** (`dump`): Exported function that serialises the current resume to `ResumeSaveData`; strips runtime `uuid` fields via `stripNodeProperties` so saved JSON is clean.
 
 ### Editor & Visualization Components
 - **NodeTreeVisualizer**: Visual tree view of resume structure
@@ -364,11 +391,46 @@ export default function registerNodes() {
 
 ## Styling Patterns
 
+### SCSS Architecture
+
+All global and shared styles live in **`src/sass/`** (top-level, not `src/shared/scss/` which is deleted).
+
+```
+src/sass/
+├── index.scss              # Barrel — imports everything
+├── variables.scss          # CSS custom properties
+├── forms.scss              # Form element styles
+├── inputs.scss             # Input field styles
+├── modals.scss             # Modal dialog styles
+├── context-menu.scss       # Context menu styles
+├── hl-box.scss             # Highlight box overlay
+├── overlay-editing.scss    # Overlay editing affordances
+├── resume-hover.scss       # Hover highlights on resume nodes
+├── landing.scss            # Landing page styles
+├── zindex.scss             # z-index scale
+├── colors/
+│   ├── index.scss          # Barrel
+│   ├── palette.scss        # Raw color tokens (background hues, etc.)
+│   ├── semantic.scss       # Named semantic tokens (--color-text-primary, etc.)
+│   └── utilities.scss      # app-text-* utility classes
+└── spacing/
+    ├── index.scss          # Utility classes (app-mb-*, app-gap-*, app-p-*)
+    └── scale.scss          # Spacing scale values
+```
+
+**Usage**: `Resume.tsx` imports `@/sass/index.scss`. Component-specific styles remain in `.scss` files co-located with the component (e.g., `TopEditingBar.scss`, `Markdown.scss`).
+
+**Spacing utilities** follow an `app-` prefix to avoid collisions with PureCSS and resume content styles:
+- `app-mb-1` through `app-mb-4` — margin-bottom
+- `app-gap-1` through `app-gap-4` — flex/grid gap
+- `app-p-4` — padding
+- `app-text-light-accent` — muted label text
+
 ### Component-Specific Styles
 Most components use:
 - Inline styles for dynamic values
 - CSS classes for static styling
-- SCSS files in `src/scss/` for complex styles
+- SCSS files co-located with the component for complex styles
 
 ### Editing Mode Styles
 Components often render differently when editing:
@@ -380,21 +442,9 @@ import { useIsNodeEditing } from "../stores/editorStore";
 const isEditing = useIsNodeEditing(props.uuid);
 
 if (isEditing) {
-    return <QuillEditor {...props} />;
+    return <textarea {...props} />;
 } else {
-    return <div dangerouslySetInnerHTML={{ __html: props.value }} />;
-}
-```
-
-**Class components** use direct store access:
-```typescript
-import { useEditorStore } from "../stores/editorStore";
-
-render() {
-    const { selectedNodeId, isEditingSelected } = useEditorStore.getState();
-    const isEditing = isEditingSelected && selectedNodeId === this.props.uuid;
-    
-    // ... rest of render
+    return <ReactMarkdown>{props.value}</ReactMarkdown>;
 }
 ```
 
@@ -601,13 +651,12 @@ state = {
 ### Remaining Performance Considerations
 1. **Index rebuild on tree mutations**: O(n) operation for every move/delete, could batch operations
 2. **Large node trees**: Deep nesting can slow performance with many mutations
-3. **Quill editor**: Heavy library, consider lazy loading
 
 ## Component Testing Approach
 
 ### Unit Tests
 Focus on:
-- Pure utility functions (Helpers.tsx)
+- Pure utility functions (individual modules in `src/shared/utils/`)
 - Data structures (NodeTree, CssTree)
 - Isolated components
 

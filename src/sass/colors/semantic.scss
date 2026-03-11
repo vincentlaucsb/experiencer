@@ -1,0 +1,86 @@
+@use "sass:color";
+@use "palette";
+
+// Primary color API (preferred naming)
+// light-shade: high-contrast light surface/text color.
+// Current use: app light surfaces and text on dark toolbar/menu backgrounds.
+// Suitable uses: cards, light panels, foreground text on `main`/`dark-accent`.
+$light-shade: palette.$porcelain;
+
+// light-accent: muted accent for supporting UI affordances.
+// Current use: toolbar labels/icons and accent borders/dividers.
+// Suitable uses: secondary labels, subtle iconography, low-emphasis outlines.
+$light-accent: palette.$lynch;
+
+// main: primary dark brand surface.
+// Current use: app header/navigation background.
+// Suitable uses: primary chrome, top-level navigation, major section bars.
+$main: palette.$oxford-blue;
+
+// dark-accent: accent intended FOR dark contexts (not necessarily darker than `main`).
+// Current use: toolbar/button hover and active states, context-menu hover state.
+// Suitable uses: interactive emphasis on dark surfaces, selected dark-nav items.
+$dark-accent: palette.$san-marino;
+
+// dark-shade: darkest neutral anchor.
+// Current use: dropdown menu backgrounds and high-emphasis dark borders/text.
+// Suitable uses: deepest surface layer, strong separators, max-emphasis dark text.
+$dark-shade: palette.$baltic-sea;
+
+// white: pure white utility for explicit white canvas/surfaces.
+// Current use: resume canvas and overlay panels where pure white is required.
+// Suitable uses: print-like paper surfaces and strict neutral backgrounds.
+$white: palette.$white;
+
+// danger: destructive/invalid state color.
+// Current use: invalid input background treatment.
+// Suitable uses: validation error states, destructive actions, warnings.
+$danger: palette.$danger-red;
+
+// subtle-overlay: translucent dark overlay for layering without full darkening.
+// Current use: editor overlay backgrounds.
+// Suitable uses: lightweight hover panes, ghost layers, inactive masks.
+$subtle-overlay: rgba(palette.$neutral-900, 0.05);
+
+// border-subtle: neutral low-contrast border.
+// Current use: input/control borders (e.g. URL field border).
+// Suitable uses: field outlines, card separators, quiet dividers.
+$border-subtle: palette.$neutral-300;
+
+// border-subtle-contrast: slightly stronger divider tuned from light-shade.
+// Current use: context-menu horizontal rule divider.
+// Suitable uses: section separators on very light backgrounds.
+$border-subtle-contrast: color.adjust($light-shade, $lightness: -20%);
+
+// light-accent-hover: lifted variant of light-accent for hover/focus affordances.
+// Current use: icon hover color on dark menus/toolbars.
+// Suitable uses: hover/focus states for muted-accent icons and text.
+$light-accent-hover: color.adjust($light-accent, $lightness: 25%);
+
+$utility-text-colors: (
+    light-shade: $light-shade,
+    light-accent: $light-accent,
+    main: $main,
+    dark-accent: $dark-accent,
+    dark-shade: $dark-shade,
+    danger: $danger,
+);
+
+$utility-background-colors: (
+    light-shade: $light-shade,
+    light-accent: $light-accent,
+    main: $main,
+    dark-accent: $dark-accent,
+    dark-shade: $dark-shade,
+    "white": $white,
+    overlay: $subtle-overlay,
+    danger: $danger,
+);
+
+$utility-border-colors: (
+    light-accent: $light-accent,
+    dark-accent: $dark-accent,
+    dark-shade: $dark-shade,
+    subtle: $border-subtle,
+    danger: $danger,
+);

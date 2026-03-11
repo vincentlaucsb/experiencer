@@ -51,6 +51,7 @@ module.exports = {
         '/node_modules/',
         '/__tests__/'
     ],
+    coverageReporters: ['text', 'text-summary', 'lcov', 'json', 'clover'],
     coverageThreshold: {
         global: {
             branches: 40,

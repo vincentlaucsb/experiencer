@@ -1,0 +1,176 @@
+@use "context-menu";
+@use "colors/semantic" as colors;
+@use "colors/utilities";
+@use "spacing";
+@use "variables";
+@use "landing";
+@use "resume-hover";
+@use "modals";
+@use "forms";
+@use "hl-box";
+@use "inputs";
+@use "overlay-editing";
+@use "zindex";
+
+/* App Stuff */
+body {
+    background: colors.$light-shade;
+    font-family: variables.$sans-serif;
+    color: colors.$dark-shade;
+    margin: 0;
+}
+
+#root {
+    display: flex;
+    box-sizing: border-box;
+    flex-flow: column;
+    width: 100%;
+    height: 100vh;
+}
+
+/* || Resizer */
+.Resizer.vertical {
+    width: 1rem;
+    cursor: col-resize;
+}
+
+.button-disabled {
+    filter: opacity(0.3);
+}
+
+button img {
+    /* Make black icons white-ish */
+    filter: invert(0.95);
+    margin-right: 2px;
+}
+
+button,
+.pure-button {
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+/** || Layouts */
+#main-grid {
+    display: flex;
+    flex: 1;
+    height: 100%;
+    overflow: auto;
+
+    // Column Gap for flexbox is only supported in FF
+    // column-gap: 1rem;
+
+    /** Grid Children */
+    > * {
+        max-width: 100%;
+        overflow: auto;
+        margin-right: 1rem;
+    }
+
+    > *:first-child {
+        // Take up all available free space
+        flex-grow: 1;
+    }
+    /** || Sidebar */
+    > *:last-child {
+        // Never shrink
+        flex-shrink: 0;
+    }
+
+    @media (max-width: variables.$screen-small) {
+        flex-direction: column;
+    }
+}
+
+@media print {
+    body {
+        background: none;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    #resume {
+        height: 100%;
+        border: none;
+    }
+}
+
+@media screen {
+    #print-preview-actions {
+        position: sticky;
+        top: 0;
+        z-index: zindex.$header-z;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: colors.$main;
+        border-bottom: 1px solid colors.$dark-accent;
+
+        .pure-button {
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 0.7em 1.2em;
+        }
+
+        .print-preview-exit {
+            background: colors.$light-shade;
+            color: colors.$dark-shade;
+        }
+    }
+
+    #resume {
+        background: colors.$white;
+        width: 8.5in;
+        min-height: 11in;
+        box-sizing: border-box;
+        border: 1px solid colors.$border-subtle;
+        margin-bottom: 1rem;
+        margin-left: auto;
+        margin-right: auto;
+
+        &[data-page-size="a4"] {
+            width: 210mm;
+            min-height: 297mm;
+        }
+
+        resume-page-break.page-break-editing {
+            position: relative;
+            display: block;
+            width: calc(100% + (2 * var(--edge-margin)));
+            margin-left: calc(-1 * var(--edge-margin));
+            margin-top: var(--x-large-spacing);
+            margin-bottom: var(--x-large-spacing);
+            height: 0;
+            border-top: 3px dashed colors.$light-accent;
+
+            .page-break-label {
+                position: absolute;
+                top: 0;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                display: inline-block;
+                padding: 0 0.5rem;
+                background: colors.$light-shade;
+                color: colors.$dark-accent;
+                font-family: variables.$monospace;
+                font-size: 9pt;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                user-select: none;
+                white-space: nowrap;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: variables.$screen-medium) {
+    #brand h1 {
+        font-size: large;
+        margin: 0;
+    }
+
+    .Resizer.vertical, .Pane.vertical.Pane2 {
+        display: none;
+    }
+}

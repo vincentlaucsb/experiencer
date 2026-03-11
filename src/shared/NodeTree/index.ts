@@ -1,5 +1,6 @@
 import { deleteAt, moveUp, moveDown } from "@/shared/utils/arrayHelpers";
-import { assignIds, deepCopy } from "@/shared/utils/Helpers";
+import { assignIds } from "@/shared/utils/assignIds";
+import { deepCopy } from "@/shared/utils/deepCopy";
 import { IdType, ResumeNode } from "@/types";
 
 export default class ResumeNodeTree implements ResumeNode {

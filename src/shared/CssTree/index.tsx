@@ -272,6 +272,23 @@ export default class CssNode {
     }
 
     /**
+     * Walk the path, returning the node at the end.
+     * Creates any missing intermediate nodes (and the leaf itself) as empty nodes.
+     * @param path Sequence of names from this node down
+     */
+    findOrCreateNode(path: string[]): CssNode {
+        let current: CssNode = this;
+        for (const name of path) {
+            let child = current._children.get(name);
+            if (!child) {
+                child = current.add(name, {});
+            }
+            current = child;
+        }
+        return current;
+    }
+
+    /**
      * Returns true if there is already a child node with the given name
      * @param name Name to look for
      */

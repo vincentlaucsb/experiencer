@@ -8,37 +8,25 @@ import getDefaultCss from "@/templates/CssTemplates";
  */
 export default function ensureCssNodeForType(type: string) {
     const cssPath = ComponentTypes.instance.cssName(type);
-    const defaultCss = getDefaultCss();
 
     if (cssStore.data.findNode([...cssPath])) {
         return;
     }
 
-    const defaultCssNode = defaultCss.findNode([...cssPath]);
-    if (!defaultCssNode) {
-        return;
-    }
+    const defaultCss = getDefaultCss();
+    const defaultNode = defaultCss.findNode([...cssPath]);
 
     cssStore.updateCss((css) => {
         if (css.findNode([...cssPath])) {
             return;
         }
 
-        const parentPath = cssPath.slice(0, -1);
-        if (parentPath.length === 0) {
-            css.addNode(defaultCssNode.deepCopy());
-            return;
-        }
-
-        const parent = css.findNode([...parentPath]);
-        if (parent) {
-            parent.addNode(defaultCssNode.deepCopy());
-            return;
-        }
-
-        const defaultParent = defaultCss.findNode([...parentPath]);
-        if (defaultParent) {
-            css.addNode(defaultParent.deepCopy());
+        if (defaultNode) {
+            // Seed from default template; create any missing parents as empty nodes
+            css.findOrCreateNode(cssPath.slice(0, -1)).addNode(defaultNode.deepCopy());
+        } else {
+            // No default exists — create an empty node so the CSS editor shows the entry
+            css.findOrCreateNode(cssPath);
         }
     });
 }

@@ -12,33 +12,19 @@
 
 ### Nodes
  - [ ] Finish semantic HTML migrations
- - [ ] Fix Image component editing mode
+ - [ ] Fix Image component editing mode (partially improved on mar-5-2026)
 
-### Markdown Component (Replace RichText) - IN PROGRESS
+### Markdown Component (Replace RichText) - COMPLETE
 **Goal**: Move away from react-quill (React 18 compatibility issues) to Markdown-based text editing
 
-**Architecture**:
-- **Markdown RichText**: General-purpose freeform text (intro paragraphs, summaries, formatted content)
-- **BulletedList** (Phase 1): Markdown RichText with `- ` prefix pre-populated, `hideBullets` toggle
-- **BulletedList** (Phase 2): Dedicated component with array structure (when feature demands justify refactor)
-
-**Phase 1 - Markdown RichText (CURRENT)**:
-1. ⏳ Create `src/resume/Markdown.tsx`:
-   - Function component with hooks
-   - Edit mode: Plain textarea with markdown syntax hints
-   - View mode: Rendered markdown via react-markdown
-   - Uses isPrinting context for export
-2. ⏳ Update ComponentTypes.tsx:
-   - Add Markdown to childTypes for Grid, Column, Entry, Section, Header
-   - Keep RichText for backward compatibility initially
-   - Add defaultValue for Markdown type ("# " for headers, "- " for lists)
-   - Add cssName mapping
-3. ⏳ Add Markdown to ResumeComponent.tsx factory
-4. ⏳ Update CssTemplates.tsx:
-   - Styles for rendered markdown (headings, lists, code blocks, blockquotes)
-5. ⏳ Update templates to use Markdown instead of RichText
-6. ⏳ Test rendering, editing, export, print
-7. ⏳ Remove/deprecate RichText component
+**Phase 1 - COMPLETE** (see `CHANGELOG.md`):
+1. ✅ Created `src/resume/Markdown.tsx` — function component with textarea edit mode, `react-markdown` view mode
+2. ✅ Updated `ComponentTypes.tsx` — Markdown registered in schema with childTypes, defaultValue, cssName
+3. ✅ Added Markdown to `ResumeComponent.tsx` factory
+4. ✅ Updated `CssTemplates.tsx` and added `src/resume/Markdown.scss` (97 lines)
+5. ✅ Templates updated to use Markdown
+6. ✅ Rendering, editing, export, print verified
+7. ✅ RichText deprecated and removed from active use
 
 **Phase 2 - Bulleted List Refactor** (Backlog):
 - Create dedicated `src/resume/BulletedList.tsx` component
@@ -84,8 +70,8 @@
 **Goal**: Professional-grade export capabilities
 - [ ] PDF export with print CSS optimization
 - [ ] Multiple format support: JSON, YAML, plain text
-- [ ] Custom page size options (A4, Letter, Legal)
-- [ ] Print preview mode with margin guides
+- ✅ ~~Custom page size options (A4, Letter)~~ — Letter/A4 toggle in editing bar; `@page { size }` injected on HTML export
+- ✅ ~~Print preview mode~~ — dedicated print-preview bar with Exit/Print buttons
 - [ ] Mobile preview: Real-time preview on mobile while editing on desktop
 **Estimated effort**: 3-5 hours
 
@@ -140,7 +126,7 @@ Similar situation to react-contextmenu - type compatibility issues with modern R
 ## Low Priority
 
 ### Testing
-- [ ] Increase test coverage (currently minimal)
+- [ ] Increase test coverage (significant new tests added on mar-5-2026 branch; global ~71% statements)
 - [ ] Add E2E tests with Playwright/Cypress
 - [ ] Visual regression testing for templates
 - [ ] Performance benchmarks
@@ -157,7 +143,7 @@ Similar situation to react-contextmenu - type compatibility issues with modern R
 - [ ] Image upload and optimization
 - [ ] Font family selector in CSS editor
 - [ ] Spell check integration
-- [ ] Accessibility audit and improvements (tracked in `ARIA-TODO.md`)
+- [~] Accessibility — initial ARIA pass complete (see `docs/ARIA-TODO.md` for remaining work)
 - [ ] Dark mode for editor UI (not resume)
 - [ ] Collaborative editing (WebRTC?)
 - [ ] Resume versioning/history

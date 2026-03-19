@@ -38,7 +38,6 @@ $white: palette.$white;
 $danger: palette.$danger-red;
 
 // subtle-overlay: translucent dark overlay for layering without full darkening.
-// Current use: editor overlay backgrounds.
 // Suitable uses: lightweight hover panes, ghost layers, inactive masks.
 $subtle-overlay: rgba(palette.$neutral-900, 0.05);
 

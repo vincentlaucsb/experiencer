@@ -1,6 +1,9 @@
 import React from "react";
 import { ToolbarItemData } from "@/controls/toolbar/ToolbarButton";
 import { BasicResumeNode, ResumeComponentProps, ResumeNode } from "@/types";
+import DefaultChildren from "./DefaultChildren";
+
+export type ChildTypeDefinition = string | string[] | DefaultChildren;
 
 /** Schema information for a resume node */
 type ResumeNodeDefinition = {
@@ -8,7 +11,7 @@ type ResumeNodeDefinition = {
     cssName?: string | string[];
 
     /** Child node types that this node can contain */
-    childTypes?: string | string[];
+    childTypes?: ChildTypeDefinition;
 
     /** React component to render this node type */
     component: typeof React.Component | React.FC<ResumeComponentProps>

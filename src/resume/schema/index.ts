@@ -1,4 +1,5 @@
 import ComponentTypes, { AliasTypes } from "./ComponentTypes";
+import DefaultChildren from "./DefaultChildren";
 import Grid from "@/resume/Grid";
 import Row from "@/resume/Row";
 import Column from "@/resume/Column";
@@ -45,6 +46,7 @@ export default function registerNodes() {
             Link.type,
             AliasTypes.BulletedList,
             DescriptionListType,
+            Group.type,
             IconType,
             Image.type
         ],
@@ -57,7 +59,7 @@ export default function registerNodes() {
         type: Row.type,
         text: 'Row',
         icon: 'swoosh-right',
-        childTypes: Column.type,
+        childTypes: DefaultChildren.create().plus([Column.type, Group.type]),
         defaultValue: {
             childNodes: [
                 { type: Column.type },
@@ -81,6 +83,7 @@ export default function registerNodes() {
             Link.type,
             AliasTypes.BulletedList,
             DescriptionListType,
+            Group.type,
             Image.type
         ],
         defaultValue: {},
@@ -101,6 +104,7 @@ export default function registerNodes() {
             DescriptionListType,
             Grid.type,
             Row.type,
+            Group.type,
             Image.type
         ],
         defaultValue: {},
@@ -118,6 +122,7 @@ export default function registerNodes() {
             DescriptionListType,
             MarkdownText.type,
             Link.type,
+            Group.type,
             Image.type
         ],
         defaultValue: {
@@ -158,6 +163,13 @@ export default function registerNodes() {
         component: Group,
         type: Group.type,
         text: 'Group',
+        childTypes: DefaultChildren.create().plus([
+            Grid.type,
+            Row.type,
+            Column.type,
+            Group.type,
+            IconType,
+        ]),
         defaultValue: {}
     });
 
@@ -167,6 +179,7 @@ export default function registerNodes() {
         cssName: 'Page Break',
         text: 'Page Break',
         icon: 'line-block',
+        childTypes: [],
         defaultValue: {}
     });
 
@@ -181,6 +194,7 @@ export default function registerNodes() {
             AliasTypes.BulletedList,
             DescriptionListType,
             Grid.type,
+            Group.type,
             Image.type
         ],
         defaultValue: {},

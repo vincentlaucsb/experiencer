@@ -1,8 +1,9 @@
 import React from "react";
-import ResumeNodeDefinition from "./ResumeNodeDefinition";
+import ResumeNodeDefinition, { ChildTypeDefinition } from "./ResumeNodeDefinition";
 import { arrayNormalize } from "@/shared/utils/arrayHelpers";
 import ResumeComponentProps, { BasicResumeNode, NodeProperty, ResumeNode } from "@/types";
 import { ToolbarItemData } from "@/types/toolbar";
+import DefaultChildren from "./DefaultChildren";
 
 export interface NodeInformation {
     text: string;
@@ -18,7 +19,7 @@ type ToolbarOptionsFunction = (
 
 /** Stores schema information */
 export default class ComponentTypes {
-    private _childTypes: Map<string, Array<string> | undefined> = new Map();
+    private _childTypes: Map<string, ChildTypeDefinition | undefined> = new Map();
     private _cssNames: Map<string, Array<string>> = new Map();
     private _components: Map<string, typeof React.Component | React.FC<ResumeComponentProps>> = new Map();
     private _defaultChildTypes: string[] = [];
@@ -38,6 +39,10 @@ export default class ComponentTypes {
      */
     childTypes(type: string) : string | Array<string> {
         const childTypes = this._childTypes.get(type);
+        if (childTypes instanceof DefaultChildren) {
+            return childTypes.resolve(this._defaultChildTypes);
+        }
+
         if (Array.isArray(childTypes)) {
             return [...childTypes];
         }
@@ -127,8 +132,12 @@ export default class ComponentTypes {
 
         this._registeredTypes.add(def.type);
 
-        this._childTypes.set(def.type, def.childTypes ? 
-            arrayNormalize(def.childTypes) : undefined);
+        if (def.childTypes instanceof DefaultChildren) {
+            this._childTypes.set(def.type, def.childTypes);
+        } else {
+            this._childTypes.set(def.type, def.childTypes ?
+                arrayNormalize(def.childTypes) : undefined);
+        }
         this._cssNames.set(def.type, def.cssName ? arrayNormalize(def.cssName) : [def.type]);
         this._components.set(def.type, def.component);
         const defaultValue = { ...def.defaultValue, type: def.type };

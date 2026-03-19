@@ -69,7 +69,7 @@ export const useResumeActions = () => {
     return {
         // Tree manipulation (accepts UUID or hierarchical ID)
         setNodes: (nodes: ResumeNode[]) => resumeNodeStore.setNodes(nodes),
-        addNode: (parentId: string | IdType, node: ResumeNode) => resumeNodeStore.addNode(parentId, node),
+        addNode: (parentId: string | IdType | undefined, node: ResumeNode) => resumeNodeStore.addNode(parentId, node),
         deleteNode: (id: string | IdType) => resumeNodeStore.deleteNode(id),
         updateNode: (id: string | IdType, key: string, data: any) => resumeNodeStore.updateNode(id, key, data),
         moveNodeUp: (id: string | IdType) => resumeNodeStore.moveNodeUp(id),

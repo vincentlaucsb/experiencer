@@ -20,11 +20,10 @@ const HtmlIdAdder = React.lazy(() => import("./HtmlIdAdder"));
 import { ToolbarItemData } from "./toolbar/ToolbarButton";
 import { useEditorStore } from "@/shared/stores/editorStore";
 import { resumeNodeStore, useResumeNodeByUuid, useHasUnsavedChanges as useHasUnsavedNodeChanges } from "@/shared/stores/resumeNodeStore";
-import { useHistoryStore } from "@/shared/stores/historyStore";
+import { recordHistory, useHistoryStore } from "@/shared/stores/historyStore";
 import updateSelected from "@/shared/stores/resumeStore/updateSelectedNode";
 import { saveLocal } from "@/shared/stores/saveResume";
 import { useHasUnsavedChanges as useHasUnsavedCssChanges } from "@/shared/stores/cssStoreHooks";
-import addChildNode from "@/shared/stores/resumeStore/addChildNode";
 import addCssClasses from "@/shared/stores/resumeStore/addCssClasses";
 import useSelectedNodeActions from "@/shared/hooks/useSelectedNodeActions";
 import addHtmlId from "@/shared/stores/addHtmlId";
@@ -104,6 +103,10 @@ function ClipboardMenu(data: EditingBarProps): ToolbarItemData[] {
     ];
 }
 
+function hasChildInsertOptions(options: string | Array<string>): boolean {
+    return Array.isArray(options) ? options.length > 0 : !!options;
+}
+
 interface EditingBarSubProps extends EditingBarProps {
     isOverflowing: boolean;
     selectedNode: ResumeNode | undefined;
@@ -118,6 +121,7 @@ function SelectedNodeToolbar(props: EditingBarSubProps) {
         let moveDownText = "rounded-down";
 
         const childTypes = ComponentTypes.instance.childTypes(type);
+        const canInsertChildren = hasChildInsertOptions(childTypes);
         const htmlId = selectedNode.htmlId ? `#${selectedNode.htmlId}` : 'CSS';
 
         if (type === Column.type) {
@@ -129,11 +133,11 @@ function SelectedNodeToolbar(props: EditingBarSubProps) {
             [`Current Node (${selectedNode.type})`, {
                 icon: "gear",
                 items: [
-                    addOptions({
+                    ...(canInsertChildren ? [addOptions({
                         id: selectedNode.uuid,
                         addChild: props.addChild,
                         options: childTypes
-                    }),
+                    })] : []),
                     {
                         onClick: props.delete,
                         icon: 'ui-delete',
@@ -432,7 +436,10 @@ export default function TopEditingBarWrapper(props: TopEditingBarWrapperProps) {
             const selectedNode = selectedNodeId ? tree.getNodeByUuid(selectedNodeId) : undefined;
             addCssClasses(selectedNode, classes);
         },
-        addChild: addChildNode,
+        addChild: (parentUuid: string | undefined, node: ResumeNode) => {
+            recordHistory();
+            resumeNodeStore.addNode(parentUuid, node);
+        },
         unselect: unselectNode,
         updateSelected: (key: string, data: NodeProperty) => {
             updateSelected(selectedNodeId, key, data);

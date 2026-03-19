@@ -133,6 +133,7 @@ export default function registerNodes() {
         type: MarkdownText.type,
         text: 'Markdown',
         icon: 'paragraph',
+        childTypes: [],
         defaultValue: {},
         isDefaultChildType: true,
         isEditable: true
@@ -226,6 +227,7 @@ export default function registerNodes() {
         type: Image.type,
         text: 'Image',
         icon: 'image',
+        isDefaultChildType: true,
         defaultValue: {
             value: ''
         }

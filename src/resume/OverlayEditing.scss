@@ -27,6 +27,13 @@
     font-weight: 600;
 }
 
+.resume-overlay-helper-text {
+    margin-top: 0.25rem;
+    color: rgba(colors.$dark-shade, 0.7);
+    font-size: 12px;
+    line-height: 1.3;
+}
+
 .resume-overlay-input {
     width: 100%;
     border: 1px solid colors.$light-accent;

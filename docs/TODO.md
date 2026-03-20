@@ -13,6 +13,7 @@
 ### Nodes
  - [ ] Finish semantic HTML migrations
  - [ ] Fix Image component editing mode (partially improved on mar-5-2026)
+ - [ ] Root toolbar expansion strategy: support broader root insert options without overwhelming users (e.g., grouping/search/progressive disclosure)
 
 ### Markdown Component (Replace RichText) - COMPLETE
 **Goal**: Move away from react-quill (React 18 compatibility issues) to Markdown-based text editing

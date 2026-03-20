@@ -4,6 +4,7 @@ import { BasicResumeNode, ResumeComponentProps, ResumeNode } from "@/types";
 import DefaultChildren from "./DefaultChildren";
 
 export type ChildTypeDefinition = string | string[] | DefaultChildren;
+export type TreeRepresentation = string | ((node: ResumeNode) => React.ReactNode);
 
 /** Schema information for a resume node */
 type ResumeNodeDefinition = {
@@ -27,6 +28,12 @@ type ResumeNodeDefinition = {
 
     /** Optional icon for this node type */
     icon?: string;
+
+    /** Optional class names for this node when rendered in the node tree */
+    treeClassNames?: string | string[];
+
+    /** Optional label renderer for this node in the node tree */
+    treeRepresentation?: TreeRepresentation;
 
     /** Display name for this node type */
     text: string;

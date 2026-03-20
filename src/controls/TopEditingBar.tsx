@@ -437,6 +437,11 @@ export default function TopEditingBarWrapper(props: TopEditingBarWrapperProps) {
             addCssClasses(selectedNode, classes);
         },
         addChild: (parentUuid: string | undefined, node: ResumeNode) => {
+            if (!resumeNodeStore.canAddNode(parentUuid, node)) {
+                resumeNodeStore.addNode(parentUuid, node);
+                return;
+            }
+
             recordHistory();
             resumeNodeStore.addNode(parentUuid, node);
         },

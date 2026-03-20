@@ -21,6 +21,7 @@ import getRowToolbarOptions from "../Row/toolbarOptions";
 import getLinkToolbarOptions from "../Link/toolbarOptions";
 import getIconToolbarOptions from "../Icon/toolbarOptions";
 import getDescriptionListItemToolbarOptions from "../List/DescriptionListItemToolbarOptions";
+import { ResumeNode } from "@/types";
 
 /**
  * Registers all resume node types with their schema definitions.
@@ -95,6 +96,8 @@ export default function registerNodes() {
         type: Section.type,
         text: 'Section',
         icon: 'book-mark',
+        treeClassNames: 'tree-item-section',
+        treeRepresentation: (node) => node.value || node.type,
         childTypes: [
             Section.type,
             Entry.type,
@@ -117,6 +120,11 @@ export default function registerNodes() {
         text: 'Entry',
         icon: 'calendar',
         isDefaultChildType: true,
+        treeClassNames: 'tree-item-entry',
+        treeRepresentation: (node) => {
+            const entryNode = node as ResumeNode<BasicEntryProps>;
+            return entryNode.title?.[0] || node.type;
+        },
         childTypes: [
             AliasTypes.BulletedList,
             DescriptionListType,
@@ -149,6 +157,10 @@ export default function registerNodes() {
         type: Link.type,
         text: 'Link',
         icon: 'link',
+        treeRepresentation: (node) => {
+            const linkNode = node as ResumeNode<{ url?: string }>;
+            return node.value || linkNode.url || node.type;
+        },
         childTypes: [],
         defaultValue: {
             value: '',
@@ -179,6 +191,7 @@ export default function registerNodes() {
         cssName: 'Page Break',
         text: 'Page Break',
         icon: 'line-block',
+        treeRepresentation: 'Page Break',
         childTypes: [],
         defaultValue: {}
     });
@@ -224,6 +237,7 @@ export default function registerNodes() {
         component: DescriptionListItem,
         type: DescriptionListItemType,
         text: 'Description List Item',
+        childTypes: [],
         defaultValue: {},
         toolbarOptions: getDescriptionListItemToolbarOptions
     });
@@ -242,6 +256,10 @@ export default function registerNodes() {
         text: 'Image',
         icon: 'image',
         isDefaultChildType: true,
+        treeRepresentation: (node) => {
+            const imageNode = node as ResumeNode<{ altText?: string }>;
+            return imageNode.altText || node.value || node.type;
+        },
         defaultValue: {
             value: ''
         }

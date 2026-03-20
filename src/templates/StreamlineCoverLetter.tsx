@@ -1,5 +1,5 @@
 import Group from "@/resume/Group";
-import Image, { BasicImageProps, ImageProps } from "@/resume/Image";
+import Image, { BasicImageProps } from "@/resume/Image";
 import MarkdownText from "@/resume/Markdown";
 
 import { getJoeBlowSignature } from "./AssuredCoveredLetter";
@@ -72,7 +72,7 @@ Thank you for your time and consideration.`
                     type: Image.type,
                     htmlId: "signature-image",
                     value: signature,
-                    alt: "Signature"
+                    altText: "Signature"
 
                 } as BasicImageProps,
                 {
@@ -179,7 +179,7 @@ export function streamlineCoverLetterCss() {
         "padding-left": "var(--edge-margin)",
         "padding-right": "var(--edge-margin)",
         "text-align": "right",
-        "text-size": "12pt"
+        "font-size": "12pt"
     }, "#signature").add("Signature", {
         "height": "72px",
         "margin-top": "var(--small-spacing)"

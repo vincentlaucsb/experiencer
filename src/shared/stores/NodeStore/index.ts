@@ -13,6 +13,13 @@ import { IdType, ResumeNode } from '@/types';
 export default class NodeStore extends ClassStore<ResumeNodeTree> {
     protected _data: ResumeNodeTree;
 
+    private getParentNode(parentId: string | IdType | undefined): ResumeNode | undefined {
+        const normalizedParentId: string | IdType = parentId ?? [];
+        return typeof normalizedParentId === 'string'
+            ? this.data.getNodeByUuid(normalizedParentId)
+            : this.data.getNodeById(normalizedParentId);
+    }
+
     private isAllowedChildType(parentType: string, childType: string): boolean {
         const allowedChildren = ComponentTypes.instance.childTypes(parentType);
 
@@ -58,9 +65,7 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
      */
     addNode(parentId: string | IdType | undefined, node: ResumeNode): void {
         const normalizedParentId: string | IdType = parentId ?? [];
-        const parentNode = typeof normalizedParentId === 'string'
-            ? this.data.getNodeByUuid(normalizedParentId)
-            : this.data.getNodeById(normalizedParentId);
+        const parentNode = this.getParentNode(parentId);
 
         if (!parentNode) {
             return;
@@ -74,6 +79,19 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
         }
 
         this.withMutation(() => this.data.addNestedChild(normalizedParentId, node));
+    }
+
+    /**
+     * Validate whether a node can be inserted under a parent.
+     * Used by callers that need to avoid side effects (e.g., history writes) for invalid inserts.
+     */
+    canAddNode(parentId: string | IdType | undefined, node: ResumeNode): boolean {
+        const parentNode = this.getParentNode(parentId);
+        if (!parentNode) {
+            return false;
+        }
+
+        return this.isAllowedChildType(parentNode.type, node.type);
     }
 
     /**

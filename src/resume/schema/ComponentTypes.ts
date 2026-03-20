@@ -16,9 +16,15 @@ type ToolbarOptionsFunction = (
     updateNode: (key: string, value: NodeProperty) => void,
     node: ResumeNode
 ) => ToolbarItemData[];
+type TreeRepresentationFunction = (node: ResumeNode) => React.ReactNode;
 
 /** Stores schema information */
 export default class ComponentTypes {
+    private static readonly ROOT_TYPE = "Resume";
+    private static readonly ROOT_DISALLOWED_CHILD_TYPES = new Set<string>([
+        "Description List Item"
+    ]);
+
     private _childTypes: Map<string, ChildTypeDefinition | undefined> = new Map();
     private _cssNames: Map<string, Array<string>> = new Map();
     private _components: Map<string, typeof React.Component | React.FC<ResumeComponentProps>> = new Map();
@@ -27,6 +33,8 @@ export default class ComponentTypes {
     private _displayText: Map<string, string> = new Map();
     private _icons: Map<string, string | undefined> = new Map();
     private _registeredTypes: Set<string> = new Set();
+    private _treeClassNames: Map<string, string[]> = new Map();
+    private _treeRepresentations: Map<string, TreeRepresentationFunction | string | undefined> = new Map();
     private _toolbarOptions: Map<string, ToolbarOptionsFunction> = new Map();
     private _editableTypes: Set<string> = new Set();
 
@@ -38,6 +46,12 @@ export default class ComponentTypes {
      * @returns A string (single type) or array of strings (multiple types)
      */
     childTypes(type: string) : string | Array<string> {
+        if (type === ComponentTypes.ROOT_TYPE) {
+            return [...this._registeredTypes].filter(
+                (childType) => !ComponentTypes.ROOT_DISALLOWED_CHILD_TYPES.has(childType)
+            );
+        }
+
         const childTypes = this._childTypes.get(type);
         if (childTypes instanceof DefaultChildren) {
             return childTypes.resolve(this._defaultChildTypes);
@@ -83,6 +97,30 @@ export default class ComponentTypes {
      */
     getComponent(type: string) : typeof React.Component | React.FC<ResumeComponentProps> | undefined {
         return this._components.get(type);
+    }
+
+    /**
+     * Get additional class names used to render a node in the tree visualizer.
+     */
+    treeClassNames(type: string): string[] {
+        return [...(this._treeClassNames.get(type) || [`tree-item-${type}`])];
+    }
+
+    /**
+     * Get the display label for a node in the tree visualizer.
+     */
+    treeRepresentation(node: ResumeNode): React.ReactNode {
+        const representation = this._treeRepresentations.get(node.type);
+
+        if (typeof representation === "function") {
+            return representation(node);
+        }
+
+        if (typeof representation === "string") {
+            return representation;
+        }
+
+        return node.type;
     }
 
     /**
@@ -144,6 +182,8 @@ export default class ComponentTypes {
         this._defaultValues.set(def.type, defaultValue);
         this._displayText.set(def.type, def.text);
         this._icons.set(def.type, def.icon);
+        this._treeClassNames.set(def.type, def.treeClassNames ? arrayNormalize(def.treeClassNames) : [`tree-item-${def.type}`]);
+        this._treeRepresentations.set(def.type, def.treeRepresentation);
         
         if (def.isDefaultChildType)
             this._defaultChildTypes.push(def.type);

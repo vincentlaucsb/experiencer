@@ -9,6 +9,12 @@ export default function pasteFromClipboard(targetUuid: string | undefined) {
     const clipboard = useClipboardStore.getState().clipboard;
     if (!clipboard) return;
 
+    const copiedNode = deepCopy(clipboard);
+    if (!resumeNodeStore.canAddNode(targetUuid, copiedNode)) {
+        resumeNodeStore.addNode(targetUuid, copiedNode);
+        return;
+    }
+
     recordHistory();
-    resumeNodeStore.addNode(targetUuid, deepCopy(clipboard));
+    resumeNodeStore.addNode(targetUuid, copiedNode);
 }

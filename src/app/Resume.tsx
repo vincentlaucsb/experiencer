@@ -19,6 +19,7 @@ import ResumeHotKeys from '@/controls/ResumeHotkeys';
 import TopEditingBar from '@/controls/TopEditingBar';
 import TopNavBar, { TopNavBarWrapperProps } from '@/controls/TopNavBar';
 import Tabs from '@/controls/Tabs';
+import Toast from '@/controls/Toast';
 import PureMenu, { PureMenuLink, PureMenuItem } from '@/controls/menus/PureMenu';
 import NodeTreeVisualizer from '@/editor/NodeTreeVisualizer';
 import Help from '@/help/Help';
@@ -193,6 +194,7 @@ function Resume(props: ResumeProps) {
                 </React.Suspense>,
                 hlBoxContainer
             )}
+            <Toast />
         </>
     );
     

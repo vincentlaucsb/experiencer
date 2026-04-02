@@ -1,5 +1,7 @@
 import ClassStore from '@/shared/ClassStore';
 import ResumeNodeTree from '@/shared/NodeTree';
+import ComponentTypes from '@/resume/schema/ComponentTypes';
+import { showToast } from '@/shared/stores/toastStore';
 import { IdType, ResumeNode } from '@/types';
 
 /**
@@ -10,6 +12,31 @@ import { IdType, ResumeNode } from '@/types';
  */
 export default class NodeStore extends ClassStore<ResumeNodeTree> {
     protected _data: ResumeNodeTree;
+
+    private getParentNode(parentId: string | IdType | undefined): ResumeNode | undefined {
+        const normalizedParentId: string | IdType = parentId ?? [];
+        return typeof normalizedParentId === 'string'
+            ? this.data.getNodeByUuid(normalizedParentId)
+            : this.data.getNodeById(normalizedParentId);
+    }
+
+    private isAllowedChildType(parentType: string, childType: string): boolean {
+        const allowedChildren = ComponentTypes.instance.childTypes(parentType);
+
+        if (Array.isArray(allowedChildren)) {
+            return allowedChildren.includes(childType);
+        }
+
+        return allowedChildren === childType;
+    }
+
+    private getNodeDisplayText(type: string): string {
+        try {
+            return ComponentTypes.instance.defaultValue(type).text;
+        } catch {
+            return type;
+        }
+    }
 
     constructor(initialTree?: ResumeNodeTree) {
         super();
@@ -31,12 +58,40 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
 
     /**
      * Add a node as a nested child using either UUID or hierarchical ID.
+     * Pass undefined to add directly under the root node.
      * 
-     * @param parentId - UUID or hierarchical ID of the parent node
+     * @param parentId - UUID, hierarchical ID, or undefined for root insertion
      * @param node - The node to add
      */
-    addNode(parentId: string | IdType, node: ResumeNode): void {
-        this.withMutation(() => this.data.addNestedChild(parentId, node));
+    addNode(parentId: string | IdType | undefined, node: ResumeNode): void {
+        const normalizedParentId: string | IdType = parentId ?? [];
+        const parentNode = this.getParentNode(parentId);
+
+        if (!parentNode) {
+            return;
+        }
+
+        if (!this.isAllowedChildType(parentNode.type, node.type)) {
+            const childText = this.getNodeDisplayText(node.type);
+            const parentText = this.getNodeDisplayText(parentNode.type);
+            showToast(`${childText} cannot be a child of ${parentText}.`);
+            return;
+        }
+
+        this.withMutation(() => this.data.addNestedChild(normalizedParentId, node));
+    }
+
+    /**
+     * Validate whether a node can be inserted under a parent.
+     * Used by callers that need to avoid side effects (e.g., history writes) for invalid inserts.
+     */
+    canAddNode(parentId: string | IdType | undefined, node: ResumeNode): boolean {
+        const parentNode = this.getParentNode(parentId);
+        if (!parentNode) {
+            return false;
+        }
+
+        return this.isAllowedChildType(parentNode.type, node.type);
     }
 
     /**

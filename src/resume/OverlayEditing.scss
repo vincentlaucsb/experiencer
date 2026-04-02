@@ -1,4 +1,5 @@
 @use "../sass/colors/semantic" as colors;
+@use "../sass/colors/palette" as palette;
 @use "../sass/variables";
 
 .resume-overlay-editor {
@@ -8,7 +9,7 @@
     max-width: 600px;
     margin-top: -1rem;
     margin-left: -1rem;
-    background: colors.$subtle-overlay;
+    background: rgba(palette.$neutral-300, 0.85);
     border: 1px solid rgba(colors.$dark-shade, 0.08);
     border-radius: 4px;
     box-shadow: 0 4px 12px rgba(colors.$dark-shade, 0.15);
@@ -25,6 +26,13 @@
 
 .resume-overlay-label {
     font-weight: 600;
+}
+
+.resume-overlay-helper-text {
+    margin-top: 0.25rem;
+    color: rgba(colors.$dark-shade, 0.7);
+    font-size: 12px;
+    line-height: 1.3;
 }
 
 .resume-overlay-input {

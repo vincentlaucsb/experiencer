@@ -10,6 +10,8 @@ import type { BasicHeaderProps } from "@/resume/Header";
 import type { LinkProps } from "@/resume/Link";
 import type { RowProps } from "@/resume/Row";
 import type { BasicResumeNode } from "@/types";
+import Group from "@/resume/Group";
+import Row from "@/resume/Row";
 
 export function streamlineCss() {
     let css = getDefaultCss().setProperties({
@@ -198,14 +200,14 @@ export function streamlineRootCss(): CssNode {
 
 export function streamlineHeader() {
     return {
-        "type": "Header",
-        "value": "**Dinesh** Chugtai",
-        "childNodes": [{
-            "type": "Group",
-            "htmlId": "contact",
+        type: "Header",
+        value: "**Dinesh** Chugtai",
+        childNodes: [{
+            type: Group.type,
+            htmlId: "contact",
             childNodes: [
                 {
-                    type: 'Row',
+                    type: Row.type,
                     justifyContent: 'flex-start',
                     childNodes: [
                         {
@@ -223,7 +225,7 @@ export function streamlineHeader() {
                     ]
                 } as RowProps,
                 {
-                    type: 'Row',
+                    type: Row.type,
                     justifyContent: 'flex-start',
                     childNodes: [
                         {
@@ -246,9 +248,9 @@ export function streamlineHeader() {
                 } as unknown as RowProps
             ]
         }],
-        "subtitle": "Platform Engineer & Blockchain Enthusiast",
-        "justifyContent": "flex-start",
-        "distribution": "top-to-bottom"
+        subtitle: "Platform Engineer & Blockchain Enthusiast",
+        justifyContent: "flex-start",
+        distribution: "top-to-bottom"
     } as BasicHeaderProps;
 }
 
@@ -315,7 +317,7 @@ export function streamlineNodes(): Array<BasicResumeNode> {
         streamlineHeader(),
         {
             "type": "Column",
-            "htmlId": "main",
+            htmlId: "main",
             childNodes: [
                 experience,
                 education,

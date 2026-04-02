@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 
-import "./OverlayEditing.scss";
+import "../OverlayEditing.scss";
 
 // Components
 import Container from "@/resume/infrastructure/Container";
+import { useEditorStore, useIsNodeEditing } from "@/shared/stores/editorStore";
 
 // Hooks
-import useEditingControls from "./hooks/useEditingControls";
-import { useEditorStore, useIsNodeEditing } from "@/shared/stores/editorStore";
+import useEditingControls from "../hooks/useEditingControls";
 
 // Types
 import ResumeComponentProps, { BasicResumeNode } from "@/types";
+import useHandleSourcePaste from "./useHandleSourcePaste";
 
 interface ImageBase {
     altText?: string;
@@ -73,6 +74,8 @@ export default function Image({ updateDataFields, ...props }: ImageProps) {
         }
     }, [isEditing, src, altText]);
 
+    const handleSourcePaste = useHandleSourcePaste(setTempSrc);
+
     const editContent = (
         <div className="resume-overlay-editor resume-overlay-editor--image app-gap-2 app-p-4" onClick={(e) => e.stopPropagation()}>
             <div className="resume-overlay-field app-gap-1">
@@ -84,9 +87,13 @@ export default function Image({ updateDataFields, ...props }: ImageProps) {
                     id={`${props.uuid}-image-src`}
                     value={tempSrc}
                     onChange={(e) => setTempSrc(e.target.value)}
+                    onPaste={handleSourcePaste}
                     placeholder="https://example.com/image.png or data:image/png;base64,..."
                     autoFocus
                 />
+                <small className="resume-overlay-helper-text">
+                    Tip: Press Ctrl + V to paste an image directly from your clipboard.
+                </small>
             </div>
             <div className="resume-overlay-field app-gap-1">
                 <label className="resume-overlay-label" htmlFor={`${props.uuid}-image-alt`}>

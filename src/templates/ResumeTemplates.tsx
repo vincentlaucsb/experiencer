@@ -2,6 +2,7 @@ import { assignIds } from "@/shared/utils/assignIds";
 import { randyMarshCss, randyMarsh, randyMarshRootCss } from "./RandyMarsh";
 import { assuredNodes, assuredCss, assuredRootCss } from "./Assured";
 import { streamlineNodes, streamlineCss, streamlineRootCss } from "./Streamline";
+import { streamlineCoverLetterNodes, streamlineCoverLetterCss } from "./StreamlineCoverLetter";
 import { ResumeSaveData } from "@/types";
 import { assuredCoverLetterNodes, assuredCoverLetterCss } from "./AssuredCoveredLetter";
 
@@ -28,6 +29,12 @@ export default class ResumeTemplates {
         "Streamline": {
             builtinCss: streamlineCss().dump(),
             childNodes: assignIds(streamlineNodes()),
+            rootCss: streamlineRootCss().dump()
+        } as ResumeSaveData,
+
+        "Streamline: Cover Letter": {
+            builtinCss: streamlineCoverLetterCss().dump(),
+            childNodes: assignIds(streamlineCoverLetterNodes()),
             rootCss: streamlineRootCss().dump()
         } as ResumeSaveData
     }

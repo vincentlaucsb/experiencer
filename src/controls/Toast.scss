@@ -1,0 +1,18 @@
+@use "../sass/colors/semantic" as colors;
+
+.app-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    z-index: 9999;
+    max-width: min(90vw, 680px);
+    padding: 10px 14px;
+    border-radius: 6px;
+    border: 1px solid rgba(colors.$dark-shade, 0.15);
+    background: rgba(colors.$dark-shade, 0.95);
+    color: colors.$light-shade;
+    box-shadow: 0 8px 24px rgba(colors.$dark-shade, 0.35);
+    font-size: 13px;
+    line-height: 1.3;
+}

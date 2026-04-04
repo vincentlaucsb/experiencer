@@ -110,7 +110,7 @@ describe('CssNode - Navigation & Selectors', () => {
 
     test('fullPath for immediate child', () => {
         const root = new CssNode('Root', {}, 'body');
-        const child = root.add('Child', {}, 'div');
+        const child = root.addNode('Child', {}, 'div');
         
         expect(arraysEqual(child.fullPath, ['Child'])).toBe(true);
     });
@@ -132,7 +132,7 @@ describe('CssNode - Navigation & Selectors', () => {
 
     test('fullSelector for single child', () => {
         const root = new CssNode('Root', {}, 'body');
-        root.add('Child', {}, 'div');
+        root.addNode('Child', {}, 'div');
         
         const child = root.children[0];
         expect(child.fullSelector).toBe('body div');
@@ -140,38 +140,38 @@ describe('CssNode - Navigation & Selectors', () => {
 
     test('fullSelector with comma selector in parent', () => {
         const root = new CssNode('Root', {}, '.text, #special');
-        const child = root.add('Child', {}, 'span');
+        const child = root.addNode('Child', {}, 'span');
         
         expect(child.fullSelector).toBe('.text span, #special span');
     });
 
     test('fullSelector with comma selector in child', () => {
         const root = new CssNode('Root', {}, 'body');
-        const child = root.add('Child', {}, 'span, a');
+        const child = root.addNode('Child', {}, 'span, a');
         
         expect(child.fullSelector).toBe('body span, body a');
     });
 
     test('fullSelector with pseudo-element selector', () => {
         const root = new CssNode('Root', {}, 'span');
-        const pseudoElement = root.add('After', {}, '::after');
+        const pseudoElement = root.addNode('After', {}, '::after');
         
         expect(pseudoElement.fullSelector).toBe('span::after');
     });
 
     test('fullSelector with nested comma selectors', () => {
         const root = new CssNode('Headings', {}, 'h1, h2');
-        const text = root.add('Text', {}, 'p, span');
-        const grandchild = text.add('Link', {}, 'a');
+        const text = root.addNode('Text', {}, 'p, span');
+        const grandchild = text.addNode('Link', {}, 'a');
         
         expect(grandchild.fullSelector).toBe('h1 p a, h1 span a, h2 p a, h2 span a');
     });
 
     test('fullSelector with pseudo-elements in complex tree', () => {
         const root = new CssNode('Container', {}, 'div');
-        const child = root.add('Content', {}, 'p');
-        const pseudo = child.add('Before', {}, '::before');
-        const pseudo2 = child.add('After', {}, '::after');
+        const child = root.addNode('Content', {}, 'p');
+        const pseudo = child.addNode('Before', {}, '::before');
+        const pseudo2 = child.addNode('After', {}, '::after');
         
         expect(pseudo.fullSelector).toBe('div p::before');
         expect(pseudo2.fullSelector).toBe('div p::after');

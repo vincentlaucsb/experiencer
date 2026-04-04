@@ -8,29 +8,29 @@ import PageBreak from "@/resume/PageBreak";
 function getMarkdownCss(): CssNode {
     let markdownCss = new CssNode(MarkdownText.type, {}, '.text-content');
 
-    let listCss = markdownCss.add('Lists', {
+    let listCss = markdownCss.addNode('Lists', {
         'padding-left': 'var(--large-spacing)',
     }, 'ul, ol');
 
-    listCss.add('List Item', { 'list-style-type': 'square' }, 'li');
+    listCss.addNode('List Item', { 'list-style-type': 'square' }, 'li');
 
-    markdownCss.add('Paragraphs', {
+    markdownCss.addNode('Paragraphs', {
         'margin': 'var(--small-spacing) 0'
     }, 'p');
 
-    markdownCss.add('Headings', {
+    markdownCss.addNode('Headings', {
         'margin': 'var(--spacing) 0 var(--small-spacing) 0',
         'font-weight': 'bold'
     }, 'h1, h2, h3, h4, h5, h6');
 
-    markdownCss.add('Code Blocks', {
+    markdownCss.addNode('Code Blocks', {
         'background-color': '#f5f5f5',
         'padding': 'var(--spacing)',
         'margin': 'var(--spacing) 0',
         'border-radius': '4px'
     }, 'pre');
 
-    markdownCss.add('Links', {
+    markdownCss.addNode('Links', {
         'color': '#0066cc',
         'text-decoration': 'underline'
     }, 'a');
@@ -43,14 +43,14 @@ function getSectionCss(): CssNode {
         'margin-bottom': 'var(--large-spacing)'
     }, 'section');
 
-    sectionCss.add('Title', {
+    sectionCss.addNode('Title', {
         'font-family': 'var(--sans-serif)',
         'font-weight': 'bold',
         'font-size': '15pt',
         'text-transform': 'uppercase'
     }, '> h2');
 
-    sectionCss.add('Content', {
+    sectionCss.addNode('Content', {
         'margin-top': '8px',
         'margin-left': '8px',
         'padding-left': '16px',
@@ -66,39 +66,39 @@ function getEntryCss(): CssNode {
         'display': 'block'
     }, 'resume-entry');
 
-    entryCss.add('Adjacent Entries', {
+    entryCss.addNode('Adjacent Entries', {
         'margin-top': 'var(--large-spacing)'
     }, '+ resume-entry');
 
-    let entryTitleCss = entryCss.add('Title Block',
+    let entryTitleCss = entryCss.addNode('Title Block',
         { 'margin-bottom': 'var(--small-spacing)' }, '> hgroup');
 
-    let entryTitleHeadingCss = entryTitleCss.add('Title', {
+    let entryTitleHeadingCss = entryTitleCss.addNode('Title', {
             'font-family': 'var(--serif)',
             'font-size': '13pt',
         }, '> h3');
 
-    entryTitleHeadingCss.add('First Field', {
+    entryTitleHeadingCss.addNode('First Field', {
         'font-weight': 'bold'
     }, 'span.field-0');
 
-    entryTitleHeadingCss.add('Middle Fields', {
+    entryTitleHeadingCss.addNode('Middle Fields', {
         'font-weight': 'normal'
     }, 'span.field-middle');
 
-    entryTitleHeadingCss.add('Last Field', {
+    entryTitleHeadingCss.addNode('Last Field', {
         'font-weight': 'normal'
     }, 'span.field-last');
 
-    let subtitleCss = entryTitleCss.add('Subtitle', {
+    let subtitleCss = entryTitleCss.addNode('Subtitle', {
         'display': 'flex',
         'flex-wrap': 'wrap',
         'font-weight': 'normal'
     }, '> h4');
 
-    subtitleCss.add('First Field', { 'font-weight': 'bold' }, 'span.field-0');
-    subtitleCss.add('Middle Fields', {}, 'span.field-middle');
-    subtitleCss.add('Last Field', {}, 'span.field-last');
+    subtitleCss.addNode('First Field', { 'font-weight': 'bold' }, 'span.field-0');
+    subtitleCss.addNode('Middle Fields', {}, 'span.field-middle');
+    subtitleCss.addNode('Last Field', {}, 'span.field-last');
 
     return entryCss;
 }
@@ -108,12 +108,12 @@ function getHeaderCss() {
         'margin-bottom': 'var(--large-spacing)'
     }, 'header');
 
-    const titleGroup = headerCss.add('Title Group', {}, '> hgroup');
-    titleGroup.add('Title', {
+    const titleGroup = headerCss.addNode('Title Group', {}, '> hgroup');
+    titleGroup.addNode('Title', {
         'font-family': 'var(--serif)',
         'font-weight': 'normal'
     }, '> h1');
-    titleGroup.add('Subtitle', { 'font-weight': 'normal' }, '> h2');
+    titleGroup.addNode('Subtitle', { 'font-weight': 'normal' }, '> h2');
 
     return headerCss;
 }
@@ -124,7 +124,7 @@ function getLinkCss(): CssNode {
         'text-decoration': 'underline'
     }, 'a');
 
-    linkCss.add('Hover', {
+    linkCss.addNode('Hover', {
         'color': '#004499',
         'text-decoration': 'none'
     }, ':hover');
@@ -153,20 +153,20 @@ export default function getDefaultCss(): CssNode {
         'padding': 'var(--edge-margin)',
     }, '#resume');
 
-    defaultCss.add('All Elements', { 'margin': '0' }, '*');
+    defaultCss.addNode('All Elements', { 'margin': '0' }, '*');
 
-    defaultCss.add('Image', {
+    defaultCss.addNode('Image', {
         'max-width': '100%',
         'max-height': '100%',
         'object-fit': 'scale-down'
     }, 'img');
 
-    let dlCss = defaultCss.add('Description List', { }, 'dl');
-    dlCss.add('Definitions', { 'padding-left': '0.5rem' }, 'dd');
+    let dlCss = defaultCss.addNode('Description List', { }, 'dl');
+    dlCss.addNode('Definitions', { 'padding-left': '0.5rem' }, 'dd');
 
-    defaultCss.add('Row', {}, 'resume-row');
-    defaultCss.add('Column', {}, 'resume-column');
-    defaultCss.add('Grid', {}, 'resume-grid');
+    defaultCss.addNode('Row', {}, 'resume-row');
+    defaultCss.addNode('Column', {}, 'resume-column');
+    defaultCss.addNode('Grid', {}, 'resume-grid');
     defaultCss.addNode(getHeaderCss());
     defaultCss.addNode(getSectionCss());
     defaultCss.addNode(getEntryCss());

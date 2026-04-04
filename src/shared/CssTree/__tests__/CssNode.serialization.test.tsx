@@ -3,7 +3,7 @@ import CssNode from "..";
 describe('CssNode - Serialization', () => {
     test('dump returns correct structure', () => {
         const node = new CssNode('Test', { color: 'red' }, 'div');
-        node.add('Child', { margin: '10px' }, 'span');
+        node.addNode('Child', { margin: '10px' }, 'span');
         
         const dump = node.dump();
         
@@ -33,8 +33,8 @@ describe('CssNode - Serialization', () => {
 
     test('dump with nested children', () => {
         const root = new CssNode('Root', {}, 'body');
-        const level1 = root.add('Level1', { padding: '0' }, 'section');
-        const level2 = level1.add('Level2', { margin: '0' }, 'article');
+        const level1 = root.addNode('Level1', { padding: '0' }, 'section');
+        const level2 = level1.addNode('Level2', { margin: '0' }, 'article');
         
         const dump = root.dump();
         
@@ -45,8 +45,8 @@ describe('CssNode - Serialization', () => {
 
     test('load reconstructs tree from dump', () => {
         const original = new CssNode('Root', { background: 'white' }, 'body');
-        original.add('Header', { padding: '20px' }, 'header');
-        original.add('Content', { margin: '10px' }, 'main');
+        original.addNode('Header', { padding: '20px' }, 'header');
+        original.addNode('Content', { margin: '10px' }, 'main');
         
         const dump = original.dump();
         const reconstructed = CssNode.load(dump);
@@ -61,9 +61,9 @@ describe('CssNode - Serialization', () => {
 
     test('load reconstructs nested tree', () => {
         const original = new CssNode('Root', {}, 'body');
-        const level1 = original.add('Level1', {}, 'section');
-        const level2 = level1.add('Level2', {}, 'article');
-        level2.add('Target', { color: 'red' }, 'p');
+        const level1 = original.addNode('Level1', {}, 'section');
+        const level2 = level1.addNode('Level2', {}, 'article');
+        level2.addNode('Target', { color: 'red' }, 'p');
         
         const dump = original.dump();
         const reconstructed = CssNode.load(dump);
@@ -85,7 +85,7 @@ describe('CssNode - Serialization', () => {
 
     test('deepCopy creates independent copy', () => {
         const original = new CssNode('Root', { background: 'white' }, 'body');
-        original.add('Child', { color: 'blue' }, 'div');
+        original.addNode('Child', { color: 'blue' }, 'div');
         
         const copy = original.deepCopy();
         
@@ -97,12 +97,12 @@ describe('CssNode - Serialization', () => {
 
     test('deepCopy modifications do not affect original', () => {
         const original = new CssNode('Root', { color: 'red' }, 'body');
-        original.add('ChildOriginal', {}, 'div');
+        original.addNode('ChildOriginal', {}, 'div');
         
         const copy = original.deepCopy();
         copy.name = 'Copy';
         copy.properties.set('color', 'blue');
-        copy.add('ChildCopy', {}, 'span');
+        copy.addNode('ChildCopy', {}, 'span');
         
         expect(original.name).toBe('Root');
         expect(original.properties.get('color')).toBe('red');
@@ -114,8 +114,8 @@ describe('CssNode - Serialization', () => {
 
     test('deepCopy creates independent nested structures', () => {
         const original = new CssNode('Root', {}, 'body');
-        const level1 = original.add('Level1', { padding: '10px' }, 'section');
-        level1.add('Level2', { margin: '5px' }, 'article');
+        const level1 = original.addNode('Level1', { padding: '10px' }, 'section');
+        level1.addNode('Level2', { margin: '5px' }, 'article');
         
         const copy = original.deepCopy();
         const copyLevel1 = copy.findNode(['Level1']) as CssNode;
@@ -135,7 +135,7 @@ describe('CssNode - Serialization', () => {
 
     test('dump/load/dump cycle is consistent', () => {
         const original = new CssNode('Root', { color: 'red', margin: '10px' }, 'body');
-        original.add('Child', { padding: '5px' }, 'div');
+        original.addNode('Child', { padding: '5px' }, 'div');
         
         const dump1 = original.dump();
         const reloaded = CssNode.load(dump1);

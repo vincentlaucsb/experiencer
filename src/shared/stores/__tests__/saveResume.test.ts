@@ -88,7 +88,7 @@ describe('dump()', () => {
 
     test('includes CSS dump from cssStore', () => {
         cssStore.updateCss((css) => {
-            css.add('Section', { 'font-size': '14pt' });
+            css.addNode('Section', { 'font-size': '14pt' });
         });
 
         const result = dump();

@@ -3,7 +3,7 @@ import CssNode from "..";
 describe('CssNode - Tree Operations', () => {
     test('copySkeleton without parameters', () => {
         const original = new CssNode('Root', { margin: '10px' }, 'body');
-        original.add('Child', { padding: '5px' }, 'div');
+        original.addNode('Child', { padding: '5px' }, 'div');
         
         const skeleton = original.copySkeleton();
         
@@ -16,7 +16,7 @@ describe('CssNode - Tree Operations', () => {
 
     test('copySkeleton with custom name', () => {
         const original = new CssNode('Root', { margin: '10px' }, 'body');
-        original.add('Child', { padding: '5px' }, 'div');
+        original.addNode('Child', { padding: '5px' }, 'div');
         
         const skeleton = original.copySkeleton('NewRoot');
         
@@ -28,7 +28,7 @@ describe('CssNode - Tree Operations', () => {
 
     test('copySkeleton with custom selector', () => {
         const original = new CssNode('Root', { margin: '10px' }, 'body');
-        original.add('Child', { padding: '5px' }, 'div');
+        original.addNode('Child', { padding: '5px' }, 'div');
         
         const skeleton = original.copySkeleton(undefined, '.custom');
         
@@ -48,8 +48,8 @@ describe('CssNode - Tree Operations', () => {
 
     test('children getter returns array of child nodes', () => {
         const parent = new CssNode('Parent', {}, 'div');
-        const child1 = parent.add('Child1', {}, 'span');
-        const child2 = parent.add('Child2', {}, 'p');
+        const child1 = parent.addNode('Child1', {}, 'span');
+        const child2 = parent.addNode('Child2', {}, 'p');
         
         const children = parent.children;
         
@@ -67,7 +67,7 @@ describe('CssNode - Tree Operations', () => {
 
     test('isRoot returns false for non-root node', () => {
         const parent = new CssNode('Parent', {}, 'div');
-        const child = parent.add('Child', {}, 'span');
+        const child = parent.addNode('Child', {}, 'span');
         
         expect(child.isRoot).toBe(false);
     });
@@ -80,9 +80,9 @@ describe('CssNode - Tree Operations', () => {
 
     test('treeRoot returns root for nested node', () => {
         const root = new CssNode('Root', {}, 'div');
-        const level1 = root.add('Level1', {}, 'section');
-        const level2 = level1.add('Level2', {}, 'article');
-        const level3 = level2.add('Level3', {}, 'p');
+        const level1 = root.addNode('Level1', {}, 'section');
+        const level2 = level1.addNode('Level2', {}, 'article');
+        const level3 = level2.addNode('Level3', {}, 'p');
         
         expect(level1.treeRoot).toBe(root);
         expect(level2.treeRoot).toBe(root);
@@ -91,14 +91,14 @@ describe('CssNode - Tree Operations', () => {
 
     test('delete immediate child', () => {
         const parent = new CssNode('Parent', {}, 'div');
-        parent.add('Child1', {}, 'span');
-        parent.add('Child2', {}, 'p');
-        parent.add('Child3', {}, 'a');
+        parent.addNode('Child1', {}, 'span');
+        parent.addNode('Child2', {}, 'p');
+        parent.addNode('Child3', {}, 'a');
         
         expect(parent.hasName('Child2')).toBe(true);
         expect(parent.children.length).toBe(3);
         
-        parent.delete(['Child2']);
+        parent.deleteNode(['Child2']);
         
         expect(parent.hasName('Child2')).toBe(false);
         expect(parent.children.length).toBe(2);
@@ -108,14 +108,14 @@ describe('CssNode - Tree Operations', () => {
 
     test('delete nested child', () => {
         const root = new CssNode('Root', {}, 'body');
-        const parent = root.add('Parent', {}, 'div');
-        parent.add('Child1', {}, 'span');
-        parent.add('Child2', {}, 'p');
+        const parent = root.addNode('Parent', {}, 'div');
+        parent.addNode('Child1', {}, 'span');
+        parent.addNode('Child2', {}, 'p');
         
         expect(parent.hasName('Child2')).toBe(true);
         expect(parent.children.length).toBe(2);
         
-        root.delete(['Parent', 'Child2']);
+        root.deleteNode(['Parent', 'Child2']);
         
         expect(parent.hasName('Child2')).toBe(false);
         expect(parent.children.length).toBe(1);
@@ -124,10 +124,10 @@ describe('CssNode - Tree Operations', () => {
 
     test('delete with non-existent path does nothing', () => {
         const parent = new CssNode('Parent', {}, 'div');
-        parent.add('Child1', {}, 'span');
+        parent.addNode('Child1', {}, 'span');
         
         expect(() => {
-            parent.delete(['NonExistent']);
+            parent.deleteNode(['NonExistent']);
         }).not.toThrow();
         
         expect(parent.children.length).toBe(1);
@@ -135,12 +135,12 @@ describe('CssNode - Tree Operations', () => {
 
     test('delete deeply nested child', () => {
         const root = new CssNode('Root', {}, 'body');
-        const level1 = root.add('Level1', {}, 'section');
-        const level2 = level1.add('Level2', {}, 'article');
-        level2.add('Target', {}, 'p');
-        level2.add('Other', {}, 'span');
+        const level1 = root.addNode('Level1', {}, 'section');
+        const level2 = level1.addNode('Level2', {}, 'article');
+        level2.addNode('Target', {}, 'p');
+        level2.addNode('Other', {}, 'span');
         
-        root.delete(['Level1', 'Level2', 'Target']);
+        root.deleteNode(['Level1', 'Level2', 'Target']);
         
         expect(level2.hasName('Target')).toBe(false);
         expect(level2.hasName('Other')).toBe(true);

@@ -34,7 +34,7 @@ describe('ReadonlyCssNode', () => {
 
         test('reads isRoot property correctly', () => {
             const root = new CssNode('Root', {});
-            const child = root.add('Child', {});
+            const child = root.addNode('Child', {});
 
             const readonlyRoot = new ReadonlyCssNode(root);
             const readonlyChild = new ReadonlyCssNode(child);
@@ -52,8 +52,8 @@ describe('ReadonlyCssNode', () => {
 
         test('reads hasName method correctly', () => {
             const node = new CssNode('Test', {});
-            node.add('Child1', {});
-            node.add('Child2', {});
+            node.addNode('Child1', {});
+            node.addNode('Child2', {});
 
             const readonly = new ReadonlyCssNode(node);
 
@@ -114,8 +114,8 @@ describe('ReadonlyCssNode', () => {
     describe('fullPath is defensive copy', () => {
         test('fullPath returns a frozen array', () => {
             const root = new CssNode('Root', {});
-            const parent = root.add('Parent', {});
-            const child = parent.add('Child', {});
+            const parent = root.addNode('Parent', {});
+            const child = parent.addNode('Child', {});
 
             const readonly = new ReadonlyCssNode(child);
             const path = readonly.fullPath;
@@ -126,7 +126,7 @@ describe('ReadonlyCssNode', () => {
 
         test('fullPath returns a new array each time', () => {
             const root = new CssNode('Root', {});
-            const child = root.add('Child', {});
+            const child = root.addNode('Child', {});
 
             const readonly = new ReadonlyCssNode(child);
             const path1 = readonly.fullPath;
@@ -138,7 +138,7 @@ describe('ReadonlyCssNode', () => {
 
         test('frozen fullPath cannot be mutated', () => {
             const root = new CssNode('Root', {});
-            const child = root.add('Child', {});
+            const child = root.addNode('Child', {});
 
             const readonly = new ReadonlyCssNode(child);
             const path = readonly.fullPath;
@@ -152,8 +152,8 @@ describe('ReadonlyCssNode', () => {
     describe('Children are wrapped ReadonlyCssNode instances', () => {
         test('children returns array of ReadonlyCssNode', () => {
             const parent = new CssNode('Parent', {});
-            parent.add('Child1', {});
-            parent.add('Child2', {});
+            parent.addNode('Child1', {});
+            parent.addNode('Child2', {});
 
             const readonly = new ReadonlyCssNode(parent);
             const children = readonly.children;
@@ -167,8 +167,8 @@ describe('ReadonlyCssNode', () => {
 
         test('children wrapping is deep', () => {
             const root = new CssNode('Root', {});
-            const parent = root.add('Parent', {});
-            const child = parent.add('Child', {});
+            const parent = root.addNode('Parent', {});
+            const child = parent.addNode('Child', {});
 
             const readonlyRoot = new ReadonlyCssNode(root);
             const readonlyParent = readonlyRoot.children[0];
@@ -181,8 +181,8 @@ describe('ReadonlyCssNode', () => {
 
         test('child ReadonlyCssNode instances are independent', () => {
             const parent = new CssNode('Parent', {});
-            parent.add('Child1', {});
-            parent.add('Child2', {});
+            parent.addNode('Child1', {});
+            parent.addNode('Child2', {});
 
             const readonly = new ReadonlyCssNode(parent);
             const children1 = readonly.children;
@@ -194,7 +194,7 @@ describe('ReadonlyCssNode', () => {
     });
 
     describe('Mutation methods are not available', () => {
-        test('add method is not available on ReadonlyCssNode', () => {
+        test('addNode method is not available on ReadonlyCssNode', () => {
             const node = new CssNode('Test', {});
             const readonly = new ReadonlyCssNode(node);
 
@@ -208,7 +208,7 @@ describe('ReadonlyCssNode', () => {
             expect('addNode' in readonly).toBe(false);
         });
 
-        test('delete method is not available on ReadonlyCssNode', () => {
+        test('deleteNode method is not available on ReadonlyCssNode', () => {
             const node = new CssNode('Test', {});
             const readonly = new ReadonlyCssNode(node);
 
@@ -247,7 +247,7 @@ describe('ReadonlyCssNode', () => {
     describe('Wrapping preserves data consistency', () => {
         test('multiple wrappings of same node show consistent data', () => {
             const node = new CssNode('Test', { color: 'red', margin: '10px' });
-            const node2 = node.add('Child', { padding: '5px' });
+            const node2 = node.addNode('Child', { padding: '5px' });
 
             const readonly1 = new ReadonlyCssNode(node);
             const readonly2 = new ReadonlyCssNode(node);
@@ -279,9 +279,9 @@ describe('ReadonlyCssNode', () => {
     describe('Complex tree scenarios', () => {
         test('handles deeply nested trees', () => {
             const root = new CssNode('Root', {}, ':root');
-            const level1 = root.add('Container', {}, '.container');
-            const level2 = level1.add('Header', {}, 'header');
-            const level3 = level2.add('Title', {}, 'h1');
+            const level1 = root.addNode('Container', {}, '.container');
+            const level2 = level1.addNode('Header', {}, 'header');
+            const level3 = level2.addNode('Title', {}, 'h1');
 
             const readonly = new ReadonlyCssNode(level3);
 
@@ -292,13 +292,13 @@ describe('ReadonlyCssNode', () => {
 
         test('handles multiple children at all levels', () => {
             const root = new CssNode('Root', {});
-            const parent1 = root.add('Parent1', {});
-            const parent2 = root.add('Parent2', {});
+            const parent1 = root.addNode('Parent1', {});
+            const parent2 = root.addNode('Parent2', {});
 
-            parent1.add('Child1', {});
-            parent1.add('Child2', {});
-            parent2.add('Child3', {});
-            parent2.add('Child4', {});
+            parent1.addNode('Child1', {});
+            parent1.addNode('Child2', {});
+            parent2.addNode('Child3', {});
+            parent2.addNode('Child4', {});
 
             const readonlyRoot = new ReadonlyCssNode(root);
 

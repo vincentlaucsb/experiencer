@@ -104,7 +104,7 @@ export function streamlineCoverLetterCss() {
     }).setProperties({ "margin-right": "auto" }, "Title Group");
 
     const titleGroup = header.mustFindNode("Title Group");
-    titleGroup.add("Headers", { "margin": "0 !important" }, "> *");
+    titleGroup.addNode("Headers", { "margin": "0 !important" }, "> *");
 
     titleGroup.mustFindNode("Title").setProperties({
         "font-family": "var(--sans-serif)",
@@ -118,23 +118,23 @@ export function streamlineCoverLetterCss() {
         "color": "var(--header-subtitle-color)"
     });
 
-    const contact = header.add("#contact", {
+    const contact = header.addNode("#contact", {
         "font-size": "var(--contact-font-size)",
         "margin-top": "var(--x-small-spacing)",
         "line-height": "var(--contact-line-height)"
     });
 
-    const contactText = contact.add("Contact Text", {}, ".text-content");
-    contactText.add("Content", { "margin": "0 !important" }, "> p");
+    const contactText = contact.addNode("Contact Text", {}, ".text-content");
+    contactText.addNode("Content", { "margin": "0 !important" }, "> p");
 
-    const contactRow = contact.add("Contact Row", {}, "resume-row");
+    const contactRow = contact.addNode("Contact Row", {}, "resume-row");
 
-    contactRow.add("Contact Row Items", {
+    contactRow.addNode("Contact Row Items", {
         "display": "inline-flex !important",
         "align-items": "center"
     }, "> .text-content, > .link");
 
-    contactRow.add("Contact Row Separators", {
+    contactRow.addNode("Contact Row Separators", {
         "content": "\"•\"",
         "color": "var(--accent)",
         "font-size": "var(--separator-size)",
@@ -143,7 +143,7 @@ export function streamlineCoverLetterCss() {
     }, "> .text-content + .text-content::before, > .link + .link::before");
 
     /** Cover letter body */
-    const content = css.add("#content", {
+    const content = css.addNode("#content", {
         "font-family": "var(--sans-serif)",
         "font-size": "12pt",
         "line-height": "1.55",
@@ -153,34 +153,34 @@ export function streamlineCoverLetterCss() {
         "padding-bottom": "var(--edge-margin)"
     }, "#content");
 
-    content.add("Paragraph", {
+    content.addNode("Paragraph", {
         "margin-top": "0",
         "margin-bottom": "1em"
-    }, "p").add(":last-of-type", {
+    }, "p").addNode(":last-of-type", {
         "margin-bottom": "0"
     });
 
-    css.add("#date", {
+    css.addNode("#date", {
         "margin-top": "var(--small-spacing)"
     }, "#date");
 
-    css.add("#salutation", {
+    css.addNode("#salutation", {
         "margin-top": "var(--large-spacing)"
     }, "#salutation");
 
-    css.add("#body", {
+    css.addNode("#body", {
         "margin-top": "var(--spacing)",
         "margin-bottom": "var(--spacing)"
     }, "#body");
 
-    css.add("#signature", {
+    css.addNode("#signature", {
         "margin-top": "var(--large-spacing)",
         "margin-bottom": "var(--large-spacing)",
         "padding-left": "var(--edge-margin)",
         "padding-right": "var(--edge-margin)",
         "text-align": "right",
         "font-size": "12pt"
-    }, "#signature").add("Signature", {
+    }, "#signature").addNode("Signature", {
         "height": "72px",
         "margin-top": "var(--small-spacing)"
     }, "img");

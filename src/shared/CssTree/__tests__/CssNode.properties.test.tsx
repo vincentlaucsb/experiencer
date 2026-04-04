@@ -3,7 +3,7 @@ import CssNode from "..";
 describe('CssNode - Property Management', () => {
     test('setProperty sets single property on node', () => {
         const root = new CssNode('Root', {}, 'body');
-        root.add('Child', {}, 'div');
+        root.addNode('Child', {}, 'div');
         
         root.setProperty(['Child'], 'color', 'red');
         
@@ -13,7 +13,7 @@ describe('CssNode - Property Management', () => {
 
     test('setProperty overwrites existing property', () => {
         const root = new CssNode('Root', {}, 'body');
-        const child = root.add('Child', { color: 'blue' }, 'div');
+        const child = root.addNode('Child', { color: 'blue' }, 'div');
         
         root.setProperty(['Child'], 'color', 'red');
         
@@ -22,8 +22,8 @@ describe('CssNode - Property Management', () => {
 
     test('setProperty on deeply nested node', () => {
         const root = new CssNode('Root', {}, 'body');
-        const level1 = root.add('Level1', {}, 'section');
-        const level2 = level1.add('Level2', {}, 'article');
+        const level1 = root.addNode('Level1', {}, 'section');
+        const level2 = level1.addNode('Level2', {}, 'article');
         
         root.setProperty(['Level1', 'Level2'], 'font-size', '16px');
         
@@ -32,7 +32,7 @@ describe('CssNode - Property Management', () => {
 
     test('deleteProperty removes property from node', () => {
         const root = new CssNode('Root', {}, 'body');
-        const child = root.add('Child', { color: 'blue', margin: '10px' }, 'div');
+        const child = root.addNode('Child', { color: 'blue', margin: '10px' }, 'div');
         
         expect(child.properties.has('color')).toBe(true);
         
@@ -44,8 +44,8 @@ describe('CssNode - Property Management', () => {
 
     test('deleteProperty on deeply nested node', () => {
         const root = new CssNode('Root', {}, 'body');
-        const level1 = root.add('Level1', {}, 'section');
-        const level2 = level1.add('Level2', { padding: '5px' }, 'article');
+        const level1 = root.addNode('Level1', {}, 'section');
+        const level2 = level1.addNode('Level2', { padding: '5px' }, 'article');
         
         root.deleteProperty(['Level1', 'Level2'], 'padding');
         
@@ -54,7 +54,7 @@ describe('CssNode - Property Management', () => {
 
     test('deleteProperty on non-existent property does nothing', () => {
         const root = new CssNode('Root', {}, 'body');
-        const child = root.add('Child', { color: 'blue' }, 'div');
+        const child = root.addNode('Child', { color: 'blue' }, 'div');
         
         expect(() => {
             root.deleteProperty(['Child'], 'non-existent');
@@ -65,7 +65,7 @@ describe('CssNode - Property Management', () => {
 
     test('setProperties replaces all properties on node', () => {
         const root = new CssNode('Root', {}, 'body');
-        const child = root.add('Child', { old1: 'value1', old2: 'value2' }, 'div');
+        const child = root.addNode('Child', { old1: 'value1', old2: 'value2' }, 'div');
         
         root.setProperties(new Map<string, string>([['new1', 'value1'], ['new2', 'value2']]), ['Child']);
         
@@ -87,7 +87,7 @@ describe('CssNode - Property Management', () => {
 
     test('setProperties with empty array clears properties', () => {
         const root = new CssNode('Root', {}, 'body');
-        const child = root.add('Child', { color: 'red', margin: '10px' }, 'div');
+        const child = root.addNode('Child', { color: 'red', margin: '10px' }, 'div');
         
         root.setProperties(new Map<string, string>(), ['Child']);
         
@@ -110,7 +110,7 @@ describe('CssNode - Property Management', () => {
 
     test('setProperties callback adds new properties', () => {
         const root = new CssNode('Root', {}, 'body');
-        const child = root.add('Child', { color: 'red' }, 'div');
+        const child = root.addNode('Child', { color: 'red' }, 'div');
         
         root.setProperties((current) => {
             const next = new Map<string, string>(current);
@@ -127,7 +127,7 @@ describe('CssNode - Property Management', () => {
 
     test('setProperties callback overwrites existing properties', () => {
         const root = new CssNode('Root', {}, 'body');
-        const child = root.add('Child', { color: 'red', margin: '10px' }, 'div');
+        const child = root.addNode('Child', { color: 'red', margin: '10px' }, 'div');
         
         root.setProperties((current) => {
             const next = new Map<string, string>(current);
@@ -171,8 +171,8 @@ describe('CssNode - Property Management', () => {
 
     test('setProperties callback on deeply nested node', () => {
         const root = new CssNode('Root', {}, 'body');
-        const level1 = root.add('Level1', {}, 'section');
-        const level2 = level1.add('Level2', { old: 'value' }, 'article');
+        const level1 = root.addNode('Level1', {}, 'section');
+        const level2 = level1.addNode('Level2', { old: 'value' }, 'article');
         
         root.setProperties((current) => {
             const next = new Map<string, string>(current);

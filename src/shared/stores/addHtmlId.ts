@@ -31,7 +31,7 @@ export default function addHtmlId(htmlId: string) {
             const existingNode = css.findNode([previousSelector]);
             if (existingNode) {
                 root = existingNode.deepCopy();
-                css.delete([previousSelector]);
+                css.deleteNode([previousSelector]);
             }
         }
 

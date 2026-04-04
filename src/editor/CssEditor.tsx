@@ -47,7 +47,7 @@ export function makeCssEditorProps(
     return {
         addSelector: (path, name, selector) => {
             updateTree((cssTreeRoot) => {
-                cssTreeRoot.mustFindNode(Array.from(path)).add(name, {}, selector);
+                cssTreeRoot.mustFindNode(Array.from(path)).addNode(name, {}, selector);
             });
         },
 
@@ -83,7 +83,7 @@ export function makeCssEditorProps(
 
         deleteNode: (path) => {
             updateTree((cssTreeRoot) => {
-                cssTreeRoot.delete(Array.from(path));
+                cssTreeRoot.deleteNode(Array.from(path));
             });
         }
     };

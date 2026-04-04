@@ -175,21 +175,13 @@ export default class CssNode {
 
     // #region Public Methods
 
-    /**
-     * Add a CssNode and return a reference to the added node.
-     * This is a shortcut for `addNode(new CssNode(name, properties, selector))`.
-     * 
-     * @param name Name of the new node
-     * @param properties CSS properties for the new node
-     * @param selector Optional CSS selector for the new node (defaults to name)
-     * 
-     * @returns The added node.
-     */
-    add(name: string, properties: Record<string, string>, selector?: string): CssNode {
-        return this.addNode(new CssNode(name, properties, selector || name));
-    }
+    addNode(node: CssNode): CssNode;
+    addNode(name: string, properties: Record<string, string>, selector?: string): CssNode;
+    addNode(nodeOrName: CssNode | string, properties?: Record<string, string>, selector?: string): CssNode {
+        const node = (typeof nodeOrName === 'string')
+            ? new CssNode(nodeOrName, properties || {}, selector || nodeOrName)
+            : nodeOrName;
 
-    addNode(node: CssNode): CssNode {
         if (this.hasName(node.name)) {
             throw new Error(`Already have a child named ${node.name}`);
         }
@@ -225,7 +217,7 @@ export default class CssNode {
      * Delete a node somewhere in this subtree, given its path from this node.
      * @param path A list of names ordered from higher up in the tree to lower, ending with the name of the node to delete
      */
-    delete(path: string[]) {
+    deleteNode(path: string[]) {
         const parent = this.findNode(path.slice(0, path.length - 1));
         const childName = path[path.length - 1];
         if (parent && parent.hasName(childName)) {
@@ -281,7 +273,7 @@ export default class CssNode {
         for (const name of path) {
             let child = current._children.get(name);
             if (!child) {
-                child = current.add(name, {});
+                child = current.addNode(name, {});
             }
             current = child;
         }

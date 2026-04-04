@@ -48,7 +48,7 @@ describe('CssNode - Stylesheet Generation', () => {
         const node = new CssNode('Text Field', {
             "font-family": "Tahoma, sans-serif"
         }, 'span');
-        node.add('Bold', { "font-size": "120%" }, 'strong');
+        node.addNode('Bold', { "font-size": "120%" }, 'strong');
         
         expect(node.stylesheet()).toBe(`span {
   font-family: Tahoma, sans-serif;
@@ -61,8 +61,8 @@ span strong {
 
     test('stylesheet with multiple children', () => {
         const node = new CssNode('Container', {}, 'div');
-        node.add('Header', { "background": "blue" }, 'header');
-        node.add('Footer', { "background": "gray" }, 'footer');
+        node.addNode('Header', { "background": "blue" }, 'header');
+        node.addNode('Footer', { "background": "gray" }, 'footer');
         
         const stylesheet = node.stylesheet();
         expect(stylesheet).toContain('div header {');
@@ -76,7 +76,7 @@ span strong {
             "font-family": "Tahoma, sans-serif"
         }, 'span, a');
         
-        const boldNode = node.add('Bold', { "font-size": "120%" }, 'strong');
+        const boldNode = node.addNode('Bold', { "font-size": "120%" }, 'strong');
         
         expect(boldNode.fullSelector).toBe('span strong, a strong');
         expect(node.stylesheet()).toBe(`span, a {
@@ -93,8 +93,8 @@ span strong, a strong {
             "font-family": "Tahoma, sans-serif"
         }, 'span');
         
-        let after = node.add('::after', { "content": '","' });
-        node.add('Bold', { "font-size": "120%" }, 'strong');
+        let after = node.addNode('::after', { "content": '","' });
+        node.addNode('Bold', { "font-size": "120%" }, 'strong');
         
         expect(after.fullSelector).toBe('span::after');
         expect(node.stylesheet()).toBe(`span {
@@ -112,8 +112,8 @@ span strong {
 
     test('stylesheet with deeply nested children', () => {
         const root = new CssNode('Root', { color: 'black' }, 'body');
-        const section = root.add('Section', { padding: '20px' }, 'section');
-        const article = section.add('Article', { margin: '10px' }, 'article');
+        const section = root.addNode('Section', { padding: '20px' }, 'section');
+        const article = section.addNode('Article', { margin: '10px' }, 'article');
         
         const stylesheet = root.stylesheet();
         expect(stylesheet).toContain('body {');
@@ -123,7 +123,7 @@ span strong {
 
     test('stylesheet with empty properties skips node', () => {
         const root = new CssNode('Root', {}, 'body');
-        root.add('Child', { "color": "red" }, 'div');
+        root.addNode('Child', { "color": "red" }, 'div');
         
         const stylesheet = root.stylesheet();
         // Root has no properties, so it shouldn't appear (but there may be whitespace)
@@ -134,8 +134,8 @@ span strong {
 
     test('stylesheet with mixed empty and populated nodes', () => {
         const root = new CssNode('Root', { padding: '0' }, 'body');
-        const section = root.add('Section', {}, 'section');
-        section.add('Paragraph', { margin: '10px' }, 'p');
+        const section = root.addNode('Section', {}, 'section');
+        section.addNode('Paragraph', { margin: '10px' }, 'p');
         
         const stylesheet = root.stylesheet();
         expect(stylesheet).toContain('body {');
@@ -168,7 +168,7 @@ span strong {
 
     test('stylesheet with complex selector combinations', () => {
         const root = new CssNode('Root', {}, 'div.container, section.wrapper');
-        const child = root.add('Child', {}, 'p:first-child, p:last-child');
+        const child = root.addNode('Child', {}, 'p:first-child, p:last-child');
         
         expect(child.fullSelector).toBe('div.container p:first-child, div.container p:last-child, section.wrapper p:first-child, section.wrapper p:last-child');
     });

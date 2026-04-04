@@ -20,17 +20,17 @@ export function streamlineCss() {
         "line-height": "var(--body-line-height)"
     });
 
-    css.add('Markdown Lists', {
+    css.addNode('Markdown Lists', {
         'padding-left': 'var(--list-indent)',
         'margin': 'var(--xx-small-spacing) 0',
         'list-style-type': 'disc'
     }, '.text-content ul, .text-content ol');
 
-    css.add('List Items', {
+    css.addNode('List Items', {
         'margin': 'var(--list-item-spacing) 0'
     }, '.text-content li');
 
-    css.add('List Markers', {
+    css.addNode('List Markers', {
         'font-size': 'var(--list-marker-size)'
     }, '.text-content li::marker');
 
@@ -47,7 +47,7 @@ export function streamlineCss() {
     }).setProperties({"margin-right": "auto"}, 'Title Group');
     
     const titleGroup = header.mustFindNode('Title Group');
-    titleGroup.add('Headers', { 'margin': '0 !important' }, '> *');
+    titleGroup.addNode('Headers', { 'margin': '0 !important' }, '> *');
     titleGroup.mustFindNode('Title').setProperties({
         'font-family': 'var(--sans-serif)',
         'margin': '0 0 var(--x-small-spacing) 0',
@@ -59,23 +59,23 @@ export function streamlineCss() {
         'color': 'var(--header-subtitle-color)'
     });
 
-    const contact = header.add('#contact', {
+    const contact = header.addNode('#contact', {
         'font-size': 'var(--contact-font-size)',
         'margin-top': 'var(--x-small-spacing)',
         'line-height': 'var(--contact-line-height)'
     });
 
-    const contactText = contact.add('Contact Text', {}, '.text-content');
-    contactText.add('Content', { margin: '0 !important' }, '> p');
+    const contactText = contact.addNode('Contact Text', {}, '.text-content');
+    contactText.addNode('Content', { margin: '0 !important' }, '> p');
 
-    const contactRow = contact.add('Contact Row', {}, 'resume-row');
+    const contactRow = contact.addNode('Contact Row', {}, 'resume-row');
 
-    contactRow.add('Contact Row Items', {
+    contactRow.addNode('Contact Row Items', {
         'display': 'inline-flex !important',
         'align-items': 'center'
     }, '> .text-content, > .link');
 
-    contactRow.add('Contact Row Separators', {
+    contactRow.addNode('Contact Row Separators', {
         'content': '"•"',
         'color': 'var(--accent)',
         'font-size': 'var(--separator-size)',
@@ -137,13 +137,13 @@ export function streamlineCss() {
             "justify-content": "flex-start"
         });
 
-        titleBlock.add('Subtitle Fields', {
+        titleBlock.addNode('Subtitle Fields', {
             'display': 'inline-block'
         }, '.field');
     }
 
     /** Main Column */
-    css.add('#main', {
+    css.addNode('#main', {
         'padding-left': 'var(--edge-margin)',
         'padding-right': 'var(--edge-margin)',
         'padding-top': '0',

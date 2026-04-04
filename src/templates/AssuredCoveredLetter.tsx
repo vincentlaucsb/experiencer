@@ -83,13 +83,13 @@ export function assuredCoverLetterCss() {
         "padding": "var(--edge-margin)",
         "padding-bottom": "var(--large-spacing)",
     }).setProperties({"margin-right": "auto"}, 'Title Group'
-    ).add('Markdown', {
+    ).addNode('Markdown', {
         'text-align': 'right',
         'font-size': '10pt'
     }, '.text-content');
 
     /** Contact Information */
-    let contact = css.add("Contact Information", {
+    let contact = css.addNode("Contact Information", {
         "grid-template-columns": "1fr 30px",
         "grid-column-gap": "var(--small-spacing)",
         "margin-left": "var(--spacing)",
@@ -97,13 +97,13 @@ export function assuredCoverLetterCss() {
         "height": "auto",
     }, "#contact, #social-media");
 
-    contact.add('Icon', {
+    contact.addNode('Icon', {
         'height': '24px',
         'vertical-align': 'middle'
     }, 'svg.icon, img.icon');
 
     /** Letter */
-    let content = css.add("#content", {
+    let content = css.addNode("#content", {
         "font-family": "var(--serif)",
         "font-size": "12pt",
         "line-height": "1.6",
@@ -111,27 +111,27 @@ export function assuredCoverLetterCss() {
         "padding-right": "var(--edge-margin)"
     }, '#content');
 
-    content.add("Paragraph", {
+    content.addNode("Paragraph", {
         "padding-top": "1em",
-    }, "p").add(":first-of-type", {
+    }, "p").addNode(":first-of-type", {
         "padding-top": "0"
     });
 
-    css.add("#date", {
+    css.addNode("#date", {
         "margin-top": "2em",
     }, "#date");
 
-    css.add("#salutation", {
+    css.addNode("#salutation", {
         "margin-top": "2em"
     }, "#salutation");
 
-    css.add("#body", {
+    css.addNode("#body", {
         "margin-top": "2em"
     }, "#body");
 
-    css.add("#closing", {
+    css.addNode("#closing", {
         "margin-top": "2em"
-    }, "#closing").add("Signature", {
+    }, "#closing").addNode("Signature", {
         "height": "80px"
     }, "img");
 

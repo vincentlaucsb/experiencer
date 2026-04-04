@@ -26,7 +26,7 @@ describe('CSS Store Hooks - Unsaved Changes', () => {
             
             act(() => {
                 cssStore.updateCss((css) => {
-                    css.add('Test', { color: 'red' });
+                    css.addNode('Test', { color: 'red' });
                 });
             });
             
@@ -52,7 +52,7 @@ describe('CSS Store Hooks - Unsaved Changes', () => {
             
             act(() => {
                 cssStore.updateCss((css) => {
-                    css.add('Test1', { color: 'red' });
+                    css.addNode('Test1', { color: 'red' });
                 });
             });
             
@@ -78,7 +78,7 @@ describe('CSS Store Hooks - Unsaved Changes', () => {
             
             act(() => {
                 cssStore.updateCss((css) => {
-                    css.add('Test', { color: 'red' });
+                    css.addNode('Test', { color: 'red' });
                 });
                 rootCssStore.updateCss((css) => {
                     css.properties.set('--test-var', '10px');
@@ -101,7 +101,7 @@ describe('CSS Store Hooks - Unsaved Changes', () => {
             
             act(() => {
                 cssStore.updateCss((css) => {
-                    css.add('Test', { color: 'red' });
+                    css.addNode('Test', { color: 'red' });
                 });
             });
             
@@ -136,7 +136,7 @@ describe('CSS Store Hooks - Unsaved Changes', () => {
             
             act(() => {
                 cssStore.updateCss((css) => {
-                    css.add('NewStyle', { margin: '0' });
+                    css.addNode('NewStyle', { margin: '0' });
                 });
             });
             
@@ -171,7 +171,7 @@ describe('CSS Store Hooks - Unsaved Changes', () => {
             
             act(() => {
                 cssStore.updateCss((css) => {
-                    css.add('Test1', { color: 'red' });
+                    css.addNode('Test1', { color: 'red' });
                 });
             });
             
@@ -179,7 +179,7 @@ describe('CSS Store Hooks - Unsaved Changes', () => {
             
             act(() => {
                 cssStore.updateCss((css) => {
-                    css.add('Test2', { color: 'blue' });
+                    css.addNode('Test2', { color: 'blue' });
                 });
             });
             

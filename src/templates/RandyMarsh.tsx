@@ -22,12 +22,12 @@ export function randyMarshCss() {
     });
 
     /** Headshot */
-    randyCss.add(
+    randyCss.addNode(
         '#headshot', {
             'height': 'var(--header-height)',
             'text-align': 'center',
             'padding-bottom': 'var(--header-padding-bottom)'
-        }).add('Image', { 'border-radius': '50%' }, 'img');
+        }).addNode('Image', { 'border-radius': '50%' }, 'img');
 
     /** Header */
     randyCss.mustFindNode("Header").setProperties({
@@ -50,10 +50,10 @@ export function randyMarshCss() {
             "font-size": "20pt",
             "color": "var(--randy-teal)"
             }, 'Title'
-            ).add('Grid', {
+            ).addNode('Grid', {
                 'grid-template-columns': 'var(--year-column-width) 1fr'
             }, 'resume-grid'
-            ).add('Entry', {
+            ).addNode('Entry', {
                 'border-left': '1px solid var(--text-color)',
                 'padding-left': 'var(--large-spacing)',
             }, 'resume-entry');
@@ -66,7 +66,7 @@ export function randyMarshCss() {
             "font-family": "var(--serif)"
         }, ["Title", "First Title Field"]
         ).setProperties({"font-weight": "normal"}, ["Title", "Other Title Fields"]
-        ).mustFindNode(["Subtitle", "Last Field"]).add('::before', {
+        ).mustFindNode(["Subtitle", "Last Field"]).addNode('::before', {
             "content": '"\\1f33f"',
             "padding": "var(--spacing)"
         });
@@ -82,7 +82,7 @@ export function randyMarshCss() {
         "color": "var(--text-color)",
         "padding": "0.5in",
         "background": "var(--secondary-color)"
-    }).add('Heading', { 'color': 'var(--text-color)' }, 'h2');
+    }).addNode('Heading', { 'color': 'var(--text-color)' }, 'h2');
 
     randyCss.addNode(
         (randyCss.findNode("Markdown") as CssNode).copySkeleton('#tegridy', '#tegridy')

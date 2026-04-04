@@ -14,12 +14,12 @@ export function assuredCss() {
         "font-size": "11pt"
     });
 
-    css.add('Icon', {
+    css.addNode('Icon', {
         'display': 'inline-block',
         'vertical-align': 'middle'
     }, '.icon');
 
-    css.add('Markdown Lists', {
+    css.addNode('Markdown Lists', {
         'padding-left': 'var(--spacing)'
     }, '.text-content ul, .text-content ol');
 
@@ -35,7 +35,7 @@ export function assuredCss() {
     );
 
     /** Contact Information */
-    let contact = css.add("Contact Information", {
+    let contact = css.addNode("Contact Information", {
         "grid-template-columns": "1fr 30px",
         "grid-column-gap": "var(--small-spacing)",
         "margin-left": "var(--spacing)",
@@ -43,14 +43,14 @@ export function assuredCss() {
         "height": "auto",
     }, "#contact, #social-media");
     
-    contact.add('Text', {
+    contact.addNode('Text', {
         'text-align': 'right',
         'font-size': '0.8rem',
         'margin': '0',
         'line-height': '24px'
     }, '.link, .text-content, p');
 
-    contact.add('Icon', {
+    contact.addNode('Icon', {
         'height': '24px',
         'vertical-align': 'middle'
     }, 'svg.icon, img.icon');
@@ -69,21 +69,21 @@ export function assuredCss() {
         }, 'Title');
 
     /** Grid */
-    css.add('#main', {
+    css.addNode('#main', {
         'padding-left': 'var(--edge-margin)',
         'padding-right': 'var(--edge-margin)',
         'grid-template-columns': '1fr 200px',
         'grid-column-gap': 'var(--large-spacing)'
     });
 
-    const sidebar = css.add('#sidebar', {});
-    sidebar.add('Last Subtitle Field', {
+    const sidebar = css.addNode('#sidebar', {});
+    sidebar.addNode('Last Subtitle Field', {
         'margin-left': '0'
     }, 'resume-entry > hgroup > h4 span.field-last');
 
     const subtitleFields = css.findNode(["Entry", "Title Block", "Subtitle"]);
     if (subtitleFields) {
-        subtitleFields.mustFindNode("Middle Fields").add(":before", {
+        subtitleFields.mustFindNode("Middle Fields").addNode(":before", {
             content: '"|"',
             padding: "0 0.6em"
         });

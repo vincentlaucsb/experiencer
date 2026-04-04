@@ -25,9 +25,9 @@ describe('CssNode - Core Operations', () => {
         expect(node.selector).toBe('CustomClass');
     });
 
-    test('add method returns added node', () => {
+    test('addNode returns added node', () => {
         const parent = new CssNode('Parent', {}, 'div');
-        const child = parent.add('Child', { color: 'blue' }, 'span');
+        const child = parent.addNode('Child', { color: 'blue' }, 'span');
         
         expect(child.name).toBe('Child');
         expect(child.selector).toBe('span');
@@ -35,9 +35,9 @@ describe('CssNode - Core Operations', () => {
         expect(parent.children.length).toBe(1);
     });
 
-    test('add method with default selector', () => {
+    test('addNode with default selector', () => {
         const parent = new CssNode('Parent', {}, 'div');
-        const child = parent.add('Child', { padding: '10px' });
+        const child = parent.addNode('Child', { padding: '10px' });
         
         expect(child.selector).toBe('Child');
     });
@@ -53,8 +53,8 @@ describe('CssNode - Core Operations', () => {
 
     test('hasName returns true for existing child', () => {
         const parent = new CssNode('Parent', {}, 'div');
-        parent.add('Child1', {});
-        parent.add('Child2', {});
+        parent.addNode('Child1', {});
+        parent.addNode('Child2', {});
         
         expect(parent.hasName('Child1')).toBe(true);
         expect(parent.hasName('Child2')).toBe(true);
@@ -62,16 +62,16 @@ describe('CssNode - Core Operations', () => {
 
     test('hasName returns false for non-existent child', () => {
         const parent = new CssNode('Parent', {}, 'div');
-        parent.add('Child1', {});
+        parent.addNode('Child1', {});
         
         expect(parent.hasName('NonExistent')).toBe(false);
     });
 
     test('duplicate name throws error', () => {
         const parent = new CssNode('Parent', {}, 'div');
-        parent.add('Child', {});
+        parent.addNode('Child', {});
         
-        expect(() => parent.add('Child', {})).toThrow('Already have a child named Child');
+        expect(() => parent.addNode('Child', {})).toThrow('Already have a child named Child');
     });
 
     test('description property can be set and get', () => {

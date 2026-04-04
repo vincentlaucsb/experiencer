@@ -14,6 +14,7 @@ interface DropdownTriggerProps {
 export interface DropdownProps extends PureMenuItemProps {
     trigger: React.ReactElement<DropdownTriggerProps>;
     hover?: boolean;
+    closeOnItemClick?: boolean;
     ulProps?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLUListElement>, HTMLUListElement>;
 }
 
@@ -81,10 +82,20 @@ export default function Dropdown(props: DropdownProps) {
         }
     };
 
+    const onMenuClick = (event: React.MouseEvent<HTMLUListElement>) => {
+        props.ulProps?.onClick?.(event);
+
+        // Close by default when selecting a menu item; callers can opt out.
+        if (props.closeOnItemClick !== false) {
+            setActive(false);
+        }
+    };
+
     const newUlProps: React.DetailedHTMLProps<React.HTMLAttributes<HTMLUListElement>, HTMLUListElement> = {
         ...props.ulProps,
         className: [props.ulProps?.className, ...childClasses].filter(Boolean).join(' '),
         id: props.ulProps?.id || menuId,
+        onClick: onMenuClick,
         role: 'menu'
     };
 

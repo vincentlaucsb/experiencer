@@ -1,5 +1,4 @@
 import { useEditorStore } from "../stores/editorStore";
-import { recordHistory } from "../stores/historyStore";
 import { resumeNodeStore } from "../stores/resumeNodeStore";
 
 /**
@@ -25,14 +24,12 @@ export default function useMoveSelectedProps() {
     return {
         moveUp: moveSelectedUpEnabled ?
             () => {
-                recordHistory();
                 const newUuid = resumeNodeStore.moveNodeUp(uuid) as string;
                 useEditorStore.getState().selectNode(newUuid);
             } :
             undefined,
         moveDown: moveSelectedDownEnabled ?
             () => {
-                recordHistory();
                 const newUuid = resumeNodeStore.moveNodeDown(uuid) as string;
                 useEditorStore.getState().selectNode(newUuid);
             } :

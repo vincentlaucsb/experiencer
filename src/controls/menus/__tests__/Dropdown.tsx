@@ -62,4 +62,46 @@ describe("Dropdown", () => {
         fireEvent.click(trigger);
         expect(dropdown.classList.contains("pure-menu-active")).toBe(true);
     });
+
+    test("closes by default when clicking a menu item", () => {
+        const { container, getByText } = render(
+            <Dropdown trigger={<button type="button">Open</button>}>
+                <li>
+                    <button type="button">Item Action</button>
+                </li>
+            </Dropdown>
+        );
+
+        const trigger = getByText("Open");
+        const itemAction = getByText("Item Action");
+        const dropdown = container.querySelector(".pure-menu-has-children") as HTMLElement;
+
+        fireEvent.click(trigger);
+        expect(dropdown.classList.contains("pure-menu-active")).toBe(true);
+
+        fireEvent.click(itemAction);
+        expect(dropdown.classList.contains("pure-menu-active")).toBe(false);
+    });
+
+    test("can remain open on item click when closeOnItemClick is false", () => {
+        const { container, getByText } = render(
+            <Dropdown
+                closeOnItemClick={false}
+                trigger={<button type="button">Open</button>}>
+                <li>
+                    <button type="button">Item Action</button>
+                </li>
+            </Dropdown>
+        );
+
+        const trigger = getByText("Open");
+        const itemAction = getByText("Item Action");
+        const dropdown = container.querySelector(".pure-menu-has-children") as HTMLElement;
+
+        fireEvent.click(trigger);
+        expect(dropdown.classList.contains("pure-menu-active")).toBe(true);
+
+        fireEvent.click(itemAction);
+        expect(dropdown.classList.contains("pure-menu-active")).toBe(true);
+    });
 });

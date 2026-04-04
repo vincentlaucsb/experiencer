@@ -31,7 +31,6 @@ import PageSize from '@/types/PageSize';
 
 // Stores
 import { useEditorStore, useMode, usePageSize, useSelectedNodeId, useIsEditingSelected } from '@/shared/stores/editorStore';
-import { recordHistory } from '@/shared/stores/historyStore';
 import { useResumeTree, resumeNodeStore } from '@/shared/stores/resumeNodeStore';
 import { useTreeStylesheet } from '@/shared/stores/cssStoreHooks';
 
@@ -99,17 +98,11 @@ function Resume(props: ResumeProps) {
 
     // Creating/Editing Nodes
     const updateData = useCallback((id: IdType, key: string, data: any) => {
-        recordHistory();
         resumeNodeStore.updateNode(id, key, data);
     }, []);
 
     const updateDataFields = useCallback((id: IdType, patch: Partial<Record<string, NodeProperty>>) => {
-        recordHistory();
-        Object.entries(patch).forEach(([key, value]) => {
-            if (value !== undefined) {
-                resumeNodeStore.updateNode(id, key, value);
-            }
-        });
+        resumeNodeStore.updateNodeFields(id, patch);
     }, []);
 
     // Serialization

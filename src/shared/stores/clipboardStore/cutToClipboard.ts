@@ -1,10 +1,10 @@
 import { ResumeNode } from '@/types';
 import copyToClipboard from './copyToClipboard';
-import deleteSelectedNode from '@/shared/stores/resumeStore/deleteSelectedNode';
+import { resumeNodeStore } from '@/shared/stores/resumeNodeStore';
 
 export default function cutToClipboard(node: ResumeNode | undefined) {
     if (!node) return;
 
     copyToClipboard(node);
-    deleteSelectedNode(node.uuid);
+    resumeNodeStore.deleteNode(node.uuid);
 }

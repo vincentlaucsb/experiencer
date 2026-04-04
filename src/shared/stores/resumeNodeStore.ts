@@ -1,10 +1,16 @@
 import { useSyncExternalStore } from 'react';
 import NodeStore from '@/shared/stores/NodeStore';
 import ResumeNodeTree from '@/shared/NodeTree';
-import { IdType, ResumeNode } from '@/types';
+import { IdType, NodeProperty, ResumeNode } from '@/types';
+import { useEditorStore } from './editorStore';
 
 // Singleton instance of the resume node store
 export const resumeNodeStore = new NodeStore();
+
+resumeNodeStore.setSelectionAdapter(
+    () => useEditorStore.getState().selectedNodeId,
+    () => useEditorStore.getState().unselectNode()
+);
 
 /**
  * Hook to access the entire resume tree.
@@ -73,6 +79,7 @@ export const useResumeActions = () => {
         canAddNode: (parentId: string | IdType | undefined, node: ResumeNode) => resumeNodeStore.canAddNode(parentId, node),
         deleteNode: (id: string | IdType) => resumeNodeStore.deleteNode(id),
         updateNode: (id: string | IdType, key: string, data: any) => resumeNodeStore.updateNode(id, key, data),
+        updateNodeFields: (id: string | IdType, patch: Partial<Record<string, NodeProperty>>) => resumeNodeStore.updateNodeFields(id, patch),
         moveNodeUp: (id: string | IdType) => resumeNodeStore.moveNodeUp(id),
         moveNodeDown: (id: string | IdType) => resumeNodeStore.moveNodeDown(id),
         

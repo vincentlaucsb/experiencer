@@ -20,8 +20,7 @@ const HtmlIdAdder = React.lazy(() => import("./HtmlIdAdder"));
 import { ToolbarItemData } from "./toolbar/ToolbarButton";
 import { useEditorStore } from "@/shared/stores/editorStore";
 import { resumeNodeStore, useResumeNodeByUuid, useHasUnsavedChanges as useHasUnsavedNodeChanges } from "@/shared/stores/resumeNodeStore";
-import { recordHistory, useHistoryStore } from "@/shared/stores/historyStore";
-import updateSelected from "@/shared/stores/resumeStore/updateSelectedNode";
+import { useHistoryStore } from "@/shared/stores/historyStore";
 import { saveLocal } from "@/shared/stores/saveResume";
 import { useHasUnsavedChanges as useHasUnsavedCssChanges } from "@/shared/stores/cssStoreHooks";
 import addCssClasses from "@/shared/stores/resumeStore/addCssClasses";
@@ -442,12 +441,15 @@ export default function TopEditingBarWrapper(props: TopEditingBarWrapperProps) {
                 return;
             }
 
-            recordHistory();
             resumeNodeStore.addNode(parentUuid, node);
         },
         unselect: unselectNode,
         updateSelected: (key: string, data: NodeProperty) => {
-            updateSelected(selectedNodeId, key, data);
+            if (!selectedNodeId) {
+                return;
+            }
+
+            resumeNodeStore.updateNode(selectedNodeId, key, data);
         },
         saveLocal: unsavedChanges ? saveLocal : undefined,
     };

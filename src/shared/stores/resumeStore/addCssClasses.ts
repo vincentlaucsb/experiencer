@@ -1,5 +1,4 @@
 import { ResumeNode } from "@/types";
-import { recordHistory } from "../historyStore";
 import { resumeNodeStore } from "../resumeNodeStore";
 
 /**
@@ -14,6 +13,5 @@ export default function addCssClasses(
     const uuid = node?.uuid;
     if (!uuid) return; // If there's no UUID, we can't proceed
     
-    recordHistory();
     resumeNodeStore.updateNode(uuid, 'classNames', classes);
 }

@@ -2,7 +2,6 @@ import CssNode from "@/shared/CssTree";
 import { useEditorStore } from "./editorStore";
 import { resumeNodeStore } from "./resumeNodeStore";
 import { cssStore } from "./cssStoreHooks";
-import { recordHistory } from "./historyStore";
 import ComponentTypes from "@/resume/schema/ComponentTypes";
 
 function sanitizeHtmlId(value: string) {
@@ -22,7 +21,6 @@ export default function addHtmlId(htmlId: string) {
     const nextHtmlId = sanitizeHtmlId(htmlId);
     const previousHtmlId = currentNode.htmlId;
 
-    recordHistory();
     resumeNodeStore.updateNode(selectedNodeId, 'htmlId', nextHtmlId || undefined);
     
     cssStore.updateCss((css) => {

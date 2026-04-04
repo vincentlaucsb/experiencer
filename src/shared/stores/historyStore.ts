@@ -121,6 +121,9 @@ export const recordHistory = () => {
     });
 };
 
+// Inject history recording into the node store without creating a module-init cycle.
+resumeNodeStore.setHistoryRecorder(recordHistory);
+
 /**
  * Hook to record a snapshot of current state for undo/redo.
  * Call this BEFORE making changes to the resume tree.

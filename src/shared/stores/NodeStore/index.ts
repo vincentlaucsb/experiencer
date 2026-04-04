@@ -5,13 +5,52 @@ import { showToast } from '@/shared/stores/toastStore';
 import { IdType, ResumeNode } from '@/types';
 
 /**
- * Store wrapper for ResumeNodeTree that integrates with React's useSyncExternalStore.
- * 
- * Separates tree operations (NodeTree) from store/subscription concerns (ClassStore).
- * All mutation methods modify the tree in place and notify React subscribers.
+ * Model-app communication layer for ResumeNodeTree.
+ *
+ * This store is the mutation gatekeeper for resume nodes: it exposes app-facing
+ * operations, delegates structural edits to ResumeNodeTree, and coordinates
+ * app-side effects through injected adapters.
+ *
+ * Responsibilities:
+ * - Bridge ResumeNodeTree to React subscriptions via ClassStore
+ * - Enforce insertion constraints and user feedback (toasts)
+ * - Record history for undo/redo on accepted mutations
+ * - Maintain cross-store invariants (for example, clear selection when a
+ *   deleted subtree contains the selected node)
  */
 export default class NodeStore extends ClassStore<ResumeNodeTree> {
     protected _data: ResumeNodeTree;
+    private historyRecorder: () => void = () => undefined;
+    private selectedNodeIdProvider: () => string | undefined = () => undefined;
+    private clearSelection: () => void = () => undefined;
+
+    setHistoryRecorder(recorder?: () => void): void {
+        this.historyRecorder = recorder ?? (() => undefined);
+    }
+
+    setSelectionAdapter(
+        selectedNodeIdProvider?: () => string | undefined,
+        clearSelection?: () => void
+    ): void {
+        this.selectedNodeIdProvider = selectedNodeIdProvider ?? (() => undefined);
+        this.clearSelection = clearSelection ?? (() => undefined);
+    }
+
+    private recordNodeHistory(): void {
+        this.historyRecorder();
+    }
+
+    private resolvePath(id: string | IdType): IdType | undefined {
+        return typeof id === 'string' ? this.data.getHierarchicalId(id) : id;
+    }
+
+    private isPrefixPath(prefix: IdType, target: IdType): boolean {
+        if (prefix.length > target.length) {
+            return false;
+        }
+
+        return prefix.every((value, index) => target[index] === value);
+    }
 
     private getParentNode(parentId: string | IdType | undefined): ResumeNode | undefined {
         const normalizedParentId: string | IdType = parentId ?? [];
@@ -78,6 +117,7 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
             return;
         }
 
+        this.recordNodeHistory();
         this.withMutation(() => this.data.addNestedChild(normalizedParentId, node));
     }
 
@@ -101,7 +141,21 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
      * @param id - UUID or hierarchical ID of the node to delete
      */
     deleteNode(id: string | IdType): void {
-        this.withMutation(() => this.data.deleteChild(id));
+        const deletePath = this.resolvePath(id);
+        if (!deletePath) {
+            return;
+        }
+
+        const selectedNodeId = this.selectedNodeIdProvider();
+        const selectedPath = selectedNodeId ? this.data.getHierarchicalId(selectedNodeId) : undefined;
+        const shouldClearSelection = !!selectedPath && this.isPrefixPath(deletePath, selectedPath);
+
+        this.recordNodeHistory();
+        this.withMutation(() => this.data.deleteChild(deletePath));
+
+        if (shouldClearSelection) {
+            this.clearSelection();
+        }
     }
 
     /**
@@ -113,7 +167,26 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
      * @param data - New value for the property
      */
     updateNode(id: string | IdType, key: string, data: any): void {
+        this.recordNodeHistory();
         this.withMutation(() => this.data.updateChild(id, key, data));
+    }
+
+    /**
+     * Update multiple properties on a node in a single history entry.
+     * Accepts either a UUID string or hierarchical ID.
+     */
+    updateNodeFields(id: string | IdType, patch: Partial<Record<string, unknown>>): void {
+        const entries = Object.entries(patch).filter(([, value]) => value !== undefined);
+        if (entries.length === 0) {
+            return;
+        }
+
+        this.recordNodeHistory();
+        this.withMutation(() => {
+            entries.forEach(([key, value]) => {
+                this.data.updateChild(id, key, value);
+            });
+        });
     }
 
     /**
@@ -126,6 +199,7 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
      * @returns The UUID if input was UUID, hierarchical ID if input was IdType
      */
     moveNodeUp(id: string | IdType): string | IdType {
+        this.recordNodeHistory();
         return this.withMutation(() => this.data.moveUp(id));
     }
 
@@ -139,6 +213,7 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
      * @returns The UUID if input was UUID, hierarchical ID if input was IdType
      */
     moveNodeDown(id: string | IdType): string | IdType {
+        this.recordNodeHistory();
         return this.withMutation(() => this.data.moveDown(id));
     }
 

@@ -1,7 +1,6 @@
 services:
   experiencer-web:
-    build: .
-    image: experiencer-site:latest
+    image: ghcr.io/vincentlaucsb/experiencer:latest
     restart: unless-stopped
     networks:
       proxy-net:

@@ -57,6 +57,5 @@ export default defineConfig(({ mode }) => ({
     open: true,
   },
   
-  // For production deployment under mywebsite.com/experiencer
-  base: mode === 'production' ? '/experiencer/' : '/'
+  base: '/'
 }));

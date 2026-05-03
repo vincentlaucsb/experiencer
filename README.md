@@ -30,7 +30,7 @@ The CSS editor allows you to nest a set of rules within another, therefore givin
 
 ## Use It Live
 
-You can use this app live at [http://vincela.com/experiencer](http://vincela.com/experiencer).
+You can use this app live at [https://experiencer.vincela.com](https://experiencer.vincela.com).
 
 ## Thanks
  * [Feather Icons](https://feathericons.com/)

@@ -1,0 +1,9 @@
+node_modules
+build
+coverage
+.git
+.github
+.vscode
+npm-debug.log*
+Dockerfile
+docker-compose.yml

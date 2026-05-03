@@ -43,9 +43,6 @@ import { useEffect } from 'react';
 import loadData, { loadLocal } from '@/shared/stores/loadData';
 
 // Dynamic imports (lazy-loaded on-demand)
-const ResumeContextMenuConnected = React.lazy(
-    () => import('@/controls/ResumeContextMenuConnected')
-);
 const SelectedNodeHighlightBox = React.lazy(
     () => import('@/editor/HighlightBox').then(m => ({ default: m.SelectedNodeHighlightBox }))
 );
@@ -178,9 +175,6 @@ function Resume(props: ResumeProps) {
                     );
                 })}
             </div>
-            <React.Suspense fallback={null}>
-                <ResumeContextMenuConnected />
-            </React.Suspense>
             {createPortal(
                 <React.Suspense fallback={null}>
                     <SelectedNodeHighlightBox />

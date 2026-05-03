@@ -1,0 +1,13 @@
+services:
+  experiencer-web:
+    build: .
+    image: experiencer-site:latest
+    restart: unless-stopped
+    networks:
+      proxy-net:
+        aliases:
+          - experiencer-web
+
+networks:
+  proxy-net:
+    external: true

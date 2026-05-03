@@ -1,6 +1,7 @@
 import React from "react";
 import { ToolbarItemData } from "@/controls/toolbar/ToolbarButton";
 import { BasicResumeNode, ResumeComponentProps, ResumeNode } from "@/types";
+import { ContextMenuItemData } from "@/types/contextMenu";
 import DefaultChildren from "./DefaultChildren";
 
 export type ChildTypeDefinition = string | string[] | DefaultChildren;
@@ -37,6 +38,8 @@ type ResumeNodeDefinition = {
 
     /** Display name for this node type */
     text: string;
+
+    contextMenuOptions?: (updateNode: (key: string, value: any) => void, node: ResumeNode) => ContextMenuItemData[];
 
     toolbarOptions?: (updateNode: (key: string, value: any) => void, node: ResumeNode) => ToolbarItemData[];
 

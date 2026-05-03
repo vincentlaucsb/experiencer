@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import registerNodes from '@/resume/schema';
 import Resume from './Resume';
+import 'popright/styles.css';
 // import * as serviceWorker from './serviceWorker';
 
 registerNodes();

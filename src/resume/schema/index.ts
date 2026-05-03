@@ -19,6 +19,7 @@ import getGridToolbarOptions from "../Grid/toolbarOptions";
 import getColumnToolbarOptions from "../Column/toolbarOptions";
 import getRowToolbarOptions from "../Row/toolbarOptions";
 import getLinkToolbarOptions from "../Link/toolbarOptions";
+import getLinkContextMenuOptions from "../Link/contextMenuOptions";
 import getIconToolbarOptions from "../Icon/toolbarOptions";
 import getDescriptionListItemToolbarOptions from "../List/DescriptionListItemToolbarOptions";
 import { ResumeNode } from "@/types";
@@ -168,6 +169,7 @@ export default function registerNodes() {
         },
         isDefaultChildType: true,
         isEditable: true,
+        contextMenuOptions: getLinkContextMenuOptions,
         toolbarOptions: getLinkToolbarOptions
     });
 

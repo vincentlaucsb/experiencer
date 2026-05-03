@@ -2,6 +2,7 @@ import React from "react";
 import ResumeNodeDefinition, { ChildTypeDefinition } from "./ResumeNodeDefinition";
 import { arrayNormalize } from "@/shared/utils/arrayHelpers";
 import ResumeComponentProps, { BasicResumeNode, NodeProperty, ResumeNode } from "@/types";
+import { ContextMenuItemData } from "@/types/contextMenu";
 import { ToolbarItemData } from "@/types/toolbar";
 import DefaultChildren from "./DefaultChildren";
 
@@ -17,6 +18,10 @@ type ToolbarOptionsFunction = (
     node: ResumeNode
 ) => ToolbarItemData[];
 type TreeRepresentationFunction = (node: ResumeNode) => React.ReactNode;
+type ContextMenuOptionsFunction = (
+    updateNode: (key: string, value: NodeProperty) => void,
+    node: ResumeNode
+) => ContextMenuItemData[];
 
 /** Stores schema information */
 export default class ComponentTypes {
@@ -35,6 +40,7 @@ export default class ComponentTypes {
     private _registeredTypes: Set<string> = new Set();
     private _treeClassNames: Map<string, string[]> = new Map();
     private _treeRepresentations: Map<string, TreeRepresentationFunction | string | undefined> = new Map();
+    private _contextMenuOptions: Map<string, ContextMenuOptionsFunction> = new Map();
     private _toolbarOptions: Map<string, ToolbarOptionsFunction> = new Map();
     private _editableTypes: Set<string> = new Set();
 
@@ -124,6 +130,16 @@ export default class ComponentTypes {
     }
 
     /**
+     * Get context menu options for a given node.
+     */
+    contextMenuOptions(
+        node: ResumeNode,
+        updateNode: (key: string, value: NodeProperty) => void
+    ) : ContextMenuItemData[] {
+        return this._contextMenuOptions.get(node.type)?.(updateNode, node) || [];
+    }
+
+    /**
      * Get toolbar options for a given node
      * @param node The node instance
      * @param updateNode Callback to update node properties
@@ -190,6 +206,9 @@ export default class ComponentTypes {
 
         if (def.isEditable)
             this._editableTypes.add(def.type);
+
+        if (def.contextMenuOptions)
+            this._contextMenuOptions.set(def.type, def.contextMenuOptions);
 
         if (def.toolbarOptions)
             this._toolbarOptions.set(def.type, def.toolbarOptions);

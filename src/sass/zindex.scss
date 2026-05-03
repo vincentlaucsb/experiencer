@@ -40,12 +40,6 @@ $main-pane-z: $default-z + 1;
         z-index: $main-pane-z;
     }
 
-    .react-contextmenu {
-        // Make context menu appear over sidebars and highlight boxes
-        &, * {
-            z-index: $main-pane-z + 2;
-        }
-    }
 }
 
 /** || Highlight Boxes */
@@ -63,10 +57,9 @@ $main-pane-z: $default-z + 1;
 }
 
 /** || Context Menu */
-#context-menu-container {
-    &, * {
-        z-index: $main-pane-z + 2;
-    }
+[data-popright-menu] {
+    // Make context menus appear over sidebars and highlight boxes.
+    z-index: $header-z + 3;
 }
 
 /** || Popovers */

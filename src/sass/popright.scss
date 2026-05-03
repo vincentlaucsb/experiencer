@@ -1,0 +1,23 @@
+@use "sass:color";
+@use "colors/semantic" as colors;
+@use "variables";
+
+[data-popright-menu] {
+    --popright-bg: #{colors.$dark-shade};
+    --popright-color: #{colors.$light-shade};
+    --popright-border: #{color.adjust(colors.$light-accent, $alpha: -0.45)};
+    --popright-active-bg: #{rgba(colors.$dark-accent, 0.55)};
+    --popright-disabled-color: #{colors.$light-accent};
+    --popright-danger-color: #{colors.$danger};
+    --popright-shadow: 0 10px 28px #{rgba(colors.$dark-shade, 0.35)};
+
+    font-family: variables.$sans-serif;
+}
+
+[data-popright-header] {
+    color: colors.$light-shade;
+}
+
+[data-popright-separator] {
+    background: color.adjust(colors.$light-accent, $alpha: -0.55);
+}

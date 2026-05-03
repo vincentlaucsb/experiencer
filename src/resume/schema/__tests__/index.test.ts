@@ -157,4 +157,47 @@ describe("schema childTypes", () => {
         expect(ComponentTypes.instance.treeRepresentation(imageWithAlt)).toBe("Signature");
         expect(ComponentTypes.instance.treeRepresentation(imageWithoutAlt)).toBe("https://example.com/photo.png");
     });
+
+    test("context menu options come from registration metadata", () => {
+        const schema = ComponentTypes.instance;
+        const suffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        const type = `ContextMenuType-${suffix}`;
+        const updateNode = jest.fn();
+
+        schema.registerNodeType({
+            component: MarkdownText,
+            type,
+            text: "Context Menu Type",
+            defaultValue: {},
+            contextMenuOptions: (updateNode, node) => [{
+                text: `Rename ${node.type}`,
+                onClick: () => updateNode("value", "Renamed")
+            }]
+        });
+
+        const options = schema.contextMenuOptions({ type, uuid: "context-menu-1" }, updateNode);
+        options[0].onClick();
+
+        expect(options).toHaveLength(1);
+        expect(options[0].text).toBe(`Rename ${type}`);
+        expect(updateNode).toHaveBeenCalledWith("value", "Renamed");
+    });
+
+    test("Link context menu can open its URL in a new tab", () => {
+        const open = jest.spyOn(window, "open").mockReturnValue({ opener: window } as Window);
+        const url = "https://example.com/some/really/long/path/that/needs/truncation";
+        const options = ComponentTypes.instance.contextMenuOptions({
+            type: Link.type,
+            uuid: "link-context-menu-1",
+            url
+        }, jest.fn());
+
+        options[0].onClick();
+
+        expect(options).toHaveLength(1);
+        expect(options[0].text).toBe("Go to https://example.com/some/really/l...");
+        expect(open).toHaveBeenCalledWith(url, "_blank", "noopener,noreferrer");
+
+        open.mockRestore();
+    });
 });

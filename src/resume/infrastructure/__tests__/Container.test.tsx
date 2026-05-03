@@ -89,6 +89,33 @@ describe("ContainerPresentation", () => {
         expect(onContextMenuOpen).toHaveBeenCalledWith("node-2");
     });
 
+    test("selects on right mouse down before the context menu event", () => {
+        const onSelect = jest.fn();
+        const onEdit = jest.fn();
+        const onContextMenuOpen = jest.fn();
+
+        const { container } = render(
+            <ContainerPresentation
+                id={[0]}
+                uuid="node-2"
+                isSelected={false}
+                isEditing={false}
+                onSelect={onSelect}
+                onEdit={onEdit}
+                onContextMenuOpen={onContextMenuOpen}
+            >
+                <span>Child</span>
+            </ContainerPresentation>
+        );
+
+        const element = container.querySelector('[data-uuid="node-2"]') as HTMLElement;
+        fireEvent.mouseDown(element, { button: 2 });
+        fireEvent.contextMenu(element);
+
+        expect(onContextMenuOpen).toHaveBeenCalledTimes(1);
+        expect(onContextMenuOpen).toHaveBeenCalledWith("node-2");
+    });
+
     test("does not call onContextMenuOpen when right-clicking while editing", () => {
         const onSelect = jest.fn();
         const onEdit = jest.fn();

@@ -4,6 +4,7 @@ module.exports = {
         "\\.(css|scss|sass)(\\?.*)?$": "<rootDir>/config/StyleStubber",
         "\\.(svg|png|jpg|jpeg|gif)(\\?.*)?$": "<rootDir>/config/StyleStubber",
         "^react-markdown$": "<rootDir>/config/ReactMarkdownMock.js",
+        "^@popright/react$": "<rootDir>/config/PoprightReactMock.tsx",
         "^@/assets/(.*)$": "<rootDir>/src/assets/$1",
         "^@/(.*)$": "<rootDir>/src/$1",
         "^@/app/(.*)$": "<rootDir>/src/app/$1",

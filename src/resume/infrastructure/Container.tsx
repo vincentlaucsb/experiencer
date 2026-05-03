@@ -1,10 +1,12 @@
 import React from "react";
+import { ContextMenu } from "@popright/react";
+import type { MenuItem } from "popright";
 
 // Utilities
 import { isNullOrUndefined } from "@/shared/utils/isNullOrUndefined";
+import buildContextMenuItems from "@/resume/schema/buildContextMenuItems";
 
 // Components
-import { ContextMenuTrigger } from "@/controls/ContextMenu";
 import OverlayEditor from "./OverlayEditor";
 
 // Stores
@@ -39,6 +41,7 @@ export interface ContainerPresentationProps extends ContainerProps {
     onSelect: (uuid: string) => void;
     onEdit: (uuid: string) => void;
     onContextMenuOpen: (uuid: string) => void;
+    contextMenuItems?: MenuItem[];
 }
 
 /**
@@ -61,6 +64,7 @@ export function ContainerPresentation(props: ContainerPresentationProps) {
     const displayAs = props.displayAs || "div";
     let classes = [props.className];
     let elementRef = React.useRef<HTMLElement>(null);
+    const selectedOnRightMouseDown = React.useRef(false);
     const hasOverlayEdit = !isNullOrUndefined(props.editContent);
 
     /** Props for managing selection and focus */
@@ -76,11 +80,24 @@ export function ContainerPresentation(props: ContainerPresentationProps) {
         }
     }
 
+    const handleMouseDown = (event: React.MouseEvent) => {
+        if (event.button === 2 && !props.isEditing) {
+            selectedOnRightMouseDown.current = true;
+            props.onContextMenuOpen(props.uuid);
+            event.stopPropagation();
+        }
+    };
+
     const handleContextMenu = (event: React.MouseEvent) => {
         event.stopPropagation();
 
         // Only open context menu if not currently editing
         if (!props.isEditing) {
+            if (selectedOnRightMouseDown.current) {
+                selectedOnRightMouseDown.current = false;
+                return;
+            }
+
             props.onContextMenuOpen(props.uuid);
         }
     };
@@ -100,15 +117,21 @@ export function ContainerPresentation(props: ContainerPresentationProps) {
     }
 
     const element = (
-        <ContextMenuTrigger
+        <ContextMenu
             id="resume-menu"
-            renderTag={displayAs}
-            attributes={newProps}
-            onContextMenu={handleContextMenu}
-            disabled={props.isEditing}
+            items={props.contextMenuItems || []}
+            trigger={props.isEditing ? "manual" : "contextmenu"}
         >
-            {displayAs === "img" ? undefined : props.children}
-        </ContextMenuTrigger>
+            {React.createElement(
+                displayAs,
+                {
+                    ...newProps,
+                    onMouseDown: handleMouseDown,
+                    onContextMenu: handleContextMenu
+                },
+                displayAs === "img" ? undefined : props.children
+            )}
+        </ContextMenu>
     );
 
     return (
@@ -149,6 +172,10 @@ export default function Container(props: ContainerProps) {
     const isEditingNode = useIsNodeEditing(props.uuid);
     const selectNode = useEditorStore((state) => state.selectNode);
     const editNode = useEditorStore((state) => state.editNode);
+    const contextMenuItems = React.useMemo(
+        () => buildContextMenuItems(props.uuid, { selectNode, editNode }),
+        [props.uuid, selectNode, editNode]
+    );
 
     return (
         <ContainerPresentation
@@ -158,6 +185,7 @@ export default function Container(props: ContainerProps) {
             onSelect={selectNode}
             onEdit={editNode}
             onContextMenuOpen={selectNode}
+            contextMenuItems={contextMenuItems}
         />
     );
 }

@@ -1,12 +1,15 @@
 {
   "name": "experiencer",
-  "homepage": "http://vincela.com/experiencer",
+  "homepage": "https://experiencer.vincela.com",
   "version": "0.1.3",
   "private": true,
   "dependencies": {
+    "@popright/react": "^0.0.1",
     "@types/react": "^19.2.13",
     "@types/react-dom": "^19.2.3",
     "file-saver": "^2.0.5",
+    "npm": "^11.13.0",
+    "popright": "^0.0.1",
     "purecss": "^3.0.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
@@ -14,7 +17,6 @@
     "react-markdown": "^10.1.0",
     "react-modal": "^3.16.1",
     "react-tiny-popover": "^8.1.0",
-    "uuid": "^11.0.3",
     "zustand": "^5.0.11"
   },
   "scripts": {
@@ -48,7 +50,6 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.2",
     "@types/react-modal": "^3.16.3",
-    "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^5.1.3",
     "html2canvas": "^1.4.1",
     "immer": "^11.1.3",

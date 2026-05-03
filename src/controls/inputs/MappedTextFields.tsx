@@ -1,5 +1,5 @@
 ﻿import React from "react";
-import { v4 as uuid } from 'uuid';
+import createUuid from "@/shared/utils/createUuid";
 
 interface ValueFieldProps {
     value?: string;
@@ -56,7 +56,7 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
         let suggestions = <></>
         let suggestionId = "";
         if (this.props.suggestions) {
-            suggestionId = uuid();
+            suggestionId = createUuid();
             suggestions = (<datalist id={suggestionId}>
                 {this.props.suggestions.map((value) =>
                     <option key={value} value={value} />)}

@@ -1,0 +1,30 @@
+name: Deploy experiencer.vincela.com
+
+on:
+  push:
+    branches: [ master ]
+
+concurrency:
+  group: deploy-experiencer-vincela-com
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to Droplet
+        # appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            set -e
+            cd /var/www/experiencer
+            git pull --ff-only origin master
+            docker compose build
+            docker compose up -d --remove-orphans
+            docker image prune -f
+            echo "experiencer.vincela.com deployed at $(date)"

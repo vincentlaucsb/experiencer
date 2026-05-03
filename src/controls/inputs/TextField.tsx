@@ -1,10 +1,8 @@
 import React, { MouseEvent } from "react";
-import { v4 as uuid } from 'uuid';
-import { ContextMenu, ContextMenuTrigger, MenuItem } from "@/controls/ContextMenu";
-import ReactDOM from "react-dom";
+import { ContextMenu } from "@popright/react";
+import type { MenuItem } from "popright";
 import InlineMarkdown from "@/resume/helpers/InlineMarkdown";
 
-import { createContainer } from "@/shared/utils/createContainer";
 import { isNullOrUndefined } from "@/shared/utils/isNullOrUndefined";
 
 interface ContextMenuOption {
@@ -122,35 +120,33 @@ export default class TextField extends React.Component<TextFieldProps, TextField
             displayValue = "Enter a value";
         }
 
-        const contextMenuContainer = createContainer("context-menu-container");
-        const contextMenuOptions = this.props.contextMenuOptions ?
-            this.props.contextMenuOptions.map((option, index: number) => {
-            return (
-                <MenuItem onClick={option.onClick} key={index}>{option.text}</MenuItem>
-            )
-        }) : <></>;
+        const contextMenuItems: MenuItem[] = [
+            { type: "header", label: "Text Field" },
+            {
+                id: "edit",
+                label: "Edit",
+                onSelect: () => this.setState({ isEditing: true })
+            },
+            ...(this.props.contextMenuOptions || []).map((option, index: number) => ({
+                id: `custom-${index}`,
+                label: option.text,
+                onSelect: option.onClick
+            }))
+        ];
 
-        const menuId = uuid();
         return (
-            <>
-                {ReactDOM.createPortal(<ContextMenu id={menuId}>
-                    <h3>Text Field</h3>
-                    <MenuItem onClick={() => this.setState({ isEditing: true })}>Edit</MenuItem>
-                    {contextMenuOptions}
-                </ContextMenu>, contextMenuContainer)}
-                <ContextMenuTrigger
-                    attributes={{
-                        onClick: (event: MouseEvent) => {
-                            if (!this.props.static) {
-                                this.setState({ isEditing: true });
-                            }
-                        },
-                        className: props.displayClassName,
+            <ContextMenu items={contextMenuItems}>
+                <span
+                    onClick={(event: MouseEvent) => {
+                        if (!this.props.static) {
+                            this.setState({ isEditing: true });
+                        }
                     }}
-                    id={menuId} renderTag="span">
+                    className={props.displayClassName}
+                >
                     <InlineMarkdown>{displayValue}</InlineMarkdown>
-                </ContextMenuTrigger>
-            </>
+                </span>
+            </ContextMenu>
         );
     }
 }

@@ -69,6 +69,7 @@ export interface ResumeProps {
     deleteDocument?: (id: string) => void;
     renameDocument?: (id: string, title: string) => void;
     createDocumentFromTemplate?: (key?: string) => void;
+    importDocument?: (data: object, title?: string) => void;
 }
 
 export type ResumeWrapperProps = Partial<Omit<ResumeProps, 'selectedNodeId' | 'isEditingSelected'>> & {
@@ -105,6 +106,10 @@ function Resume(props: ResumeProps) {
 
     const openTemplateSelector = useCallback(() => {
         useEditorStore.getState().setMode('changingTemplate');
+    }, []);
+
+    const importLocalData = useCallback((data: object) => {
+        loadData(data);
     }, []);
 
     const renderTemplateChanger = () => {
@@ -163,6 +168,7 @@ function Resume(props: ResumeProps) {
         documents: props.documents,
         activeDocumentId: props.activeDocumentId,
         selectDocument: props.selectDocument,
+        loadData: props.importDocument,
         saveLocal: props.saveCurrentDocument,
         saveStatus: props.saveStatus,
         proBadge: props.proBadge,
@@ -255,7 +261,7 @@ function Resume(props: ResumeProps) {
                 main={<Landing
                     loadLocal={() => props.activeDocumentId ? props.selectDocument?.(props.activeDocumentId) : loadLocal()}
                     new={openTemplateSelector}
-                    loadData={loadData}
+                    loadData={props.importDocument ?? importLocalData}
                     hasLocalResume={Boolean(props.activeDocumentId)}
                     documents={props.documents}
                     activeDocumentId={props.activeDocumentId}
@@ -357,6 +363,7 @@ function ResumeContainer(props: ResumeWrapperProps) {
         renameDocument={libraryStore.renameDocument}
         saveCurrentDocument={libraryStore.saveCurrentDocument}
         createDocumentFromTemplate={libraryStore.createDocumentFromTemplate}
+        importDocument={libraryStore.importDocument}
         saveStatus={library.saveStatus}
         proBadge={props.proBadge}
         accountLabel={props.accountLabel}

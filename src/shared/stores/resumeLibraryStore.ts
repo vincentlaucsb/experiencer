@@ -119,6 +119,29 @@ export default class ResumeLibraryStore {
         }
     };
 
+    importDocument = async (data: object, title = "Imported Resume") => {
+        this.setSnapshot({ saveStatus: "Importing" });
+
+        try {
+            const resumeData = data as ResumeSaveData;
+            const document = await this.repository.create({
+                title,
+                schemaVersion: 1,
+                data: resumeData
+            });
+
+            loadData(document.data, "normal");
+            await this.repository.setActiveId(document.id);
+            this.setSnapshot({
+                activeDocumentId: document.id,
+                saveStatus: `Imported v${document.version}`
+            });
+            await this.refreshDocuments();
+        } catch {
+            this.setSnapshot({ saveStatus: "Import failed" });
+        }
+    };
+
     deleteDocument = async (id: string) => {
         this.setSnapshot({ saveStatus: "Deleting" });
 

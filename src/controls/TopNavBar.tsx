@@ -23,7 +23,7 @@ export interface TopNavBarProps {
     /** Loading and Saving */
     exportHtml: Action;
     exportToPng: Action;
-    loadData: (data: object) => void;
+    loadData: (data: object, title?: string) => void;
     saveFile: (filename: string) => void;
     saveLocal: Action;
     print: Action;
@@ -137,16 +137,18 @@ export type TopNavBarWrapperProps = Omit<
     'loadData' | 'mode' | 'isEditing' | 'print' |
     'saveLocal' | 'saveFile' | 'toggleHelp' | 'toggleLanding'
 > & {
+    loadData?: (data: object, title?: string) => void;
     saveLocal?: Action;
 };
 
 export default function TopNavBarWrapper(props: TopNavBarWrapperProps) {
     const { toggleMode, mode, setMode } = useEditorStore();
     const isEditing = mode !== 'printing';
+    const loadImportedData = (data: object) => loadData(data);
 
     const wrappedProps = {
         ...props,
-        loadData: loadData,
+        loadData: props.loadData ?? loadImportedData,
         mode,
         isEditing,
         toggleHelp: () => toggleMode('help'),

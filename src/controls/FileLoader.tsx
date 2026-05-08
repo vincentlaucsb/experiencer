@@ -3,7 +3,7 @@ import { Action } from "@/types";
 
 interface FileLoaderProps {
     close: Action;
-    loadData: (data: object) => void;
+    loadData: (data: object, title?: string) => void;
 }
 
 interface FileLoaderState {
@@ -38,7 +38,8 @@ export default class FileLoader extends React.Component<FileLoaderProps, FileLoa
         reader.onload =(fileLoadedEvent: Event) => {
             var text = reader.result;
             if (text as string) {
-                this.props.loadData(JSON.parse((text as string).toString()));
+                const title = this.state.filename || file?.name;
+                this.props.loadData(JSON.parse((text as string).toString()), title);
             }
         };
 
@@ -52,6 +53,7 @@ export default class FileLoader extends React.Component<FileLoaderProps, FileLoa
     onFileSelect(event) {
         let userFile = this.fileInput.current.files[0];
         if (userFile) {
+            this.setState({ filename: userFile.name });
             this.readFile(userFile);
         }
 

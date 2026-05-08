@@ -9,7 +9,7 @@ import { ResumeDocumentSummary } from "@/shared/repositories/ResumeRepository";
 interface LandingProps {
     className?: string;
     loadLocal: () => void;
-    loadData: (data: object) => void;
+    loadData: (data: object, title?: string) => void;
     new: () => void;
     hasLocalResume?: boolean;
     documents?: ResumeDocumentSummary[];

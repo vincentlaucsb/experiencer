@@ -14,6 +14,7 @@ import ToolbarButton, { ToolbarButtonProps } from "./toolbar/ToolbarButton";
 import { useEditorStore, useMode } from "@/shared/stores/editorStore";
 import loadData from "@/shared/stores/loadData";
 import { saveFile, saveLocal } from "@/shared/stores/saveResume";
+import { ResumeDocumentSummary } from "@/shared/repositories/ResumeRepository";
 
 export interface TopNavBarProps {
     isEditing: boolean;
@@ -26,6 +27,14 @@ export interface TopNavBarProps {
     saveFile: (filename: string) => void;
     saveLocal: Action;
     print: Action;
+    documents?: ResumeDocumentSummary[];
+    activeDocumentId?: string;
+    selectDocument?: (id: string) => void;
+    saveStatus?: string;
+    proBadge?: string;
+    accountLabel?: string;
+    signOut?: Action;
+    signIn?: Action;
 
     /** Sidebar Actions */
     new: Action;
@@ -81,6 +90,7 @@ export function TopNavBar(props: TopNavBarProps) {
                 >
                     Experiencer
                 </h1>
+                {props.proBadge ? <span className="pro-badge">{props.proBadge}</span> : <></>}
                 <PureMenu id="top-menu" horizontal divProps={{ className: "app-ml-4" }}>
                     <Dropdown className="toolbar-dropdown" trigger={<Button>File</Button>}>
                         <IconicItem icon="paper" onClick={() => props.new()} text="New" />
@@ -94,7 +104,26 @@ export function TopNavBar(props: TopNavBarProps) {
                     <Item onClick={props.toggleHelp}>
                         <Button>Help</Button>
                     </Item>
+                    {props.documents?.length ? (
+                        <Dropdown
+                            className="toolbar-dropdown"
+                            trigger={<Button>{props.documents.find((document) => document.id === props.activeDocumentId)?.title ?? "Documents"}</Button>}
+                        >
+                            {props.documents.map((document) => (
+                                <IconicItem
+                                    key={document.id}
+                                    icon={document.id === props.activeDocumentId ? "check" : "paper"}
+                                    onClick={() => props.selectDocument?.(document.id)}
+                                    text={`${document.title} · v${document.version}`}
+                                />
+                            ))}
+                        </Dropdown>
+                    ) : <></>}
                 </PureMenu>
+                {props.saveStatus ? <span className="save-status">{props.saveStatus}</span> : <></>}
+                {props.accountLabel ? <span className="account-label">{props.accountLabel}</span> : <></>}
+                {props.signOut ? <Button onClick={props.signOut}>Sign out</Button> : <></>}
+                {props.signIn ? <Button onClick={props.signIn}>Login with Google for Pro access</Button> : <></>}
                 <a href="https://github.com/vincentlaucsb/experiencer" aria-label="View Experiencer on GitHub">
                     <img className="github-mark" src={GitHubLight} alt="GitHub" />
                 </a>
@@ -107,7 +136,9 @@ export type TopNavBarWrapperProps = Omit<
     TopNavBarProps,
     'loadData' | 'mode' | 'isEditing' | 'print' |
     'saveLocal' | 'saveFile' | 'toggleHelp' | 'toggleLanding'
->;
+> & {
+    saveLocal?: Action;
+};
 
 export default function TopNavBarWrapper(props: TopNavBarWrapperProps) {
     const { toggleMode, mode, setMode } = useEditorStore();
@@ -121,7 +152,7 @@ export default function TopNavBarWrapper(props: TopNavBarWrapperProps) {
         toggleHelp: () => toggleMode('help'),
         toggleLanding: () => setMode('landing'),
         print: () => toggleMode('printing'),
-        saveLocal,
+        saveLocal: props.saveLocal ?? saveLocal,
         saveFile
     };
     

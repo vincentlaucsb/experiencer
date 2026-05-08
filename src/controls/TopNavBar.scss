@@ -110,4 +110,26 @@ header#app-header {
         color: colors.$light-accent;
         width: 32px;
     }
+
+    .pro-badge,
+    .save-status,
+    .account-label {
+        align-self: center;
+        border: 1px solid colors.$light-shade;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        line-height: 1;
+        padding: 0.35rem 0.5rem;
+    }
+
+    .pro-badge {
+        background: colors.$light-shade;
+        color: colors.$main;
+        font-weight: 700;
+    }
+
+    .save-status,
+    .account-label {
+        opacity: 0.85;
+    }
 }

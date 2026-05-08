@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { createPortal } from 'react-dom';
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useSyncExternalStore } from 'react';
 
 import '@/assets/fonts/icofont.min.css';
 import '@/sass/index.scss';
@@ -36,11 +36,13 @@ import { useTreeStylesheet } from '@/shared/stores/cssStoreHooks';
 
 // Types
 import CssNode from '@/shared/CssTree';
-import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode, Globals } from '@/types';
+import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode } from '@/types';
 import useHandlePrint from '@/shared/hooks/useHandlePrint';
 import useStylesheet from '@/shared/hooks/useStylesheet';
 import { useEffect } from 'react';
 import loadData, { loadLocal } from '@/shared/stores/loadData';
+import { ResumeDocumentSummary, ResumeRepository } from '@/shared/repositories/ResumeRepository';
+import ResumeLibraryStore from '@/shared/stores/resumeLibraryStore';
 
 // Dynamic imports (lazy-loaded on-demand)
 const SelectedNodeHighlightBox = React.lazy(
@@ -55,12 +57,31 @@ export interface ResumeProps {
     nodes?: Array<ResumeNode>;
     stylesheet: string;
     tree: ResumeNode;
+    documents?: ResumeDocumentSummary[];
+    activeDocumentId?: string;
+    saveStatus?: string;
+    proBadge?: string;
+    accountLabel?: string;
+    signOut?: () => void;
+    signIn?: () => void;
+    saveCurrentDocument?: () => void;
+    selectDocument?: (id: string) => void;
+    deleteDocument?: (id: string) => void;
+    renameDocument?: (id: string, title: string) => void;
+    createDocumentFromTemplate?: (key?: string) => void;
 }
 
-export type ResumeWrapperProps = Partial<Omit<ResumeProps, 'selectedNodeId' | 'isEditingSelected'>>;
+export type ResumeWrapperProps = Partial<Omit<ResumeProps, 'selectedNodeId' | 'isEditingSelected'>> & {
+    resumeRepository?: ResumeRepository;
+    proBadge?: string;
+    accountLabel?: string;
+    signOut?: () => void;
+    signIn?: () => void;
+};
 
 function Resume(props: ResumeProps) {
     const resumeRef = useRef<HTMLDivElement>(null);
+    const [selectedTemplateKey, setSelectedTemplateKey] = React.useState('Integrity');
     const resumeNodes = props.tree.childNodes || [];
     const pageSize = props.pageSize || PageSize.Letter;
     const minHeight = getResumeMinHeight(resumeNodes, pageSize);
@@ -73,8 +94,17 @@ function Resume(props: ResumeProps) {
 
     // Change Templates
     const loadTemplate = useCallback((key = 'Integrity') => {
+        if (props.createDocumentFromTemplate) {
+            props.createDocumentFromTemplate(key);
+            return;
+        }
+
         const template: ResumeSaveData = ResumeTemplates.templates[key];
         loadData(template, 'changingTemplate');
+    }, [props.createDocumentFromTemplate]);
+
+    const openTemplateSelector = useCallback(() => {
+        useEditorStore.getState().setMode('changingTemplate');
     }, []);
 
     const renderTemplateChanger = () => {
@@ -83,12 +113,16 @@ function Resume(props: ResumeProps) {
             <div id="template-selector">
                 <PureMenu>
                     {templateNames.map((key: string) =>
-                        <PureMenuItem key={key} onClick={() => loadTemplate(key)}>
+                        <PureMenuItem
+                            key={key}
+                            selected={key === selectedTemplateKey}
+                            onClick={() => setSelectedTemplateKey(key)}
+                        >
                             <PureMenuLink>{key}</PureMenuLink>
                         </PureMenuItem>
                     )}
                 </PureMenu>
-                <Button onClick={() => useEditorStore.getState().toggleMode('normal')}>Use this Template</Button>
+                <Button onClick={() => loadTemplate(selectedTemplateKey)}>Use this Template</Button>
             </div>
         );
     };
@@ -125,7 +159,16 @@ function Resume(props: ResumeProps) {
     const topMenuProps: TopNavBarWrapperProps = {
         exportHtml: exportHtml,
         exportToPng: exportToPng,
-        new: loadTemplate
+        new: openTemplateSelector,
+        documents: props.documents,
+        activeDocumentId: props.activeDocumentId,
+        selectDocument: props.selectDocument,
+        saveLocal: props.saveCurrentDocument,
+        saveStatus: props.saveStatus,
+        proBadge: props.proBadge,
+        accountLabel: props.accountLabel,
+        signOut: props.signOut,
+        signIn: props.signIn
     };
 
     const renderSidebar = () => {
@@ -210,9 +253,15 @@ function Resume(props: ResumeProps) {
             return <DefaultLayout
                 topNav={editingTop}
                 main={<Landing
-                    loadLocal={() => { loadLocal() }}
-                    new={loadTemplate}
+                    loadLocal={() => props.activeDocumentId ? props.selectDocument?.(props.activeDocumentId) : loadLocal()}
+                    new={openTemplateSelector}
                     loadData={loadData}
+                    hasLocalResume={Boolean(props.activeDocumentId)}
+                    documents={props.documents}
+                    activeDocumentId={props.activeDocumentId}
+                    openDocument={props.selectDocument}
+                    deleteDocument={props.deleteDocument}
+                    renameDocument={props.renameDocument}
                 />
                 } />
         case 'printing':
@@ -247,6 +296,15 @@ function Resume(props: ResumeProps) {
  * Provides these as props to the Resume component for selective re-rendering.
  */
 function ResumeContainer(props: ResumeWrapperProps) {
+    const libraryStore = React.useMemo(
+        () => new ResumeLibraryStore(props.resumeRepository),
+        [props.resumeRepository]
+    );
+    const library = useSyncExternalStore(
+        libraryStore.subscribe,
+        libraryStore.getSnapshot,
+        libraryStore.getSnapshot
+    );
     const stylesheet = useTreeStylesheet();
     const storeMode = useMode();
     const pageSize = usePageSize();
@@ -267,6 +325,20 @@ function ResumeContainer(props: ResumeWrapperProps) {
         }
     }, []); // Run once on mount
 
+    useEffect(() => {
+        libraryStore.initialize();
+    }, [libraryStore]);
+
+    const deleteDocument = React.useCallback(async (id: string) => {
+        const document = library.documents.find((item) => item.id === id);
+        const title = document?.title ?? "this resume";
+        if (!window.confirm(`Delete ${title}?`)) {
+            return;
+        }
+
+        await libraryStore.deleteDocument(id);
+    }, [library.documents, libraryStore]);
+
     useHandlePrint();
     useStylesheet(stylesheet);
     
@@ -278,6 +350,18 @@ function ResumeContainer(props: ResumeWrapperProps) {
         isEditingSelected={isEditingSelected}
         stylesheet={stylesheet}
         tree={tree}
+        documents={library.documents}
+        activeDocumentId={library.activeDocumentId}
+        selectDocument={libraryStore.selectDocument}
+        deleteDocument={deleteDocument}
+        renameDocument={libraryStore.renameDocument}
+        saveCurrentDocument={libraryStore.saveCurrentDocument}
+        createDocumentFromTemplate={libraryStore.createDocumentFromTemplate}
+        saveStatus={library.saveStatus}
+        proBadge={props.proBadge}
+        accountLabel={props.accountLabel}
+        signOut={props.signOut}
+        signIn={props.signIn}
     />
 }
 

@@ -16,6 +16,11 @@ module.exports = {
         "^@/shared/(.*)$": "<rootDir>/src/shared/$1",
     },
     testEnvironment: 'jsdom',
+    testPathIgnorePatterns: [
+        '<rootDir>/e2e/',
+        '<rootDir>/playwright-report/',
+        '<rootDir>/test-results/'
+    ],
     setupFilesAfterEnv: ['<rootDir>/config/jest.setup.js'],
     transform: {
         '^.+\\.tsx?$': ['@swc/jest', {

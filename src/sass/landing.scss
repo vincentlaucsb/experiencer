@@ -35,3 +35,68 @@
         }
     }
 }
+
+.resume-library {
+    margin-top: 2rem;
+
+    h2 {
+        margin-bottom: 0.75rem;
+    }
+}
+
+.resume-library-list {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.resume-library-item {
+    align-items: center;
+    border: 1px solid colors.$light-accent;
+    border-radius: 6px;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 0.75rem;
+
+    &.active {
+        border-color: colors.$main;
+        box-shadow: inset 4px 0 0 colors.$main;
+    }
+
+    h3,
+    p {
+        margin: 0;
+    }
+
+    p {
+        color: colors.$dark-accent;
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
+    }
+}
+
+.resume-library-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.resume-library-edit {
+    display: grid;
+    gap: 0.5rem;
+
+    label {
+        display: grid;
+        gap: 0.25rem;
+    }
+
+    input {
+        font: inherit;
+        padding: 0.4rem;
+    }
+}
+
+@media (max-width: 700px) {
+    .resume-library-item {
+        grid-template-columns: 1fr;
+    }
+}

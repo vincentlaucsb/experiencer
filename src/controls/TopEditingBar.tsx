@@ -410,7 +410,9 @@ export function TopEditingBar(props: EditingBarProps) {
     return <div ref={toolbarRef} id="toolbar" className={className}>{children}</div>;
 }
 
-export type TopEditingBarWrapperProps = Record<string, never>;
+export interface TopEditingBarWrapperProps {
+    saveLocal?: Action;
+}
 
 export default function TopEditingBarWrapper(props: TopEditingBarWrapperProps) {
     const { canUndo, canRedo, undo, redo } = useHistoryStore.getState();
@@ -451,7 +453,7 @@ export default function TopEditingBarWrapper(props: TopEditingBarWrapperProps) {
 
             resumeNodeStore.updateNode(selectedNodeId, key, data);
         },
-        saveLocal: unsavedChanges ? saveLocal : undefined,
+        saveLocal: props.saveLocal ?? (unsavedChanges ? saveLocal : undefined),
     };
 
     return <TopEditingBar {...wrappedProps} />

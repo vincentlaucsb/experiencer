@@ -11,6 +11,8 @@ import { createContainer } from '@/shared/utils/createContainer';
 import { exportResumeAsHtml } from '@/shared/utils/PrintHelpers';
 import { exportResumeToPng } from '@/shared/utils/ExportPng';
 import getResumeMinHeight from '@/shared/utils/getResumeMinHeight';
+import { assignIds } from '@/shared/utils/assignIds';
+import { deepCopy } from '@/shared/utils/deepCopy';
 
 // Components
 import { Button } from '@/controls/Buttons';
@@ -49,6 +51,55 @@ const SelectedNodeHighlightBox = React.lazy(
     () => import('@/editor/HighlightBox').then(m => ({ default: m.SelectedNodeHighlightBox }))
 );
 
+function getTemplateStylesheet(template: ResumeSaveData) {
+    return `${CssNode.load(template.rootCss).stylesheet()}\n\n${CssNode.load(template.builtinCss).stylesheet()}`;
+}
+
+function TemplatePreview(props: { pageSize: PageSize; templateKey: string }) {
+    const preview = React.useMemo(() => {
+        const template = ResumeTemplates.templates[props.templateKey] ?? ResumeTemplates.templates.Integrity;
+        const nodes = assignIds(deepCopy(template.childNodes) as ResumeSaveData['childNodes']);
+
+        return {
+            nodes,
+            stylesheet: getTemplateStylesheet(template),
+            minHeight: getResumeMinHeight(nodes, props.pageSize)
+        };
+    }, [props.pageSize, props.templateKey]);
+
+    const noopUpdate = React.useCallback(() => {}, []);
+
+    return (
+        <>
+            <style>{preview.stylesheet}</style>
+            <div
+                id="resume"
+                aria-label={`${props.templateKey} template preview`}
+                data-page-size={props.pageSize}
+                style={{ minHeight: preview.minHeight, pointerEvents: 'none' }}
+            >
+                {preview.nodes.map((elem, idx, arr) => {
+                    const uniqueId = elem.uuid;
+                    const elementProps = {
+                        ...elem,
+                        updateResumeData: noopUpdate,
+                        updateResumeDataFields: noopUpdate,
+                        index: idx,
+                        numSiblings: arr.length
+                    };
+
+                    return (
+                        <ResumeComponentFactory
+                            key={uniqueId}
+                            {...elementProps}
+                        />
+                    );
+                })}
+            </div>
+        </>
+    );
+}
+
 export interface ResumeProps {
     mode?: EditorMode;
     selectedNodeId?: string;
@@ -80,7 +131,7 @@ export type ResumeWrapperProps = Partial<Omit<ResumeProps, 'selectedNodeId' | 'i
     signIn?: () => void;
 };
 
-function Resume(props: ResumeProps) {
+export function Resume(props: ResumeProps) {
     const resumeRef = useRef<HTMLDivElement>(null);
     const [selectedTemplateKey, setSelectedTemplateKey] = React.useState('Integrity');
     const resumeNodes = props.tree.childNodes || [];
@@ -237,7 +288,7 @@ function Resume(props: ResumeProps) {
     const editingTop = mode === 'printing' ? <></> : (
         <header id="app-header" className="no-print app-mb-4">
             <TopNavBar {...topMenuProps} />
-            {isEditing ? <TopEditingBar /> : <></>}
+            {isEditing ? <TopEditingBar saveLocal={props.saveCurrentDocument} /> : <></>}
         </header>
     );
 
@@ -252,7 +303,7 @@ function Resume(props: ResumeProps) {
         case 'changingTemplate':
             return <StaticSidebarLayout
                 topNav={editingTop}
-                main={resume}
+                main={<TemplatePreview pageSize={pageSize} templateKey={selectedTemplateKey} />}
                 sidebar={renderTemplateChanger()}
             />
         case 'landing':

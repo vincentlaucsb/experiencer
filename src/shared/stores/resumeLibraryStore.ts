@@ -186,15 +186,8 @@ export default class ResumeLibraryStore {
         this.setSnapshot({ saveStatus: "Loading" });
 
         try {
-            const summaries = await this.refreshDocuments();
-            const activeId = await this.repository.getActiveId();
-            const documentId = activeId ?? summaries[0]?.id;
-
-            if (documentId) {
-                await this.selectDocument(documentId);
-            } else {
-                this.setSnapshot({ saveStatus: "Not synced" });
-            }
+            await this.refreshDocuments();
+            this.setSnapshot({ saveStatus: "Not synced" });
         } catch {
             this.setSnapshot({ saveStatus: "Load failed" });
         }

@@ -3,7 +3,7 @@
  */
 import { act, render, screen } from "@testing-library/react";
 
-import { TopEditingBar, EditingBarProps } from "@/controls/TopEditingBar";
+import TopEditingBarWrapper, { TopEditingBar, EditingBarProps } from "@/controls/TopEditingBar";
 import MarkdownText from "@/resume/Markdown";
 import Section from "@/resume/Section";
 import registerNodes from "@/resume/schema";
@@ -41,6 +41,16 @@ afterEach(() => {
 });
 
 describe("TopEditingBar Insert visibility", () => {
+    test("uses provided save handler for repository-backed saves", () => {
+        const save = jest.fn();
+
+        render(<TopEditingBarWrapper saveLocal={save} />);
+
+        screen.getByLabelText("Save").click();
+
+        expect(save).toHaveBeenCalledTimes(1);
+    });
+
     test("hides Insert for selected Markdown node (no children)", async () => {
         const nodes = assignIds([
             {

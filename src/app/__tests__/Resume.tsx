@@ -1,8 +1,8 @@
 /**
  * @jest-environment jsdom
  */
-import { render, fireEvent, getByText, getAllByText, act } from "@testing-library/react";
-import Resume from "@/app/Resume";
+import { render, fireEvent, getByText, getAllByText, act, screen } from "@testing-library/react";
+import Resume, { Resume as ResumeView } from "@/app/Resume";
 import ResumeTemplates from "@/templates/ResumeTemplates";
 import CssNode from "@/shared/CssTree";
 import registerNodes from "@/resume/schema";
@@ -25,6 +25,17 @@ function setupResumeForTest(template: ResumeSaveData) {
         rootCssStore.setCss(CssNode.load(template.rootCss));
         cssStore.setCss(CssNode.load(template.builtinCss));
     });
+}
+
+function renderTemplateSwitcher(createDocumentFromTemplate = jest.fn()) {
+    return render(
+        <ResumeView
+            mode="changingTemplate"
+            stylesheet=""
+            tree={{ type: "Resume", uuid: "test-root", childNodes: [] }}
+            createDocumentFromTemplate={createDocumentFromTemplate}
+        />
+    );
 }
 
 /**
@@ -156,4 +167,36 @@ test('CSS editor reopens for a new selected node of the same type', async () => 
     await selectNode(education);
 
     expect(container.querySelector('.css-category-content')).not.toBeNull();
+});
+
+test('Template switcher previews the selected template', async () => {
+    renderTemplateSwitcher();
+
+    expect(screen.getByLabelText('Integrity template preview')).toBeTruthy();
+    expect(screen.getByText('Randy Marsh')).toBeTruthy();
+
+    await act(async () => {
+        fireEvent.click(screen.getByText('Assured'));
+    });
+
+    expect(screen.getByLabelText('Assured template preview')).toBeTruthy();
+    expect(screen.getByRole('heading', { name: /\*\*Solid\*\* Programmer/ })).toBeTruthy();
+    expect(screen.queryByText('Randy Marsh')).toBeNull();
+});
+
+test('Template switcher only commits the selected template from the action button', async () => {
+    const createDocumentFromTemplate = jest.fn();
+    renderTemplateSwitcher(createDocumentFromTemplate);
+
+    await act(async () => {
+        fireEvent.click(screen.getByText('Streamline'));
+    });
+
+    expect(createDocumentFromTemplate).not.toHaveBeenCalled();
+
+    await act(async () => {
+        fireEvent.click(screen.getByText('Use this Template'));
+    });
+
+    expect(createDocumentFromTemplate).toHaveBeenCalledWith('Streamline');
 });

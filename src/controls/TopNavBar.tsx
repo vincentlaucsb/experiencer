@@ -35,6 +35,7 @@ export interface TopNavBarProps {
     accountLabel?: string;
     signOut?: Action;
     signIn?: Action;
+    extraItems?: React.ReactNode;
 
     /** Sidebar Actions */
     new: Action;
@@ -104,6 +105,7 @@ export function TopNavBar(props: TopNavBarProps) {
                     <Item onClick={props.toggleHelp}>
                         <Button>Help</Button>
                     </Item>
+                    {props.extraItems}
                     {props.documents?.length ? (
                         <Dropdown
                             className="toolbar-dropdown"

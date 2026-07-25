@@ -10,9 +10,6 @@ import 'purecss/build/pure-min.css';
 import { createContainer } from '@/shared/utils/createContainer';
 import { exportResumeAsHtml } from '@/shared/utils/PrintHelpers';
 import { exportResumeToPng } from '@/shared/utils/ExportPng';
-import getResumeMinHeight from '@/shared/utils/getResumeMinHeight';
-import { assignIds } from '@/shared/utils/assignIds';
-import { deepCopy } from '@/shared/utils/deepCopy';
 
 // Components
 import { Button } from '@/controls/Buttons';
@@ -26,7 +23,8 @@ import PureMenu, { PureMenuLink, PureMenuItem } from '@/controls/menus/PureMenu'
 import NodeTreeVisualizer from '@/editor/NodeTreeVisualizer';
 import Help from '@/help/Help';
 import Landing from '@/help/Landing';
-import ResumeComponentFactory from '@/resume/ResumeComponent';
+import ResumePreview from '@/resume/ResumePreview';
+import ResumeRenderer from '@/resume/ResumeRenderer';
 import ResumeTemplates from '@/templates/ResumeTemplates';
 import ResumeCssEditor from '@/app/ResumeCssEditor';
 import PageSize from '@/types/PageSize';
@@ -37,7 +35,6 @@ import { useResumeTree, resumeNodeStore } from '@/shared/stores/resumeNodeStore'
 import { useTreeStylesheet } from '@/shared/stores/cssStoreHooks';
 
 // Types
-import CssNode from '@/shared/CssTree';
 import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode } from '@/types';
 import useHandlePrint from '@/shared/hooks/useHandlePrint';
 import useStylesheet from '@/shared/hooks/useStylesheet';
@@ -51,52 +48,16 @@ const SelectedNodeHighlightBox = React.lazy(
     () => import('@/editor/HighlightBox').then(m => ({ default: m.SelectedNodeHighlightBox }))
 );
 
-function getTemplateStylesheet(template: ResumeSaveData) {
-    return `${CssNode.load(template.rootCss).stylesheet()}\n\n${CssNode.load(template.builtinCss).stylesheet()}`;
-}
-
 function TemplatePreview(props: { pageSize: PageSize; templateKey: string }) {
-    const preview = React.useMemo(() => {
-        const template = ResumeTemplates.templates[props.templateKey] ?? ResumeTemplates.templates.Integrity;
-        const nodes = assignIds(deepCopy(template.childNodes) as ResumeSaveData['childNodes']);
-
-        return {
-            nodes,
-            stylesheet: getTemplateStylesheet(template),
-            minHeight: getResumeMinHeight(nodes, props.pageSize)
-        };
-    }, [props.pageSize, props.templateKey]);
-
-    const noopUpdate = React.useCallback(() => {}, []);
+    const template = ResumeTemplates.templates[props.templateKey]
+        ?? ResumeTemplates.templates.Integrity;
 
     return (
-        <>
-            <style>{preview.stylesheet}</style>
-            <div
-                id="resume"
-                aria-label={`${props.templateKey} template preview`}
-                data-page-size={props.pageSize}
-                style={{ minHeight: preview.minHeight, pointerEvents: 'none' }}
-            >
-                {preview.nodes.map((elem, idx, arr) => {
-                    const uniqueId = elem.uuid;
-                    const elementProps = {
-                        ...elem,
-                        updateResumeData: noopUpdate,
-                        updateResumeDataFields: noopUpdate,
-                        index: idx,
-                        numSiblings: arr.length
-                    };
-
-                    return (
-                        <ResumeComponentFactory
-                            key={uniqueId}
-                            {...elementProps}
-                        />
-                    );
-                })}
-            </div>
-        </>
+        <ResumePreview
+            data={template}
+            pageSize={props.pageSize}
+            ariaLabel={`${props.templateKey} template preview`}
+        />
     );
 }
 
@@ -121,6 +82,8 @@ export interface ResumeProps {
     renameDocument?: (id: string, title: string) => void;
     createDocumentFromTemplate?: (key?: string) => void;
     importDocument?: (data: object, title?: string) => void;
+    topMenuItems?: React.ReactNode;
+    overlays?: React.ReactNode;
 }
 
 export type ResumeWrapperProps = Partial<Omit<ResumeProps, 'selectedNodeId' | 'isEditingSelected'>> & {
@@ -129,6 +92,7 @@ export type ResumeWrapperProps = Partial<Omit<ResumeProps, 'selectedNodeId' | 'i
     accountLabel?: string;
     signOut?: () => void;
     signIn?: () => void;
+    resumeLibraryStore?: ResumeLibraryStore;
 };
 
 export function Resume(props: ResumeProps) {
@@ -136,7 +100,6 @@ export function Resume(props: ResumeProps) {
     const [selectedTemplateKey, setSelectedTemplateKey] = React.useState('Integrity');
     const resumeNodes = props.tree.childNodes || [];
     const pageSize = props.pageSize || PageSize.Letter;
-    const minHeight = getResumeMinHeight(resumeNodes, pageSize);
 
     // Returns true if we are actively editing a resume
     const isEditing = (() => {
@@ -225,7 +188,8 @@ export function Resume(props: ResumeProps) {
         proBadge: props.proBadge,
         accountLabel: props.accountLabel,
         signOut: props.signOut,
-        signIn: props.signIn
+        signIn: props.signIn,
+        extraItems: props.topMenuItems
     };
 
     const renderSidebar = () => {
@@ -250,31 +214,14 @@ export function Resume(props: ResumeProps) {
     const hlBoxContainer = createContainer("hl-box-container");
     const resume = (
         <>
-            <div
-                id="resume"
-                data-page-size={pageSize}
-                style={{ minHeight }}
-                ref={resumeRef}
-            >
-                <ResumeHotKeys />
-                {resumeNodes.map((elem, idx, arr) => {
-                    const uniqueId = elem.uuid;
-                    const elementProps = {
-                        ...elem,
-                        updateResumeData: updateData,
-                        updateResumeDataFields: updateDataFields,
-                        index: idx,
-                        numSiblings: arr.length
-                    };
-
-                    return (
-                        <ResumeComponentFactory
-                            key={uniqueId}
-                            {...elementProps}
-                        />
-                    );
-                })}
-            </div>
+            <ResumeRenderer
+                nodes={resumeNodes}
+                pageSize={pageSize}
+                containerRef={resumeRef}
+                beforeNodes={<ResumeHotKeys />}
+                updateResumeData={updateData}
+                updateResumeDataFields={updateDataFields}
+            />
             {createPortal(
                 <React.Suspense fallback={null}>
                     <SelectedNodeHighlightBox />
@@ -287,6 +234,7 @@ export function Resume(props: ResumeProps) {
     
     const editingTop = mode === 'printing' ? <></> : (
         <header id="app-header" className="no-print app-mb-4">
+            {props.overlays}
             <TopNavBar {...topMenuProps} />
             {isEditing ? <TopEditingBar saveLocal={props.saveCurrentDocument} /> : <></>}
         </header>
@@ -354,8 +302,8 @@ export function Resume(props: ResumeProps) {
  */
 function ResumeContainer(props: ResumeWrapperProps) {
     const libraryStore = React.useMemo(
-        () => new ResumeLibraryStore(props.resumeRepository),
-        [props.resumeRepository]
+        () => props.resumeLibraryStore ?? new ResumeLibraryStore(props.resumeRepository),
+        [props.resumeLibraryStore, props.resumeRepository]
     );
     const library = useSyncExternalStore(
         libraryStore.subscribe,
@@ -398,7 +346,7 @@ function ResumeContainer(props: ResumeWrapperProps) {
 
     useHandlePrint();
     useStylesheet(stylesheet);
-    
+
     return <Resume 
         {...props}
         mode={mode}

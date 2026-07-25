@@ -72,25 +72,31 @@ export function getGoogleFontsUrl(fontFamilies: string[]): string {
     return `${GOOGLE_FONTS_BASE_URL}${familyParam}&display=swap`;
 }
 
-export function ensureGoogleFontsLink(fontFamilies: string[]) {
-    if (typeof document === 'undefined') {
+export function ensureGoogleFontsLink(
+    fontFamilies: string[],
+    targetDocument: Document | undefined = typeof document === 'undefined'
+        ? undefined
+        : document,
+    linkId = 'template-google-fonts'
+) {
+    if (!targetDocument) {
         return;
     }
 
     const href = getGoogleFontsUrl(fontFamilies);
-    const existing = document.getElementById('template-google-fonts') as HTMLLinkElement | null;
+    const existing = targetDocument.getElementById(linkId) as HTMLLinkElement | null;
 
     if (!href) {
         existing?.remove();
         return;
     }
 
-    const link = existing ?? document.createElement('link');
-    link.id = 'template-google-fonts';
+    const link = existing ?? targetDocument.createElement('link');
+    link.id = linkId;
     link.rel = 'stylesheet';
     link.href = href;
 
     if (!existing) {
-        document.head.appendChild(link);
+        targetDocument.head.appendChild(link);
     }
 }

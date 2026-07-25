@@ -6,6 +6,8 @@ import loadData from "@/shared/stores/loadData";
 import { dump } from "@/shared/stores/saveResume";
 import { resumeNodeStore } from "@/shared/stores/resumeNodeStore";
 import { useEditorStore } from "@/shared/stores/editorStore";
+import { cssStore, rootCssStore } from "@/shared/stores/cssStoreHooks";
+import { ResumeDocument } from "@/shared/repositories/ResumeRepository";
 
 export interface ResumeLibrarySnapshot {
     documents: ResumeDocumentSummary[];
@@ -180,6 +182,27 @@ export default class ResumeLibraryStore {
         } catch {
             this.setSnapshot({ saveStatus: "Rename failed" });
         }
+    };
+
+    applyExternalDocument = async (
+        document: ResumeDocument,
+        saveStatus = `Loaded v${document.version}`
+    ) => {
+        loadData(document.data, "normal");
+        resumeNodeStore.clearUnsavedChanges();
+        cssStore.clearUnsavedChanges();
+        rootCssStore.clearUnsavedChanges();
+        await this.repository.setActiveId(document.id);
+        this.setSnapshot({
+            activeDocumentId: document.id,
+            saveStatus
+        });
+        await this.refreshDocuments();
+    };
+
+    refreshCurrentDocument = async () => {
+        const documents = await this.refreshDocuments();
+        return documents.find((document) => document.id === this.snapshot.activeDocumentId);
     };
 
     private async loadInitialDocument() {

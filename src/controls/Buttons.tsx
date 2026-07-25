@@ -7,21 +7,22 @@ interface ButtonProps extends React.DetailedHTMLProps<React.ButtonHTMLAttributes
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     (props, ref) => {
+        const { primary, ...buttonProps } = props;
         let classes = ['pure-button'];
-        if (props.primary) {
+        if (primary) {
             classes.push('pure-button-primary');
         }
 
-        if (props.disabled) {
+        if (buttonProps.disabled) {
             classes.push('pure-button-disabled');
         }
 
-        if (props.className) {
-            classes.push(props.className);
+        if (buttonProps.className) {
+            classes.push(buttonProps.className);
         }
 
         const newProps = {
-            ...props,
+            ...buttonProps,
             className: classes.join(' '),
         };
 

@@ -170,10 +170,11 @@ test('CSS editor reopens for a new selected node of the same type', async () => 
 });
 
 test('Template switcher previews the selected template', async () => {
-    renderTemplateSwitcher();
+    const view = renderTemplateSwitcher();
 
     expect(screen.getByLabelText('Integrity template preview')).toBeTruthy();
     expect(screen.getByText('Randy Marsh')).toBeTruthy();
+    expect(document.getElementById('resume-preview-google-fonts')).not.toBeNull();
 
     await act(async () => {
         fireEvent.click(screen.getByText('Assured'));
@@ -182,6 +183,9 @@ test('Template switcher previews the selected template', async () => {
     expect(screen.getByLabelText('Assured template preview')).toBeTruthy();
     expect(screen.getByRole('heading', { name: /\*\*Solid\*\* Programmer/ })).toBeTruthy();
     expect(screen.queryByText('Randy Marsh')).toBeNull();
+
+    view.unmount();
+    expect(document.getElementById('resume-preview-google-fonts')).toBeNull();
 });
 
 test('Template switcher only commits the selected template from the action button', async () => {

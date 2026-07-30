@@ -1,11 +1,17 @@
 import { Globals, ResumeSaveData } from "@/types";
-import { ResumeDocument, ResumeDocumentSummary, ResumeRepository, SaveResumeDocumentInput } from "./ResumeRepository";
+import {
+    BaseResumeRepository,
+    ResumeDocument,
+    ResumeDocumentSummary,
+    SaveExistingResumeResult,
+    SaveResumeDocumentInput
+} from "./ResumeRepository";
 
 const indexKey = `${Globals.localStorageKey}.documents`;
 const activeIdKey = `${Globals.localStorageKey}.activeResumeId`;
 const documentKey = (id: string) => `${Globals.localStorageKey}.document.${id}`;
 
-export default class LocalStorageResumeRepository implements ResumeRepository {
+export default class LocalStorageResumeRepository extends BaseResumeRepository {
     async list(): Promise<ResumeDocumentSummary[]> {
         this.migrateLegacyResume();
         return this.readIndex().sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
@@ -33,20 +39,30 @@ export default class LocalStorageResumeRepository implements ResumeRepository {
         return document;
     }
 
-    async save(id: string, input: SaveResumeDocumentInput): Promise<ResumeDocument> {
+    protected async trySaveExisting(
+        id: string,
+        input: SaveResumeDocumentInput
+    ): Promise<SaveExistingResumeResult> {
         const current = await this.get(id);
+        if (!current) {
+            return { status: "not-found" };
+        }
+        if (input.expectedVersion !== undefined && input.expectedVersion !== current.version) {
+            return { status: "conflict" };
+        }
+
         const document: ResumeDocument = {
             id,
             title: input.title,
             schemaVersion: input.schemaVersion,
-            version: (current?.version ?? 0) + 1,
+            version: current.version + 1,
             updatedAt: new Date().toISOString(),
             data: input.data
         };
 
         this.writeDocument(document);
         await this.setActiveId(document.id);
-        return document;
+        return { status: "saved", document };
     }
 
     async rename(id: string, title: string): Promise<ResumeDocumentSummary> {

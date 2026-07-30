@@ -8,17 +8,17 @@ import Dropdown from "./menus/Dropdown";
 import PureMenu, { PureMenuItem } from "./menus/PureMenu";
 import Modal from "./Modal";
 import GitHubLight from "@/assets/icons/GitHub-Mark-Light-120px-plus.png";
-import { Action, EditorMode } from "@/types";
+import { Action } from "@/types";
 import { Button } from "./Buttons";
 import ToolbarButton, { ToolbarButtonProps } from "./toolbar/ToolbarButton";
-import { useEditorStore, useMode } from "@/shared/stores/editorStore";
+import { isEditingMode, workspaceStore } from "@/shared/stores/workspaceStore";
+import { useWorkspaceSnapshot } from "@/shared/stores/workspaceStoreHooks";
 import loadData from "@/shared/stores/loadData";
 import { saveFile, saveLocal } from "@/shared/stores/saveResume";
 import { ResumeDocumentSummary } from "@/shared/repositories/ResumeRepository";
 
 export interface TopNavBarProps {
     isEditing: boolean;
-    mode: EditorMode;
 
     /** Loading and Saving */
     exportHtml: Action;
@@ -28,6 +28,7 @@ export interface TopNavBarProps {
     saveLocal: Action;
     print: Action;
     documents?: ResumeDocumentSummary[];
+    documentLabels?: Record<string, string>;
     activeDocumentId?: string;
     selectDocument?: (id: string) => void;
     saveStatus?: string;
@@ -35,6 +36,8 @@ export interface TopNavBarProps {
     accountLabel?: string;
     signOut?: Action;
     signIn?: Action;
+    fileMenuItems?: React.ReactNode;
+    documentItems?: React.ReactNode;
     extraItems?: React.ReactNode;
 
     /** Sidebar Actions */
@@ -97,32 +100,54 @@ export function TopNavBar(props: TopNavBarProps) {
                         <IconicItem icon="paper" onClick={() => props.new()} text="New" />
                         <IconicItem icon="folder-open" onClick={openLoader} text="Load" />
                         <IconicItem disabled={!props.isEditing} onClick={props.saveLocal} text="Save" />
+                        {props.fileMenuItems}
                         <IconicItem disabled={!props.isEditing} icon="save" onClick={openSaver} text="Save As" />
                         <IconicItem disabled={!props.isEditing} icon="file-html5" onClick={props.exportHtml} text="Export to HTML/CSS" />
                         <IconicItem disabled={!props.isEditing} icon="image" onClick={props.exportToPng} text="Export to PNG" />
                         <IconicItem disabled={!props.isEditing} icon="printer" onClick={props.print} text="Print" />
                     </Dropdown>
-                    <Item onClick={props.toggleHelp}>
-                        <Button>Help</Button>
-                    </Item>
+                    {props.isEditing ? (
+                        <Item onClick={props.toggleHelp}>
+                            <Button>Help</Button>
+                        </Item>
+                    ) : <></>}
                     {props.extraItems}
-                    {props.documents?.length ? (
+                    {props.isEditing ? props.documentItems : <></>}
+                    {props.isEditing && props.documents?.length ? (
                         <Dropdown
                             className="toolbar-dropdown"
-                            trigger={<Button>{props.documents.find((document) => document.id === props.activeDocumentId)?.title ?? "Documents"}</Button>}
+                            trigger={<Button>{(() => {
+                                const activeDocument = props.documents.find(
+                                    (document) => document.id === props.activeDocumentId
+                                );
+                                if (!activeDocument) {
+                                    return "Documents";
+                                }
+
+                                const label = props.documentLabels?.[activeDocument.id];
+                                return label
+                                    ? `${activeDocument.title} · ${label}`
+                                    : activeDocument.title;
+                            })()}</Button>}
                         >
                             {props.documents.map((document) => (
                                 <IconicItem
                                     key={document.id}
                                     icon={document.id === props.activeDocumentId ? "check" : "paper"}
                                     onClick={() => props.selectDocument?.(document.id)}
-                                    text={`${document.title} · v${document.version}`}
+                                    text={[
+                                        document.title,
+                                        `v${document.version}`,
+                                        props.documentLabels?.[document.id]
+                                    ].filter(Boolean).join(" · ")}
                                 />
                             ))}
                         </Dropdown>
                     ) : <></>}
                 </PureMenu>
-                {props.saveStatus ? <span className="save-status">{props.saveStatus}</span> : <></>}
+                {props.isEditing && props.saveStatus
+                    ? <span className="save-status">{props.saveStatus}</span>
+                    : <></>}
                 {props.accountLabel ? <span className="account-label">{props.accountLabel}</span> : <></>}
                 {props.signOut ? <Button onClick={props.signOut}>Sign out</Button> : <></>}
                 {props.signIn ? <Button onClick={props.signIn}>Login with Google for Pro access</Button> : <></>}
@@ -136,26 +161,26 @@ export function TopNavBar(props: TopNavBarProps) {
 
 export type TopNavBarWrapperProps = Omit<
     TopNavBarProps,
-    'loadData' | 'mode' | 'isEditing' | 'print' |
+    'loadData' | 'isEditing' | 'print' |
     'saveLocal' | 'saveFile' | 'toggleHelp' | 'toggleLanding'
 > & {
     loadData?: (data: object, title?: string) => void;
     saveLocal?: Action;
+    isEditing?: boolean;
 };
 
 export default function TopNavBarWrapper(props: TopNavBarWrapperProps) {
-    const { toggleMode, mode, setMode } = useEditorStore();
-    const isEditing = mode !== 'printing';
+    const workspace = useWorkspaceSnapshot();
+    const isEditing = props.isEditing ?? isEditingMode(workspace.mode);
     const loadImportedData = (data: object) => loadData(data);
 
     const wrappedProps = {
         ...props,
         loadData: props.loadData ?? loadImportedData,
-        mode,
         isEditing,
-        toggleHelp: () => toggleMode('help'),
-        toggleLanding: () => setMode('landing'),
-        print: () => toggleMode('printing'),
+        toggleHelp: workspaceStore.toggleHelp,
+        toggleLanding: () => workspaceStore.showLanding(),
+        print: workspaceStore.startPrinting,
         saveLocal: props.saveLocal ?? saveLocal,
         saveFile
     };

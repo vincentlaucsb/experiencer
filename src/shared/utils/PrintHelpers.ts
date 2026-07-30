@@ -1,5 +1,6 @@
 import { saveAs } from 'file-saver';
 import { useEditorStore } from '@/shared/stores/editorStore';
+import { workspaceStore } from '@/shared/stores/workspaceStore';
 import generateHtml from '@/editor/GenerateHtml';
 import PageSize from '@/types/PageSize';
 
@@ -9,14 +10,14 @@ import PageSize from '@/types/PageSize';
  */
 export function printResume() {
     requestAnimationFrame(() => {
-        const prevMode = useEditorStore.getState().mode;
+        const previousWorkspace = workspaceStore.getSnapshot();
 
         useEditorStore.getState().unselectNode();
-        useEditorStore.getState().setMode('printing');
+        if (!workspaceStore.startPrinting()) return;
 
         window.print();
 
-        useEditorStore.getState().setMode(prevMode);
+        workspaceStore.restore(previousWorkspace);
     });
 }
 
@@ -33,14 +34,14 @@ export function exportResumeAsHtml(
     stylesheet: string,
     filename: string = 'resume.html'
 ) {
-    const prevMode = useEditorStore.getState().mode;
+    const previousWorkspace = workspaceStore.getSnapshot();
     const pageSize = useEditorStore.getState().pageSize;
     const pageSizeRule = pageSize === PageSize.A4
         ? '@page { size: A4; }'
         : '@page { size: Letter; }';
 
     useEditorStore.getState().unselectNode();
-    useEditorStore.getState().setMode('printing');
+    if (!workspaceStore.startPrinting()) return;
 
     // Wait for render to complete before capturing HTML
     requestAnimationFrame(() => {
@@ -54,6 +55,6 @@ export function exportResumeAsHtml(
         saveAs(blob, filename);
         
         // Restore previous mode
-        useEditorStore.getState().setMode(prevMode);
+        workspaceStore.restore(previousWorkspace);
     });
 }

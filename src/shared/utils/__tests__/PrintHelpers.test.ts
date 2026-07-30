@@ -3,6 +3,7 @@ import generateHtml from '@/editor/GenerateHtml';
 import { useEditorStore } from '@/shared/stores/editorStore';
 import { exportResumeAsHtml } from '@/shared/utils/PrintHelpers';
 import PageSize from '@/types/PageSize';
+import { workspaceStore } from '@/shared/stores/workspaceStore';
 
 jest.mock('file-saver', () => ({
     saveAs: jest.fn()
@@ -45,10 +46,8 @@ describe('exportResumeAsHtml', () => {
     beforeEach(() => {
         jest.clearAllMocks();
 
-        useEditorStore.setState({
-            mode: 'normal',
-            pageSize: PageSize.Letter
-        });
+        workspaceStore.openDocument('resume-1');
+        useEditorStore.setState({ pageSize: PageSize.Letter });
     });
 
     test('injects A4 @page rule into exported stylesheet when page size is a4', () => {

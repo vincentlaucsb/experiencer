@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import PageSize from "@/types/PageSize";
 import { useEditorStore } from "../stores/editorStore";
+import { workspaceStore } from "../stores/workspaceStore";
 
 const PRINT_PAGE_SIZE_STYLE_ID = 'print-page-size-style';
 
@@ -33,17 +34,11 @@ export default function useHandlePrint() {
 
     useEffect(() => {
         const handleBeforePrint = () => {
-            const currentMode = useEditorStore.getState().mode || 'landing';
-            if (currentMode !== 'printing') {
-                useEditorStore.getState().setMode('printing');
-            }
+            workspaceStore.startPrinting();
         };
 
         const handleAfterPrint = () => {
-            const currentMode = useEditorStore.getState().mode || 'landing';
-            if (currentMode === 'printing') {
-                useEditorStore.getState().setMode('normal');
-            }
+            workspaceStore.finishPrinting();
         };
 
         window.addEventListener('beforeprint', handleBeforePrint);

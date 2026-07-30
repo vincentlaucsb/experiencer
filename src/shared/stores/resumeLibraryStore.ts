@@ -5,7 +5,7 @@ import { ResumeDocumentSummary, ResumeRepository } from "@/shared/repositories/R
 import loadData from "@/shared/stores/loadData";
 import { dump } from "@/shared/stores/saveResume";
 import { resumeNodeStore } from "@/shared/stores/resumeNodeStore";
-import { useEditorStore } from "@/shared/stores/editorStore";
+import { workspaceStore } from "@/shared/stores/workspaceStore";
 import { cssStore, rootCssStore } from "@/shared/stores/cssStoreHooks";
 import { ResumeDocument } from "@/shared/repositories/ResumeRepository";
 
@@ -15,12 +15,27 @@ export interface ResumeLibrarySnapshot {
     saveStatus: string;
 }
 
+export interface ResumeLibraryController {
+    subscribe(listener: () => void): () => void;
+    getSnapshot(): ResumeLibrarySnapshot;
+    initialize(): Promise<void>;
+    selectDocument(id: string): Promise<void>;
+    hasUnsavedChanges(): boolean;
+    saveCurrentDocument(): Promise<ResumeDocument | undefined>;
+    createDocumentFromTemplate(key?: string): Promise<void>;
+    importDocument(data: object, title?: string): Promise<void>;
+    deleteDocument(id: string): Promise<void>;
+    renameDocument(id: string, title: string): Promise<void>;
+    applyExternalDocument(document: ResumeDocument, saveStatus?: string): Promise<void>;
+    refreshCurrentDocument(): Promise<ResumeDocumentSummary | undefined>;
+}
+
 const initialSnapshot: ResumeLibrarySnapshot = {
     documents: [],
     saveStatus: "Not synced"
 };
 
-export default class ResumeLibraryStore {
+export default class ResumeLibraryStore implements ResumeLibraryController {
     private snapshot = initialSnapshot;
     private listeners = new Set<() => void>();
     private initialization?: Promise<void>;
@@ -48,7 +63,7 @@ export default class ResumeLibraryStore {
             return;
         }
 
-        loadData(document.data, "normal");
+        loadData(document.data, "normal", id);
         await this.repository.setActiveId(id);
         this.setSnapshot({
             activeDocumentId: id,
@@ -57,16 +72,22 @@ export default class ResumeLibraryStore {
         await this.refreshDocuments();
     };
 
-    saveCurrentDocument = async () => {
+    hasUnsavedChanges = () =>
+        resumeNodeStore.hasUnsavedChanges()
+        || cssStore.hasUnsavedChanges()
+        || rootCssStore.hasUnsavedChanges();
+
+    saveCurrentDocument = async (): Promise<ResumeDocument | undefined> => {
         this.setSnapshot({ saveStatus: "Saving" });
 
         try {
             const data = dump();
             const activeDocumentId = this.snapshot.activeDocumentId;
+            let saved: ResumeDocument;
 
             if (activeDocumentId) {
                 const current = this.snapshot.documents.find((document) => document.id === activeDocumentId);
-                const saved = await this.repository.save(activeDocumentId, {
+                saved = await this.repository.save(activeDocumentId, {
                     title: current?.title ?? "Untitled Resume",
                     schemaVersion: current?.schemaVersion ?? 1,
                     expectedVersion: current?.version,
@@ -79,7 +100,7 @@ export default class ResumeLibraryStore {
                     saveStatus: `Saved v${saved.version}`
                 });
             } else {
-                const saved = await this.repository.create({
+                saved = await this.repository.create({
                     title: "Untitled Resume",
                     schemaVersion: 1,
                     data
@@ -92,9 +113,15 @@ export default class ResumeLibraryStore {
                 });
             }
 
+            workspaceStore.rememberDocument(saved.id);
+            resumeNodeStore.clearUnsavedChanges();
+            cssStore.clearUnsavedChanges();
+            rootCssStore.clearUnsavedChanges();
             await this.refreshDocuments();
+            return saved;
         } catch {
             this.setSnapshot({ saveStatus: "Save failed" });
+            return undefined;
         }
     };
 
@@ -109,7 +136,7 @@ export default class ResumeLibraryStore {
                 data: template
             });
 
-            loadData(document.data, "normal");
+            loadData(document.data, "normal", document.id);
             await this.repository.setActiveId(document.id);
             this.setSnapshot({
                 activeDocumentId: document.id,
@@ -132,7 +159,7 @@ export default class ResumeLibraryStore {
                 data: resumeData
             });
 
-            loadData(document.data, "normal");
+            loadData(document.data, "normal", document.id);
             await this.repository.setActiveId(document.id);
             this.setSnapshot({
                 activeDocumentId: document.id,
@@ -159,7 +186,7 @@ export default class ResumeLibraryStore {
                 if (nextDocument) {
                     await this.selectDocument(nextDocument.id);
                 } else {
-                    useEditorStore.getState().setMode("landing");
+                    workspaceStore.reset();
                     this.setSnapshot({ saveStatus: "Not synced" });
                 }
             } else {
@@ -188,7 +215,7 @@ export default class ResumeLibraryStore {
         document: ResumeDocument,
         saveStatus = `Loaded v${document.version}`
     ) => {
-        loadData(document.data, "normal");
+        loadData(document.data, "normal", document.id);
         resumeNodeStore.clearUnsavedChanges();
         cssStore.clearUnsavedChanges();
         rootCssStore.clearUnsavedChanges();

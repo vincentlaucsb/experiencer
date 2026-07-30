@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { EditorMode } from '@/types';
 import PageSize from '@/types/PageSize';
 
 interface EditorState {
@@ -8,9 +7,6 @@ interface EditorState {
     selectedNodeId: string | undefined;
     isEditingSelected: boolean;
 
-    // Mode state
-    mode: EditorMode;
-    
     // UI state
     leftPaneElement: HTMLDivElement | null;
     pageSize: PageSize;
@@ -20,8 +16,6 @@ interface EditorState {
     editNode: (nodeId: string) => void;
     unselectNode: () => void;
     toggleEdit: () => void;
-    setMode: (mode: EditorMode) => void;
-    toggleMode: (mode: EditorMode) => void;
     setLeftPaneElement: (element: HTMLDivElement | null) => void;
     setPageSize: (pageSize: PageSize) => void;
 }
@@ -32,7 +26,6 @@ export const useEditorStore = create<EditorState>()(
             // Initial state
             selectedNodeId: undefined,
             isEditingSelected: false,
-            mode: 'landing',
             leftPaneElement: null,
             pageSize: PageSize.Letter,
 
@@ -49,14 +42,6 @@ export const useEditorStore = create<EditorState>()(
             toggleEdit: () =>
                 set((state) => ({ isEditingSelected: !state.isEditingSelected }), false, 'toggleEdit'),
 
-            setMode: (mode: EditorMode) =>
-                set({ mode }, false, 'setMode'),
-
-            toggleMode: (mode: EditorMode) => {
-                const newMode = get().mode === mode ? 'normal' : mode;
-                set({ mode: newMode }, false, 'toggleMode');
-            },
-            
             setLeftPaneElement: (element: HTMLDivElement | null) =>
                 set((state) => {
                     // Only update if the element reference actually changed
@@ -82,11 +67,7 @@ export const useEditorStore = create<EditorState>()(
 export const useSelectedNodeId = () => useEditorStore((state) => state.selectedNodeId);
 export const useIsEditingSelected = () => useEditorStore((state) => state.isEditingSelected);
 export const useLeftPaneElement = () => useEditorStore((state) => state.leftPaneElement);
-export const useMode = () => useEditorStore((state) => state.mode);
 export const usePageSize = () => useEditorStore((state) => state.pageSize);
-export const useIsEditing = () => useEditorStore((state) => 
-    state.mode === 'normal' || state.mode === 'help'
-);
 export const useIsNodeSelected = (nodeId: string) => 
     useEditorStore((state) => state.selectedNodeId === nodeId);
 export const useIsNodeEditing = (nodeId: string) => 

@@ -1,9 +1,9 @@
 import { EditorMode, Globals, ResumeSaveData } from "@/types";
-import { useEditorStore } from "./editorStore";
 import { cssStore, rootCssStore } from "./cssStoreHooks";
 import { resumeNodeStore } from "./resumeNodeStore";
 import { useHistoryStore } from "./historyStore";
 import { assignIds } from "../utils/assignIds";
+import { workspaceStore } from "./workspaceStore";
 
 function normalizeLegacyNodeTypes(nodes: any[] | undefined): any[] {
     if (!nodes) {
@@ -25,9 +25,14 @@ function normalizeLegacyNodeTypes(nodes: any[] | undefined): any[] {
 /**
  * Load resume data into the stores
  * @param data Serialized resume data to load
- * @param mode Editor mode to set after loading (default: 'normal')
+ * @param mode Workspace mode to enter after loading (default: 'normal')
+ * @param documentId Persisted document opened by this load, when applicable
  */
-export default function loadData(data: object, mode: EditorMode = 'normal') {
+export default function loadData(
+    data: object,
+    mode: EditorMode = 'normal',
+    documentId?: string
+) {
     let savedData = data as ResumeSaveData;
     const normalizedChildNodes = normalizeLegacyNodeTypes(savedData.childNodes as any[]);
     const nodes = assignIds(normalizedChildNodes);
@@ -40,7 +45,7 @@ export default function loadData(data: object, mode: EditorMode = 'normal') {
     cssStore.loadCss(savedData.builtinCss);
     rootCssStore.loadCss(savedData.rootCss);
 
-    useEditorStore.getState().setMode(mode);
+    workspaceStore.transitionTo(mode, documentId);
 }
 
 export function loadLocal() {

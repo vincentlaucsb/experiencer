@@ -34,3 +34,118 @@ div[class*='ReactModal__Content'] {
 /** Modals created by top nav menu */
 .top-nav-modal {
 }
+
+.confirmation-modal {
+    width: min(30rem, calc(100% - 2rem)) !important;
+
+    .confirmation-modal-body > p {
+        margin-top: 0;
+        line-height: 1.5;
+    }
+
+    .confirmation-modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+    }
+
+    .confirmation-modal-danger {
+        background: colors.$danger;
+        color: colors.$white;
+
+        &:hover,
+        &:focus-visible {
+            filter: brightness(0.85);
+        }
+    }
+}
+
+.live-css-changes-modal {
+    width: min(48rem, calc(100% - 2rem)) !important;
+    max-height: 84vh;
+    margin-top: 8vh !important;
+
+    .live-css-changes-modal-body > p {
+        margin-top: 0;
+        line-height: 1.5;
+    }
+
+    .live-css-change-list {
+        max-height: 52vh;
+        overflow-y: auto;
+        border-block: 1px solid colors.$border-subtle;
+    }
+
+    .live-css-rule-change {
+        padding: 1rem 0;
+
+        & + .live-css-rule-change {
+            border-top: 1px solid colors.$border-subtle;
+        }
+
+        h4 {
+            margin: 0 0 0.25rem;
+        }
+
+        ul {
+            display: grid;
+            gap: 0.35rem;
+            padding: 0;
+            margin: 0.75rem 0 0;
+            list-style: none;
+        }
+
+        li {
+            display: grid;
+            grid-template-columns: 4.5rem minmax(7rem, 1fr) minmax(0, 1.5fr) auto minmax(0, 1.5fr);
+            align-items: baseline;
+            gap: 0.5rem;
+        }
+
+        code {
+            overflow-wrap: anywhere;
+        }
+    }
+
+    .live-css-selector {
+        color: colors.$dark-accent;
+    }
+
+    .live-css-change-type {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .live-css-change-added {
+        color: colors.$dark-accent;
+    }
+
+    .live-css-change-removed {
+        color: colors.$danger;
+    }
+
+    .live-css-old-value {
+        text-decoration: line-through;
+        color: colors.$light-accent;
+        overflow-wrap: anywhere;
+    }
+
+    .live-css-modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+}
+
+@media (max-width: 42rem) {
+    .live-css-changes-modal .live-css-rule-change li {
+        grid-template-columns: 4.5rem minmax(0, 1fr);
+
+        > :nth-child(n + 3) {
+            grid-column: 2;
+        }
+    }
+}

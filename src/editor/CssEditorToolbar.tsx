@@ -8,6 +8,7 @@ import ButtonGroup from "@/controls/ButtonGroup";
 export interface CssEditorToolbarProps {
     cssNode: ReadonlyCssNode;
     addSelector: (name: string, selector: string) => void;
+    importLiveChanges: () => void;
     deleteNode: () => void;
 }
 
@@ -58,6 +59,7 @@ export default function CssEditorToolbar(props: CssEditorToolbarProps) {
 
     return (
         <ButtonGroup className="css-title-toolbar"
+            aria-label="CSS rule actions"
             onClick={(event: React.MouseEvent) => {
                 // Stop parent from collapsing
                 event.stopPropagation();
@@ -68,6 +70,13 @@ export default function CssEditorToolbar(props: CssEditorToolbarProps) {
                     setPseudoMenuActive(!pseudoMenuActive)
                 }>::</Button>
             </Popover>
+            <Button
+                aria-label="Import live changes"
+                title="Import live rule changes from browser DevTools"
+                onClick={props.importLiveChanges}
+            >
+                <i className="icofont-refresh" aria-hidden="true" />
+            </Button>
             <Button onClick={() => props.addSelector(newSectionName, "#some-id.some-class")}>
                 <AddIcon />
             </Button>

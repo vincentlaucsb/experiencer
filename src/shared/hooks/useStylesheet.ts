@@ -11,6 +11,7 @@ export default function useStylesheet(stylesheet: string) {
 
     const styleElement = useMemo(() => {
         const ret = document.createElement("style");
+        ret.setAttribute("data-resume-editor-stylesheet", "");
         const head = document.getElementsByTagName("head")[0];
         return head.appendChild(ret);
     }, []);
@@ -19,4 +20,8 @@ export default function useStylesheet(stylesheet: string) {
         if (!styleElement) return;
         styleElement.textContent = stylesheet;
     }, [styleElement, stylesheet]);
+
+    useEffect(() => {
+        return () => styleElement.remove();
+    }, [styleElement]);
 }

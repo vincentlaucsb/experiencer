@@ -1,0 +1,27 @@
+#template-selector {
+    .template-selector-group-heading {
+        margin-top: 0.75rem;
+        padding: 0.5rem 1rem 0.25rem;
+        font-weight: 700;
+    }
+
+    .template-selector-empty-state {
+        max-width: 19rem;
+        padding: 0.5rem 1rem 0.75rem;
+        white-space: normal;
+    }
+
+    .template-selector-error {
+        max-width: 19rem;
+        color: #a21f2d;
+        line-height: 1.35;
+    }
+}
+
+.template-preview-status {
+    display: grid;
+    min-height: 14rem;
+    place-items: center;
+    padding: 2rem;
+    text-align: center;
+}

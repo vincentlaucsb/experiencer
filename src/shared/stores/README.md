@@ -1,6 +1,7 @@
 # State Management Stores
 
-This directory contains Zustand stores for global application state.
+This directory contains framework-neutral stores and focused Zustand stores for
+application state.
 
 ## Store Architecture
 
@@ -13,7 +14,19 @@ Manages which resume node is currently selected and being edited.
 
 **Use for:** UI interactions, highlighting, showing/hiding editors
 
-### 2. `resumeStore.ts` - Resume Data Structure
+### 2. `workspaceStore.ts` - Workspace Session State
+
+Owns navigation mode and whether a persisted document is currently being edited.
+This is a framework-neutral state machine; React subscriptions live separately in
+`workspaceStoreHooks.ts`.
+
+Non-editing modes (`landing` and `changingTemplate`) never expose an
+`activeDocumentId`. They may retain a `suspendedDocumentId` so the user can return to
+the prior editing session. Use semantic transitions such as `openDocument`,
+`showLanding`, `showTemplateSelector`, `toggleHelp`, and `startPrinting`; do not add
+another writable mode field to a component or store.
+
+### 3. `resumeStore.ts` - Resume Data Structure
 Manages the resume content tree using `ResumeNodeTree` class.
 
 **State:**
@@ -29,7 +42,7 @@ Manages the resume content tree using `ResumeNodeTree` class.
 
 **Use for:** All resume content mutations
 
-### 3. `historyStore.ts` - Undo/Redo State
+### 4. `historyStore.ts` - Undo/Redo State
 Manages time-travel for resume edits.
 
 **State:**

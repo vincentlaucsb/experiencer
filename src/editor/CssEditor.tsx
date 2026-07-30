@@ -10,6 +10,12 @@ import CssNode, { ReadonlyCssNode } from "@/shared/CssTree";
 import { createContainer } from "@/shared/utils/createContainer";
 import CssSuggestions from "./CssSuggestions";
 import { HighlightBox } from "./HighlightBox";
+import {
+    countLiveCssDeclarationChanges,
+    inspectLiveCssTree,
+    LiveCssTreeChange
+} from "@/shared/utils/liveCssSync";
+import { showToast } from "@/shared/stores/toastStore";
 
 // Lazy-load CssEditorToolbar since it's only shown in CSS editor sections
 const CssEditorToolbar = React.lazy(() => import("./CssEditorToolbar"));
@@ -20,6 +26,7 @@ export interface CssUpdateProps {
     updateProperty: (path: ReadonlyArray<string>, key: string, value: string) => void;
     updateDescription: (path: ReadonlyArray<string>, data: string) => void;
     updateSelector: (path: ReadonlyArray<string>, selector: string) => void;
+    replaceProperties: (changes: ReadonlyArray<LiveCssTreeChange>) => void;
     deleteKey: (path: ReadonlyArray<string>, key: string) => void;
     deleteNode: (path: ReadonlyArray<string>) => void;
 }
@@ -75,6 +82,16 @@ export function makeCssEditorProps(
             });
         },
 
+        replaceProperties: (changes) => {
+            updateTree((cssTreeRoot) => {
+                for (const change of changes) {
+                    cssTreeRoot
+                        .mustFindNode(Array.from(change.path))
+                        .setProperties(new Map(change.declarations));
+                }
+            });
+        },
+
         deleteKey: (path, key) => {
             updateTree((cssTreeRoot) => {
                 cssTreeRoot.deleteProperty(Array.from(path), key);
@@ -99,6 +116,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         };
 
         this.mapContainer = this.mapContainer.bind(this);
+        this.importLiveChanges = this.importLiveChanges.bind(this);
     }
 
     get description() {
@@ -138,6 +156,19 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
     get path() {
         return this.props.cssNode.fullPath;
+    }
+
+    importLiveChanges() {
+        const changes = inspectLiveCssTree(this.props.cssNode);
+
+        if (changes.length === 0) {
+            showToast("This CSS section already matches the live stylesheet.");
+            return;
+        }
+
+        this.props.replaceProperties(changes);
+        const changeCount = countLiveCssDeclarationChanges(changes);
+        showToast(`Imported ${changeCount} live CSS change${changeCount === 1 ? "" : "s"}.`);
     }
 
     get sectionName() {
@@ -260,6 +291,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
                 updateProperty={this.props.updateProperty}
                 updateDescription={this.props.updateDescription}
                 updateSelector={this.props.updateSelector}
+                replaceProperties={this.props.replaceProperties}
                 deleteKey={this.props.deleteKey}
                 deleteNode={this.props.deleteNode}
                 />
@@ -281,6 +313,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
                 <CssEditorToolbar
                     cssNode={this.props.cssNode}
                     addSelector={(name, selector) => this.props.addSelector(this.path, name, selector)}
+                    importLiveChanges={this.importLiveChanges}
                     deleteNode={() => this.props.deleteNode(this.path)}
                 />
             </React.Suspense>

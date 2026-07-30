@@ -115,11 +115,13 @@ header#app-header {
     .save-status,
     .account-label {
         align-self: center;
+        flex: 0 0 auto;
         border: 1px solid colors.$light-shade;
         border-radius: 6px;
         font-size: 0.8rem;
         line-height: 1;
         padding: 0.35rem 0.5rem;
+        white-space: nowrap;
     }
 
     .pro-badge {

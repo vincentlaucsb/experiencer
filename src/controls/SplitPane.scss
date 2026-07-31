@@ -1,0 +1,31 @@
+@use "../sass/colors/semantic" as colors;
+
+.split-pane {
+    background: colors.$surface-workspace;
+
+    &__workspace {
+        background: colors.$surface-workspace;
+    }
+
+    &__divider {
+        background: colors.$surface-workspace;
+
+        &::after {
+            position: absolute;
+            inset: 0 4px;
+            background: colors.$border-chrome;
+            content: "";
+            transition: background-color 0.2s, inset 0.2s;
+        }
+
+        &:hover::after {
+            inset: 0 3px;
+            background: colors.$focus-ring;
+        }
+    }
+
+    &__inspector {
+        background: colors.$surface-inspector;
+        border-left: 1px solid colors.$border-chrome;
+    }
+}

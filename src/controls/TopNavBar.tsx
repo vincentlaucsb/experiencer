@@ -8,6 +8,7 @@ import Dropdown from "./menus/Dropdown";
 import PureMenu, { PureMenuItem } from "./menus/PureMenu";
 import Modal from "./Modal";
 import GitHubLight from "@/assets/icons/GitHub-Mark-Light-120px-plus.png";
+import ExperiencerMark from "@/assets/brand/experiencer-mark-on-dark.svg?url";
 import { Action } from "@/types";
 import { Button } from "./Buttons";
 import ToolbarButton, { ToolbarButtonProps } from "./toolbar/ToolbarButton";
@@ -16,6 +17,7 @@ import { useWorkspaceSnapshot } from "@/shared/stores/workspaceStoreHooks";
 import loadData from "@/shared/stores/loadData";
 import { saveFile, saveLocal } from "@/shared/stores/saveResume";
 import { ResumeDocumentSummary } from "@/shared/repositories/ResumeRepository";
+import ThemeMenu from "./ThemeMenu";
 
 export interface TopNavBarProps {
     isEditing: boolean;
@@ -92,7 +94,8 @@ export function TopNavBar(props: TopNavBarProps) {
                     role="button"
                     tabIndex={0}
                 >
-                    Experiencer
+                    <img className="brand-mark" src={ExperiencerMark} alt="" aria-hidden="true" />
+                    <span>Experiencer</span>
                 </h1>
                 {props.proBadge ? <span className="pro-badge">{props.proBadge}</span> : <></>}
                 <PureMenu id="top-menu" horizontal divProps={{ className: "app-ml-4" }}>
@@ -106,6 +109,7 @@ export function TopNavBar(props: TopNavBarProps) {
                         <IconicItem disabled={!props.isEditing} icon="image" onClick={props.exportToPng} text="Export to PNG" />
                         <IconicItem disabled={!props.isEditing} icon="printer" onClick={props.print} text="Print" />
                     </Dropdown>
+                    <ThemeMenu />
                     {props.isEditing ? (
                         <Item onClick={props.toggleHelp}>
                             <Button>Help</Button>

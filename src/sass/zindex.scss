@@ -1,70 +1,76 @@
-﻿/** Overlap Control */
-@use "variables";
+/**
+ * Structural stacking order
+ *
+ * Keep application-wide layers here rather than introducing local numeric
+ * z-index values. Components may import these variables when their positioning
+ * rules live beside the component.
+ */
+$workspace: 0;
+$workspace-content: 10;
+$selection-overlay: 20;
+$sticky-content: 30;
+$header: 100;
+$header-control: 110;
+$menu: 120;
+$popover: 200;
+$modal: 300;
+$context-menu: 400;
+$toast: 500;
 
-$default-z: 0;
-$header-z: 1000;
+/** Base editor and print-faithful document plane. */
+.split-pane {
+    position: relative;
+    z-index: $workspace;
+}
 
-/** || Header Panae */
-.horizontal.Pane1 {
-    &, * {
-        z-index: $header-z;
+#resume {
+    position: relative;
+    z-index: $workspace-content;
+}
+
+/** Application chrome must cover fixed selection/highlight overlays. */
+header#app-header {
+    position: relative;
+    z-index: $header;
+}
+
+/** Dropdown controls and menus stay within the header stacking context. */
+header#app-header {
+    #top-menu,
+    .toolbar-button {
+        position: relative;
+        z-index: $header-control;
     }
 
-    /** Dropdown menus */
-    #top-menu, .toolbar-button {
-        z-index: $header-z + 1;
-    }
-
-    /** Active dropdown menu */
     .pure-menu-active {
-        z-index: $header-z + 2;
-    }
-
-    /** Don't want label obscuring dropdown menus */
-    .toolbar-label {
-        z-index: $header-z - 1;
+        position: relative;
+        z-index: $menu;
     }
 }
 
-.ReactModalPortal {
-    &, * {
-        z-index: $header-z + 2;
-    }
+/** Resume element selection and CSS-editor highlight boxes. */
+#hl-box-container > * {
+    z-index: $selection-overlay;
 }
 
-/** || Main Pane */
-$main-pane-z: $default-z + 1;
-.vertical.Pane1 {
-    &, * {
-        // Main pane items should be able to display over sidebar items
-        z-index: $main-pane-z;
-    }
-
+/** Modal overlays cover all application chrome. */
+.ReactModal__Overlay {
+    z-index: $modal;
 }
 
-/** || Highlight Boxes */
-#hl-box-container {
-    &, * {
-        z-index: $main-pane-z + 1;
-    }
+/** Body-level editors and anchored popovers. */
+.overlay-editor,
+.resume-overlay-editor,
+.link-editing-overlay,
+.link-popover,
+.markdown-popover,
+.resume-popover,
+.css-selector-adder,
+.pseudo-options-container {
+    z-index: $popover;
 }
 
-/** || Sidebar */
-.vertical.Pane2 {
-    &, * {
-        z-index: $default-z;
-    }
-}
-
-/** || Context Menu */
+/** Context menus intentionally cover popovers and modals. */
 [data-popright-menu] {
-    // Make context menus appear over sidebars and highlight boxes.
-    z-index: $header-z + 3;
-}
-
-/** || Popovers */
-.resume-popover, .css-selector-adder, .pseudo-options-container {
-    &, * {
-        z-index: $header-z + 2;
-    }
+    z-index: $context-menu;
 }

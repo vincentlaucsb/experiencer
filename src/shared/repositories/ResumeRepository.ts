@@ -20,6 +20,15 @@ export interface SaveResumeDocumentInput {
     idempotencyKey?: string;
 }
 
+export const RESUME_TITLE_MAX_LENGTH = 200;
+export const RESUME_TITLE_TOO_LONG_MESSAGE = "Name must be 200 characters or fewer.";
+
+export function getResumeTitleValidationError(title: string): string | null {
+    return title.length > RESUME_TITLE_MAX_LENGTH
+        ? RESUME_TITLE_TOO_LONG_MESSAGE
+        : null;
+}
+
 export interface ResumeRepository {
     list(): Promise<ResumeDocumentSummary[]>;
     get(id: string): Promise<ResumeDocument | undefined>;
@@ -35,8 +44,10 @@ export type ResumeRepositoryErrorCode =
     | "not-found"
     | "conflict"
     | "access-required"
+    | "validation"
     | "unavailable";
 
+/** Carries storage-neutral failure categories into library workflows. */
 export class ResumeRepositoryError extends Error {
     constructor(
         public readonly code: ResumeRepositoryErrorCode,
@@ -53,10 +64,8 @@ export type SaveExistingResumeResult =
     | { status: "conflict" };
 
 /**
- * Owns the behavioral contract for updating an existing resume.
- *
- * Implementations perform their storage-specific update atomically and report
- * the outcome. They cannot accidentally turn save() into create().
+ * Enforces that saving updates an existing resume atomically and never falls
+ * back to creating a replacement.
  */
 export abstract class BaseResumeRepository implements ResumeRepository {
     abstract list(): Promise<ResumeDocumentSummary[]>;

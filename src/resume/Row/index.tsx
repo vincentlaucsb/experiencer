@@ -11,6 +11,7 @@ export interface RowBase {
 export interface BasicRowProps extends BasicResumeNode<RowBase> {}
 export interface RowProps extends ResumeComponentProps<RowBase> {}
 
+/** Lays out resume columns and preserves an editable target when the row is empty. */
 export default class Row extends React.PureComponent<RowProps> {
     static readonly type: string = 'Row';
 

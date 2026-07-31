@@ -5,18 +5,8 @@ import { showToast } from '@/shared/stores/toastStore';
 import { IdType, ResumeNode } from '@/types';
 
 /**
- * Model-app communication layer for ResumeNodeTree.
- *
- * This store is the mutation gatekeeper for resume nodes: it exposes app-facing
- * operations, delegates structural edits to ResumeNodeTree, and coordinates
- * app-side effects through injected adapters.
- *
- * Responsibilities:
- * - Bridge ResumeNodeTree to React subscriptions via ClassStore
- * - Enforce insertion constraints and user feedback (toasts)
- * - Record history for undo/redo on accepted mutations
- * - Maintain cross-store invariants (for example, clear selection when a
- *   deleted subtree contains the selected node)
+ * Gates resume-tree mutations, undo history, selection cleanup, and user
+ * feedback behind one store.
  */
 export default class NodeStore extends ClassStore<ResumeNodeTree> {
     protected _data: ResumeNodeTree;

@@ -6,6 +6,7 @@ import { streamlineCoverLetterNodes, streamlineCoverLetterCss } from "./Streamli
 import { ResumeSaveData } from "@/types";
 import { assuredCoverLetterNodes, assuredCoverLetterCss } from "./AssuredCoveredLetter";
 
+/** Provides ID-assigned save data for the built-in OSS templates. */
 export default class ResumeTemplates {
     static templates = {
         "Assured": {

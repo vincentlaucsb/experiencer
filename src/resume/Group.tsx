@@ -3,7 +3,7 @@ import React from "react";
 import Container from "@/resume/infrastructure/Container";
 import ResumeComponentProps from "@/types";
 
-/** Generic grouping <div> element */
+/** Renders a schema-visible grouping node as a plain container. */
 export default class Group extends React.PureComponent<ResumeComponentProps> {
     static readonly type: string = "Group";
 

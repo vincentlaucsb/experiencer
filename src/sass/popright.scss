@@ -3,21 +3,21 @@
 @use "variables";
 
 [data-popright-menu] {
-    --popright-bg: #{colors.$dark-shade};
-    --popright-color: #{colors.$light-shade};
-    --popright-border: #{color.adjust(colors.$light-accent, $alpha: -0.45)};
-    --popright-active-bg: #{rgba(colors.$dark-accent, 0.55)};
-    --popright-disabled-color: #{colors.$light-accent};
-    --popright-danger-color: #{colors.$danger};
-    --popright-shadow: 0 10px 28px #{rgba(colors.$dark-shade, 0.35)};
+    --popright-bg: var(--xp-surface-inverse);
+    --popright-color: var(--xp-text-on-inverse);
+    --popright-border: var(--xp-border-subtle);
+    --popright-active-bg: var(--xp-interactive-overlay);
+    --popright-disabled-color: var(--xp-text-secondary);
+    --popright-danger-color: var(--xp-danger);
+    --popright-shadow: var(--xp-shadow-medium);
 
     font-family: variables.$sans-serif;
 }
 
 [data-popright-header] {
-    color: colors.$light-shade;
+    color: colors.$text-on-inverse;
 }
 
 [data-popright-separator] {
-    background: color.adjust(colors.$light-accent, $alpha: -0.55);
+    background: colors.$highlight;
 }

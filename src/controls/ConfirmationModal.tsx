@@ -28,7 +28,7 @@ export default function ConfirmationModal(props: ConfirmationModalProps) {
                     </Button>
                     <Button
                         type="button"
-                        className="confirmation-modal-danger"
+                        variant="error"
                         onClick={props.onConfirm}
                     >
                         {props.confirmLabel ?? "Confirm"}

@@ -21,17 +21,18 @@
             display: flex;
             align-items: center;
             background: inherit;
+            color: colors.$text-primary;
             font-size: large;
             width: 100%;
 
             &:hover {
-                background: color.adjust(colors.$light-accent, $lightness: 20%);
+                background: colors.$surface-muted;
             }
         }
 
         i[class*="icofont"] {
             font-size: 40px;
-            color: colors.$main;
+            color: colors.$text-primary;
         }
     }
 }
@@ -55,7 +56,8 @@
 
 .resume-library-item {
     align-items: center;
-    border: 1px solid colors.$light-accent;
+    background: colors.$surface-card;
+    border: 1px solid colors.$border-strong;
     border-radius: 6px;
     display: grid;
     gap: 1rem;
@@ -63,8 +65,8 @@
     padding: 0.75rem;
 
     &.active {
-        border-color: colors.$main;
-        box-shadow: inset 4px 0 0 colors.$main;
+        border-color: colors.$surface-interactive;
+        box-shadow: inset 4px 0 0 colors.$surface-interactive;
     }
 
     h3,
@@ -73,7 +75,7 @@
     }
 
     p {
-        color: colors.$dark-accent;
+        color: colors.$text-interactive;
         font-size: 0.9rem;
         margin-top: 0.25rem;
     }

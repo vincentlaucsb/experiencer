@@ -26,7 +26,7 @@ export default function OverlayEditor({
     triggerElement, 
     isOpen, 
     children, 
-    className = 'overlay-editor' 
+    className = ''
 }: OverlayEditorProps) {
     const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
     const overlayRef = useRef<HTMLDivElement>(null);
@@ -58,16 +58,17 @@ export default function OverlayEditor({
 
     if (!isOpen) return null;
 
+    const overlayClassName = ['overlay-editor', className].filter(Boolean).join(' ');
+
     return createPortal(
         <div
             ref={overlayRef}
-            className={className}
+            className={overlayClassName}
             style={{
                 position: 'absolute',
                 top: `${position.top}px`,
                 left: `${position.left}px`,
                 minWidth: `${position.width}px`,
-                zIndex: 1000,
             }}
             onClick={(e) => e.stopPropagation()}
         >

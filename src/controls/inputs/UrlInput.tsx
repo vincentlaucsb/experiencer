@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useEffect } from "react";
+import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
 
 interface UrlInputProps {
     url?: string;
@@ -37,6 +38,7 @@ export default function UrlInput(props: UrlInputProps) {
                     <span style={{ marginRight: '8px', fontWeight: 'bold' }}>URL:</span>
                 </label>
                 <input
+                    {...nonCredentialInputAttributes}
                     ref={inputRef}
                     id="link-url"
                     type="url"

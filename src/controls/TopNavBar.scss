@@ -4,8 +4,9 @@
 
 /** || Header */
 header#app-header {
-    background: colors.$main;
-    color: colors.$light-shade;
+    background: colors.$surface-header;
+    color: colors.$text-on-inverse;
+    box-shadow: 0 1px 0 colors.$border-chrome;
 
     #brand, #toolbar {
         @extend %flex-row;
@@ -14,11 +15,16 @@ header#app-header {
 
     .pure-menu-active {
         &, :focus {
-            background: colors.$dark-accent;
+            background: colors.$surface-interactive;
         }
     }
 
-    .pure-button {
+    .pure-button:not(
+        .pure-button-primary,
+        .pure-button-success,
+        .pure-button-warning,
+        .pure-button-error
+    ) {
         background: inherit;
         color: inherit;
 
@@ -27,7 +33,7 @@ header#app-header {
         }
 
         &:hover {
-            background: colors.$dark-accent;
+            background: colors.$surface-interactive;
         }
     }
 
@@ -42,11 +48,11 @@ header#app-header {
 
         /** || Dropdown Items */
         .pure-menu-children {
-            box-shadow: color.adjust(colors.$dark-shade, $alpha: -0.5) 2px 2px 5px;
+            box-shadow: colors.$shadow-soft;
 
             .pure-menu-item {
-                background: colors.$dark-shade;
-                color: colors.$light-shade;
+                background: colors.$surface-inverse;
+                color: colors.$text-on-inverse;
                 padding: 0;
             }
 
@@ -74,14 +80,14 @@ header#app-header {
                 }
 
                 i[class*="icofont"] {
-                    color: colors.$light-accent;
+                    color: colors.$text-on-inverse;
                 }
 
                 &:hover {
-                    background: colors.$dark-accent;
+                    background: colors.$surface-interactive;
 
                     i[class*="icofont"] {
-                        color: colors.$light-accent-hover;
+                        color: colors.$progress-accent;
                     }
                 }
             }
@@ -94,8 +100,28 @@ header#app-header {
     align-items: center;
 
     h1 {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        color: colors.$text-on-inverse;
+        font-family: "Avenir Next", "Segoe UI Variable", "Segoe UI", sans-serif;
         font-size: 20pt;
+        font-weight: 750;
+        letter-spacing: -0.045em;
+        flex: 0 0 auto;
         cursor: pointer;
+
+        &:focus-visible {
+            border-radius: 4px;
+            outline: 3px solid colors.$focus-ring;
+            outline-offset: 4px;
+        }
+    }
+
+    .brand-mark {
+        width: 2rem;
+        height: 2rem;
+        flex: 0 0 auto;
     }
 
     .pure-menu-horizontal {
@@ -107,7 +133,7 @@ header#app-header {
     // GitHub Icon
     .github-mark {
         vertical-align: middle;
-        color: colors.$light-accent;
+        color: colors.$text-on-inverse;
         width: 32px;
     }
 
@@ -116,7 +142,7 @@ header#app-header {
     .account-label {
         align-self: center;
         flex: 0 0 auto;
-        border: 1px solid colors.$light-shade;
+        border: 1px solid colors.$text-on-inverse;
         border-radius: 6px;
         font-size: 0.8rem;
         line-height: 1;
@@ -125,13 +151,18 @@ header#app-header {
     }
 
     .pro-badge {
-        background: colors.$light-shade;
-        color: colors.$main;
+        background: colors.$text-on-inverse;
+        color: colors.$surface-inverse;
         font-weight: 700;
     }
 
     .save-status,
     .account-label {
         opacity: 0.85;
+    }
+
+    .theme-menu__selected {
+        grid-column: 3;
+        text-align: right;
     }
 }

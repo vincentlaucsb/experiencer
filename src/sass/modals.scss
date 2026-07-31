@@ -6,8 +6,8 @@ div[class*='ReactModal__Content'] {
         display: flex;
         align-items: center;
         margin: 0;
-        background: colors.$main;
-        color: colors.$light-shade;
+        background: colors.$surface-inverse;
+        color: colors.$text-on-inverse;
 
         .modal-close {
             border: none;
@@ -15,13 +15,13 @@ div[class*='ReactModal__Content'] {
             margin-left: auto;
 
             &:hover {
-                color: colors.$light-accent;
+                color: colors.$text-on-inverse;
             }
         }
     }
 
-    border: 1px solid colors.$dark-shade;
-    background: colors.$light-shade;
+    border: 1px solid colors.$border-strong;
+    background: colors.$surface-raised;
     overflow: auto;
     border-radius: 4px;
     outline: none;
@@ -50,15 +50,6 @@ div[class*='ReactModal__Content'] {
         margin-top: 1.5rem;
     }
 
-    .confirmation-modal-danger {
-        background: colors.$danger;
-        color: colors.$white;
-
-        &:hover,
-        &:focus-visible {
-            filter: brightness(0.85);
-        }
-    }
 }
 
 .live-css-changes-modal {
@@ -109,7 +100,7 @@ div[class*='ReactModal__Content'] {
     }
 
     .live-css-selector {
-        color: colors.$dark-accent;
+        color: colors.$text-interactive;
     }
 
     .live-css-change-type {
@@ -119,7 +110,7 @@ div[class*='ReactModal__Content'] {
     }
 
     .live-css-change-added {
-        color: colors.$dark-accent;
+        color: colors.$text-interactive;
     }
 
     .live-css-change-removed {
@@ -128,7 +119,7 @@ div[class*='ReactModal__Content'] {
 
     .live-css-old-value {
         text-decoration: line-through;
-        color: colors.$light-accent;
+        color: colors.$text-secondary;
         overflow-wrap: anywhere;
     }
 

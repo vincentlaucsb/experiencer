@@ -6,6 +6,7 @@ import { useEditorStore, useIsNodeEditing } from "@/shared/stores/editorStore";
 import { RowBase } from "../Row";
 import useEditingControls from "../hooks/useEditingControls";
 import useAutoExpandInput from "../hooks/useAutoExpandInput";
+import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
 
 import "./index.scss";
 import ResumeComponentProps, { BasicResumeNode } from "@/types";
@@ -68,6 +69,7 @@ export default function Header({ updateDataFields, ...props }: HeaderProps) {
 
     if (isEditing) {
         value = <input
+            {...nonCredentialInputAttributes}
             ref={titleRef}
             id={`${props.uuid}-title`}
             type="text"
@@ -77,6 +79,7 @@ export default function Header({ updateDataFields, ...props }: HeaderProps) {
         />
 
         subtitle = <input
+            {...nonCredentialInputAttributes}
             ref={subtitleRef}
             id={`${props.uuid}-subtitle`}
             type="text"

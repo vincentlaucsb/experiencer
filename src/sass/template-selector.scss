@@ -1,4 +1,26 @@
+@use "colors/semantic" as colors;
+
 #template-selector {
+    .pure-menu-link,
+    .pure-menu-link:visited {
+        background: transparent;
+        color: colors.$text-secondary;
+        transition: background-color 0.15s, color 0.15s;
+    }
+
+    .pure-menu-link:hover,
+    .pure-menu-link:focus,
+    .pure-menu-selected > .pure-menu-link,
+    .pure-menu-selected > .pure-menu-link:visited {
+        background: colors.$surface-interactive;
+        color: colors.$text-on-inverse;
+    }
+
+    .pure-menu-link:focus-visible {
+        outline: 2px solid colors.$focus-ring;
+        outline-offset: -2px;
+    }
+
     .template-selector-group-heading {
         margin-top: 0.75rem;
         padding: 0.5rem 1rem 0.25rem;
@@ -13,8 +35,18 @@
 
     .template-selector-error {
         max-width: 19rem;
-        color: #a21f2d;
+        color: colors.$danger;
         line-height: 1.35;
+    }
+
+    .template-selector-primary-action {
+        margin: 0.75rem 1rem 1rem;
+        font-weight: 600;
+
+        &:disabled {
+            cursor: wait;
+            opacity: 0.6;
+        }
     }
 }
 

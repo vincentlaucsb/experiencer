@@ -1,3 +1,4 @@
+@use "colors/themes";
 @use "colors/semantic" as colors;
 @use "colors/utilities";
 @use "spacing";
@@ -7,6 +8,7 @@
 @use "template-selector";
 @use "modals";
 @use "forms";
+@use "buttons";
 @use "hl-box";
 @use "inputs";
 @use "overlay-editing";
@@ -15,9 +17,9 @@
 
 /* App Stuff */
 body {
-    background: colors.$light-shade;
+    background: colors.$surface-workspace;
     font-family: variables.$sans-serif;
-    color: colors.$dark-shade;
+    color: colors.$text-primary;
     margin: 0;
 }
 
@@ -43,11 +45,6 @@ button img {
     /* Make black icons white-ish */
     filter: invert(0.95);
     margin-right: 2px;
-}
-
-button,
-.pure-button {
-    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
 /** || Layouts */
@@ -85,6 +82,7 @@ button,
 @media print {
     body {
         background: none;
+        color: colors.$document-ink;
     }
 
     .no-print {
@@ -92,6 +90,9 @@ button,
     }
 
     #resume {
+        background: colors.$document-paper;
+        color: colors.$document-ink;
+        color-scheme: light;
         height: 100%;
         border: none;
     }
@@ -101,12 +102,12 @@ button,
     #print-preview-actions {
         position: sticky;
         top: 0;
-        z-index: zindex.$header-z;
+        z-index: zindex.$header;
         display: flex;
         justify-content: center;
         align-items: center;
-        background: colors.$main;
-        border-bottom: 1px solid colors.$dark-accent;
+        background: colors.$surface-inverse;
+        border-bottom: 1px solid colors.$surface-interactive;
 
         .pure-button {
             font-size: 1rem;
@@ -114,18 +115,17 @@ button,
             padding: 0.7em 1.2em;
         }
 
-        .print-preview-exit {
-            background: colors.$light-shade;
-            color: colors.$dark-shade;
-        }
     }
 
     #resume {
-        background: colors.$white;
+        background: colors.$document-paper;
+        color: colors.$document-ink;
+        color-scheme: light;
         width: 8.5in;
         min-height: 11in;
         box-sizing: border-box;
-        border: 1px solid colors.$border-subtle;
+        border: 1px solid colors.$document-border;
+        box-shadow: colors.$shadow-medium;
         margin-bottom: 1rem;
         margin-left: auto;
         margin-right: auto;
@@ -143,7 +143,7 @@ button,
             margin-top: var(--x-large-spacing);
             margin-bottom: var(--x-large-spacing);
             height: 0;
-            border-top: 3px dashed colors.$light-accent;
+            border-top: 3px dashed colors.$document-muted;
 
             .page-break-label {
                 position: absolute;
@@ -152,8 +152,8 @@ button,
                 transform: translate(-50%, -50%);
                 display: inline-block;
                 padding: 0 0.5rem;
-                background: colors.$light-shade;
-                color: colors.$dark-accent;
+                background: colors.$document-paper;
+                color: colors.$document-accent;
                 font-family: variables.$monospace;
                 font-size: 9pt;
                 letter-spacing: 0.12em;

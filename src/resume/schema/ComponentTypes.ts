@@ -23,7 +23,7 @@ type ContextMenuOptionsFunction = (
     node: ResumeNode
 ) => ContextMenuItemData[];
 
-/** Stores schema information */
+/** Registers resume node types and serves their rendering, editing, and child policies. */
 export default class ComponentTypes {
     private static readonly ROOT_TYPE = "Resume";
     private static readonly ROOT_DISALLOWED_CHILD_TYPES = new Set<string>([
@@ -215,6 +215,7 @@ export default class ComponentTypes {
     }
 }
 
+/** Names legacy schema aliases that remain valid in saved documents. */
 export class AliasTypes {
     static readonly BulletedList = 'Bulleted List';
 }

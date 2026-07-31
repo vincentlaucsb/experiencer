@@ -1,9 +1,11 @@
 import { createRoot } from 'react-dom/client';
 import registerNodes from '@/resume/schema';
 import Resume from './Resume';
+import { themeStore } from '@/shared/stores/themeStore';
 // import * as serviceWorker from './serviceWorker';
 
 registerNodes();
+themeStore.initialize();
 
 const container = document.getElementById('root');
 const root = createRoot(container!);

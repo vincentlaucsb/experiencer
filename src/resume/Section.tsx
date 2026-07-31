@@ -4,7 +4,7 @@ import Container from "@/resume/infrastructure/Container";
 import { process } from "@/shared/utils/processText";
 import ResumeComponentProps from "@/types";
 
-/** Represents a section in a resume */
+/** Renders a titled resume section whose title remains inline-editable. */
 export default class Section extends React.PureComponent<ResumeComponentProps> {
     static readonly type = 'Section';
     

@@ -4,12 +4,15 @@
 
 /** || Top Editing Bar */
 div#toolbar {
-    border-top: 1px solid colors.$light-accent;
-    color: colors.$light-shade;
+    background: colors.$surface-toolbar;
+    border-top: 1px solid colors.$border-chrome;
+    border-bottom: 1px solid colors.$border-chrome;
+    box-shadow: colors.$shadow-soft;
+    color: colors.$text-on-inverse;
 
     div.toolbar-section {
         @extend %flex-col;
-        border-right: 1px solid color.adjust(colors.$light-accent, $alpha: -0.5);
+        border-right: 1px solid colors.$border-subtle;
         align-items: center;
         justify-content: space-between;
 
@@ -37,7 +40,7 @@ div#toolbar {
 
         .page-size-toggle {
             @extend %flex-row;
-            border: 1px solid color.adjust(colors.$light-accent, $alpha: -0.25);
+            border: 1px solid colors.$border-strong;
             border-radius: 3px;
             overflow: hidden;
         }
@@ -47,10 +50,10 @@ div#toolbar {
             font-size: 0.8em;
             line-height: 1.2;
             padding: 0.3em 0.55em;
-            color: colors.$light-shade;
+            color: colors.$text-on-inverse;
 
             &.active {
-                background: colors.$dark-accent;
+                background: colors.$surface-interactive;
                 font-weight: 600;
             }
         }
@@ -74,7 +77,7 @@ div#toolbar.toolbar-collapsed > .pure-menu > .pure-menu-list {
     .toolbar-collapsed-section h3 {
         @extend %flex-row;
         align-items: center;
-        border-bottom: 1px solid colors.$light-accent;
+        border-bottom: 1px solid colors.$border-strong;
         margin: 0;
 
         .pure-button.back-button {
@@ -84,12 +87,12 @@ div#toolbar.toolbar-collapsed > .pure-menu > .pure-menu-list {
             &::after {
                 content: "";
                 margin-left: 1em;
-                border-right: 1px solid color.adjust(colors.$light-accent, $alpha: -0.25);
+                border-right: 1px solid colors.$border-strong;
             }
 
             &:hover::after {
                 border: none;
-                border-right: 1px solid colors.$dark-accent;
+                border-right: 1px solid colors.$surface-interactive;
             }
         }
     }

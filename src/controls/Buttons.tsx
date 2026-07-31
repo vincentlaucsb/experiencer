@@ -1,16 +1,21 @@
 ﻿import * as React from "react";
 
+export type ButtonVariant = 'primary' | 'success' | 'warning' | 'error';
+
 interface ButtonProps extends React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> {
+    /** @deprecated Prefer variant="primary" for new code. */
     primary?: boolean;
+    variant?: ButtonVariant;
     disabled?: boolean;
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     (props, ref) => {
-        const { primary, ...buttonProps } = props;
+        const { primary, variant, ...buttonProps } = props;
         let classes = ['pure-button'];
-        if (primary) {
-            classes.push('pure-button-primary');
+        const semanticVariant = variant ?? (primary ? 'primary' : undefined);
+        if (semanticVariant) {
+            classes.push(`pure-button-${semanticVariant}`);
         }
 
         if (buttonProps.disabled) {
@@ -46,7 +51,7 @@ export function Confirm(props: ConfirmProps) {
     if (prompt) {
         return (
             <>
-                <Button onClick={props.onConfirm}>
+                <Button variant="success" onClick={props.onConfirm}>
                     <i className="icofont-ui-check" />
                 </Button>
                 <Button onClick={() => setPrompt(false)}>

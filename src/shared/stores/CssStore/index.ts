@@ -2,11 +2,7 @@ import ClassStore from '@/shared/ClassStore';
 import CssNode from '@/shared/CssTree';
 import { CssNodeDump } from '@/types';
 
-/**
- * Store wrapper for CssNode that integrates with React's useSyncExternalStore.
- * 
- * Handles CSS tree mutations with automatic change notifications.
- */
+/** Gates CSS-tree mutations and publishes React-compatible change snapshots. */
 export default class CssStore extends ClassStore<CssNode> {
     protected _data: CssNode;
 

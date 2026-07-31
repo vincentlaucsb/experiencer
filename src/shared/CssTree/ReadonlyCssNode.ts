@@ -1,15 +1,8 @@
 import CssNode from './index';
 
 /**
- * A non-modifiable wrapper around CssNode.
- * 
- * Prevents accidental mutations by:
- * - Making read-only getters that return copies/wrapped values
- * - Removing all mutation methods (add, delete, setProperty, etc.)
- * - Returning frozen arrays for fullPath
- * - Returning defensive copies of Maps for properties
- * 
- * This enforces that all mutations must go through the proper update callbacks.
+ * Exposes defensive views of a CSS node so mutations must pass through the
+ * owning store.
  */
 export class ReadonlyCssNode {
     private node: CssNode;

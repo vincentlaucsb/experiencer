@@ -1,0 +1,135 @@
+@mixin light-theme {
+    --xp-surface-workspace: #f6f2ea;
+    --xp-surface-raised: #ffffff;
+    --xp-surface-muted: #e7eceb;
+    --xp-surface-inverse: #15263a;
+    --xp-surface-header: #15263a;
+    --xp-surface-toolbar: #15263a;
+    --xp-surface-inspector: #f6f2ea;
+    --xp-surface-card: transparent;
+    --xp-surface-interactive: #2f5d82;
+    --xp-surface-interactive-hover: #244b69;
+
+    --xp-text-primary: #151318;
+    --xp-text-secondary: #5f6f80;
+    --xp-text-on-inverse: #f6f2ea;
+    --xp-text-interactive: #2f5d82;
+
+    --xp-border-subtle: #d8d4cb;
+    --xp-border-strong: #8a99a6;
+    --xp-border-chrome: #8a99a6;
+    --xp-focus-ring: #39b7a5;
+
+    --xp-brand-accent: #ff6b57;
+    --xp-progress-accent: #39b7a5;
+    --xp-danger: #b42332;
+    --xp-warning-surface: #fff4d6;
+    --xp-warning-text: #6b4b00;
+    --xp-success-surface: #e5f5ef;
+    --xp-success-text: #205d40;
+    --xp-danger-surface: #fff0f0;
+
+    --xp-button-base-surface: #e7eceb;
+    --xp-button-base-hover: #d8dedc;
+    --xp-button-base-text: #151318;
+    --xp-button-primary-surface: #2f5d82;
+    --xp-button-primary-hover: #244b69;
+    --xp-button-primary-text: #ffffff;
+    --xp-button-success-surface: #39b7a5;
+    --xp-button-success-hover: #2c9586;
+    --xp-button-success-text: #15263a;
+    --xp-button-warning-surface: #8a5c00;
+    --xp-button-warning-hover: #6b4b00;
+    --xp-button-warning-text: #ffffff;
+    --xp-button-error-surface: #b42332;
+    --xp-button-error-hover: #8f1c28;
+    --xp-button-error-text: #ffffff;
+
+    --xp-overlay-subtle: rgb(21 38 58 / 5%);
+    --xp-overlay-soft: rgb(21 38 58 / 10%);
+    --xp-overlay-medium: rgb(21 38 58 / 18%);
+    --xp-overlay-strong: rgb(21 38 58 / 92%);
+    --xp-interactive-overlay: rgb(47 93 130 / 55%);
+    --xp-shadow-soft: 0 4px 12px rgb(21 38 58 / 15%);
+    --xp-shadow-medium: 0 10px 28px rgb(21 38 58 / 28%);
+    --xp-highlight: rgb(47 93 130 / 12%);
+    --xp-highlight-subtle: rgb(47 93 130 / 6%);
+    --xp-selection: rgb(57 183 165 / 18%);
+}
+
+@mixin dark-theme {
+    --xp-surface-workspace: #242527;
+    --xp-surface-raised: #2e3033;
+    --xp-surface-muted: #3a3d41;
+    --xp-surface-inverse: #17191c;
+    --xp-surface-header: #15263a;
+    --xp-surface-toolbar: #2b2e32;
+    --xp-surface-inspector: #292b2f;
+    --xp-surface-card: #2e3034;
+    --xp-surface-interactive: #3b6d93;
+    --xp-surface-interactive-hover: #4a82aa;
+
+    --xp-text-primary: #f2eee7;
+    --xp-text-secondary: #bdc1c7;
+    --xp-text-on-inverse: #f6f2ea;
+    --xp-text-interactive: #a5cbe5;
+
+    --xp-border-subtle: #494d53;
+    --xp-border-strong: #6c727b;
+    --xp-border-chrome: #59616b;
+    --xp-focus-ring: #39b7a5;
+
+    --xp-brand-accent: #ff6b57;
+    --xp-progress-accent: #39b7a5;
+    --xp-danger: #ff7f86;
+    --xp-warning-surface: #463b24;
+    --xp-warning-text: #f6d37a;
+    --xp-success-surface: #21483e;
+    --xp-success-text: #83d6bc;
+    --xp-danger-surface: #482a31;
+
+    --xp-button-base-surface: #3a3d41;
+    --xp-button-base-hover: #494d53;
+    --xp-button-base-text: #f2eee7;
+    --xp-button-primary-surface: #3b6d93;
+    --xp-button-primary-hover: #4a82aa;
+    --xp-button-primary-text: #ffffff;
+    --xp-button-success-surface: #39b7a5;
+    --xp-button-success-hover: #61c8b9;
+    --xp-button-success-text: #151318;
+    --xp-button-warning-surface: #f6d37a;
+    --xp-button-warning-hover: #ffe29c;
+    --xp-button-warning-text: #151318;
+    --xp-button-error-surface: #ff7f86;
+    --xp-button-error-hover: #ff9ba0;
+    --xp-button-error-text: #151318;
+
+    --xp-overlay-subtle: rgb(246 242 234 / 6%);
+    --xp-overlay-soft: rgb(246 242 234 / 10%);
+    --xp-overlay-medium: rgb(246 242 234 / 18%);
+    --xp-overlay-strong: rgb(23 25 28 / 96%);
+    --xp-interactive-overlay: rgb(74 130 170 / 55%);
+    --xp-shadow-soft: 0 4px 12px rgb(0 0 0 / 24%);
+    --xp-shadow-medium: 0 10px 28px rgb(0 0 0 / 34%);
+    --xp-highlight: rgb(165 203 229 / 17%);
+    --xp-highlight-subtle: rgb(165 203 229 / 9%);
+    --xp-selection: rgb(57 183 165 / 22%);
+}
+
+:root,
+:root[data-theme="light"] {
+    color-scheme: light;
+    @include light-theme;
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    @include dark-theme;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        color-scheme: dark;
+        @include dark-theme;
+    }
+}

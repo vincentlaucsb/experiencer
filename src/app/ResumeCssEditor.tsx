@@ -106,7 +106,7 @@ function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss 
                 </span>
                 <Button
                     type="button"
-                    primary
+                    variant="primary"
                     onClick={() => setReviewChanges(true)}
                 >
                     <i className="icofont-refresh" aria-hidden="true" />

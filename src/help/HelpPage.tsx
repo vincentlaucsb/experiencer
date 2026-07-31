@@ -1,6 +1,7 @@
 import React from "react";
 import CloseIcon from "@/assets/icons/close-24px.svg?url";
 import { Action } from "@/types";
+import { Button } from "@/controls/Buttons";
 
 export interface HelpPageActions {
     close: Action;
@@ -20,11 +21,9 @@ export default function HelpPage(props: HelpPageProps) {
     return <div>
         <div className="d-flex flex-row justify-content-between">
             <h2>{props.title}</h2>
-            <button>
-                <img className="cursor-pointer"
-                    onClick={props.close}
-                    src={CloseIcon} alt="Close Help" />
-            </button>
+            <Button aria-label="Close Help" onClick={props.close}>
+                <img className="cursor-pointer" src={CloseIcon} alt="" />
+            </Button>
         </div>
 
         {backButton}

@@ -11,16 +11,17 @@
             background: inherit;
             border: none;
             border-radius: unset;
+            color: colors.$text-primary;
         }
 
         .tabs-button-active {
-            background: colors.$main;
-            color: colors.$light-shade;
+            background: colors.$surface-interactive;
+            color: colors.$text-on-inverse;
         }
     }
 
     .tabs-children {
-        border: solid colors.$main;
+        border: solid colors.$surface-interactive;
         border-width: 2px 0px 0px 2px;
         overflow-y: auto;
         flex-grow: 2;

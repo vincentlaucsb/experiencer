@@ -4,6 +4,7 @@ import type { MenuItem } from "popright";
 import InlineMarkdown from "@/resume/helpers/InlineMarkdown";
 
 import { isNullOrUndefined } from "@/shared/utils/isNullOrUndefined";
+import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
 
 interface ContextMenuOption {
     text: string;
@@ -30,6 +31,7 @@ export interface TextFieldState {
     isEditing: boolean;
 }
 
+/** Switches resume text between rendered Markdown and an inline editing control. */
 export default class TextField extends React.Component<TextFieldProps, TextFieldState> {
     constructor(props) {
         super(props);
@@ -100,6 +102,7 @@ export default class TextField extends React.Component<TextFieldProps, TextField
                 }}>
                 {label}
                 <input
+                    {...nonCredentialInputAttributes}
                     autoFocus
                     onChange={(event) => this.setState({ value: event.target.value })}
                     onKeyDown={this.onKeyDown}

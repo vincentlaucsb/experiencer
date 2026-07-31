@@ -1,6 +1,6 @@
 import Group from "@/resume/Group";
 
-/** Legacy alias kept for backward compatibility with older saved resumes */
+/** Keeps the legacy Divider node type loadable as a generic group. */
 export default class Divider extends Group {
     static readonly type: string = "Divider";
 }

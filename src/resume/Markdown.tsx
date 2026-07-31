@@ -10,12 +10,14 @@ import useEditingControls from "./hooks/useEditingControls";
 
 // Components
 import Container from "@/resume/infrastructure/Container";
+import { Button } from "@/controls/Buttons";
 
 // Stores
 import { useEditorStore, useIsNodeEditing } from "@/shared/stores/editorStore";
 
 // Types
 import ResumeComponentProps from "@/types";
+import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
 
 /**
  * Markdown component - Freeform text with Markdown formatting support
@@ -66,6 +68,7 @@ export default function MarkdownText(props: ResumeComponentProps) {
         <div className="resume-overlay-editor resume-overlay-editor--markdown app-gap-2 app-p-4" onClick={(e) => e.stopPropagation()}>
             <div className="resume-overlay-field app-gap-1">
                 <textarea
+                    {...nonCredentialInputAttributes}
                     className="resume-overlay-input resume-overlay-textarea app-p-2"
                     id={`${props.uuid}-markdown-input`}
                     aria-label="Markdown content"
@@ -76,12 +79,16 @@ export default function MarkdownText(props: ResumeComponentProps) {
                 />
             </div>
             <div className="resume-overlay-actions app-gap-2">
-                <button className="resume-overlay-cancel-button app-py-2 app-px-4" onClick={handleCancel}>
+                <Button className="resume-overlay-cancel-button app-py-2 app-px-4" onClick={handleCancel}>
                     Cancel
-                </button>
-                <button className="resume-overlay-save-button app-py-2 app-px-4" onClick={handleSave}>
+                </Button>
+                <Button
+                    className="resume-overlay-save-button app-py-2 app-px-4"
+                    variant="primary"
+                    onClick={handleSave}
+                >
                     Save (Ctrl + Enter)
-                </button>
+                </Button>
             </div>
         </div>
     );

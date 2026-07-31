@@ -4,6 +4,7 @@ import "../OverlayEditing.scss";
 
 // Components
 import Container from "@/resume/infrastructure/Container";
+import { Button } from "@/controls/Buttons";
 import { useEditorStore, useIsNodeEditing } from "@/shared/stores/editorStore";
 
 // Hooks
@@ -12,6 +13,8 @@ import useEditingControls from "../hooks/useEditingControls";
 // Types
 import ResumeComponentProps, { BasicResumeNode } from "@/types";
 import useHandleSourcePaste from "./useHandleSourcePaste";
+import useImageNormalization from "./useImageNormalization";
+import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
 
 interface ImageBase {
     altText?: string;
@@ -74,7 +77,15 @@ export default function Image({ updateDataFields, ...props }: ImageProps) {
         }
     }, [isEditing, src, altText]);
 
-    const handleSourcePaste = useHandleSourcePaste(setTempSrc);
+    const { error: imageError, isProcessing, normalizeFile } = useImageNormalization(setTempSrc);
+    const handleSourcePaste = useHandleSourcePaste(normalizeFile);
+    const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.currentTarget.files?.[0];
+        if (file) {
+            void normalizeFile(file);
+        }
+        event.currentTarget.value = "";
+    };
 
     const editContent = (
         <div className="resume-overlay-editor resume-overlay-editor--image app-gap-2 app-p-4" onClick={(e) => e.stopPropagation()}>
@@ -83,6 +94,7 @@ export default function Image({ updateDataFields, ...props }: ImageProps) {
                     Image Source (URL or Data URI):
                 </label>
                 <textarea
+                    {...nonCredentialInputAttributes}
                     className="resume-overlay-input resume-overlay-textarea app-p-2"
                     id={`${props.uuid}-image-src`}
                     value={tempSrc}
@@ -92,14 +104,32 @@ export default function Image({ updateDataFields, ...props }: ImageProps) {
                     autoFocus
                 />
                 <small className="resume-overlay-helper-text">
-                    Tip: Press Ctrl + V to paste an image directly from your clipboard.
+                    Paste or choose a JPEG, PNG, or WebP. Large images are compressed automatically.
                 </small>
+                <input
+                    aria-label="Choose an image file"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleFileSelect}
+                    disabled={isProcessing}
+                />
+                {isProcessing && (
+                    <small className="resume-overlay-helper-text" role="status">
+                        Compressing image…
+                    </small>
+                )}
+                {imageError && (
+                    <small className="resume-overlay-helper-text" role="alert">
+                        {imageError}
+                    </small>
+                )}
             </div>
             <div className="resume-overlay-field app-gap-1">
                 <label className="resume-overlay-label" htmlFor={`${props.uuid}-image-alt`}>
                     Alt Text:
                 </label>
                 <input
+                    {...nonCredentialInputAttributes}
                     className="resume-overlay-input app-p-2"
                     id={`${props.uuid}-image-alt`}
                     type="text"
@@ -109,12 +139,17 @@ export default function Image({ updateDataFields, ...props }: ImageProps) {
                 />
             </div>
             <div className="resume-overlay-actions app-gap-2">
-                <button className="resume-overlay-cancel-button app-py-2 app-px-4" onClick={handleCancel}>
+                <Button className="resume-overlay-cancel-button app-py-2 app-px-4" onClick={handleCancel}>
                     Cancel
-                </button>
-                <button className="resume-overlay-save-button app-py-2 app-px-4" onClick={handleSave}>
+                </Button>
+                <Button
+                    className="resume-overlay-save-button app-py-2 app-px-4"
+                    variant="primary"
+                    onClick={handleSave}
+                    disabled={isProcessing}
+                >
                     Save (Ctrl + Enter)
-                </button>
+                </Button>
             </div>
         </div>
     );

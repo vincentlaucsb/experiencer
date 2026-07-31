@@ -1,19 +1,20 @@
 @use "../sass/colors/semantic" as colors;
 @use "../sass/variables";
+@use "../sass/zindex";
 
 .live-css-sync-banner {
     position: sticky;
     top: 0;
-    z-index: 2;
+    z-index: zindex.$sticky-content;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
     padding: 0.75rem;
     margin-bottom: 0.75rem;
-    border: 1px solid colors.$dark-accent;
+    border: 1px solid colors.$border-strong;
     border-left-width: 4px;
-    background: colors.$light-shade;
+    background: colors.$surface-raised;
     box-shadow: 0 2px 5px colors.$subtle-overlay;
 
     > span {
@@ -77,10 +78,10 @@ section.css-category {
     button.hl {
         background: inherit;
         border: none;
-        color: colors.$light-accent;
+        color: colors.$text-secondary;
 
         &:hover, &.hl-active {
-            color: colors.$dark-shade;
+            color: colors.$text-primary;
         }
     }
 
@@ -107,7 +108,7 @@ section.css-category {
 section.css-category-1 {
     /** All nested categories */
     section.css-category {
-        border: 1px solid colors.$main;
+        border: 1px solid colors.$border-strong;
 
         h2 {
             margin: 0;
@@ -115,12 +116,12 @@ section.css-category-1 {
             // Make sure inputs, text and buttons inside the heading
             // are visible on dark backgrounds
             &, * {
-                color: colors.$light-shade;
+                color: colors.$text-on-inverse;
             }
         }
 
         div.css-category-content {
-            background: colors.$light-shade;
+            background: colors.$surface-raised;
         }
 
         button {
@@ -131,24 +132,28 @@ section.css-category-1 {
 
     /** First nested category */
     section.css-category-2 h2 {
-        background: colors.$dark-shade;
+        background: colors.$surface-inverse;
         font-size: large;
     }
 
     section.css-category-3 {
         h2 {
-            background: colors.$dark-accent;
+            background: colors.$surface-interactive;
             font-size: medium;
         }
     }
 
     section.css-category-4 h2 {
-        background: colors.$main;
+        background: colors.$surface-inverse;
         font-size: small;
     }
 
     section.css-category-5 h2 {
-        background: colors.$light-accent;
+        background: colors.$surface-muted;
+
+        &, * {
+            color: colors.$text-primary;
+        }
     }
 }
 

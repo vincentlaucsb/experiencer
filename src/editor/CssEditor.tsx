@@ -16,6 +16,7 @@ import {
     LiveCssTreeChange
 } from "@/shared/utils/liveCssSync";
 import { showToast } from "@/shared/stores/toastStore";
+import { Button } from "@/controls/Buttons";
 
 // Lazy-load CssEditorToolbar since it's only shown in CSS editor sections
 const CssEditorToolbar = React.lazy(() => import("./CssEditorToolbar"));
@@ -106,6 +107,7 @@ export function makeCssEditorProps(
     };
 }
 
+/** Edits the selected CSS subtree and can import changes from the live document. */
 export default class CssEditor extends React.Component<CssEditorProps, CssEditorState> {
     constructor(props) {
         super(props);
@@ -143,14 +145,14 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         }
 
         return (
-            <button
+            <Button
                 className={className}
                 onClick={(event) => {
                     this.setState({ highlight: !this.state.highlight });
                     event.stopPropagation();
                 }}>
                 <i className="icofont-binoculars" />
-            </button>
+            </Button>
         );
     }
 

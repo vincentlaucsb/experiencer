@@ -70,3 +70,24 @@ test("local save rejects stale versions and updates the existing document", asyn
     expect(saved.version).toBe(2);
     expect((await repository.list())).toHaveLength(1);
 });
+
+test("local title mutations reject names longer than 200 characters", async () => {
+    localStorage.clear();
+    const repository = new LocalStorageResumeRepository();
+    const overlongTitle = "a".repeat(201);
+
+    await expect(repository.create({ ...input, title: overlongTitle }))
+        .rejects.toMatchObject<Partial<ResumeRepositoryError>>({
+            code: "validation",
+            message: "Name must be 200 characters or fewer."
+        });
+
+    const created = await repository.create(input);
+    await expect(repository.save(created.id, {
+        ...input,
+        expectedVersion: created.version,
+        title: overlongTitle
+    })).rejects.toMatchObject<Partial<ResumeRepositoryError>>({ code: "validation" });
+    await expect(repository.rename(created.id, overlongTitle))
+        .rejects.toMatchObject<Partial<ResumeRepositoryError>>({ code: "validation" });
+});

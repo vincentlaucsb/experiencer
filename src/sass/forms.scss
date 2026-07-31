@@ -1,10 +1,10 @@
 ﻿@use "colors/semantic" as colors;
 
 %file-form {
-    background: colors.$light-shade;
-    border: 1px solid colors.$dark-accent;
+    background: colors.$surface-raised;
+    border: 1px solid colors.$border-strong;
     padding: 1rem;
-    color: colors.$dark-shade;
+    color: colors.$text-primary;
 }
 
 form#html-id-adder {
@@ -16,10 +16,10 @@ form#html-id-adder {
     }
 
     .html-id-prefix {
-        background: colors.$light-accent;
-        border: 1px solid colors.$dark-accent;
+        background: colors.$surface-muted;
+        border: 1px solid colors.$border-strong;
         border-right: none;
-        color: colors.$dark-shade;
+        color: colors.$text-primary;
         line-height: 1;
         padding: 0.55em 0.65em;
     }
@@ -42,9 +42,19 @@ input.invalid {
 
 #link-url {
     width: 300px;
-    color: colors.$light-shade;
+    color: colors.$text-on-inverse;
     padding: 6px 10px;
     border: 1px solid colors.$border-subtle;
     border-radius: 4px;
     font-size: 1rem;
+}
+
+.async-action-form-error {
+    color: colors.$danger;
+    margin: 0;
+}
+
+.async-action-form-actions {
+    display: flex;
+    gap: 0.5rem;
 }

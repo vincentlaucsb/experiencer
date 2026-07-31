@@ -3,6 +3,7 @@ import { assignIds } from "@/shared/utils/assignIds";
 import { deepCopy } from "@/shared/utils/deepCopy";
 import { IdType, ResumeNode } from "@/types";
 
+/** Owns resume-tree structure and keeps UUID-to-path lookups synchronized with mutations. */
 export default class ResumeNodeTree implements ResumeNode {
     /** A mapping of node UUIDs to hierarchal IDs */
     private _uuidIndex = new Map<string, IdType>();

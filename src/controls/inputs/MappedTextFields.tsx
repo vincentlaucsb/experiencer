@@ -1,5 +1,7 @@
 ﻿import React from "react";
 import createUuid from "@/shared/utils/createUuid";
+import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
+import { Button } from "@/controls/Buttons";
 
 interface ValueFieldProps {
     value?: string;
@@ -13,6 +15,7 @@ interface ValueState {
     value: string;
 }
 
+/** Buffers one mapped value while it is being edited. */
 class ValueField extends React.Component<ValueFieldProps, ValueState> {
     constructor(props) {
         super(props);
@@ -25,9 +28,13 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
     }
 
     get deleter() {
-        return (this.props.delete) ? <button onClick={this.props.delete}>
+        return (this.props.delete) ? <Button
+            aria-label="Delete property"
+            variant="error"
+            onClick={this.props.delete}
+        >
             <i className="icofont-ui-delete" />
-        </button> :
+        </Button> :
             <></>
     }
 
@@ -66,7 +73,10 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
 
         if (this.props.isEditing) {
             return <>
-                <input autoFocus onChange={(event) => this.setState({ value: event.target.value })}
+                <input
+                    {...nonCredentialInputAttributes}
+                    autoFocus
+                    onChange={(event) => this.setState({ value: event.target.value })}
                     onKeyDown={this.keyDownHandler}
                     value={this.state.value}
                     list={suggestionId}
@@ -110,6 +120,7 @@ export interface MappedTextFieldsProps {
     container: (props: ContainerProps) => React.ReactNode;
 }
 
+/** Edits a string map as independently selectable key/value fields. */
 export default class MappedTextFields extends React.Component<MappedTextFieldsProps, MappedTextFieldsState> {
     constructor(props) {
         super(props);

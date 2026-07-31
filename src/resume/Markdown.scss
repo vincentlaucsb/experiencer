@@ -4,7 +4,7 @@
 /* Markdown component state indicator (while editing via overlay) */
 .text-content.editing {
     opacity: 0.7;
-    border-bottom: 2px dashed colors.$main;
+    border-bottom: 2px dashed colors.$document-accent;
     cursor: text;
 }
 
@@ -32,7 +32,7 @@
         }
 
         code {
-            background-color: rgba(colors.$dark-shade, 0.05);
+            background-color: colors.$document-subtle;
             padding: 2px 6px;
             border-radius: 3px;
             font-family: variables.$monospace;
@@ -40,8 +40,8 @@
         }
 
         pre {
-            background-color: rgba(colors.$dark-shade, 0.05);
-            border-left: 3px solid colors.$main;
+            background-color: colors.$document-subtle;
+            border-left: 3px solid colors.$document-accent;
             padding: 1rem;
             margin: 1rem 0;
             overflow-x: auto;
@@ -55,15 +55,15 @@
         }
 
         blockquote {
-            border-left: 4px solid colors.$main;
+            border-left: 4px solid colors.$document-accent;
             padding-left: 1rem;
             margin-left: 0;
-            color: colors.$dark-shade;
+            color: colors.$document-ink;
             font-style: italic;
         }
 
         a {
-            color: colors.$main;
+            color: colors.$document-accent;
             text-decoration: none;
 
             &:hover {
@@ -81,12 +81,12 @@
 
         del {
             text-decoration: line-through;
-            color: rgba(colors.$dark-shade, 0.6);
+            color: colors.$document-muted-overlay;
         }
 
         hr {
             border: none;
-            border-top: 1px solid colors.$light-accent;
+            border-top: 1px solid colors.$document-border;
             margin: 1rem 0;
         }
     }

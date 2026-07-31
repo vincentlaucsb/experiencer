@@ -1,10 +1,10 @@
 import { useCallback } from "react";
 
 /**
- * Handle pasting an image from the clipboard into the textarea. If an image is found,
- * it reads the file and sets the temporary source for the image.
+ * Handles image clipboard files. Normalization is supplied separately so paste
+ * and file selection share exactly the same ingestion path.
  */
-export default function useHandleSourcePaste(setTempSrc: (src: string) => void):
+export default function useHandleSourcePaste(normalizeFile: (file: File) => Promise<void>):
     (e: React.ClipboardEvent<HTMLTextAreaElement>) => void
 {
     return useCallback((e: React.ClipboardEvent<HTMLTextAreaElement>) => {
@@ -23,27 +23,6 @@ export default function useHandleSourcePaste(setTempSrc: (src: string) => void):
 
         e.preventDefault();
         e.stopPropagation();
-
-        const reader = new FileReader();
-        const cleanup = () => {
-            reader.onload = null;
-            reader.onerror = null;
-            reader.onabort = null;
-        };
-
-        reader.onload = () => {
-            if (typeof reader.result === "string") {
-                setTempSrc(reader.result);
-            }
-            cleanup();
-        };
-        reader.onerror = cleanup;
-        reader.onabort = cleanup;
-
-        try {
-            reader.readAsDataURL(file);
-        } catch {
-            cleanup();
-        }
-    }, [setTempSrc]);
+        void normalizeFile(file);
+    }, [normalizeFile]);
 }

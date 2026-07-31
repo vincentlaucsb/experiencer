@@ -2,6 +2,7 @@ import React from "react";
 import Container from "@/resume/infrastructure/Container";
 import ResumeComponentProps from "@/types";
 
+/** Renders one editable column within a resume row. */
 export default class Column extends React.PureComponent<ResumeComponentProps> {
     static readonly type = 'Column';
 

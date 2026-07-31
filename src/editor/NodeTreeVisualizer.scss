@@ -3,7 +3,7 @@
 
 .node-tree {
     ul {
-        border-left: 1px solid colors.$main;
+        border-left: 1px solid colors.$border-strong;
     }
 
     li {
@@ -12,7 +12,7 @@
     }
 
     .tree-item-selected {
-        background: color.adjust(colors.$light-accent, $alpha: -0.5);
+        background: colors.$highlight;
 
         > span {
             font-weight: bold;
@@ -26,7 +26,7 @@
     .tree-item-selector {
         font-style: initial;
         font-weight: initial;
-        color: color.adjust(colors.$dark-shade, $lightness: 50%);
+        color: colors.$text-secondary;
     }
 
     /** Italic font for types that don't have their own

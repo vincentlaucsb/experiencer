@@ -1,0 +1,74 @@
+@use "colors/semantic" as colors;
+
+.pure-button {
+    border: none;
+    background: colors.$button-base-surface;
+    color: colors.$button-base-text;
+    font-family: inherit;
+    text-shadow: none;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+
+    &:hover:not(:disabled, .pure-button-disabled),
+    &:focus:not(:disabled, .pure-button-disabled) {
+        background-image: none;
+        background-color: colors.$button-base-hover;
+        color: colors.$button-base-text;
+    }
+
+    &:focus-visible {
+        outline: 3px solid colors.$focus-ring;
+        outline-offset: 2px;
+    }
+
+    &:disabled,
+    &.pure-button-disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+    }
+}
+
+@mixin semantic-button($surface, $hover, $text) {
+    background: $surface;
+    color: $text;
+
+    &:hover:not(:disabled, .pure-button-disabled),
+    &:focus:not(:disabled, .pure-button-disabled) {
+        background: $hover;
+        color: $text;
+    }
+}
+
+.pure-button-primary,
+.pure-button-selected,
+a.pure-button-primary,
+a.pure-button-selected {
+    @include semantic-button(
+        colors.$button-primary-surface,
+        colors.$button-primary-hover,
+        colors.$button-primary-text
+    );
+}
+
+.pure-button-success {
+    @include semantic-button(
+        colors.$button-success-surface,
+        colors.$button-success-hover,
+        colors.$button-success-text
+    );
+}
+
+.pure-button-warning {
+    @include semantic-button(
+        colors.$button-warning-surface,
+        colors.$button-warning-hover,
+        colors.$button-warning-text
+    );
+}
+
+.pure-button-error {
+    @include semantic-button(
+        colors.$button-error-surface,
+        colors.$button-error-hover,
+        colors.$button-error-text
+    );
+}

@@ -1,5 +1,6 @@
 ﻿import * as React from "react";
 import { Button } from './Buttons';
+import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
 
 interface FileSaverProps {
     close: () => void;
@@ -20,10 +21,15 @@ export default function FileSaver(props: FileSaverProps) {
         <form id="file-saver" className="pure-form pure-form-stacked">
             <div>
                 <label form="filename">Filename</label>
-                <input onChange={onChange} value={filename} id="filename" />
+                <input
+                    {...nonCredentialInputAttributes}
+                    onChange={onChange}
+                    value={filename}
+                    id="filename"
+                />
             </div>
 
-            <Button onClick={handleClick} primary>Download</Button>
+            <Button onClick={handleClick} variant="primary">Download</Button>
             <Button onClick={() => props.close()}>Cancel</Button>
         </form>
     );

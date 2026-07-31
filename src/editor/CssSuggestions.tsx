@@ -1,4 +1,5 @@
-﻿export default class CssSuggestions {
+﻿/** Lazily builds the CSS property and value suggestions used by the editor. */
+export default class CssSuggestions {
     private static _properties: Map<string, Array<string>> | undefined =
         undefined;
 

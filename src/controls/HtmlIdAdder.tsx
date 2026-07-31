@@ -1,6 +1,7 @@
 ﻿import * as React from "react";
 import { Popover } from 'react-tiny-popover';
 import { Button } from "./Buttons";
+import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
 import ToolbarButton from "./toolbar/ToolbarButton";
 
 import "./HtmlIdAdder.scss";
@@ -83,6 +84,7 @@ export default function HtmlIdAdder(props: htmlIdAdderProps) {
                 <div className="html-id-input">
                     <span className="html-id-prefix" data-testid="html-id-prefix" aria-hidden="true">#</span>
                     <input
+                        {...nonCredentialInputAttributes}
                         data-testid="html-id-input"
                         id="html-id"
                         className={htmlIdInputClass}
@@ -96,6 +98,7 @@ export default function HtmlIdAdder(props: htmlIdAdderProps) {
             <div className="pure-control-group" id="css-classes-group">
                 <label htmlFor="css-classes">Classes</label>
                 <input
+                    {...nonCredentialInputAttributes}
                     data-testid="css-classes-input"
                     id="css-classes"
                     className={classNameInputClass}
@@ -106,7 +109,7 @@ export default function HtmlIdAdder(props: htmlIdAdderProps) {
             </div>
 
             <div className="pure-controls">
-                <Button data-testid="html-id-save" type="submit">Save</Button>
+                <Button data-testid="html-id-save" type="submit" variant="primary">Save</Button>
             </div>
         </form>
     );

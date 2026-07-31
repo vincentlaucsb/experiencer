@@ -1,11 +1,20 @@
-$porcelain: #ecf2f2;
-$lynch: #6a869a;
-$oxford-blue: #192739;
-$san-marino: #4375a1;
-$baltic-sea: #151318;
+$warm-paper: #f6f2ea;
+$accessible-slate: #5f6f80;
+$midnight-ink: #15263a;
+$interface-blue: #2f5d82;
+$deep-ink: #151318;
+$electric-coral: #ff6b57;
+$optimistic-teal: #39b7a5;
+
+// Compatibility aliases for template and extension consumers.
+$porcelain: $warm-paper;
+$lynch: $accessible-slate;
+$oxford-blue: $midnight-ink;
+$san-marino: $interface-blue;
+$baltic-sea: $deep-ink;
 
 $white: #ffffff;
 $neutral-300: #dddddd;
 $neutral-400: #cccccc;
 $neutral-900: #000000;
-$danger-red: #ff4d4f;
+$danger-red: #b42332;

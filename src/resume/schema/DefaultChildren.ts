@@ -5,12 +5,7 @@ type Operation = {
     types: string[];
 };
 
-/**
- * Policy object for child-type definitions based on the default child set.
- *
- * Use `plus` and `minus` to derive node-specific child types from defaults
- * at runtime, after all node registrations are complete.
- */
+/** Derives node-specific child policies from the fully registered default set. */
 export default class DefaultChildren {
     private readonly operations: Operation[];
 

@@ -6,11 +6,28 @@ input {
 }
 
 #resume {
+    // Native controls otherwise follow the root dark color-scheme and render
+    // light text on the print-faithful white document canvas.
+    input,
+    textarea,
+    select,
+    [contenteditable="true"] {
+        background-color: transparent;
+        color: colors.$document-ink;
+        caret-color: colors.$document-ink;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: colors.$document-muted;
+        opacity: 1;
+    }
+
     input {
-        border-bottom: 1px solid colors.$light-accent;
+        border-bottom: 1px solid colors.$document-muted;
 
         &:hover {
-            border-bottom-color: colors.$dark-shade;
+            border-bottom-color: colors.$focus-ring;
         }
     }
 }

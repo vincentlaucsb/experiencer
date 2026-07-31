@@ -28,6 +28,13 @@ The CSS editor allows you to nest a set of rules within another, therefore givin
  * Autocompletion for CSS property values, including variables you define
  * The ability to set IDs and additional classes for any resume item
 
+### Print-Faithful Dark Mode
+
+Choose System, Light, or Dark from the Theme menu. Dark mode changes the editor
+workspace and controls while keeping the resume page white and its authored
+colors unchanged, so the editing canvas continues to match exported and printed
+output.
+
 ## Use It Live
 
 You can use this app live at [https://experiencer.vincela.com](https://experiencer.vincela.com).

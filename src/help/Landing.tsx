@@ -6,6 +6,9 @@ import { Globals, Action } from "@/types";
 import { Button } from "@/controls/Buttons";
 import { ResumeDocumentSummary } from "@/shared/repositories/ResumeRepository";
 import type { ResumeDocumentAction, ResumeDocumentGroup } from "@/app/Resume";
+import AsyncActionForm from "@/controls/AsyncActionForm";
+import { RESUME_TITLE_MAX_LENGTH } from "@/shared/repositories/ResumeRepository";
+import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
 
 interface LandingProps {
     className?: string;
@@ -20,7 +23,7 @@ interface LandingProps {
     activeDocumentId?: string;
     openDocument?: (id: string) => void;
     deleteDocument?: (id: string) => void;
-    renameDocument?: (id: string, title: string) => void;
+    renameDocument?: (id: string, title: string) => Promise<string | null>;
 }
 
 function MenuItem (props: {
@@ -92,27 +95,31 @@ export default function Landing(props: LandingProps) {
                                     key={document.id}
                                 >
                                     {editingDocumentId === document.id ? (
-                                        <form
+                                        <AsyncActionForm
                                             className="resume-library-edit"
-                                            onSubmit={(event) => {
-                                                event.preventDefault();
-                                                props.renameDocument?.(document.id, editingTitle);
-                                                setEditingDocumentId(undefined);
+                                            save={async () => {
+                                                const error = await props.renameDocument?.(
+                                                    document.id,
+                                                    editingTitle
+                                                ) ?? null;
+                                                if (!error) {
+                                                    setEditingDocumentId(undefined);
+                                                }
+                                                return error;
                                             }}
+                                            cancel={() => setEditingDocumentId(undefined)}
                                         >
                                             <label>
                                                 <span>Name</span>
                                                 <input
+                                                    {...nonCredentialInputAttributes}
                                                     autoFocus
+                                                    maxLength={RESUME_TITLE_MAX_LENGTH}
                                                     value={editingTitle}
                                                     onChange={(event) => setEditingTitle(event.target.value)}
                                                 />
                                             </label>
-                                            <div className="resume-library-actions">
-                                                <Button type="submit">Save</Button>
-                                                <Button type="button" onClick={() => setEditingDocumentId(undefined)}>Cancel</Button>
-                                            </div>
-                                        </form>
+                                        </AsyncActionForm>
                                     ) : (
                                         <div>
                                             <h3>
@@ -129,12 +136,22 @@ export default function Landing(props: LandingProps) {
                                         </div>
                                     )}
                                     <div className="resume-library-actions">
-                                        <Button onClick={() => props.openDocument?.(document.id)}>Open</Button>
+                                        <Button
+                                            variant="primary"
+                                            onClick={() => props.openDocument?.(document.id)}
+                                        >
+                                            Open
+                                        </Button>
                                         <Button onClick={() => {
                                             setEditingDocumentId(document.id);
                                             setEditingTitle(document.title);
                                         }}>Rename</Button>
-                                        <Button onClick={() => props.deleteDocument?.(document.id)}>Delete</Button>
+                                        <Button
+                                            variant="error"
+                                            onClick={() => props.deleteDocument?.(document.id)}
+                                        >
+                                            Delete
+                                        </Button>
                                         {props.documentActions?.[document.id]?.map((action) => (
                                             <Button
                                                 disabled={action.disabled}

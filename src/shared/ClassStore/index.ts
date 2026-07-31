@@ -1,33 +1,6 @@
 /**
- * Abstract base class for making any class instance compatible with React's useSyncExternalStore.
- * 
- * This pattern separates store concerns (subscriptions, notifications) from domain logic (tree operations).
- * Subclasses wrap their domain objects and call notifyListeners() after mutations.
- * 
- * @template T - The type of data being stored
- * 
- * @example
- * ```typescript
- * class NodeStore extends ClassStore<ResumeNodeTree> {
- *   protected data: ResumeNodeTree;
- * 
- *   constructor(tree: ResumeNodeTree) {
- *     super();
- *     this.data = tree;
- *   }
- * 
- *   addChild(node: ResumeNode) {
- *     this.data.addChild(node);
- *     this.notifyListeners();
- *   }
- * }
- * 
- * // In component:
- * const tree = useSyncExternalStore(
- *   nodeStore.subscribe,
- *   nodeStore.getSnapshot
- * );
- * ```
+ * Supplies React-compatible subscriptions, snapshots, and dirty tracking to
+ * framework-neutral mutable stores.
  */
 export default abstract class ClassStore<T> {
     private listeners = new Set<() => void>();

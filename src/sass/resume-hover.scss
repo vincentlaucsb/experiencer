@@ -1,12 +1,12 @@
 @use "colors/semantic" as colors;
 
 .resume-selected {
-    background: colors.$light-shade;
+    background: colors.$selection;
 }
 
 #resume {
     div.resume-selected, .resume-selected {
-        border: 2px solid colors.$dark-shade;
+        border: 2px solid colors.$focus-ring;
         cursor: auto;
     }
 }

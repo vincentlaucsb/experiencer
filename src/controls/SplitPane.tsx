@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useEditorStore } from '@/shared/stores/editorStore';
+import './SplitPane.scss';
 
 interface SplitPaneProps {
     left: React.ReactNode;
@@ -104,6 +105,7 @@ export const SplitPane = React.forwardRef<HTMLDivElement, SplitPaneProps>(functi
     return (
         <div 
             ref={containerRef}
+            className="split-pane"
             style={{ 
                 display: 'flex', 
                 height: '100%', 
@@ -113,6 +115,7 @@ export const SplitPane = React.forwardRef<HTMLDivElement, SplitPaneProps>(functi
         >
             {/* Left pane */}
             <div 
+                className="split-pane__workspace"
                 ref={(el) => {
                     // Combine refs
                     leftPaneRef.current = el;
@@ -129,6 +132,7 @@ export const SplitPane = React.forwardRef<HTMLDivElement, SplitPaneProps>(functi
             
             {/* Resizer */}
             <div
+                className="split-pane__divider"
                 onMouseDown={(e) => {
                     e.preventDefault();
                     setIsDragging(true);
@@ -137,7 +141,6 @@ export const SplitPane = React.forwardRef<HTMLDivElement, SplitPaneProps>(functi
                 style={{
                     width: 10,
                     cursor: 'col-resize',
-                    background: 'transparent',
                     flexShrink: 0,
                     position: 'relative'
                 }}
@@ -145,7 +148,7 @@ export const SplitPane = React.forwardRef<HTMLDivElement, SplitPaneProps>(functi
             />
             
             {/* Right pane */}
-            <div style={{ flex: 1, overflow: 'auto', height: '100%' }}>
+            <div className="split-pane__inspector" style={{ flex: 1, overflow: 'auto', height: '100%' }}>
                 {right}
             </div>
         </div>

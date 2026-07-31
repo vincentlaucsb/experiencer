@@ -38,9 +38,7 @@ export function isEditingMode(mode: EditorMode): mode is EditingWorkspaceMode {
 /**
  * Owns the editor's document-session state and valid view transitions.
  *
- * A document may be active only while an editing or printing view is present.
- * Landing and template selection may remember a document to return to, but that
- * document is suspended and must not authorize document-scoped controls.
+ * Suspended documents must not authorize document-scoped controls.
  */
 export class WorkspaceStore {
     private snapshot: WorkspaceSnapshot = initialSnapshot;

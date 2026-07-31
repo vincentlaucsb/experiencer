@@ -97,7 +97,7 @@ export default function LiveCssChangesModal(props: LiveCssChangesModalProps) {
                     <Button type="button" onClick={props.onCancel}>
                         Cancel
                     </Button>
-                    <Button type="button" primary autoFocus onClick={props.onConfirm}>
+                    <Button type="button" variant="primary" autoFocus onClick={props.onConfirm}>
                         Import {declarationCount} change{declarationCount === 1 ? "" : "s"}
                     </Button>
                 </div>

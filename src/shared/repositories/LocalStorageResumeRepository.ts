@@ -1,8 +1,10 @@
 import { Globals, ResumeSaveData } from "@/types";
 import {
     BaseResumeRepository,
+    getResumeTitleValidationError,
     ResumeDocument,
     ResumeDocumentSummary,
+    ResumeRepositoryError,
     SaveExistingResumeResult,
     SaveResumeDocumentInput
 } from "./ResumeRepository";
@@ -11,6 +13,7 @@ const indexKey = `${Globals.localStorageKey}.documents`;
 const activeIdKey = `${Globals.localStorageKey}.activeResumeId`;
 const documentKey = (id: string) => `${Globals.localStorageKey}.document.${id}`;
 
+/** Persists the OSS resume library in browser storage and migrates the legacy single document. */
 export default class LocalStorageResumeRepository extends BaseResumeRepository {
     async list(): Promise<ResumeDocumentSummary[]> {
         this.migrateLegacyResume();
@@ -24,6 +27,7 @@ export default class LocalStorageResumeRepository extends BaseResumeRepository {
     }
 
     async create(input: SaveResumeDocumentInput): Promise<ResumeDocument> {
+        this.validateTitle(input.title);
         const now = new Date().toISOString();
         const document: ResumeDocument = {
             id: crypto.randomUUID(),
@@ -43,6 +47,7 @@ export default class LocalStorageResumeRepository extends BaseResumeRepository {
         id: string,
         input: SaveResumeDocumentInput
     ): Promise<SaveExistingResumeResult> {
+        this.validateTitle(input.title);
         const current = await this.get(id);
         if (!current) {
             return { status: "not-found" };
@@ -66,6 +71,7 @@ export default class LocalStorageResumeRepository extends BaseResumeRepository {
     }
 
     async rename(id: string, title: string): Promise<ResumeDocumentSummary> {
+        this.validateTitle(title);
         const current = await this.get(id);
         if (!current) {
             throw new Error("Resume not found.");
@@ -137,6 +143,13 @@ export default class LocalStorageResumeRepository extends BaseResumeRepository {
 
     private normalizeTitle(title: string): string {
         return title.trim() || "Untitled Resume";
+    }
+
+    private validateTitle(title: string) {
+        const message = getResumeTitleValidationError(title);
+        if (message) {
+            throw new ResumeRepositoryError("validation", message);
+        }
     }
 
     private migrateLegacyResume() {

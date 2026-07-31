@@ -27,4 +27,16 @@ describe('generateHtml', () => {
 
         expect(html).not.toContain('fonts.googleapis.com');
     });
+
+    test('does not allow stylesheet content to terminate the style element', () => {
+        const stylesheet = '</style><script>globalThis.compromised = true</script><style>';
+
+        const html = generateHtml(stylesheet, '<div id="resume"></div>');
+
+        expect(html).not.toContain('</style><script>');
+        expect(html).not.toContain('<script>globalThis.compromised');
+        expect(html).toContain('\\3C /style>');
+        expect(html.match(/<style>/g)).toHaveLength(1);
+        expect(html.match(/<\/style>/g)).toHaveLength(1);
+    });
 });

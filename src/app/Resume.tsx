@@ -3,9 +3,9 @@ import { createPortal } from 'react-dom';
 import { useRef, useCallback, useSyncExternalStore } from 'react';
 
 import '@/assets/fonts/icofont.min.css';
-import '@/sass/index.scss';
 import 'popright/styles.css';
 import 'purecss/build/pure-min.css';
+import '@/sass/index.scss';
 
 // Utilities
 import { createContainer } from '@/shared/utils/createContainer';
@@ -123,7 +123,7 @@ export interface ResumeProps {
     saveCurrentDocument?: () => void;
     selectDocument?: (id: string) => void;
     deleteDocument?: (id: string) => void;
-    renameDocument?: (id: string, title: string) => void;
+    renameDocument?: (id: string, title: string) => Promise<string | null>;
     createDocumentFromTemplate?: (key?: string) => void;
     importDocument?: (data: object, title?: string) => void;
     fileMenuItems?: React.ReactNode;
@@ -317,9 +317,11 @@ export function Resume(props: ResumeProps) {
                     ? <p className="template-selector-error" role="alert">{templateActionError}</p>
                     : <></>}
                 <Button
+                    className="template-selector-primary-action"
                     disabled={templateActionStatus === 'using'
                         || Boolean(additionalTemplate && additionalPreview.status !== 'ready')}
                     onClick={useSelectedTemplate}
+                    variant="primary"
                 >
                     {templateActionStatus === 'using' ? 'Creating…' : 'Use this Template'}
                 </Button>
@@ -507,7 +509,7 @@ export function Resume(props: ResumeProps) {
                         </Button>
                         <Button
                             className="print-preview-print"
-                            primary
+                            variant="primary"
                             onClick={openPrintDialog}
                         >
                             Print

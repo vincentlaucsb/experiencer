@@ -17,6 +17,7 @@ function toPropertiesMap(value: SetPropertiesValue): Map<string, string> {
     return new Map<string, string>(Object.entries(value));
 }
 
+/** Models a mutable nested CSS rule and renders it as stylesheet text. */
 export default class CssNode {
     /**
      * A mapping of child node names to CSS nodes.

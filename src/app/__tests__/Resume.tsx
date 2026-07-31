@@ -218,10 +218,12 @@ test('CSS editor reopens for a new selected node of the same type', async () => 
 
 test('Template switcher previews the selected template', async () => {
     const view = renderTemplateSwitcher();
+    const integrityOption = screen.getByText('Integrity').closest('.pure-menu-item');
 
     expect(screen.getByLabelText('Integrity template preview')).toBeTruthy();
     expect(screen.getByText('Randy Marsh')).toBeTruthy();
     expect(document.getElementById('resume-preview-google-fonts')).not.toBeNull();
+    expect(integrityOption?.classList.contains('pure-menu-selected')).toBe(true);
 
     await act(async () => {
         fireEvent.click(screen.getByText('Assured'));
@@ -230,6 +232,9 @@ test('Template switcher previews the selected template', async () => {
     expect(screen.getByLabelText('Assured template preview')).toBeTruthy();
     expect(screen.getByRole('heading', { name: /\*\*Solid\*\* Programmer/ })).toBeTruthy();
     expect(screen.queryByText('Randy Marsh')).toBeNull();
+    expect(screen.getByText('Assured').closest('.pure-menu-item')
+        ?.classList.contains('pure-menu-selected')).toBe(true);
+    expect(integrityOption?.classList.contains('pure-menu-selected')).toBe(false);
 
     view.unmount();
     expect(document.getElementById('resume-preview-google-fonts')).toBeNull();
@@ -238,15 +243,18 @@ test('Template switcher previews the selected template', async () => {
 test('Template switcher only commits the selected template from the action button', async () => {
     const createDocumentFromTemplate = jest.fn();
     renderTemplateSwitcher(createDocumentFromTemplate);
+    const useTemplateButton = screen.getByRole('button', { name: 'Use this Template' });
 
     await act(async () => {
         fireEvent.click(screen.getByText('Streamline'));
     });
 
     expect(createDocumentFromTemplate).not.toHaveBeenCalled();
+    expect(useTemplateButton.classList.contains('pure-button-primary')).toBe(true);
+    expect(useTemplateButton.classList.contains('template-selector-primary-action')).toBe(true);
 
     await act(async () => {
-        fireEvent.click(screen.getByText('Use this Template'));
+        fireEvent.click(useTemplateButton);
     });
 
     expect(createDocumentFromTemplate).toHaveBeenCalledWith('Streamline');

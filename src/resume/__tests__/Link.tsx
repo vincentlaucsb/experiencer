@@ -102,6 +102,54 @@ test('Link uses # as default href when url is empty in print mode', () => {
     expect(anchor?.getAttribute('href')).toBe('#');
 });
 
+test.each([
+    'javascript:alert(document.domain)',
+    'data:text/html,<script>alert(1)</script>',
+    'vbscript:msgbox(1)',
+    '/unexpected-relative-path',
+])('Link replaces unsafe exported URL %s with a non-navigating target', (url) => {
+    usePrintStore.getState().setPrinting(true);
+
+    const { container } = render(
+        <Link
+            id={[0]}
+            type={Link.type}
+            uuid="test-uuid"
+            isLast={false}
+            updateData={() => { }}
+            updateDataFields={() => { }}
+            value="Test Link"
+            url={url}
+        />
+    );
+
+    expect(container.querySelector('a.link')?.getAttribute('href')).toBe('#');
+});
+
+test.each([
+    'https://example.com',
+    'http://example.com',
+    'mailto:hello@example.com',
+    'tel:+15555550123',
+])('Link preserves supported exported URL %s', (url) => {
+    usePrintStore.getState().setPrinting(true);
+
+    const { container } = render(
+        <Link
+            id={[0]}
+            type={Link.type}
+            uuid="test-uuid"
+            isLast={false}
+            updateData={() => { }}
+            updateDataFields={() => { }}
+            value="Test Link"
+            url={url}
+        />
+    );
+
+    expect(container.querySelector('a.link')?.getAttribute('href')).toBe(url);
+});
+
 /** Verify Link enters edit mode when selected */
 test('Link shows input when in edit mode', () => {
     usePrintStore.getState().setPrinting(false);

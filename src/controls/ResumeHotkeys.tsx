@@ -76,6 +76,7 @@ export const ResumeHotKeyMap: KeyMap = {
     } as ExtendedKeyMapOptions
 };
 
+/** Maps editor commands to keyboard shortcuts without owning command behavior. */
 export class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
     getHandlers() {
         const handlers = {

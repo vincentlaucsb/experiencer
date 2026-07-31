@@ -1,85 +1,98 @@
-@use "sass:color";
-@use "palette";
+// Runtime UI-theme roles.
+$surface-workspace: var(--xp-surface-workspace);
+$surface-raised: var(--xp-surface-raised);
+$surface-muted: var(--xp-surface-muted);
+$surface-inverse: var(--xp-surface-inverse);
+$surface-header: var(--xp-surface-header);
+$surface-toolbar: var(--xp-surface-toolbar);
+$surface-inspector: var(--xp-surface-inspector);
+$surface-card: var(--xp-surface-card);
+$surface-interactive: var(--xp-surface-interactive);
+$surface-interactive-hover: var(--xp-surface-interactive-hover);
 
-// Primary color API (preferred naming)
-// light-shade: high-contrast light surface/text color.
-// Current use: app light surfaces and text on dark toolbar/menu backgrounds.
-// Suitable uses: cards, light panels, foreground text on `main`/`dark-accent`.
-$light-shade: palette.$porcelain;
+$text-primary: var(--xp-text-primary);
+$text-secondary: var(--xp-text-secondary);
+$text-on-inverse: var(--xp-text-on-inverse);
+$text-interactive: var(--xp-text-interactive);
 
-// light-accent: muted accent for supporting UI affordances.
-// Current use: toolbar labels/icons and accent borders/dividers.
-// Suitable uses: secondary labels, subtle iconography, low-emphasis outlines.
-$light-accent: palette.$lynch;
+$border-subtle: var(--xp-border-subtle);
+$border-strong: var(--xp-border-strong);
+$border-chrome: var(--xp-border-chrome);
+$focus-ring: var(--xp-focus-ring);
 
-// main: primary dark brand surface.
-// Current use: app header/navigation background.
-// Suitable uses: primary chrome, top-level navigation, major section bars.
-$main: palette.$oxford-blue;
+$brand-accent: var(--xp-brand-accent);
+$progress-accent: var(--xp-progress-accent);
+$danger: var(--xp-danger);
+$button-base-surface: var(--xp-button-base-surface);
+$button-base-hover: var(--xp-button-base-hover);
+$button-base-text: var(--xp-button-base-text);
+$button-primary-surface: var(--xp-button-primary-surface);
+$button-primary-hover: var(--xp-button-primary-hover);
+$button-primary-text: var(--xp-button-primary-text);
+$button-success-surface: var(--xp-button-success-surface);
+$button-success-hover: var(--xp-button-success-hover);
+$button-success-text: var(--xp-button-success-text);
+$button-warning-surface: var(--xp-button-warning-surface);
+$button-warning-hover: var(--xp-button-warning-hover);
+$button-warning-text: var(--xp-button-warning-text);
+$button-error-surface: var(--xp-button-error-surface);
+$button-error-hover: var(--xp-button-error-hover);
+$button-error-text: var(--xp-button-error-text);
 
-// dark-accent: accent intended FOR dark contexts (not necessarily darker than `main`).
-// Current use: toolbar/button hover and active states, context-menu hover state.
-// Suitable uses: interactive emphasis on dark surfaces, selected dark-nav items.
-$dark-accent: palette.$san-marino;
+$subtle-overlay: var(--xp-overlay-subtle);
+$overlay-soft: var(--xp-overlay-soft);
+$overlay-medium: var(--xp-overlay-medium);
+$overlay-strong: var(--xp-overlay-strong);
+$interactive-overlay: var(--xp-interactive-overlay);
+$shadow-soft: var(--xp-shadow-soft);
+$shadow-medium: var(--xp-shadow-medium);
+$highlight: var(--xp-highlight);
+$highlight-subtle: var(--xp-highlight-subtle);
+$selection: var(--xp-selection);
 
-// dark-shade: darkest neutral anchor.
-// Current use: dropdown menu backgrounds and high-emphasis dark borders/text.
-// Suitable uses: deepest surface layer, strong separators, max-emphasis dark text.
-$dark-shade: palette.$baltic-sea;
+// Print-faithful document roles. These never react to the application theme.
+$document-paper: #ffffff;
+$document-ink: #151318;
+$document-muted: #68778a;
+$document-accent: #15263a;
+$document-border: #dddddd;
+$document-subtle: rgb(21 19 24 / 5%);
+$document-muted-overlay: rgb(21 19 24 / 60%);
 
-// white: pure white utility for explicit white canvas/surfaces.
-// Current use: resume canvas and overlay panels where pure white is required.
-// Suitable uses: print-like paper surfaces and strict neutral backgrounds.
-$white: palette.$white;
-
-// danger: destructive/invalid state color.
-// Current use: invalid input background treatment.
-// Suitable uses: validation error states, destructive actions, warnings.
-$danger: palette.$danger-red;
-
-// subtle-overlay: translucent dark overlay for layering without full darkening.
-// Suitable uses: lightweight hover panes, ghost layers, inactive masks.
-$subtle-overlay: rgba(palette.$neutral-900, 0.05);
-
-// border-subtle: neutral low-contrast border.
-// Current use: input/control borders (e.g. URL field border).
-// Suitable uses: field outlines, card separators, quiet dividers.
-$border-subtle: palette.$neutral-300;
-
-// border-subtle-contrast: slightly stronger divider tuned from light-shade.
-// Current use: context-menu horizontal rule divider.
-// Suitable uses: section separators on very light backgrounds.
-$border-subtle-contrast: color.adjust($light-shade, $lightness: -20%);
-
-// light-accent-hover: lifted variant of light-accent for hover/focus affordances.
-// Current use: icon hover color on dark menus/toolbars.
-// Suitable uses: hover/focus states for muted-accent icons and text.
-$light-accent-hover: color.adjust($light-accent, $lightness: 25%);
+// Compatibility aliases while existing OSS styles migrate to intent names.
+$light-shade: $surface-raised;
+$light-accent: $text-secondary;
+$main: $surface-inverse;
+$dark-accent: $surface-interactive;
+$dark-shade: $text-primary;
+$white: $document-paper;
+$border-subtle-contrast: $border-strong;
+$light-accent-hover: $text-interactive;
 
 $utility-text-colors: (
-    light-shade: $light-shade,
-    light-accent: $light-accent,
-    main: $main,
-    dark-accent: $dark-accent,
-    dark-shade: $dark-shade,
+    light-shade: $text-on-inverse,
+    light-accent: $text-secondary,
+    main: $text-primary,
+    dark-accent: $text-interactive,
+    dark-shade: $text-primary,
     danger: $danger,
 );
 
 $utility-background-colors: (
-    light-shade: $light-shade,
-    light-accent: $light-accent,
-    main: $main,
-    dark-accent: $dark-accent,
-    dark-shade: $dark-shade,
-    "white": $white,
+    light-shade: $surface-raised,
+    light-accent: $surface-muted,
+    main: $surface-inverse,
+    dark-accent: $surface-interactive,
+    dark-shade: $surface-inverse,
+    "white": $document-paper,
     overlay: $subtle-overlay,
     danger: $danger,
 );
 
 $utility-border-colors: (
-    light-accent: $light-accent,
-    dark-accent: $dark-accent,
-    dark-shade: $dark-shade,
+    light-accent: $border-strong,
+    dark-accent: $surface-interactive,
+    dark-shade: $border-strong,
     subtle: $border-subtle,
     danger: $danger,
 );

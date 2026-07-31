@@ -1,7 +1,11 @@
 import ResumeTemplates from "@/templates/ResumeTemplates";
 import { ResumeSaveData } from "@/types";
 import LocalStorageResumeRepository from "@/shared/repositories/LocalStorageResumeRepository";
-import { ResumeDocumentSummary, ResumeRepository } from "@/shared/repositories/ResumeRepository";
+import {
+    ResumeDocumentSummary,
+    ResumeRepository,
+    ResumeRepositoryError
+} from "@/shared/repositories/ResumeRepository";
 import loadData from "@/shared/stores/loadData";
 import { dump } from "@/shared/stores/saveResume";
 import { resumeNodeStore } from "@/shared/stores/resumeNodeStore";
@@ -25,7 +29,7 @@ export interface ResumeLibraryController {
     createDocumentFromTemplate(key?: string): Promise<void>;
     importDocument(data: object, title?: string): Promise<void>;
     deleteDocument(id: string): Promise<void>;
-    renameDocument(id: string, title: string): Promise<void>;
+    renameDocument(id: string, title: string): Promise<string | null>;
     applyExternalDocument(document: ResumeDocument, saveStatus?: string): Promise<void>;
     refreshCurrentDocument(): Promise<ResumeDocumentSummary | undefined>;
 }
@@ -35,6 +39,7 @@ const initialSnapshot: ResumeLibrarySnapshot = {
     saveStatus: "Not synced"
 };
 
+/** Coordinates the OSS document lifecycle through an injectable resume repository. */
 export default class ResumeLibraryStore implements ResumeLibraryController {
     private snapshot = initialSnapshot;
     private listeners = new Set<() => void>();
@@ -206,8 +211,12 @@ export default class ResumeLibraryStore implements ResumeLibraryController {
             this.setSnapshot({
                 saveStatus: this.snapshot.activeDocumentId === id ? `Renamed v${renamed.version}` : "Renamed"
             });
-        } catch {
+            return null;
+        } catch (error: unknown) {
             this.setSnapshot({ saveStatus: "Rename failed" });
+            return error instanceof ResumeRepositoryError
+                ? error.message
+                : "Could not rename this resume. Please try again.";
         }
     };
 

@@ -10,7 +10,7 @@ interface FileLoaderState {
     filename: string;
 }
 
-// Form used for reading saved resume data files
+/** Reads a saved resume file and hands its parsed data to the library workflow. */
 export default class FileLoader extends React.Component<FileLoaderProps, FileLoaderState> {
     fileInput: any;
 

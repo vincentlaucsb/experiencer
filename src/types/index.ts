@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 // For simplicity, and to avoid problems, avoid all
 // imports in this file
 
+/** Holds cross-cutting constants used by the dependency-light shared type module. */
 export class Globals {
     static readonly localStorageKey = 'experiencer';
 }

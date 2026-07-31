@@ -1,5 +1,6 @@
 import ResumeLibraryStore from "@/shared/stores/resumeLibraryStore";
 import type { ResumeDocument, ResumeDocumentSummary, ResumeRepository, SaveResumeDocumentInput } from "@/shared/repositories/ResumeRepository";
+import { ResumeRepositoryError } from "@/shared/repositories/ResumeRepository";
 import ResumeTemplates from "@/templates/ResumeTemplates";
 
 function createRepository(document: ResumeDocument): jest.Mocked<ResumeRepository> {
@@ -71,4 +72,26 @@ test("initialize lists saved resumes without auto-loading one", async () => {
         ],
         saveStatus: "Not synced"
     });
+});
+
+test("rename returns a repository validation message to the action form", async () => {
+    const document: ResumeDocument = {
+        id: "saved-resume",
+        title: "Saved Resume",
+        schemaVersion: 1,
+        version: 3,
+        updatedAt: "2026-05-07T00:00:00.000Z",
+        data: ResumeTemplates.templates.Integrity
+    };
+    const repository = createRepository(document);
+    repository.rename.mockRejectedValue(new ResumeRepositoryError(
+        "validation",
+        "Name must be 200 characters or fewer."
+    ));
+    const store = new ResumeLibraryStore(repository);
+    await store.initialize();
+
+    await expect(store.renameDocument(document.id, "a".repeat(201)))
+        .resolves.toBe("Name must be 200 characters or fewer.");
+    expect(store.getSnapshot().saveStatus).toBe("Rename failed");
 });

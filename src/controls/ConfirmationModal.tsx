@@ -6,6 +6,7 @@ import Modal from "@/controls/Modal";
 export interface ConfirmationModalProps {
     children: React.ReactElement;
     confirmLabel?: string;
+    confirmDisabled?: boolean;
     isOpen: boolean;
     title: string;
     onCancel: () => void;
@@ -29,6 +30,7 @@ export default function ConfirmationModal(props: ConfirmationModalProps) {
                     <Button
                         type="button"
                         variant="error"
+                        disabled={props.confirmDisabled}
                         onClick={props.onConfirm}
                     >
                         {props.confirmLabel ?? "Confirm"}

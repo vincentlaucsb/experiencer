@@ -49,6 +49,23 @@
     margin-top: 1.5rem;
 }
 
+.resume-library-group-heading {
+    align-items: baseline;
+    display: flex;
+    gap: 0.6rem;
+
+    h2 {
+        margin-right: auto;
+    }
+}
+
+.resume-library-group-summary {
+    color: colors.$text-secondary;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
 .resume-library-list {
     display: grid;
     gap: 0.75rem;
@@ -81,9 +98,27 @@
     }
 }
 
+.resume-library-details {
+    min-width: 0;
+}
+
+.resume-library-title {
+    align-items: center;
+    display: flex;
+    gap: 0.55rem;
+    min-width: 0;
+}
+
+.resume-library-title-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .resume-library .document-label {
+    flex: 0 0 auto;
     display: inline-block;
-    margin-left: 0.55rem;
     padding: 0.15rem 0.4rem;
     border: 1px solid currentColor;
     border-radius: 999px;

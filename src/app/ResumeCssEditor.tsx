@@ -9,10 +9,13 @@ import LiveCssChangesModal from "@/editor/LiveCssChangesModal";
 import { Button } from "@/controls/Buttons";
 import { showToast } from "@/shared/stores/toastStore";
 import {
-    countLiveCssDeclarationChanges,
-    inspectLiveCssTree,
-    LiveCssTreeChange
+    countLiveCssDeclarationChanges
 } from "@/shared/utils/liveCssSync";
+import {
+    inspectScopedLiveCssChanges,
+    liveCssBaselineStore,
+    ScopedLiveCssTreeChange
+} from "@/shared/utils/liveCssBaseline";
 
 import ComponentTypes from "@/resume/schema/ComponentTypes";
 import makeCssVarSuggestions from "@/shared/utils/makeCssVarSuggestions";
@@ -29,20 +32,7 @@ interface ResumeCssEditorWrapperProps {
     selectedNodeId?: string;
 }
 
-interface PendingLiveCssChange extends LiveCssTreeChange {
-    tree: "resume" | "root";
-}
-
-function getLiveChanges(css: CssNode, rootCss: CssNode) {
-    const rootChanges = inspectLiveCssTree(new ReadonlyCssNode(rootCss))
-        .map((change): PendingLiveCssChange => ({ ...change, tree: "root" }));
-    const resumeChanges = inspectLiveCssTree(new ReadonlyCssNode(css))
-        .map((change): PendingLiveCssChange => ({ ...change, tree: "resume" }));
-
-    return [...rootChanges, ...resumeChanges];
-}
-
-function changesSignature(changes: ReadonlyArray<PendingLiveCssChange>) {
+function changesSignature(changes: ReadonlyArray<ScopedLiveCssTreeChange>) {
     return JSON.stringify(changes.map((change) => ({
         tree: change.tree,
         path: change.path,
@@ -51,12 +41,14 @@ function changesSignature(changes: ReadonlyArray<PendingLiveCssChange>) {
 }
 
 function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss }: ResumeCssEditorProps) {
-    const [liveChanges, setLiveChanges] = useState<ReadonlyArray<PendingLiveCssChange>>([]);
+    const [liveChanges, setLiveChanges] = useState<ReadonlyArray<ScopedLiveCssTreeChange>>([]);
     const [reviewChanges, setReviewChanges] = useState(false);
     const liveChangeCount = countLiveCssDeclarationChanges(liveChanges);
 
     const detectLiveChanges = useCallback(() => {
-        const nextChanges = getLiveChanges(css, rootCss);
+        const nextChanges = liveCssBaselineStore.filter(
+            inspectScopedLiveCssChanges(css, rootCss)
+        );
         setLiveChanges((currentChanges) => (
             changesSignature(currentChanges) === changesSignature(nextChanges)
                 ? currentChanges
@@ -134,6 +126,7 @@ function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss 
                 key={`${selectedNode.uuid}-${rootNode.fullPath.join('-')}`}
                 cssNode={new ReadonlyCssNode(rootNode)}
                 isOpen={true}
+                liveTree="resume"
                 {...makeCssEditorProps(updateCss)}
             />
         }
@@ -144,6 +137,7 @@ function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss 
                 key={`${selectedNode.uuid}-#${selectedNode.htmlId}`}
                 cssNode={new ReadonlyCssNode(specificRoot)}
                 isOpen={true}
+                liveTree="resume"
                 {...makeCssEditorProps(updateCss)} />
         }
 
@@ -159,10 +153,12 @@ function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss 
         <CssEditor
             cssNode={new ReadonlyCssNode(rootCss)}
             isOpen={true}
+            liveTree="root"
             {...makeCssEditorProps(updateRootCss)} />
         <CssEditor
             cssNode={new ReadonlyCssNode(css)}
             isOpen={true}
+            liveTree="resume"
             varSuggestions={makeCssVarSuggestions(rootCss)}
             {...makeCssEditorProps(updateCss)} />
     </>

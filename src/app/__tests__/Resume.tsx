@@ -394,3 +394,58 @@ test('Landing suspends document-scoped navigation until a resume is opened', asy
     await screen.findByRole("button", { name: "Document action" });
     expect(repository.get).toHaveBeenCalledTimes(1);
 });
+
+test('uses the active resume name in the HTML title and follows renames', async () => {
+    const originalTitle = document.title;
+    document.title = 'Experiencer Pro';
+    const documentSummary: ResumeDocumentSummary = {
+        id: 'resume-1',
+        title: 'My Awesome Resume',
+        schemaVersion: 1,
+        version: 1,
+        updatedAt: '2026-07-30T00:00:00Z'
+    };
+    const view = render(
+        <ResumeView
+            mode="normal"
+            stylesheet=""
+            tree={{ type: "Resume", uuid: "test-root", childNodes: [] }}
+            activeDocumentId={documentSummary.id}
+            documents={[documentSummary]}
+        />
+    );
+
+    await waitFor(() => {
+        expect(document.title).toBe('My Awesome Resume | Experiencer Pro');
+    });
+
+    view.rerender(
+        <ResumeView
+            mode="normal"
+            stylesheet=""
+            tree={{ type: "Resume", uuid: "test-root", childNodes: [] }}
+            activeDocumentId={documentSummary.id}
+            documents={[{ ...documentSummary, title: 'Renamed Resume' }]}
+        />
+    );
+
+    await waitFor(() => {
+        expect(document.title).toBe('Renamed Resume | Experiencer Pro');
+    });
+
+    view.rerender(
+        <ResumeView
+            mode="landing"
+            stylesheet=""
+            tree={{ type: "Resume", uuid: "test-root", childNodes: [] }}
+            documents={[{ ...documentSummary, title: 'Renamed Resume' }]}
+        />
+    );
+
+    await waitFor(() => {
+        expect(document.title).toBe('Experiencer Pro');
+    });
+
+    view.unmount();
+    document.title = originalTitle;
+});

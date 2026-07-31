@@ -26,4 +26,12 @@ describe("Button", () => {
                 .classList.contains("pure-button-primary")
         ).toBe(true);
     });
+
+    test("composes the outline appearance with a semantic variant", () => {
+        render(<Button appearance="outline" variant="error">Delete</Button>);
+
+        const button = screen.getByRole("button", { name: "Delete" });
+        expect(button.classList.contains("pure-button-error")).toBe(true);
+        expect(button.classList.contains("pure-button-outline")).toBe(true);
+    });
 });

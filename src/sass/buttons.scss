@@ -38,6 +38,18 @@
     }
 }
 
+@mixin outline-button($text, $hover-surface, $hover-text) {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px currentColor;
+    color: $text;
+
+    &:hover:not(:disabled, .pure-button-disabled),
+    &:focus:not(:disabled, .pure-button-disabled) {
+        background: $hover-surface;
+        color: $hover-text;
+    }
+}
+
 .pure-button-primary,
 .pure-button-selected,
 a.pure-button-primary,
@@ -69,6 +81,47 @@ a.pure-button-selected {
     @include semantic-button(
         colors.$button-error-surface,
         colors.$button-error-hover,
+        colors.$button-error-text
+    );
+}
+
+.pure-button-outline {
+    @include outline-button(
+        colors.$button-base-text,
+        colors.$button-base-hover,
+        colors.$button-base-text
+    );
+}
+
+.pure-button-primary.pure-button-outline,
+.pure-button-selected.pure-button-outline {
+    @include outline-button(
+        colors.$button-primary-surface,
+        colors.$button-primary-surface,
+        colors.$button-primary-text
+    );
+}
+
+.pure-button-success.pure-button-outline {
+    @include outline-button(
+        colors.$button-success-surface,
+        colors.$button-success-surface,
+        colors.$button-success-text
+    );
+}
+
+.pure-button-warning.pure-button-outline {
+    @include outline-button(
+        colors.$button-warning-surface,
+        colors.$button-warning-surface,
+        colors.$button-warning-text
+    );
+}
+
+.pure-button-error.pure-button-outline {
+    @include outline-button(
+        colors.$button-error-surface,
+        colors.$button-error-surface,
         colors.$button-error-text
     );
 }

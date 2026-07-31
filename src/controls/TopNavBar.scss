@@ -98,6 +98,7 @@ header#app-header {
 /** || Top Nav Bar */
 #brand {
     align-items: center;
+    min-width: 0;
 
     h1 {
         display: inline-flex;
@@ -128,6 +129,76 @@ header#app-header {
         display: flex;
         flex-direction: column;
         align-self: center;
+        min-width: 0;
+
+        > .pure-menu-list {
+            display: flex;
+            min-width: 0;
+        }
+    }
+
+    .document-selector {
+        flex: 1 1 auto;
+        max-width: min(32vw, 28rem);
+        min-width: 0;
+
+        > .pure-menu-children {
+            max-width: min(32rem, calc(100vw - 2rem));
+            min-width: min(24rem, calc(100vw - 2rem));
+        }
+    }
+
+    .document-selector-trigger {
+        align-items: center;
+        display: inline-flex;
+        max-width: 100%;
+        min-width: 0;
+
+        &::after {
+            flex: 0 0 auto;
+        }
+    }
+
+    .document-selector-label {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .document-selector-rename {
+        border-bottom: 1px solid colors.$border-chrome;
+        padding: 0.75rem 1rem !important;
+
+        .document-selector-rename-form {
+            display: grid;
+            gap: 0.5rem;
+
+            label > span {
+                display: block;
+                color: colors.$text-on-inverse;
+                font-size: 0.75rem;
+                margin-bottom: 0.35rem;
+            }
+
+            input {
+                box-sizing: border-box;
+                width: 100%;
+                background: colors.$surface-raised;
+                border: 1px solid colors.$border-strong;
+                border-radius: 3px;
+                color: colors.$text-primary;
+                padding: 0.45rem 0.55rem;
+            }
+
+            .async-action-form-actions {
+                justify-content: flex-end;
+
+                .pure-button {
+                    width: auto;
+                }
+            }
+        }
     }
 
     // GitHub Icon

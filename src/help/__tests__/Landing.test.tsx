@@ -45,8 +45,13 @@ test("renders grouped documents and invokes origin-specific secondary actions", 
     );
 
     expect(screen.getByRole("heading", { name: "Cloud resumes" })).toBeTruthy();
-    const localGroup = screen.getByRole("heading", { name: "On this device" }).parentElement!;
+    const localGroup = screen.getByRole("heading", { name: "On this device" })
+        .closest<HTMLElement>(".resume-library-group")!;
     expect(within(localGroup).getByText("Local Resume")).toBeTruthy();
+    expect(
+        within(localGroup).getByRole("button", { name: "Delete" })
+            .classList.contains("pure-button-outline")
+    ).toBe(true);
 
     fireEvent.click(within(localGroup).getByRole("button", { name: "Copy to cloud" }));
     expect(copy).toHaveBeenCalledTimes(1);
@@ -80,4 +85,50 @@ test("keeps rename open and shows the action message when saving fails", async (
         .toBe("Name must be 200 characters or fewer.");
     expect(screen.getByRole("textbox", { name: "Name" })).toBeTruthy();
     expect(rename).toHaveBeenCalledWith("resume-1", "Rejected name");
+});
+
+test("shows understated metadata for an empty document group", () => {
+    render(
+        <Landing
+            documentGroups={[{
+                id: "cloud",
+                title: "Cloud resumes",
+                summary: "0 / 100",
+                showWhenEmpty: true,
+                documentIds: []
+            }]}
+            documents={[]}
+            loadData={jest.fn()}
+            loadLocal={jest.fn()}
+            new={jest.fn()}
+        />
+    );
+
+    const heading = screen.getByRole("heading", { name: "Cloud resumes" });
+    expect(heading).toBeTruthy();
+    expect(within(heading.parentElement!).getByText("0 / 100")).toBeTruthy();
+});
+
+test("marks long resume titles for visual truncation while preserving the full name", () => {
+    const title = "A resume title that is intentionally much longer than the available row";
+    render(
+        <Landing
+            documentLabels={{ "resume-1": "Cloud" }}
+            documents={[{
+                id: "resume-1",
+                title,
+                schemaVersion: 1,
+                version: 1,
+                updatedAt: "2026-07-28T00:00:00Z"
+            }]}
+            loadData={jest.fn()}
+            loadLocal={jest.fn()}
+            new={jest.fn()}
+        />
+    );
+
+    const titleText = screen.getByText(title);
+    expect(titleText.classList.contains("resume-library-title-text")).toBe(true);
+    expect(titleText.getAttribute("title")).toBe(title);
+    expect(screen.getByText("Cloud")).toBeTruthy();
 });

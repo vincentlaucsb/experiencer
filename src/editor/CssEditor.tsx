@@ -15,6 +15,11 @@ import {
     inspectLiveCssTree,
     LiveCssTreeChange
 } from "@/shared/utils/liveCssSync";
+import {
+    liveCssBaselineStore,
+    LiveCssTreeName,
+    ScopedLiveCssTreeChange
+} from "@/shared/utils/liveCssBaseline";
 import { showToast } from "@/shared/stores/toastStore";
 import { Button } from "@/controls/Buttons";
 
@@ -34,6 +39,7 @@ export interface CssUpdateProps {
 
 export interface CssEditorProps extends CssUpdateProps {
     cssNode: ReadonlyCssNode;
+    liveTree: LiveCssTreeName;
     varSuggestions?: Array<string>;
 
     /** Whether or not the section is open initially */
@@ -161,7 +167,12 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     }
 
     importLiveChanges() {
-        const changes = inspectLiveCssTree(this.props.cssNode);
+        const scopedChanges = inspectLiveCssTree(this.props.cssNode)
+            .map((change): ScopedLiveCssTreeChange => ({
+                ...change,
+                tree: this.props.liveTree
+            }));
+        const changes = liveCssBaselineStore.filter(scopedChanges);
 
         if (changes.length === 0) {
             showToast("This CSS section already matches the live stylesheet.");
@@ -288,6 +299,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
             return <CssEditor
                 key={css.fullPath.join('-')}
                 cssNode={css}
+                liveTree={this.props.liveTree}
                 addSelector={this.props.addSelector}
                 updateName={this.props.updateName}
                 updateProperty={this.props.updateProperty}

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 
 import { TopNavBar } from "@/controls/TopNavBar";
 
@@ -96,4 +96,63 @@ test("shows injected document labels in the active-document control", () => {
     );
 
     expect(screen.getByRole("button", { name: "Canonical Resume · Template" })).toBeTruthy();
+});
+
+test("marks the active document label for visual truncation while preserving its full name", () => {
+    const title = "A document title that is intentionally much longer than the header";
+    render(
+        <TopNavBar
+            {...baseProps}
+            activeDocumentId="resume-1"
+            documents={[{
+                id: "resume-1",
+                title,
+                schemaVersion: 1,
+                version: 2,
+                updatedAt: "2026-07-28T00:00:00Z"
+            }]}
+            documentLabels={{ "resume-1": "Cloud" }}
+        />
+    );
+
+    const fullLabel = `${title} · Cloud`;
+    const selector = screen.getByRole("button", { name: fullLabel });
+    expect(selector.classList.contains("document-selector-trigger")).toBe(true);
+    expect(selector.getAttribute("title")).toBe(fullLabel);
+    expect(
+        selector.querySelector(".document-selector-label")?.textContent
+    ).toBe(fullLabel);
+});
+
+test("renames the active document from the top of the document selector", async () => {
+    const renameDocument = jest.fn(async () => null);
+    render(
+        <TopNavBar
+            {...baseProps}
+            activeDocumentId="resume-1"
+            documents={[{
+                id: "resume-1",
+                title: "Canonical Resume",
+                schemaVersion: 1,
+                version: 2,
+                updatedAt: "2026-07-28T00:00:00Z"
+            }]}
+            renameDocument={renameDocument}
+        />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Canonical Resume" }));
+    const form = screen.getByRole("form", { name: "Rename current resume" });
+    const input = within(form).getByRole("textbox", { name: "Resume name" });
+
+    expect(input.getAttribute("autocomplete")).toBe("off");
+    fireEvent.change(input, { target: { value: "My Awesome Resume" } });
+    fireEvent.click(within(form).getByRole("button", { name: "Save" }));
+
+    await waitFor(() => {
+        expect(renameDocument).toHaveBeenCalledWith(
+            "resume-1",
+            "My Awesome Resume"
+        );
+    });
 });

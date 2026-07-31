@@ -75,20 +75,25 @@ export default function Landing(props: LandingProps) {
                     <MenuItem onClick={() => props.new()} icon="paper">New</MenuItem>
                     <MenuItem onClick={() => setOpen(true)} icon="folder-open">Load</MenuItem>
                 </PureMenu>
-                {props.documents?.length ? (
+                {props.documents?.length || groups.some((group) => group.showWhenEmpty) ? (
                     <section className="resume-library" aria-label="Resume library">
                         {groups.map((group) => {
                             const documents = group.documentIds
                                 .map((id) => documentsById.get(id))
                                 .filter((document): document is ResumeDocumentSummary => Boolean(document));
-                            if (!documents.length) {
+                            if (!documents.length && !group.showWhenEmpty) {
                                 return null;
                             }
 
                             return (
                             <div className="resume-library-group" key={group.id}>
-                                <h2>{group.title}</h2>
-                                <div className="resume-library-list">
+                                <div className="resume-library-group-heading">
+                                    <h2>{group.title}</h2>
+                                    {group.summary
+                                        ? <span className="resume-library-group-summary">{group.summary}</span>
+                                        : <></>}
+                                </div>
+                                {documents.length ? <div className="resume-library-list">
                             {documents.map((document) => (
                                 <article
                                     className={document.id === props.activeDocumentId ? "resume-library-item active" : "resume-library-item"}
@@ -121,9 +126,14 @@ export default function Landing(props: LandingProps) {
                                             </label>
                                         </AsyncActionForm>
                                     ) : (
-                                        <div>
-                                            <h3>
-                                                {document.title}
+                                        <div className="resume-library-details">
+                                            <h3 className="resume-library-title">
+                                                <span
+                                                    className="resume-library-title-text"
+                                                    title={document.title}
+                                                >
+                                                    {document.title}
+                                                </span>
                                                 {props.documentLabels?.[document.id]
                                                     ? (
                                                         <span className="document-label">
@@ -147,6 +157,7 @@ export default function Landing(props: LandingProps) {
                                             setEditingTitle(document.title);
                                         }}>Rename</Button>
                                         <Button
+                                            appearance="outline"
                                             variant="error"
                                             onClick={() => props.deleteDocument?.(document.id)}
                                         >
@@ -164,7 +175,7 @@ export default function Landing(props: LandingProps) {
                                     </div>
                                 </article>
                             ))}
-                                </div>
+                                </div> : <></>}
                             </div>
                             );
                         })}

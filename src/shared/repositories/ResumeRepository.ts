@@ -44,14 +44,23 @@ export type ResumeRepositoryErrorCode =
     | "not-found"
     | "conflict"
     | "access-required"
+    | "quota"
     | "validation"
     | "unavailable";
+
+export interface ResumeRepositoryErrorDetails {
+    current?: number;
+    limit?: number;
+    projected?: number;
+    resource?: "active-resumes" | "retained-storage";
+}
 
 /** Carries storage-neutral failure categories into library workflows. */
 export class ResumeRepositoryError extends Error {
     constructor(
         public readonly code: ResumeRepositoryErrorCode,
-        message: string
+        message: string,
+        public readonly details?: ResumeRepositoryErrorDetails
     ) {
         super(message);
         this.name = "ResumeRepositoryError";

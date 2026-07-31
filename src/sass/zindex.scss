@@ -30,7 +30,9 @@ $toast: 500;
 
 /** Application chrome must cover fixed selection/highlight overlays. */
 header#app-header {
-    position: relative;
+    flex: 0 0 auto;
+    position: sticky;
+    top: 0;
     z-index: $header;
 }
 

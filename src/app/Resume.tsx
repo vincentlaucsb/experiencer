@@ -82,6 +82,8 @@ export interface AdditionalTemplateGroup {
 export interface ResumeDocumentGroup {
     id: string;
     title: string;
+    summary?: string;
+    showWhenEmpty?: boolean;
     documentIds: string[];
 }
 
@@ -91,6 +93,12 @@ export interface ResumeDocumentAction {
     disabled?: boolean;
     run: () => Promise<void> | void;
 }
+
+/** Allows an embedding product to replace the default delete confirmation for a document. */
+export type DeleteDocumentConfirmationRequest = (
+    document: ResumeDocumentSummary,
+    defaultConfirm: () => void
+) => void;
 
 type AdditionalTemplatePreviewState = {
     key?: string;
@@ -123,6 +131,7 @@ export interface ResumeProps {
     saveCurrentDocument?: () => void;
     selectDocument?: (id: string) => void;
     deleteDocument?: (id: string) => void;
+    requestDeleteConfirmation?: DeleteDocumentConfirmationRequest;
     renameDocument?: (id: string, title: string) => Promise<string | null>;
     createDocumentFromTemplate?: (key?: string) => void;
     importDocument?: (data: object, title?: string) => void;
@@ -144,6 +153,9 @@ export type ResumeWrapperProps = Partial<Omit<ResumeProps, 'selectedNodeId' | 'i
 
 export function Resume(props: ResumeProps) {
     const resumeRef = useRef<HTMLDivElement>(null);
+    const applicationTitle = useRef(
+        typeof document === 'undefined' ? 'Experiencer' : document.title
+    );
     const [selectedTemplateKey, setSelectedTemplateKey] = React.useState('Integrity');
     const [selectedAdditionalTemplateKey, setSelectedAdditionalTemplateKey] = React.useState<string>();
     const [additionalPreview, setAdditionalPreview] = React.useState<AdditionalTemplatePreviewState>({
@@ -223,6 +235,23 @@ export function Resume(props: ResumeProps) {
         const mode = props.mode || 'landing';
         return mode === 'normal' || mode === 'help';
     })();
+    const activeDocumentTitle = props.documents?.find(
+        (document) => document.id === props.activeDocumentId
+    )?.title;
+
+    useEffect(() => {
+        if (typeof document === 'undefined') {
+            return;
+        }
+
+        document.title = activeDocumentTitle
+            ? `${activeDocumentTitle} | ${applicationTitle.current}`
+            : applicationTitle.current;
+
+        return () => {
+            document.title = applicationTitle.current;
+        };
+    }, [activeDocumentTitle]);
 
     // Change Templates
     const loadTemplate = useCallback((key = 'Integrity') => {
@@ -396,6 +425,7 @@ export function Resume(props: ResumeProps) {
         documentLabels: props.documentLabels,
         activeDocumentId: props.activeDocumentId,
         selectDocument: props.selectDocument,
+        renameDocument: props.renameDocument,
         loadData: props.importDocument,
         saveLocal: props.saveCurrentDocument,
         saveStatus: props.saveStatus,
@@ -570,10 +600,18 @@ function ResumeContainer(props: ResumeWrapperProps) {
     }, [libraryStore]);
 
     const requestDeleteDocument = React.useCallback((id: string) => {
-        setDocumentPendingDelete(
-            library.documents.find((document) => document.id === id)
-        );
-    }, [library.documents]);
+        const document = library.documents.find((item) => item.id === id);
+        if (!document) {
+            return;
+        }
+
+        const defaultConfirm = () => setDocumentPendingDelete(document);
+        if (props.requestDeleteConfirmation) {
+            props.requestDeleteConfirmation(document, defaultConfirm);
+        } else {
+            defaultConfirm();
+        }
+    }, [library.documents, props.requestDeleteConfirmation]);
 
     const confirmDeleteDocument = React.useCallback(async () => {
         if (!documentPendingDelete) {

@@ -10,6 +10,8 @@ interface EditorState {
     // UI state
     leftPaneElement: HTMLDivElement | null;
     pageSize: PageSize;
+    savedPageSize: PageSize;
+    hasUnsavedPageSizeChanges: boolean;
 
     // Actions
     selectNode: (nodeId: string) => void;
@@ -18,6 +20,8 @@ interface EditorState {
     toggleEdit: () => void;
     setLeftPaneElement: (element: HTMLDivElement | null) => void;
     setPageSize: (pageSize: PageSize) => void;
+    loadPageSize: (pageSize: PageSize) => void;
+    clearPageSizeUnsavedChanges: () => void;
 }
 
 export const useEditorStore = create<EditorState>()(
@@ -28,6 +32,8 @@ export const useEditorStore = create<EditorState>()(
             isEditingSelected: false,
             leftPaneElement: null,
             pageSize: PageSize.Letter,
+            savedPageSize: PageSize.Letter,
+            hasUnsavedPageSizeChanges: false,
 
             // Actions
             selectNode: (nodeId: string) =>
@@ -56,8 +62,22 @@ export const useEditorStore = create<EditorState>()(
                     if (state.pageSize === pageSize) {
                         return state;
                     }
-                    return { pageSize };
+                    return {
+                        pageSize,
+                        hasUnsavedPageSizeChanges: pageSize !== state.savedPageSize
+                    };
                 }, false, 'setPageSize'),
+            loadPageSize: (pageSize: PageSize) =>
+                set({
+                    pageSize,
+                    savedPageSize: pageSize,
+                    hasUnsavedPageSizeChanges: false
+                }, false, 'loadPageSize'),
+            clearPageSizeUnsavedChanges: () =>
+                set((state) => ({
+                    savedPageSize: state.pageSize,
+                    hasUnsavedPageSizeChanges: false
+                }), false, 'clearPageSizeUnsavedChanges'),
         }),
         { name: 'EditorStore' }
     )
@@ -68,6 +88,8 @@ export const useSelectedNodeId = () => useEditorStore((state) => state.selectedN
 export const useIsEditingSelected = () => useEditorStore((state) => state.isEditingSelected);
 export const useLeftPaneElement = () => useEditorStore((state) => state.leftPaneElement);
 export const usePageSize = () => useEditorStore((state) => state.pageSize);
+export const useHasUnsavedPageSizeChanges = () =>
+    useEditorStore((state) => state.hasUnsavedPageSizeChanges);
 export const useIsNodeSelected = (nodeId: string) => 
     useEditorStore((state) => state.selectedNodeId === nodeId);
 export const useIsNodeEditing = (nodeId: string) => 

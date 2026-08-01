@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import PageSize from "./PageSize";
 
 // For simplicity, and to avoid problems, avoid all
 // imports in this file
@@ -74,6 +75,8 @@ export interface ResumeSaveData {
     builtinCss: CssNodeDump;
     rootCss: CssNodeDump;
     childNodes: Array<BasicResumeNode>;
+    /** Saved physical page size. Missing legacy values load as Letter. */
+    pageSize?: PageSize;
 }
 
 /**

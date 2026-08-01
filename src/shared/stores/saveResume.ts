@@ -3,12 +3,14 @@ import { resumeNodeStore } from "./resumeNodeStore";
 import { ResumeSaveData } from "@/types";
 import { stripNodeProperties } from "@/shared/utils/stripNodeProperties";
 import { cssStore, rootCssStore } from "./cssStoreHooks";
+import { useEditorStore } from "./editorStore";
 
 export function dump(): ResumeSaveData {
     return {
         childNodes: stripNodeProperties(resumeNodeStore.data.childNodes, ['uuid']),
         builtinCss: cssStore.data.dump(),
-        rootCss: rootCssStore.data.dump()
+        rootCss: rootCssStore.data.dump(),
+        pageSize: useEditorStore.getState().pageSize
     };
 }
 
@@ -17,6 +19,7 @@ export function saveLocal() {
     resumeNodeStore.clearUnsavedChanges();
     cssStore.clearUnsavedChanges();
     rootCssStore.clearUnsavedChanges();
+    useEditorStore.getState().clearPageSizeUnsavedChanges();
     localStorage.setItem('experiencer', JSON.stringify(dump()));
 }
 

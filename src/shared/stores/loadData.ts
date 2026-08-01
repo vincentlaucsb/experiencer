@@ -4,6 +4,8 @@ import { resumeNodeStore } from "./resumeNodeStore";
 import { useHistoryStore } from "./historyStore";
 import { assignIds } from "../utils/assignIds";
 import { workspaceStore } from "./workspaceStore";
+import { useEditorStore } from "./editorStore";
+import PageSize from "@/types/PageSize";
 
 function normalizeLegacyNodeTypes(nodes: any[] | undefined): any[] {
     if (!nodes) {
@@ -44,6 +46,9 @@ export default function loadData(
     
     cssStore.loadCss(savedData.builtinCss);
     rootCssStore.loadCss(savedData.rootCss);
+    useEditorStore.getState().loadPageSize(
+        savedData.pageSize === PageSize.A4 ? PageSize.A4 : PageSize.Letter
+    );
 
     workspaceStore.transitionTo(mode, documentId);
 }

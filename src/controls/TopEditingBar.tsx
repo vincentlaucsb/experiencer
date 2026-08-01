@@ -19,7 +19,7 @@ import ResumeHotKeys, { ResumeHotKeyMap } from "./ResumeHotkeys";
 // Lazy-load HtmlIdAdder since it's only shown when user clicks the ID/Classes button
 const HtmlIdAdder = React.lazy(() => import("./HtmlIdAdder"));
 import { ToolbarItemData } from "./toolbar/ToolbarButton";
-import { useEditorStore } from "@/shared/stores/editorStore";
+import { useEditorStore, useHasUnsavedPageSizeChanges } from "@/shared/stores/editorStore";
 import { resumeNodeStore, useResumeNodeByUuid, useHasUnsavedChanges as useHasUnsavedNodeChanges } from "@/shared/stores/resumeNodeStore";
 import { useHistoryStore } from "@/shared/stores/historyStore";
 import { saveLocal } from "@/shared/stores/saveResume";
@@ -427,7 +427,10 @@ export default function TopEditingBarWrapper(props: TopEditingBarWrapperProps) {
     const { unselectNode, selectedNodeId } = useEditorStore.getState();
     const hasUnsavedNodeChanges = useHasUnsavedNodeChanges();
     const hasUnsavedCssChanges = useHasUnsavedCssChanges();
-    const unsavedChanges = hasUnsavedNodeChanges || hasUnsavedCssChanges;
+    const hasUnsavedPageSizeChanges = useHasUnsavedPageSizeChanges();
+    const unsavedChanges = hasUnsavedNodeChanges
+        || hasUnsavedCssChanges
+        || hasUnsavedPageSizeChanges;
     const tree = resumeNodeStore.data;
     const selectedNodeActions = useSelectedNodeActions();
 

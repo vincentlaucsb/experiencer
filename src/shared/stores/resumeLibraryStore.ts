@@ -12,6 +12,7 @@ import { resumeNodeStore } from "@/shared/stores/resumeNodeStore";
 import { workspaceStore } from "@/shared/stores/workspaceStore";
 import { cssStore, rootCssStore } from "@/shared/stores/cssStoreHooks";
 import { ResumeDocument } from "@/shared/repositories/ResumeRepository";
+import { useEditorStore } from "@/shared/stores/editorStore";
 
 export interface ResumeLibrarySnapshot {
     documents: ResumeDocumentSummary[];
@@ -80,7 +81,8 @@ export default class ResumeLibraryStore implements ResumeLibraryController {
     hasUnsavedChanges = () =>
         resumeNodeStore.hasUnsavedChanges()
         || cssStore.hasUnsavedChanges()
-        || rootCssStore.hasUnsavedChanges();
+        || rootCssStore.hasUnsavedChanges()
+        || useEditorStore.getState().hasUnsavedPageSizeChanges;
 
     saveCurrentDocument = async (): Promise<ResumeDocument | undefined> => {
         this.setSnapshot({ saveStatus: "Saving" });
@@ -122,6 +124,7 @@ export default class ResumeLibraryStore implements ResumeLibraryController {
             resumeNodeStore.clearUnsavedChanges();
             cssStore.clearUnsavedChanges();
             rootCssStore.clearUnsavedChanges();
+            useEditorStore.getState().clearPageSizeUnsavedChanges();
             await this.refreshDocuments();
             return saved;
         } catch {

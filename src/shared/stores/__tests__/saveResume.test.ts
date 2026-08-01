@@ -4,6 +4,8 @@ import { cssStore, rootCssStore } from '../cssStoreHooks';
 import { assignIds } from '@/shared/utils/assignIds';
 import CssNode from '@/shared/CssTree';
 import { BasicResumeNode, ResumeNode } from '@/types';
+import PageSize from '@/types/PageSize';
+import { useEditorStore } from '../editorStore';
 
 function hasNoUuids(nodes: BasicResumeNode[]): boolean {
     return nodes.every((node) => {
@@ -17,6 +19,7 @@ beforeEach(() => {
     resumeNodeStore.setNodes([]);
     cssStore.setCss(new CssNode('Resume CSS', {}, '#resume'));
     rootCssStore.setCss(new CssNode(':root', {}, ':root'));
+    useEditorStore.getState().loadPageSize(PageSize.Letter);
 });
 
 describe('dump()', () => {
@@ -106,5 +109,11 @@ describe('dump()', () => {
 
         expect(result.rootCss).toBeDefined();
         expect(result.rootCss.name).toBe(':root');
+    });
+
+    test('includes the active physical page size', () => {
+        useEditorStore.getState().setPageSize(PageSize.A4);
+
+        expect(dump().pageSize).toBe(PageSize.A4);
     });
 });

@@ -221,6 +221,13 @@ header#app-header {
         white-space: nowrap;
     }
 
+    .save-status,
+    .account-label {
+        max-width: min(18rem, 30vw);
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
     .pro-badge {
         background: colors.$text-on-inverse;
         color: colors.$surface-inverse;
@@ -235,5 +242,27 @@ header#app-header {
     .theme-menu__selected {
         grid-column: 3;
         text-align: right;
+    }
+}
+
+/** Give dynamic Pro and document controls a dedicated row before they collide. */
+@media screen and (max-width: variables.$screen-large) {
+    #brand {
+        flex-wrap: wrap;
+
+        > #top-menu {
+            flex: 1 0 100%;
+            order: 1;
+            margin-left: 0 !important;
+            border-top: 1px solid colors.$border-chrome;
+
+            > .pure-menu-list {
+                width: 100%;
+            }
+        }
+
+        .document-selector {
+            max-width: none;
+        }
     }
 }

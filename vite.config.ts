@@ -43,13 +43,6 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: 'build',
     sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-        },
-      },
-    },
   },
   
   server: {

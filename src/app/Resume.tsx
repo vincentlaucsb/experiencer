@@ -46,6 +46,7 @@ import { useEffect } from 'react';
 import loadData, { loadLocal } from '@/shared/stores/loadData';
 import { ResumeDocumentSummary, ResumeRepository } from '@/shared/repositories/ResumeRepository';
 import ResumeLibraryStore, { ResumeLibraryController } from '@/shared/stores/resumeLibraryStore';
+import type { ToolbarData } from '@/controls/toolbar/ToolbarMaker';
 
 // Dynamic imports (lazy-loaded on-demand)
 const SelectedNodeHighlightBox = React.lazy(
@@ -129,6 +130,7 @@ export interface ResumeProps {
     signOut?: () => void;
     signIn?: () => void;
     saveCurrentDocument?: () => void;
+    additionalToolbarSections?: ToolbarData;
     selectDocument?: (id: string) => void;
     deleteDocument?: (id: string) => void;
     requestDeleteConfirmation?: DeleteDocumentConfirmationRequest;
@@ -483,7 +485,12 @@ export function Resume(props: ResumeProps) {
         <header id="app-header" className="no-print app-mb-4">
             {props.overlays}
             <TopNavBar {...topMenuProps} />
-            {isEditing ? <TopEditingBar saveLocal={props.saveCurrentDocument} /> : <></>}
+            {isEditing ? (
+                <TopEditingBar
+                    saveLocal={props.saveCurrentDocument}
+                    additionalToolbarSections={props.additionalToolbarSections}
+                />
+            ) : <></>}
         </header>
     );
 

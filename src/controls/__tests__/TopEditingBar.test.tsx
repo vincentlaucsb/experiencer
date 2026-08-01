@@ -11,6 +11,7 @@ import { resumeNodeStore } from "@/shared/stores/resumeNodeStore";
 import { useEditorStore } from "@/shared/stores/editorStore";
 import { assignIds } from "@/shared/utils/assignIds";
 import { BasicResumeNode, NodeProperty, ResumeNode } from "@/types";
+import type { ToolbarData } from "@/controls/toolbar/ToolbarMaker";
 
 registerNodes();
 
@@ -111,5 +112,27 @@ describe("TopEditingBar Insert visibility", () => {
         });
 
         expect(screen.getByText("Insert")).toBeTruthy();
+    });
+
+    test("appends product-owned toolbar sections", () => {
+        const additionalToolbarSections: ToolbarData = new Map([
+            ["AI Review", {
+                icon: "robot",
+                iconTone: "brand",
+                items: [{
+                    icon: "robot",
+                    iconTone: "brand",
+                    text: "Review with AI",
+                    onClick: jest.fn()
+                }]
+            }]
+        ]);
+
+        render(<TopEditingBar {...createProps()} additionalToolbarSections={additionalToolbarSections} />);
+
+        expect(screen.getByText("AI Review")).toBeTruthy();
+        const reviewButton = screen.getByRole("button", { name: "Review with AI" });
+        expect(reviewButton).toBeTruthy();
+        expect(reviewButton.querySelector(".toolbar-icon-brand")).toBeTruthy();
     });
 });

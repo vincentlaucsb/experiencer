@@ -12,6 +12,7 @@ import Section from "@/resume/Section";
 import PageBreak from "@/resume/PageBreak";
 import { Action, IdType, NodeProperty, ResumeNode, AddChild } from "@/types";
 import Toolbar, { ToolbarSection } from "./toolbar/ToolbarMaker";
+import type { ToolbarData } from "./toolbar/ToolbarMaker";
 import Column from "@/resume/Column";
 import ResumeHotKeys, { ResumeHotKeyMap } from "./ResumeHotkeys";
 
@@ -198,6 +199,8 @@ interface EditingSectionProps {
     saveLocal?: Action;
     undo?: Action;
     redo?: Action;
+    /** Additional product-owned sections appended after the editor controls. */
+    additionalToolbarSections?: ToolbarData;
 }
 
 interface PageSizeControlsProps {
@@ -405,6 +408,10 @@ export function TopEditingBar(props: EditingBarProps) {
         });
     }
 
+    props.additionalToolbarSections?.forEach((section, key) => {
+        data.set(key, section);
+    });
+
     const children = <Toolbar data={data} collapse={isOverflowing} />;
     const className = isOverflowing ? "toolbar-collapsed" : "";
     return <div ref={toolbarRef} id="toolbar" className={className}>{children}</div>;
@@ -412,6 +419,7 @@ export function TopEditingBar(props: EditingBarProps) {
 
 export interface TopEditingBarWrapperProps {
     saveLocal?: Action;
+    additionalToolbarSections?: ToolbarData;
 }
 
 export default function TopEditingBarWrapper(props: TopEditingBarWrapperProps) {

@@ -1,5 +1,7 @@
 export interface BasicToolbarItemData {
     icon?: string;
+    /** Optional semantic emphasis for an icon without changing its button variant. */
+    iconTone?: "brand";
     items?: BasicToolbarItemData[];
     text?: string;
 }

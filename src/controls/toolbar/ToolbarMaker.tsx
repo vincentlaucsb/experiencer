@@ -8,6 +8,7 @@ import ToolbarItemFactory from "./ToolbarItemFactory";
 export interface ToolbarSection {
     /** Icon that appears on collapsed toolbar */
     icon?: string;
+    iconTone?: "brand";
     items: Array<ToolbarItemData>;
 }
 
@@ -30,7 +31,13 @@ export default function Toolbar(props: ToolbarProps) {
         return (
             <PureMenu horizontal>
                 {Array.from(props.data).map(([key, section]) =>
-                    <ToolbarSectionDropdown key={key} text={key} icon={section.icon} items={section.items} />
+                    <ToolbarSectionDropdown
+                        key={key}
+                        text={key}
+                        icon={section.icon}
+                        iconTone={section.iconTone}
+                        items={section.items}
+                    />
                 )}
             </PureMenu>
         );

@@ -35,7 +35,7 @@ export default function ToolbarSectionDropdown(props: ToolbarSectionDropdownProp
     return (
         <Dropdown
             ulProps={{ className: "toolbar-collapsed-section" }}
-            trigger={<ToolbarButton icon={props.icon} text={props.text} />}>
+            trigger={<ToolbarButton icon={props.icon} iconTone={props.iconTone} text={props.text} />}>
             {heading}
             {items.map((item, index: number) => {
                 // If item contains a group of actions, then turn it 
@@ -52,6 +52,7 @@ export default function ToolbarSectionDropdown(props: ToolbarSectionDropdownProp
                                     }}
                                 dropdownChild={true}
                                 icon={item.icon}
+                                iconTone={item.iconTone}
                                 text={item.text}
                             />
                         </PureMenuItem>

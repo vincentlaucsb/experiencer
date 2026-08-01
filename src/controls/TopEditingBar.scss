@@ -10,6 +10,10 @@ div#toolbar {
     box-shadow: colors.$shadow-soft;
     color: colors.$text-on-inverse;
 
+    .toolbar-icon-brand {
+        color: colors.$brand-accent;
+    }
+
     div.toolbar-section {
         @extend %flex-col;
         border-right: 1px solid colors.$border-subtle;

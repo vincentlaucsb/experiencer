@@ -25,7 +25,7 @@ export default function ToolbarItemFactory(props: ToolbarItemProps) {
     if (props.items) {
         return (
             <Dropdown
-                trigger={<ToolbarButton icon={props.icon} text={props.text} />}>
+                trigger={<ToolbarButton icon={props.icon} iconTone={props.iconTone} text={props.text} />}>
                 {props.items.map((value, index) =>
                     <ToolbarItemFactory key={index} dropdownChild={true} {...value} />
                 )}

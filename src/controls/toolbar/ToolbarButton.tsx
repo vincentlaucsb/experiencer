@@ -10,6 +10,7 @@ export interface ToolbarButtonProps {
     condensedButton?: boolean;
     disabled?: boolean;
     icon?: string;
+    iconTone?: "brand";
     dropdownChild ?: boolean;
     onClick?: (event: React.MouseEvent) => void;
     text?: string;
@@ -24,7 +25,11 @@ const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(
     (props, ref) => {
         const hideText = props.condensedButton && !props.dropdownChild;
         const text = hideText ? <></> : <span className="button-text">{props.text}</span>
-        const icon = props.icon ? <i className={`icofont-${props.icon}`} aria-hidden="true" /> : <></>
+        const iconClassName = [
+            `icofont-${props.icon}`,
+            props.iconTone ? `toolbar-icon-${props.iconTone}` : undefined
+        ].filter(Boolean).join(" ");
+        const icon = props.icon ? <i className={iconClassName} aria-hidden="true" /> : <></>
         const shortcut = props.shortcut ? <span className="button-shortcut" aria-hidden="true">{props.shortcut}</span> : <></>
         const ariaLabel = props.ariaLabel || (hideText ? props.text : undefined);
         const onClick = props.onClick;

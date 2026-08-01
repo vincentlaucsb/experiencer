@@ -80,9 +80,24 @@ button img {
 }
 
 @media print {
+    // Print the authored document, not the application surrounding it. Keep
+    // only the resume, its descendants, and the ancestor chain needed to
+    // reach it. Flattening that chain prevents editor layout, sidebars, and
+    // Pro-owned overlays from reserving space on the printed page.
+    body *:not(#resume):not(#resume *):not(:has(#resume)) {
+        display: none !important;
+    }
+
+    body *:has(#resume) {
+        display: contents !important;
+    }
+
+    html,
     body {
         background: none;
         color: colors.$document-ink;
+        height: auto;
+        overflow: visible;
     }
 
     .no-print {
@@ -95,6 +110,9 @@ button img {
         color-scheme: light;
         height: 100%;
         border: none;
+        box-shadow: none;
+        margin: 0;
+        overflow: visible;
     }
 }
 

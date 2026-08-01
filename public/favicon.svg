@@ -1,1 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Experiencer</title>
+  <rect width="64" height="64" rx="13" fill="#15263A"/>
+  <path fill="#F6F2EA" d="M7 4h26c1 0 1.8.4 2.5 1.1l13.2 13.6c1 1 1.5 2.3 1.5 3.7V38h-1.7V23.1c0-1.5-.7-2.6-2-3.1l-8.4-1.7a3 3 0 0 1-2.3-2.3L33.3 5.5v8.8H15v7.2h15.4c.7 0 1.1.4 1.1 1.1v4.7c0 .7-.4 1.1-1.1 1.1H15v7.5h18.3l1.9 3.8C24.2 41.7 14.7 46 7 52.8V4Z"/>
+  <path fill="#FF6B57" d="M6.5 60C13.5 50.5 23 43.6 36.7 39.7l2.3 3.8C30.5 45.8 26.2 51.3 26.3 60H6.5Z"/>
+  <path fill="#39B7A5" d="M38 35.4a1 1 0 0 1 1-.1l19.4 7.6c.9.4.9 1.1 0 1.4l-7.8 2.2-.6 8.8c-.1 1-.9 1.2-1.5.4l-4.7-7.9L38 35.4Z"/>
+</svg>

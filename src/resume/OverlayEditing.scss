@@ -68,6 +68,27 @@
 
 .resume-overlay-actions {
     display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.resume-overlay-markdown-support {
+    margin: 0 auto 0 0;
+    color: colors.$text-secondary;
+    font-size: 12px;
+    line-height: 1.3;
+
+    a {
+        color: colors.$text-interactive;
+        font-weight: 600;
+        text-decoration: underline;
+    }
+}
+
+.resume-overlay-action-buttons {
+    display: flex;
+    margin-left: auto;
     justify-content: flex-end;
 }
 

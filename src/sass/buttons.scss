@@ -1,6 +1,8 @@
 @use "colors/semantic" as colors;
 
-.pure-button {
+// Repeat the base class so theme rules outrank Pure's vendor defaults even
+// when Vite emits a vendor CSS chunk after the application theme chunk.
+.pure-button.pure-button {
     border: none;
     background: colors.$button-base-surface;
     color: colors.$button-base-text;
@@ -50,10 +52,8 @@
     }
 }
 
-.pure-button-primary,
-.pure-button-selected,
-a.pure-button-primary,
-a.pure-button-selected {
+.pure-button.pure-button-primary,
+.pure-button.pure-button-selected {
     @include semantic-button(
         colors.$button-primary-surface,
         colors.$button-primary-hover,
@@ -61,7 +61,7 @@ a.pure-button-selected {
     );
 }
 
-.pure-button-success {
+.pure-button.pure-button-success {
     @include semantic-button(
         colors.$button-success-surface,
         colors.$button-success-hover,
@@ -69,7 +69,7 @@ a.pure-button-selected {
     );
 }
 
-.pure-button-warning {
+.pure-button.pure-button-warning {
     @include semantic-button(
         colors.$button-warning-surface,
         colors.$button-warning-hover,
@@ -77,7 +77,7 @@ a.pure-button-selected {
     );
 }
 
-.pure-button-error {
+.pure-button.pure-button-error {
     @include semantic-button(
         colors.$button-error-surface,
         colors.$button-error-hover,
@@ -85,7 +85,7 @@ a.pure-button-selected {
     );
 }
 
-.pure-button-outline {
+.pure-button.pure-button-outline {
     @include outline-button(
         colors.$button-base-text,
         colors.$button-base-hover,
@@ -93,8 +93,8 @@ a.pure-button-selected {
     );
 }
 
-.pure-button-primary.pure-button-outline,
-.pure-button-selected.pure-button-outline {
+.pure-button.pure-button-primary.pure-button-outline,
+.pure-button.pure-button-selected.pure-button-outline {
     @include outline-button(
         colors.$button-primary-surface,
         colors.$button-primary-surface,
@@ -102,7 +102,7 @@ a.pure-button-selected {
     );
 }
 
-.pure-button-success.pure-button-outline {
+.pure-button.pure-button-success.pure-button-outline {
     @include outline-button(
         colors.$button-success-surface,
         colors.$button-success-surface,
@@ -110,7 +110,7 @@ a.pure-button-selected {
     );
 }
 
-.pure-button-warning.pure-button-outline {
+.pure-button.pure-button-warning.pure-button-outline {
     @include outline-button(
         colors.$button-warning-surface,
         colors.$button-warning-surface,
@@ -118,7 +118,7 @@ a.pure-button-selected {
     );
 }
 
-.pure-button-error.pure-button-outline {
+.pure-button.pure-button-error.pure-button-outline {
     @include outline-button(
         colors.$button-error-surface,
         colors.$button-error-surface,

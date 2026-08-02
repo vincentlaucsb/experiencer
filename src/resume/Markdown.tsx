@@ -71,7 +71,7 @@ export default function MarkdownText(props: ResumeComponentProps) {
                     {...nonCredentialInputAttributes}
                     className="resume-overlay-input resume-overlay-textarea app-p-2"
                     id={`${props.uuid}-markdown-input`}
-                    aria-label="Markdown content"
+                    aria-label="Text content"
                     value={editValue}
                     onChange={(e) => setEditValue(e.target.value)}
                     placeholder={`# Markdown supported\n\n- Lists\n- **Bold** *italic* ~~strikethrough~~\n- [Links](url)\n- \`code\` or \`\`\`code blocks\`\`\``}
@@ -79,16 +79,28 @@ export default function MarkdownText(props: ResumeComponentProps) {
                 />
             </div>
             <div className="resume-overlay-actions app-gap-2">
-                <Button className="resume-overlay-cancel-button app-py-2 app-px-4" onClick={handleCancel}>
-                    Cancel
-                </Button>
-                <Button
-                    className="resume-overlay-save-button app-py-2 app-px-4"
-                    variant="primary"
-                    onClick={handleSave}
-                >
-                    Save (Ctrl + Enter)
-                </Button>
+                <p className="resume-overlay-markdown-support">
+                    <a
+                        href="https://www.markdownguide.org/getting-started/"
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="Learn what Markdown is"
+                    >
+                        Markdown
+                    </a>{" "}is supported.
+                </p>
+                <div className="resume-overlay-action-buttons app-gap-2">
+                    <Button className="resume-overlay-cancel-button app-py-2 app-px-4" onClick={handleCancel}>
+                        Cancel
+                    </Button>
+                    <Button
+                        className="resume-overlay-save-button app-py-2 app-px-4"
+                        variant="primary"
+                        onClick={handleSave}
+                    >
+                        Save (Ctrl + Enter)
+                    </Button>
+                </div>
             </div>
         </div>
     );

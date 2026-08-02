@@ -1,0 +1,32 @@
+@use "../../sass/colors/semantic" as colors;
+
+.entry-field-adder {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+    font-size: 0.75rem;
+    line-height: 1;
+
+    &__trigger {
+        padding: 0.25rem 0.5rem;
+        font-size: inherit;
+        line-height: 1.2;
+
+        > span:first-child {
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+    }
+
+    &--compact {
+        margin-left: 0.25rem;
+
+        .entry-field-adder__trigger {
+            min-width: 1.5rem;
+            padding: 0.15rem 0.35rem;
+            font-size: 0.9rem;
+        }
+    }
+
+}

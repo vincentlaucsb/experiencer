@@ -24,6 +24,16 @@ describe("schema childTypes", () => {
         expect(ComponentTypes.instance.childTypes(MarkdownText.type)).toEqual([]);
     });
 
+    test("Markdown uses Text as its public label", () => {
+        const markdownNode = {
+            type: MarkdownText.type,
+            uuid: "markdown-1"
+        } as ResumeNode;
+
+        expect(ComponentTypes.instance.defaultValue(MarkdownText.type).text).toBe("Text");
+        expect(ComponentTypes.instance.treeRepresentation(markdownNode)).toBe("Text");
+    });
+
     test("DescriptionList only allows DescriptionListItem", () => {
         expect(ComponentTypes.instance.childTypes(DescriptionListType)).toEqual([DescriptionListItemType]);
     });

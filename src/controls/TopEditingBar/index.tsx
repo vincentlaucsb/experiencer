@@ -2,23 +2,25 @@ import React, { useRef, useEffect, useState, useCallback } from "react";
 
 import "./TopEditingBar.scss";
 
-import { Button } from "./Buttons";
-import { SelectedNodeActions } from "./SelectedNodeActions";
+import { SelectedNodeActions } from "../SelectedNodeActions";
+import ComponentTypes from "@/resume/schema/ComponentTypes";
 import { assignIds } from "@/shared/utils/assignIds";
-import ComponentTypes, { NodeInformation } from "@/resume/schema/ComponentTypes";
 import Grid from "@/resume/Grid";
 import Row from "@/resume/Row";
 import Section from "@/resume/Section";
 import PageBreak from "@/resume/PageBreak";
-import { Action, IdType, NodeProperty, ResumeNode, AddChild } from "@/types";
-import Toolbar, { ToolbarSection } from "./toolbar/ToolbarMaker";
-import type { ToolbarData } from "./toolbar/ToolbarMaker";
+import { Action, AddChild, NodeProperty, ResumeNode } from "@/types";
+import PageSize from "@/types/PageSize";
+import Toolbar, { ToolbarSection } from "../toolbar/ToolbarMaker";
+import type { ToolbarData } from "../toolbar/ToolbarMaker";
 import Column from "@/resume/Column";
-import ResumeHotKeys, { ResumeHotKeyMap } from "./ResumeHotkeys";
+import getClipboardMenu from "./clipboardMenu";
+import { addOptions, hasChildInsertOptions } from "./insertOptions";
+import { getPageSetupSection } from "./pageSetup";
 
 // Lazy-load HtmlIdAdder since it's only shown when user clicks the ID/Classes button
-const HtmlIdAdder = React.lazy(() => import("./HtmlIdAdder"));
-import { ToolbarItemData } from "./toolbar/ToolbarButton";
+const HtmlIdAdder = React.lazy(() => import("../HtmlIdAdder"));
+import { ToolbarItemData } from "../toolbar/ToolbarButton";
 import { useEditorStore, useHasUnsavedPageSizeChanges } from "@/shared/stores/editorStore";
 import { resumeNodeStore, useResumeNodeByUuid, useHasUnsavedChanges as useHasUnsavedNodeChanges } from "@/shared/stores/resumeNodeStore";
 import { useHistoryStore } from "@/shared/stores/historyStore";
@@ -28,84 +30,6 @@ import addCssClasses from "@/shared/stores/resumeStore/addCssClasses";
 import useSelectedNodeActions from "@/shared/hooks/useSelectedNodeActions";
 import addHtmlId from "@/shared/stores/addHtmlId";
 import ensureCssNodeForType from "@/shared/stores/ensureCssNodeForType";
-import PageSize from "@/types/PageSize";
-
-interface AddOptionProps {
-    options: string | Array<string>;
-    addChild: AddChild;
-    id: string | undefined;  // UUID or undefined for root
-}
-
-/**
- * Return the button or menu for adding children to a node
- * @param options
- */
-function addOptions(data: AddOptionProps): ToolbarItemData {
-    const options = data.options;
-    const nodeInfo = (type: string) => ComponentTypes.instance.defaultValue(type);
-
-    if (Array.isArray(options)) {
-        if (options.length === 0) {
-            return {};
-        }
-
-        return {
-            text: "Insert",
-            icon: "ui-add",
-            items: options.map((nodeType: string) => {
-                const info = nodeInfo(nodeType);
-                const node: NodeInformation = nodeInfo(nodeType);
-
-                return {
-                    icon: info.icon,
-                    text: info.text,
-                    onClick: () => data.addChild(data.id, assignIds(node.node))
-                } as ToolbarItemData
-            })
-        }
-    }
-
-    const node: NodeInformation = nodeInfo(data.options as string);
-    return {
-        onClick: () => data.addChild(data.id, assignIds(node.node)),
-        text: `Add ${node.text}`
-    }
-}
-
-function ClipboardMenu(data: EditingBarProps): ToolbarItemData[] {
-    /**
-     * Get the keyboard shortcut associated with key
-     * @param key Resume hotkey key
-     */
-    const getShortcut = (key: string): string => {
-        return  ResumeHotKeyMap[key]['sequence'];
-    }
-
-    return [
-        {
-            text: 'Cut',
-            icon: "ui-cut",
-            onClick: data.cutClipboard,
-            shortcut: getShortcut('CUT_SELECTED')
-        },
-        {
-            text: 'Copy',
-            icon: "ui-copy",
-            onClick: data.copyClipboard,
-            shortcut: getShortcut('COPY_SELECTED')
-        },
-        {
-            text: 'Paste',
-            icon: "ui-clip-board",
-            onClick: data.pasteClipboard,
-            shortcut: getShortcut('PASTE_SELECTED')
-        }
-    ];
-}
-
-function hasChildInsertOptions(options: string | Array<string>): boolean {
-    return Array.isArray(options) ? options.length > 0 : !!options;
-}
 
 interface EditingBarSubProps extends EditingBarProps {
     isOverflowing: boolean;
@@ -136,7 +60,8 @@ function SelectedNodeToolbar(props: EditingBarSubProps) {
                     ...(canInsertChildren ? [addOptions({
                         id: selectedNode.uuid,
                         addChild: props.addChild,
-                        options: childTypes
+                        options: childTypes,
+                        parentNode: selectedNode
                     })] : []),
                     {
                         onClick: props.delete,
@@ -148,7 +73,7 @@ function SelectedNodeToolbar(props: EditingBarSubProps) {
                         icon: 'clip-board',
                         text: 'Clipboard',
                         condensedButton: true,
-                        items: ClipboardMenu(props),
+                        items: getClipboardMenu(props),
                     },
                     ...ComponentTypes.instance.toolbarOptions(selectedNode, props.updateSelected),
                     {
@@ -203,11 +128,6 @@ interface EditingSectionProps {
     additionalToolbarSections?: ToolbarData;
 }
 
-interface PageSizeControlsProps {
-    pageSize: PageSize;
-    setPageSize: (pageSize: PageSize) => void;
-}
-
 export interface EditingBarProps extends SelectedNodeActions, EditingSectionProps {
     addHtmlId: (htmlId: string) => void;
     addCssClasses: (classes: string) => void;
@@ -219,30 +139,6 @@ export interface EditingBarProps extends SelectedNodeActions, EditingSectionProp
 
 /** Screen width at which toolbar should shrink regardless of anything */
 const CLIP_WIDTH = 800;
-
-function PageSizeControls(props: PageSizeControlsProps) {
-    const { pageSize, setPageSize } = props;
-
-    return (
-        <div className="page-size-control app-gap-1-5" role="group" aria-label="Page size">
-            <span className="page-size-label app-text-light-accent">Size</span>
-            <div className="page-size-toggle">
-                <Button
-                    className={`page-size-option${pageSize === PageSize.Letter ? ' active' : ''}`}
-                    onClick={() => setPageSize(PageSize.Letter)}
-                >
-                    Letter
-                </Button>
-                <Button
-                    className={`page-size-option${pageSize === PageSize.A4 ? ' active' : ''}`}
-                    onClick={() => setPageSize(PageSize.A4)}
-                >
-                    A4
-                </Button>
-            </div>
-        </div>
-    );
-}
 
 function getEditingSection(
     props: EditingBarProps,
@@ -270,37 +166,6 @@ function getEditingSection(
     ];
 
     return items;
-}
-
-function getPageSetupSection(
-    pageSize: PageSize,
-    setPageSize: (pageSize: PageSize) => void,
-    isOverflowing: boolean
-): ToolbarSection {
-    if (isOverflowing) {
-        return {
-            icon: "ui-file",
-            items: [
-                {
-                    onClick: pageSize === PageSize.Letter ? undefined : () => setPageSize(PageSize.Letter),
-                    text: `Letter${pageSize === PageSize.Letter ? ' ✓' : ''}`
-                },
-                {
-                    onClick: pageSize === PageSize.A4 ? undefined : () => setPageSize(PageSize.A4),
-                    text: `A4${pageSize === PageSize.A4 ? ' ✓' : ''}`
-                }
-            ]
-        };
-    }
-
-    return {
-        icon: "ui-file",
-        items: [
-            {
-                content: <PageSizeControls pageSize={pageSize} setPageSize={setPageSize} />
-            }
-        ]
-    };
 }
 
 /** A responsive top editing bar */

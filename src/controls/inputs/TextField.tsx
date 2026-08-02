@@ -15,6 +15,8 @@ interface TextFieldProps {
     value?: string;
     label?: string;
     defaultText?: string;
+    /** Start the newly-created field in edit mode. */
+    startEditing?: boolean;
     displayClassName?: string;
     displayValue?: string;
     static?: boolean;
@@ -38,7 +40,7 @@ export default class TextField extends React.Component<TextFieldProps, TextField
 
         this.state = {
             value: props.value,
-            isEditing: false
+            isEditing: Boolean(props.startEditing)
         };
 
         this.onKeyDown = this.onKeyDown.bind(this);

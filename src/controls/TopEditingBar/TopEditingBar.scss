@@ -1,6 +1,6 @@
 @use "sass:color";
-@use "../sass/colors/semantic" as colors;
-@use "../sass/variables";
+@use "../../sass/colors/semantic" as colors;
+@use "../../sass/variables";
 
 /** || Top Editing Bar */
 div#toolbar {

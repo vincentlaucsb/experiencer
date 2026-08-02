@@ -85,10 +85,11 @@ describe("TopEditingBar Insert visibility", () => {
         expect(screen.getByLabelText("Delete")).toBeTruthy();
     });
 
-    test("shows Insert for selected Section node (allows children)", async () => {
+    test("labels an Entry insert with the selected section name", async () => {
         const nodes = assignIds([
             {
                 type: Section.type,
+                value: "Experience",
                 childNodes: [
                     {
                         type: MarkdownText.type,
@@ -112,6 +113,19 @@ describe("TopEditingBar Insert visibility", () => {
         });
 
         expect(screen.getByText("Insert")).toBeTruthy();
+
+        act(() => {
+            screen.getByText("Insert").click();
+        });
+
+        const entryOption = screen.getByText("Experience Entry");
+        const sectionOption = screen.getByText("Section");
+        expect(entryOption).toBeTruthy();
+        expect(entryOption.compareDocumentPosition(sectionOption) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+        expect(screen.getByRole("button", { name: "Experience Entry" }).querySelector(".toolbar-icon-brand")).toBeTruthy();
+        expect(screen.getByText("Text")).toBeTruthy();
+        expect(screen.queryByText("Markdown")).toBeNull();
+        expect(screen.queryByText("Entry")).toBeNull();
     });
 
     test("appends product-owned toolbar sections", () => {

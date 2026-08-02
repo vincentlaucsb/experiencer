@@ -6,6 +6,9 @@ import toUrl from "@/shared/utils/toUrl";
 import { deleteAt } from "@/shared/utils/arrayHelpers";
 import ResumeComponentProps, { BasicResumeNode } from "@/types";
 import { useIsNodeEditing, useIsNodeSelected } from "@/shared/stores/editorStore";
+import FieldAdder from "./FieldAdder";
+
+import "./Entry.scss";
 
 interface EntryBase {
     title?: string[];
@@ -37,6 +40,13 @@ function getFieldClassName(index: number, arr: string[]) {
 export default function Entry(props: EntryProps) {
     const isEditing = useIsNodeEditing(props.uuid);
     const isSelected = useIsNodeSelected(props.uuid);
+    const [newSubtitleIndex, setNewSubtitleIndex] = React.useState<number | undefined>();
+
+    const addSubtitleField = () => {
+        const subtitle = props.subtitle || [];
+        setNewSubtitleIndex(subtitle.length);
+        props.updateData("subtitle", [...subtitle, ""]);
+    };
 
     const getFields = (key: 'title' | 'subtitle') => {
         const deleter = (key: 'title' | 'subtitle', index: number) => {
@@ -75,6 +85,7 @@ export default function Entry(props: EntryProps) {
                     <TextField
                         displayClassName={getFieldClassName(index, arr)}
                         static={!isSelected}
+                        startEditing={key === "subtitle" && newSubtitleIndex === index}
                         onChange={(data: string) => updater(key, index, data)}
                         value={text || ""}
                         defaultText="Enter a value"
@@ -98,7 +109,11 @@ export default function Entry(props: EntryProps) {
                 }
             }}>
                 <h3 className="title">{getFields('title')}</h3>
-                <h4 className="subtitle">{getFields('subtitle')}</h4>
+                <h4 className="subtitle">
+                    {getFields('subtitle')}
+                    {isEditing && <FieldAdder compact onAdd={addSubtitleField} />}
+                </h4>
+                {isSelected && !isEditing && <FieldAdder onAdd={addSubtitleField} />}
             </hgroup>
 
             {props.children}

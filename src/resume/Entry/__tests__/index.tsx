@@ -1,8 +1,35 @@
 /**
  * @jest-environment jsdom
  */
-import { render } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
+import { useState } from "react";
 import Entry from "../";
+import { useEditorStore } from "@/shared/stores/editorStore";
+
+function StatefulEntry({ uuid }: { uuid: string }) {
+    const [subtitle, setSubtitle] = useState(["Some Job Title"]);
+
+    return <Entry
+        id={[0]}
+        type={Entry.type}
+        uuid={uuid}
+        isLast={false}
+        updateData={(key, value) => {
+            if (key === "subtitle") {
+                setSubtitle(value as string[]);
+            }
+        }}
+        updateDataFields={() => { }}
+        title={["Some Company"]}
+        subtitle={subtitle}
+    />;
+}
+
+afterEach(() => {
+    act(() => {
+        useEditorStore.getState().unselectNode();
+    });
+});
 
 /** Assert that the correct class names are generated */
 test('Entry Class Names Test', async () => {
@@ -53,3 +80,44 @@ test('Entry Class Names Test', async () => {
         expect(lastField.textContent).toBe("2016");
     }
 })
+
+test("selected entries expose a direct add-field action", () => {
+    const uuid = "selected-entry";
+
+    act(() => {
+        useEditorStore.getState().selectNode(uuid);
+    });
+
+    render(<StatefulEntry uuid={uuid} />);
+
+    act(() => {
+        screen.getByRole("button", { name: "Add field" }).click();
+    });
+
+    expect(screen.queryByRole("menu")).toBeNull();
+    expect(screen.getByRole("textbox")).toBeTruthy();
+});
+
+test("editing entries expose a compact add-field control", () => {
+    const uuid = "editing-entry";
+
+    act(() => {
+        useEditorStore.getState().editNode(uuid);
+    });
+
+    render(<Entry
+        id={[0]}
+        type={Entry.type}
+        uuid={uuid}
+        isLast={false}
+        updateData={() => { }}
+        updateDataFields={() => { }}
+        title={["Some Company"]}
+        subtitle={["Some Job Title"]}
+    />);
+
+    const addFieldButton = screen.getByRole("button", { name: "Add field" });
+    expect(addFieldButton.className).toContain("entry-field-adder__trigger");
+    expect(addFieldButton.className).toContain("pure-button-primary");
+    expect(addFieldButton.className).toContain("pure-button-outline");
+});

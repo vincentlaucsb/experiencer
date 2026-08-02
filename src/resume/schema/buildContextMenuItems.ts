@@ -44,7 +44,7 @@ export default function buildContextMenuItems(uuid: string, actions: ContextMenu
     ));
 
     return [
-        { type: "header", label: node.type },
+        { type: "header", label: getNodeLabel(node.type) },
         ...parentItems,
         ...(additionalItems.length > 0 ? [{ type: "separator" } as MenuItem] : []),
         ...additionalItems
@@ -61,8 +61,16 @@ function mapContextMenuOptions(options: ContextMenuItemData[], idPrefix: string)
 
 function getParentLabel(node: { type: string; value?: unknown }): string {
     if (node.type === "Section" && typeof node.value === "string" && node.value.length > 0) {
-        return `${node.type}: ${node.value}`;
+        return `${getNodeLabel(node.type)}: ${node.value}`;
     }
 
-    return node.type;
+    return getNodeLabel(node.type);
+}
+
+function getNodeLabel(type: string): string {
+    try {
+        return ComponentTypes.instance.defaultValue(type).text;
+    } catch {
+        return type;
+    }
 }

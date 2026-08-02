@@ -145,8 +145,9 @@ export default function registerNodes() {
     schema.registerNodeType({
         component: MarkdownText,
         type: MarkdownText.type,
-        text: 'Markdown',
+        text: 'Text',
         icon: 'paragraph',
+        treeRepresentation: 'Text',
         childTypes: [],
         defaultValue: {},
         isDefaultChildType: true,

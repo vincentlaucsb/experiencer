@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 import registerNodes from "@/resume/schema";
+import ComponentTypes from "@/resume/schema/ComponentTypes";
 import MarkdownText from "@/resume/Markdown";
 import Section from "@/resume/Section";
 import NodeStore from "@/shared/stores/NodeStore";
@@ -38,7 +39,9 @@ describe("NodeStore child validation", () => {
 
         const parentAfter = store.getNodeByUuid(parentUuid);
         expect(parentAfter?.childNodes?.length || 0).toBe(0);
-        expect(useToastStore.getState().message).toBe("Section cannot be a child of Markdown.");
+        const sectionLabel = ComponentTypes.instance.defaultValue(Section.type).text;
+        const markdownLabel = ComponentTypes.instance.defaultValue(MarkdownText.type).text;
+        expect(useToastStore.getState().message).toBe(`${sectionLabel} cannot be a child of ${markdownLabel}.`);
         expect(useToastStore.getState().visible).toBe(true);
     });
 

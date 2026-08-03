@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { resumeNodeStore } from './resumeNodeStore';
+import { deepCopy } from '@/shared/utils/deepCopy';
 import { ResumeNode } from '@/types';
 
 interface HistoryState {
@@ -43,7 +44,7 @@ export const useHistoryStore = create<HistoryStore>()(
                 const newPast = past.slice(0, -1);
                 
                 // Save current state to future before changing
-                const current = resumeNodeStore.data.childNodes;
+                const current = deepCopy(resumeNodeStore.data.childNodes);
                 
                 set(
                     {
@@ -70,7 +71,7 @@ export const useHistoryStore = create<HistoryStore>()(
                 const newFuture = future.slice(1);
                 
                 // Save current state to past before changing
-                const current = resumeNodeStore.data.childNodes;
+                const current = deepCopy(resumeNodeStore.data.childNodes);
                 
                 set(
                     {
@@ -103,12 +104,12 @@ export const useHistoryStore = create<HistoryStore>()(
  * Call this BEFORE making changes to the resume tree.
  * This is a regular function (not a hook) so it can be called from anywhere.
  */
-export const recordHistory = () => {
-    const current = resumeNodeStore.data.childNodes;
+export const recordHistory = (committedSnapshot?: ResumeNode[]) => {
+    const current = committedSnapshot ?? resumeNodeStore.data.childNodes;
     const { past } = useHistoryStore.getState();
-    
+
     // Deep clone to prevent reference issues
-    const snapshot = JSON.parse(JSON.stringify(current));
+    const snapshot = deepCopy(current);
     
     // Limit history to 50 entries to prevent memory issues
     const newPast = past.length >= 50 

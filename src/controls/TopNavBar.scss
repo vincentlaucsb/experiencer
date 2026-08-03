@@ -115,20 +115,20 @@ header#app-header {
     }
 
     .document-selector-trigger {
-        flex: 1 1 auto;
-        max-width: min(32vw, 28rem);
-        min-width: 0;
-    }
-
-    .document-selector-trigger {
         align-items: center;
         display: inline-flex;
+        width: 100%;
         max-width: 100%;
         min-width: 0;
 
         &::after {
             flex: 0 0 auto;
         }
+    }
+
+    .document-selector {
+        flex: 0 1 min(32vw, 28rem);
+        min-width: 0;
     }
 
     .document-selector-label {
@@ -195,6 +195,7 @@ header#app-header {
         }
 
         .document-selector {
+            flex: 1 1 min(100%, 28rem);
             max-width: none;
         }
     }

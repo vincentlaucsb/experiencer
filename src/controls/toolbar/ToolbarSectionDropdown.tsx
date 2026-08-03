@@ -12,7 +12,12 @@ export default function ToolbarSectionDropdown(props: ToolbarSectionDropdownProp
     return (
         <Dropdown
             items={toPoprightMenuItems(props.items, "section")}
-            trigger={<ToolbarButton icon={props.icon} iconTone={props.iconTone} text={props.text} />}
+            trigger={<ToolbarButton
+                icon={props.icon}
+                iconTone={props.iconTone}
+                text={props.text}
+                dropdownTrigger
+            />}
         />
     );
 }

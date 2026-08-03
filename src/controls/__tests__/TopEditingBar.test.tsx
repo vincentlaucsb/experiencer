@@ -116,8 +116,12 @@ describe("TopEditingBar Insert visibility", () => {
 
         expect(screen.getByText("Insert")).toBeTruthy();
 
+        const insertButton = screen.getByRole("button", { name: "Insert" });
+        expect(insertButton.querySelector(".toolbar-dropdown-indicator")).toBeTruthy();
+        expect(insertButton.getAttribute("aria-haspopup")).toBe("menu");
+
         act(() => {
-            screen.getByText("Insert").click();
+            insertButton.click();
         });
 
         const entryOption = screen.getByText("Experience Entry");

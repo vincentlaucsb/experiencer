@@ -69,7 +69,7 @@ export default function Entry(props: EntryProps) {
         }
 
         const updater = (key: 'title' | 'subtitle', index: number, text: string) => {
-            let replTitle = props[key] || [];
+            const replTitle = [...(props[key] || [])];
 
             // Replace contents
             replTitle[index] = text;

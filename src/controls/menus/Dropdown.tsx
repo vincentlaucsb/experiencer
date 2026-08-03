@@ -6,6 +6,7 @@ export interface DropdownProps {
     trigger: React.ReactElement<DropdownTriggerProps>;
     items: MenuItem[];
     className?: string;
+    wrapperClassName?: string;
 }
 
 interface DropdownTriggerProps {
@@ -15,7 +16,7 @@ interface DropdownTriggerProps {
     "aria-expanded"?: boolean;
 }
 
-export default function Dropdown({ trigger, items, className }: DropdownProps) {
+export default function Dropdown({ trigger, items, className, wrapperClassName }: DropdownProps) {
     const [isOpen, setIsOpen] = React.useState(false);
     const accessibleTrigger = React.cloneElement(trigger, {
         "aria-haspopup": "menu",
@@ -23,7 +24,7 @@ export default function Dropdown({ trigger, items, className }: DropdownProps) {
     });
 
     return (
-        <li className="pure-menu-item">
+        <li className={["pure-menu-item", wrapperClassName].filter(Boolean).join(" ")}>
             <DropdownMenu
                 className={className}
                 items={items}

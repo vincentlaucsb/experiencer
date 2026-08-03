@@ -1,5 +1,7 @@
 import registerNodes from '@/resume/schema';
 import NodeStore from '@/shared/stores/NodeStore';
+import { resumeNodeStore } from '@/shared/stores/resumeNodeStore';
+import { useHistoryStore } from '@/shared/stores/historyStore';
 import { assignIds } from '@/shared/utils/assignIds';
 import { BasicResumeNode, ResumeNode } from '@/types';
 
@@ -38,6 +40,76 @@ describe('NodeStore history recording', () => {
         store.updateNode(section.uuid, 'textAlign', 'center');
 
         expect(mockRecordHistory).toHaveBeenCalledTimes(1);
+    });
+
+    test('updateNode history preserves the committed value when an array was mutated before the call', () => {
+        const store = makeStore([
+            {
+                type: 'Section',
+                childNodes: [{ type: 'Entry', subtitle: ['Original', 'City'] }],
+            },
+        ]);
+
+        const entry = store.data.childNodes[0].childNodes?.[0];
+        if (!entry) throw new Error('Expected Entry node');
+
+        const subtitle = entry.subtitle as string[];
+        subtitle[0] = 'Changed';
+        store.updateNode(entry.uuid, 'subtitle', subtitle);
+
+        const snapshot = mockRecordHistory.mock.calls[0][0] as ResumeNode[];
+        expect(snapshot[0].childNodes?.[0]?.subtitle).toEqual(['Original', 'City']);
+        expect(store.getNodeByUuid(entry.uuid)?.subtitle).toEqual(['Changed', 'City']);
+    });
+
+    test('updateNode history preserves deleted fields when an array was mutated before the call', () => {
+        const store = makeStore([
+            {
+                type: 'Section',
+                childNodes: [{ type: 'Entry', subtitle: ['Original', 'City'] }],
+            },
+        ]);
+
+        const entry = store.data.childNodes[0].childNodes?.[0];
+        if (!entry) throw new Error('Expected Entry node');
+
+        const subtitle = entry.subtitle as string[];
+        subtitle.splice(0, 1);
+        store.updateNode(entry.uuid, 'subtitle', subtitle);
+
+        const snapshot = mockRecordHistory.mock.calls[0][0] as ResumeNode[];
+        expect(snapshot[0].childNodes?.[0]?.subtitle).toEqual(['Original', 'City']);
+        expect(store.getNodeByUuid(entry.uuid)?.subtitle).toEqual(['City']);
+    });
+
+    test('undo restores Entry subtitle edits and deletions through the live history store', () => {
+        useHistoryStore.getState().clear();
+        resumeNodeStore.setNodes(assignIds([
+            {
+                type: 'Section',
+                childNodes: [{ type: 'Entry', subtitle: ['Original', 'City'] }],
+            },
+        ] as BasicResumeNode[]) as ResumeNode[]);
+
+        const entry = resumeNodeStore.data.childNodes[0].childNodes?.[0];
+        if (!entry) throw new Error('Expected Entry node');
+
+        const editedSubtitle = entry.subtitle as string[];
+        editedSubtitle[0] = 'Changed';
+        resumeNodeStore.updateNode(entry.uuid, 'subtitle', editedSubtitle);
+        useHistoryStore.getState().undo();
+
+        const restoredEntry = resumeNodeStore.data.childNodes[0].childNodes?.[0];
+        expect(restoredEntry?.subtitle).toEqual(['Original', 'City']);
+
+        const deletedSubtitle = restoredEntry?.subtitle as string[];
+        deletedSubtitle.splice(0, 1);
+        resumeNodeStore.updateNode(restoredEntry!.uuid, 'subtitle', deletedSubtitle);
+        useHistoryStore.getState().undo();
+
+        expect(resumeNodeStore.data.childNodes[0].childNodes?.[0]?.subtitle)
+            .toEqual(['Original', 'City']);
+        useHistoryStore.getState().clear();
     });
 
     test('updateNodeFields records history once for multiple fields', () => {

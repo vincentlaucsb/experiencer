@@ -27,7 +27,12 @@ export default function ToolbarItemFactory(props: ToolbarItemProps) {
         return (
             <Dropdown
                 items={toPoprightMenuItems(props.items)}
-                trigger={<ToolbarButton icon={props.icon} iconTone={props.iconTone} text={props.text} />}>
+                trigger={<ToolbarButton
+                    icon={props.icon}
+                    iconTone={props.iconTone}
+                    text={props.text}
+                    dropdownTrigger
+                />}>
             </Dropdown>
         );
     }

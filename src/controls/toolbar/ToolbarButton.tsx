@@ -12,9 +12,12 @@ export interface ToolbarButtonProps {
     icon?: string;
     iconTone?: "brand";
     dropdownChild ?: boolean;
+    dropdownTrigger?: boolean;
     onClick?: (event: React.MouseEvent) => void;
     text?: string;
     shortcut ?: string;
+    "aria-haspopup"?: React.AriaAttributes["aria-haspopup"];
+    "aria-expanded"?: React.AriaAttributes["aria-expanded"];
 }
 
 /**
@@ -31,6 +34,9 @@ const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(
         ].filter(Boolean).join(" ");
         const icon = props.icon ? <i className={iconClassName} aria-hidden="true" /> : <></>
         const shortcut = props.shortcut ? <span className="button-shortcut" aria-hidden="true">{props.shortcut}</span> : <></>
+        const dropdownIndicator = props.dropdownTrigger
+            ? <i className="icofont-caret-down toolbar-dropdown-indicator" aria-hidden="true" />
+            : <></>;
         const ariaLabel = props.ariaLabel || (hideText ? props.text : undefined);
         const onClick = props.onClick;
 
@@ -52,8 +58,15 @@ const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(
         }
 
         return (
-            <Container ref={ref} aria-label={ariaLabel} disabled={props.disabled} onClick={onClick}>
-                {icon} {text} {shortcut}
+            <Container
+                ref={ref}
+                aria-label={ariaLabel}
+                aria-haspopup={props["aria-haspopup"]}
+                aria-expanded={props["aria-expanded"]}
+                disabled={props.disabled}
+                onClick={onClick}
+            >
+                {icon} {text} {dropdownIndicator} {shortcut}
             </Container>
         );
     }

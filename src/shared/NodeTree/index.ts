@@ -284,7 +284,7 @@ export default class ResumeNodeTree implements ResumeNode {
             const deletedIndex = hierarchicalId[hierarchicalId.length - 1];
             const childElem = parentNode.childNodes[deletedIndex];
             this.removeFromIndex(childElem);
-            deleteAt(parentNode.childNodes, deletedIndex);
+            parentNode.childNodes = deleteAt(parentNode.childNodes, deletedIndex);
             // Reindex only shifted siblings (and their descendants)
             const parentPath = hierarchicalId.slice(0, -1);
             this.deleteIndex(parentNode, parentPath, deletedIndex);
@@ -303,7 +303,8 @@ export default class ResumeNodeTree implements ResumeNode {
         const hierarchicalId = typeof id === 'string' ? this.getHierarchicalId(id) : id;
         if (!hierarchicalId) return;
         let targetNode = this.getNodeById(hierarchicalId);
-        targetNode[key] = data;
+        // Do not retain caller-owned arrays/objects in the live document.
+        targetNode[key] = data === undefined ? undefined : deepCopy(data);
     }
     
     /**
@@ -328,7 +329,10 @@ export default class ResumeNodeTree implements ResumeNode {
             throw new Error("Parent has no children");
         }
 
-        moveUp(parentNode.childNodes, hierarchicalId[hierarchicalId.length - 1]);
+        parentNode.childNodes = moveUp(
+            parentNode.childNodes,
+            hierarchicalId[hierarchicalId.length - 1]
+        );
 
         const newId = [
             ...hierarchicalId.slice(0, hierarchicalId.length - 1),
@@ -370,7 +374,10 @@ export default class ResumeNodeTree implements ResumeNode {
             throw new Error("Parent has no children");
         }
 
-        moveDown(parentNode.childNodes, hierarchicalId[hierarchicalId.length - 1]);
+        parentNode.childNodes = moveDown(
+            parentNode.childNodes,
+            hierarchicalId[hierarchicalId.length - 1]
+        );
 
         const newId = [
             ...hierarchicalId.slice(0, hierarchicalId.length - 1),

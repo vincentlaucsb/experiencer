@@ -19,14 +19,12 @@ export const DescriptionListItemType = "Description List Item";
 function getDefinitions(props: DescriptionItemProps, isSelected: boolean) {
     const moveFieldUp = (index: number) => {
         const definitions = props.definitions || [];
-        moveUp(definitions, index);
-        props.updateData('definitions', definitions);
+        props.updateData('definitions', moveUp(definitions, index));
     };
 
     const moveFieldDown = (index: number) => {
         const definitions = props.definitions || [];
-        moveDown(definitions, index);
-        props.updateData('definitions', definitions);
+        props.updateData('definitions', moveDown(definitions, index));
     };
 
     const deleteField = (index: number) => {
@@ -34,7 +32,7 @@ function getDefinitions(props: DescriptionItemProps, isSelected: boolean) {
     };
 
     const updater = (index: number, text: string) => {
-        let replDefs = props.definitions || [];
+        const replDefs = [...(props.definitions || [])];
 
         // Replace contents
         replDefs[index] = text;

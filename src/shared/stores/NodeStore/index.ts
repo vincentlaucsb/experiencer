@@ -2,7 +2,10 @@ import ClassStore from '@/shared/ClassStore';
 import ResumeNodeTree from '@/shared/NodeTree';
 import ComponentTypes from '@/resume/schema/ComponentTypes';
 import { showToast } from '@/shared/stores/toastStore';
+import { deepCopy } from '@/shared/utils/deepCopy';
 import { IdType, ResumeNode } from '@/types';
+
+type HistoryRecorder = (snapshot: ResumeNode[]) => void;
 
 /**
  * Gates resume-tree mutations, undo history, selection cleanup, and user
@@ -10,11 +13,13 @@ import { IdType, ResumeNode } from '@/types';
  */
 export default class NodeStore extends ClassStore<ResumeNodeTree> {
     protected _data: ResumeNodeTree;
-    private historyRecorder: () => void = () => undefined;
+    private historyRecorder: HistoryRecorder = () => undefined;
+    /** Last committed tree, retained independently of mutable live node references. */
+    private committedNodes: ResumeNode[];
     private selectedNodeIdProvider: () => string | undefined = () => undefined;
     private clearSelection: () => void = () => undefined;
 
-    setHistoryRecorder(recorder?: () => void): void {
+    setHistoryRecorder(recorder?: HistoryRecorder): void {
         this.historyRecorder = recorder ?? (() => undefined);
     }
 
@@ -27,7 +32,18 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
     }
 
     private recordNodeHistory(): void {
-        this.historyRecorder();
+        // A caller may have mutated a node received from the live tree before
+        // invoking updateNode. History must still receive the true prior state.
+        this.historyRecorder(deepCopy(this.committedNodes));
+    }
+
+    /** Publishes a tree mutation and refreshes the immutable history baseline. */
+    private withTrackedMutation<R>(operation: () => R): R {
+        return this.withMutation(() => {
+            const result = operation();
+            this.committedNodes = deepCopy(this.data.childNodes);
+            return result;
+        });
     }
 
     private resolvePath(id: string | IdType): IdType | undefined {
@@ -69,7 +85,9 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
 
     constructor(initialTree?: ResumeNodeTree) {
         super();
-        this._data = initialTree || new ResumeNodeTree();
+        const nodes = deepCopy((initialTree || new ResumeNodeTree()).childNodes);
+        this._data = new ResumeNodeTree(nodes);
+        this.committedNodes = deepCopy(nodes);
     }
 
     // #region Tree Manipulation (IdType-based)
@@ -80,8 +98,10 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
      * @param nodes - Array of root-level nodes
      */
     setNodes(nodes: ResumeNode[]): void {
+        const nextNodes = deepCopy(nodes);
         this.withMutation(() => {
-            this.data = new ResumeNodeTree(nodes);
+            this.data = new ResumeNodeTree(nextNodes);
+            this.committedNodes = deepCopy(nextNodes);
         });
     }
 
@@ -108,7 +128,7 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
         }
 
         this.recordNodeHistory();
-        this.withMutation(() => this.data.addNestedChild(normalizedParentId, node));
+        this.withTrackedMutation(() => this.data.addNestedChild(normalizedParentId, node));
     }
 
     /**
@@ -141,7 +161,7 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
         const shouldClearSelection = !!selectedPath && this.isPrefixPath(deletePath, selectedPath);
 
         this.recordNodeHistory();
-        this.withMutation(() => this.data.deleteChild(deletePath));
+        this.withTrackedMutation(() => this.data.deleteChild(deletePath));
 
         if (shouldClearSelection) {
             this.clearSelection();
@@ -158,7 +178,7 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
      */
     updateNode(id: string | IdType, key: string, data: any): void {
         this.recordNodeHistory();
-        this.withMutation(() => this.data.updateChild(id, key, data));
+        this.withTrackedMutation(() => this.data.updateChild(id, key, data));
     }
 
     /**
@@ -172,7 +192,7 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
         }
 
         this.recordNodeHistory();
-        this.withMutation(() => {
+        this.withTrackedMutation(() => {
             entries.forEach(([key, value]) => {
                 this.data.updateChild(id, key, value);
             });
@@ -190,7 +210,7 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
      */
     moveNodeUp(id: string | IdType): string | IdType {
         this.recordNodeHistory();
-        return this.withMutation(() => this.data.moveUp(id));
+        return this.withTrackedMutation(() => this.data.moveUp(id));
     }
 
     /**
@@ -204,7 +224,7 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
      */
     moveNodeDown(id: string | IdType): string | IdType {
         this.recordNodeHistory();
-        return this.withMutation(() => this.data.moveDown(id));
+        return this.withTrackedMutation(() => this.data.moveDown(id));
     }
 
     /** Duplicate a node next to its current sibling position. */
@@ -216,7 +236,7 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
 
         const node = this.data.getNodeById(hierarchicalId);
         this.recordNodeHistory();
-        return this.withMutation(() => this.data.insertSibling(hierarchicalId, node, before));
+        return this.withTrackedMutation(() => this.data.insertSibling(hierarchicalId, node, before));
     }
 
     // #endregion

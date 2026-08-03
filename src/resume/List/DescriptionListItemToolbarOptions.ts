@@ -7,9 +7,7 @@ export default function getDescriptionListItemToolbarOptions(
     node: ResumeNode
 ): ToolbarItemData[] {
     const addDefinition = (node: BasicDescriptionItemProps) => {
-        let arr = node.definitions || [];
-        arr.push('');
-        return arr;
+        return [...(node.definitions || []), ''];
     };
 
     return [

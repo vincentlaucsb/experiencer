@@ -59,6 +59,19 @@ describe("Dropdown", () => {
         expect(screen.getByRole("menuitem", { name: "Item" })).toBeTruthy();
     });
 
+    test("supports a class on the menu item wrapper", () => {
+        render(
+            <Dropdown
+                items={items}
+                trigger={<button type="button">Open</button>}
+                wrapperClassName="document-selector"
+            />
+        );
+
+        expect(screen.getByRole("button", { name: "Open" }).closest("li")?.className)
+            .toBe("pure-menu-item document-selector");
+    });
+
     test("closes after selecting a menu item", () => {
         render(
             <Dropdown items={items} trigger={<button type="button">Open</button>} />

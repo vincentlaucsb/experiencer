@@ -6,7 +6,7 @@ export default function getEntryToolbarOptions(
 ): ToolbarItemData[] {
     const addLineBreak = (node: any) => {
         if (node.subtitle) {
-            let arr = node.subtitleBreaks || [];
+            const arr = [...(node.subtitleBreaks || [])];
             arr.push(node.subtitle.length - 1);
             return arr;
         }
@@ -21,15 +21,11 @@ export default function getEntryToolbarOptions(
     };
 
     const addTitleField = (node: any) => {
-        let arr = node.title || [];
-        arr.push('');
-        return arr;
+        return [...(node.title || []), ''];
     };
 
     const addSubtitleField = (node: any) => {
-        let arr = node.subtitle || [];
-        arr.push('');
-        return arr;
+        return [...(node.subtitle || []), ''];
     };
 
     return [

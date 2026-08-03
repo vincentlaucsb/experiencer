@@ -234,7 +234,8 @@ export function TopNavBar(props: TopNavBarProps) {
                     {props.isEditing ? props.documentItems : <></>}
                     {props.isEditing && props.documents?.length ? (
                         <Dropdown
-                            className="toolbar-dropdown document-selector"
+                            className="toolbar-dropdown"
+                            wrapperClassName="document-selector"
                             items={documentMenuItems}
                             trigger={(
                                 <Button

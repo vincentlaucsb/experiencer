@@ -13,6 +13,13 @@ div#toolbar {
         color: colors.$brand-accent;
     }
 
+    .toolbar-dropdown-indicator {
+        margin-left: 0.35em;
+        font-size: 0.75em;
+        opacity: 0.8;
+        vertical-align: 0.08em;
+    }
+
     div.toolbar-section {
         @extend %flex-col;
         border-right: 1px solid colors.$border-subtle;

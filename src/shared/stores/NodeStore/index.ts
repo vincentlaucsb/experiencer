@@ -207,6 +207,18 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
         return this.withMutation(() => this.data.moveDown(id));
     }
 
+    /** Duplicate a node next to its current sibling position. */
+    duplicateNode(id: string | IdType, before: boolean): string | undefined {
+        const hierarchicalId = this.resolvePath(id);
+        if (!hierarchicalId) {
+            return undefined;
+        }
+
+        const node = this.data.getNodeById(hierarchicalId);
+        this.recordNodeHistory();
+        return this.withMutation(() => this.data.insertSibling(hierarchicalId, node, before));
+    }
+
     // #endregion
 
     // #region Read-Only Operations

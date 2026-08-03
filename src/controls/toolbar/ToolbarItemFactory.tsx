@@ -3,6 +3,7 @@
 import Dropdown from "../menus/Dropdown";
 import ToolbarButton, { ToolbarItemData } from "./ToolbarButton";
 import { PureMenuItem } from "../menus/PureMenu";
+import { toPoprightMenuItems } from "./toPoprightMenuItems";
 
 export interface ToolbarItemProps extends ToolbarItemData {
     dropdownChild?: boolean;
@@ -25,10 +26,8 @@ export default function ToolbarItemFactory(props: ToolbarItemProps) {
     if (props.items) {
         return (
             <Dropdown
+                items={toPoprightMenuItems(props.items)}
                 trigger={<ToolbarButton icon={props.icon} iconTone={props.iconTone} text={props.text} />}>
-                {props.items.map((value, index) =>
-                    <ToolbarItemFactory key={index} dropdownChild={true} {...value} />
-                )}
             </Dropdown>
         );
     }

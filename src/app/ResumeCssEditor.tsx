@@ -126,6 +126,7 @@ function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss 
                 key={`${selectedNode.uuid}-${rootNode.fullPath.join('-')}`}
                 cssNode={new ReadonlyCssNode(rootNode)}
                 isOpen={true}
+                showAncestors
                 liveTree="resume"
                 {...makeCssEditorProps(updateCss)}
             />
@@ -137,6 +138,7 @@ function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss 
                 key={`${selectedNode.uuid}-#${selectedNode.htmlId}`}
                 cssNode={new ReadonlyCssNode(specificRoot)}
                 isOpen={true}
+                showAncestors
                 liveTree="resume"
                 {...makeCssEditorProps(updateCss)} />
         }

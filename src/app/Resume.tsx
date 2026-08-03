@@ -1,9 +1,11 @@
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { useRef, useCallback, useSyncExternalStore } from 'react';
+import type { MenuItem } from 'popright';
 
 import '@/assets/fonts/icofont.min.css';
 import 'popright/styles.css';
+import 'popright/dropdown.css';
 import 'purecss/build/pure-min.css';
 import '@/sass/index.scss';
 
@@ -137,7 +139,7 @@ export interface ResumeProps {
     renameDocument?: (id: string, title: string) => Promise<string | null>;
     createDocumentFromTemplate?: (key?: string) => void;
     importDocument?: (data: object, title?: string) => void;
-    fileMenuItems?: React.ReactNode;
+    fileMenuItems?: MenuItem[];
     topMenuItems?: React.ReactNode;
     documentMenuItems?: React.ReactNode;
     additionalTemplateGroups?: AdditionalTemplateGroup[];

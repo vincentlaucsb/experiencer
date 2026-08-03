@@ -50,8 +50,22 @@ export default function Entry(props: EntryProps) {
 
     const getFields = (key: 'title' | 'subtitle') => {
         const deleter = (key: 'title' | 'subtitle', index: number) => {
-            let arr = props[key] || [];
-            props.updateData(key, deleteAt(arr, index));
+            const arr = props[key] || [];
+            const nextFields = deleteAt(arr, index);
+
+            if (key === "subtitle" && props.subtitleBreaks) {
+                const nextSubtitleBreaks = props.subtitleBreaks
+                    .filter((breakIndex) => breakIndex !== index)
+                    .map((breakIndex) => breakIndex > index ? breakIndex - 1 : breakIndex);
+
+                props.updateDataFields({
+                    subtitle: nextFields,
+                    subtitleBreaks: nextSubtitleBreaks
+                });
+                return;
+            }
+
+            props.updateData(key, nextFields);
         }
 
         const updater = (key: 'title' | 'subtitle', index: number, text: string) => {
@@ -74,12 +88,12 @@ export default function Entry(props: EntryProps) {
                     }}/>
                 }
 
-                const textFieldOptions = [
+                const textFieldOptions = key === "subtitle" ? [
                     {
                         text: `Delete "${text}"`,
                         onClick: () => deleter(key, index)
                     }
-                ];
+                ] : [];
 
                 return <React.Fragment key={`${index}/${arr.length}`}>
                     <TextField
@@ -102,7 +116,7 @@ export default function Entry(props: EntryProps) {
 
     /** hgroup onclick stops event from bubbling up to resume */
     return (
-        <Container {...props} className="entry" displayAs="resume-entry">
+        <Container {...props} className={`entry${isEditing ? " entry--editing" : ""}`} displayAs="resume-entry">
             <hgroup onClick={(event) => {
                 if (isEditing) {
                     event.stopPropagation();
@@ -115,6 +129,13 @@ export default function Entry(props: EntryProps) {
                 </h4>
                 {isSelected && !isEditing && <FieldAdder onAdd={addSubtitleField} />}
             </hgroup>
+            {isSelected && (
+                <div className="entry-field-help no-print">
+                    {isEditing
+                        ? "Finish editing to see field options"
+                        : "Right-click fields for more options"}
+                </div>
+            )}
 
             {props.children}
         </Container>

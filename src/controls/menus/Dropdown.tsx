@@ -1,124 +1,38 @@
 import React from "react";
+import { DropdownMenu } from "@popright/react";
+import type { MenuItem } from "popright";
 
-import { PureMenuItem, PureMenuItemProps } from "./PureMenu";
-
-type TriggerHandler = ((event: React.MouseEvent) => void) | (() => void);
+export interface DropdownProps {
+    trigger: React.ReactElement<DropdownTriggerProps>;
+    items: MenuItem[];
+    className?: string;
+}
 
 interface DropdownTriggerProps {
-    onClick?: TriggerHandler;
-    'aria-haspopup'?: 'menu';
-    'aria-controls'?: string;
-    'aria-expanded'?: boolean;
+    onClick?: (event: React.MouseEvent) => void;
+    "aria-haspopup"?: "menu";
+    "aria-controls"?: string;
+    "aria-expanded"?: boolean;
 }
 
-export interface DropdownProps extends PureMenuItemProps {
-    trigger: React.ReactElement<DropdownTriggerProps>;
-    hover?: boolean;
-    closeOnItemClick?: boolean;
-    ulProps?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLUListElement>, HTMLUListElement>;
-}
-
-export default function Dropdown(props: DropdownProps) {
-    /** See: https://purecss.io/js/menus.js */
-    let [active, setActive] = React.useState(false);
-    const dropdownRef = React.useRef<HTMLLIElement | null>(null);
-    const menuId = React.useId();
-    let classes = ['pure-menu-has-children'];
-
-    const onMouseOver = props.hover ? () => setActive(true) : props.onMouseOver;
-    const onMouseOut = props.hover ? () => setActive(false) : props.onMouseOut;
-
-    if (props.hover) {
-        classes.push('pure-menu-allow-hover');
-    }
-
-    let childClasses = ['pure-menu-children'];
-    if (active) {
-        classes.push('pure-menu-active');
-    }
-
-    React.useEffect(() => {
-        if (!active) {
-            return;
-        }
-
-        const handleOutsideClick = (event: MouseEvent | TouchEvent) => {
-            const target = event.target as Node | null;
-            if (!target || !dropdownRef.current) {
-                return;
-            }
-
-            if (!dropdownRef.current.contains(target)) {
-                setActive(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleOutsideClick);
-        document.addEventListener('touchstart', handleOutsideClick);
-
-        return () => {
-            document.removeEventListener('mousedown', handleOutsideClick);
-            document.removeEventListener('touchstart', handleOutsideClick);
-        };
-    }, [active]);
-
-    const toggler = (event: React.MouseEvent) => {
-        event.stopPropagation();
-        setActive(!active);
-    }
-
-    const onTriggerClick = (event: React.MouseEvent) => {
-        toggler(event);
-
-        const triggerOnClick = props.trigger?.props?.onClick;
-        if (typeof triggerOnClick === 'function') {
-            triggerOnClick(event);
-        }
-    };
-
-    const onKeyDown = (event: React.KeyboardEvent) => {
-        if (event.key === 'Escape') {
-            setActive(false);
-        }
-    };
-
-    const onMenuClick = (event: React.MouseEvent<HTMLUListElement>) => {
-        props.ulProps?.onClick?.(event);
-
-        // Close by default when selecting a menu item; callers can opt out.
-        if (props.closeOnItemClick !== false) {
-            setActive(false);
-        }
-    };
-
-    const newUlProps: React.DetailedHTMLProps<React.HTMLAttributes<HTMLUListElement>, HTMLUListElement> = {
-        ...props.ulProps,
-        className: [props.ulProps?.className, ...childClasses].filter(Boolean).join(' '),
-        id: props.ulProps?.id || menuId,
-        onClick: onMenuClick,
-        role: 'menu'
-    };
-
-    const trigger = React.cloneElement(props.trigger, {
-        'aria-haspopup': 'menu',
-        'aria-controls': newUlProps.id,
-        'aria-expanded': active,
-        onClick: props.hover ? props.trigger.props?.onClick : onTriggerClick
+export default function Dropdown({ trigger, items, className }: DropdownProps) {
+    const [isOpen, setIsOpen] = React.useState(false);
+    const accessibleTrigger = React.cloneElement(trigger, {
+        "aria-haspopup": "menu",
+        "aria-expanded": isOpen
     });
 
-    // TODO: Rework onBlur handler
     return (
-        <PureMenuItem
-            {...props}
-            itemRef={dropdownRef}
-            onKeyDown={onKeyDown}
-            onMouseOut={onMouseOut}
-            onMouseOver={onMouseOver}
-            classNames={classes}>
-            {trigger}
-            <ul {...newUlProps}>
-                {props.children}
-            </ul>
-        </PureMenuItem>
+        <li className="pure-menu-item">
+            <DropdownMenu
+                className={className}
+                items={items}
+                minWidth={180}
+                onOpen={() => setIsOpen(true)}
+                onClose={() => setIsOpen(false)}
+            >
+                {accessibleTrigger}
+            </DropdownMenu>
+        </li>
     );
 }

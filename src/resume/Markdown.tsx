@@ -11,13 +11,13 @@ import useEditingControls from "./hooks/useEditingControls";
 // Components
 import Container from "@/resume/infrastructure/Container";
 import { Button } from "@/controls/Buttons";
+import { getMarkdownEditor } from "@/resume/markdownEditor";
 
 // Stores
 import { useEditorStore, useIsNodeEditing } from "@/shared/stores/editorStore";
 
 // Types
 import ResumeComponentProps from "@/types";
-import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
 
 /**
  * Markdown component - Freeform text with Markdown formatting support
@@ -53,6 +53,7 @@ export default function MarkdownText(props: ResumeComponentProps) {
         onChange: setEditValue, // Use setEditValue to update local state, not props.updateData
         toggleEditing: toggleEdit,
     });
+    const MarkdownEditor = getMarkdownEditor();
 
     const handleCancel = (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
@@ -67,13 +68,11 @@ export default function MarkdownText(props: ResumeComponentProps) {
     const editContent = (
         <div className="resume-overlay-editor resume-overlay-editor--markdown app-gap-2 app-p-4" onClick={(e) => e.stopPropagation()}>
             <div className="resume-overlay-field app-gap-1">
-                <textarea
-                    {...nonCredentialInputAttributes}
-                    className="resume-overlay-input resume-overlay-textarea app-p-2"
+                <MarkdownEditor
                     id={`${props.uuid}-markdown-input`}
-                    aria-label="Text content"
+                    ariaLabel="Text content"
                     value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
+                    onChange={setEditValue}
                     placeholder={`# Markdown supported\n\n- Lists\n- **Bold** *italic* ~~strikethrough~~\n- [Links](url)\n- \`code\` or \`\`\`code blocks\`\`\``}
                     autoFocus
                 />

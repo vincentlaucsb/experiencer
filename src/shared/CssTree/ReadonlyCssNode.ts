@@ -20,6 +20,12 @@ export class ReadonlyCssNode {
             new ReadonlyCssNode(node));
     }
 
+    /** Get ancestor nodes from the direct parent up to the tree root. */
+    get ancestors(): ReadonlyArray<ReadonlyCssNode> {
+        return this.node.ancestors.map((node) =>
+            new ReadonlyCssNode(node));
+    }
+
     /**
      * Get the description for this CSS node.
      */

@@ -34,10 +34,12 @@
 - Migrate existing Markdown lists with `- ` prefix automatically
 - Add list-specific UI (add/remove item buttons)
 
-**Phase 3 - WYSIWYG Editor** (Nice-to-have, Backlog):
-- Evaluate `@uiw/react-md-editor` (modern, TypeScript-first, preview pane)
-- Provides visual toolbar while maintaining markdown compatibility
-- Can be added later without breaking Phase 1 implementation
+**Phase 3 - Visual Markdown Editor** - COMPLETE:
+- ✅ Integrated `@uiw/react-md-editor` behind a replaceable editor adapter
+- ✅ Preserves Markdown as the canonical stored value
+- ✅ Retained a dependency-free textarea adapter as a fallback/reference
+- ✅ Documented the selected library and replacement contract in
+  `docs/MARKDOWN_EDITOR.md`
 
 **Supported Markdown Features**:
 - Headings (# h1, ## h2, etc.)

@@ -1,4 +1,3 @@
-@use "sass:color";
 @use "../../sass/colors/semantic" as colors;
 @use "../../sass/variables";
 
@@ -76,28 +75,4 @@ div#toolbar {
 div#toolbar.toolbar-collapsed > .pure-menu > .pure-menu-list {
     @extend %flex-row;
     flex-wrap: wrap;
-
-    /** || Subsection Headings */
-    .toolbar-collapsed-section h3 {
-        @extend %flex-row;
-        align-items: center;
-        border-bottom: 1px solid colors.$border-strong;
-        margin: 0;
-
-        .pure-button.back-button {
-            width: auto;
-            padding-right: 0;
-
-            &::after {
-                content: "";
-                margin-left: 1em;
-                border-right: 1px solid colors.$border-strong;
-            }
-
-            &:hover::after {
-                border: none;
-                border-right: 1px solid colors.$surface-interactive;
-            }
-        }
-    }
 }

@@ -1,4 +1,3 @@
-@use "sass:color";
 @use "../sass/colors/semantic" as colors;
 @use "../sass/variables";
 
@@ -37,61 +36,39 @@ header#app-header {
         }
     }
 
-    /** || Toolbar Dropdowns */
-    .pure-menu-has-children {
-        /** || Caret */
-        > button::after {
-            content: "\25BE";
-            font-size: small;
-            padding-left: 0.5rem;
+}
+
+/** Popright dropdowns are body-level menus, so they need global chrome styling. */
+[data-popright-menu-type="dropdown"] {
+    min-width: 180px;
+    padding: 0.25rem;
+    background: colors.$surface-inverse;
+    border: 1px solid colors.$border-chrome;
+    border-radius: 3px;
+    box-shadow: colors.$shadow-soft;
+    color: colors.$text-on-inverse;
+    font: inherit;
+
+    [data-popright-item] {
+        min-height: 2rem;
+        border-radius: 2px;
+        color: inherit;
+
+        &[data-active] {
+            background: colors.$surface-interactive;
         }
+    }
 
-        /** || Dropdown Items */
-        .pure-menu-children {
-            box-shadow: colors.$shadow-soft;
+    [data-popright-icon] {
+        color: colors.$text-on-inverse;
+    }
 
-            .pure-menu-item {
-                background: colors.$surface-inverse;
-                color: colors.$text-on-inverse;
-                padding: 0;
-            }
+    [data-popright-item][data-active] [data-popright-icon] {
+        color: colors.$progress-accent;
+    }
 
-            .pure-button {
-                width: 100%;
-
-                div {
-                    /** Workaround due to a Chrome bug where <button> elements can't be
-                        grid containers
-
-                        See: https://github.com/rachelandrew/gridbugs#10-some-html-elements-cant-be-grid-containers
-                    */
-                    display: grid;
-                    text-align: left;
-                    align-items: center;
-                    /** icon, label, shortcut (if applicable) */
-                    grid-template-columns: 16px 1fr 0.5fr;
-                    grid-column-gap: 1rem;
-                    width: 100%;
-
-                    .button-text {
-                        grid-column-start: 2;
-                        white-space: nowrap;
-                    }
-                }
-
-                i[class*="icofont"] {
-                    color: colors.$text-on-inverse;
-                }
-
-                &:hover {
-                    background: colors.$surface-interactive;
-
-                    i[class*="icofont"] {
-                        color: colors.$progress-accent;
-                    }
-                }
-            }
-        }
+    [data-popright-separator] {
+        background: colors.$border-chrome;
     }
 }
 
@@ -137,15 +114,10 @@ header#app-header {
         }
     }
 
-    .document-selector {
+    .document-selector-trigger {
         flex: 1 1 auto;
         max-width: min(32vw, 28rem);
         min-width: 0;
-
-        > .pure-menu-children {
-            max-width: min(32rem, calc(100vw - 2rem));
-            min-width: min(24rem, calc(100vw - 2rem));
-        }
     }
 
     .document-selector-trigger {
@@ -164,41 +136,6 @@ header#app-header {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-    }
-
-    .document-selector-rename {
-        border-bottom: 1px solid colors.$border-chrome;
-        padding: 0.75rem 1rem !important;
-
-        .document-selector-rename-form {
-            display: grid;
-            gap: 0.5rem;
-
-            label > span {
-                display: block;
-                color: colors.$text-on-inverse;
-                font-size: 0.75rem;
-                margin-bottom: 0.35rem;
-            }
-
-            input {
-                box-sizing: border-box;
-                width: 100%;
-                background: colors.$surface-raised;
-                border: 1px solid colors.$border-strong;
-                border-radius: 3px;
-                color: colors.$text-primary;
-                padding: 0.45rem 0.55rem;
-            }
-
-            .async-action-form-actions {
-                justify-content: flex-end;
-
-                .pure-button {
-                    width: auto;
-                }
-            }
-        }
     }
 
     // GitHub Icon
@@ -239,10 +176,6 @@ header#app-header {
         opacity: 0.85;
     }
 
-    .theme-menu__selected {
-        grid-column: 3;
-        text-align: right;
-    }
 }
 
 /** Give dynamic Pro and document controls a dedicated row before they collide. */

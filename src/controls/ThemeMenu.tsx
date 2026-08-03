@@ -2,7 +2,8 @@ import React from "react";
 
 import { Button } from "./Buttons";
 import Dropdown from "./menus/Dropdown";
-import { PureMenuItem } from "./menus/PureMenu";
+import { createPoprightIcon } from "./menus/poprightMenu";
+import type { MenuItem } from "popright";
 import {
     ThemePreference,
     themeStore
@@ -25,38 +26,22 @@ export default function ThemeMenu() {
         ({ preference }) => preference === theme.preference
     )?.label;
 
+    const items: MenuItem[] = options.map(({ preference, label, icon }, index) => {
+        const selected = theme.preference === preference;
+
+        return {
+            id: `theme-${preference}-${index}`,
+            label: `${label}${selected ? " ✓" : ""}`,
+            icon: createPoprightIcon(icon),
+            onSelect: () => themeStore.setPreference(preference)
+        };
+    });
+
     return (
         <Dropdown
             className="toolbar-dropdown theme-menu"
-            trigger={
-                <Button aria-label={`Theme: ${currentLabel}`}>
-                    Theme
-                </Button>
-            }
-        >
-            {options.map(({ preference, label, icon }) => {
-                const selected = theme.preference === preference;
-
-                return (
-                    <PureMenuItem key={preference} selected={selected}>
-                        <Button
-                            aria-pressed={selected}
-                            onClick={() => themeStore.setPreference(preference)}
-                        >
-                            <div>
-                                <i className={`icofont-${icon}`} aria-hidden="true" />
-                                <span className="button-text">{label}</span>
-                                <span
-                                    className="theme-menu__selected"
-                                    aria-hidden="true"
-                                >
-                                    {selected ? "✓" : ""}
-                                </span>
-                            </div>
-                        </Button>
-                    </PureMenuItem>
-                );
-            })}
-        </Dropdown>
+            items={items}
+            trigger={<Button aria-label={`Theme: ${currentLabel}`}>Theme</Button>}
+        />
     );
 }

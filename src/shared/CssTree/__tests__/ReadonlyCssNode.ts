@@ -277,6 +277,19 @@ describe('ReadonlyCssNode', () => {
     });
 
     describe('Complex tree scenarios', () => {
+        test('exposes ancestors from the direct parent to the tree root', () => {
+            const root = new CssNode('Root', {});
+            const parent = root.addNode('Parent', {}, '.parent');
+            const child = parent.addNode('Child', {}, '.child');
+
+            const readonly = new ReadonlyCssNode(child);
+
+            expect(readonly.ancestors.map((node) => node.name)).toEqual([
+                'Parent',
+                'Root'
+            ]);
+        });
+
         test('handles deeply nested trees', () => {
             const root = new CssNode('Root', {}, ':root');
             const level1 = root.addNode('Container', {}, '.container');

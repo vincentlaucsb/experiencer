@@ -1,107 +1,73 @@
 /**
  * @jest-environment jsdom
  */
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 
 import Dropdown from "@/controls/menus/Dropdown";
 import ToolbarButton from "@/controls/toolbar/ToolbarButton";
 
+const items = [{
+    id: "item",
+    label: "Item",
+    onSelect: jest.fn()
+}];
+
 describe("Dropdown", () => {
-    test("toggles active class on trigger click", () => {
-        const { container, getByText } = render(
-            <Dropdown trigger={<button type="button">Open</button>}>
-                <li>Item</li>
-            </Dropdown>
+    beforeEach(() => {
+        items[0].onSelect.mockClear();
+    });
+
+    test("toggles the Popright menu from the trigger", () => {
+        render(
+            <Dropdown items={items} trigger={<button type="button">Open</button>} />
         );
 
-        const trigger = getByText("Open");
-        const dropdown = container.querySelector(".pure-menu-has-children") as HTMLElement;
-
-        expect(dropdown.classList.contains("pure-menu-active")).toBe(false);
+        const trigger = screen.getByRole("button", { name: "Open" });
+        expect(document.querySelector("[data-popright-menu]")).toBeNull();
 
         fireEvent.click(trigger);
-        expect(dropdown.classList.contains("pure-menu-active")).toBe(true);
+        expect(screen.getByRole("menuitem", { name: "Item" })).toBeTruthy();
 
         fireEvent.click(trigger);
-        expect(dropdown.classList.contains("pure-menu-active")).toBe(false);
+        expect(document.querySelector("[data-popright-menu]")).toBeNull();
     });
 
     test("closes when clicking outside", () => {
-        const { container, getByText } = render(
+        render(
             <>
-                <Dropdown trigger={<button type="button">Open</button>}>
-                    <li>Item</li>
-                </Dropdown>
+                <Dropdown items={items} trigger={<button type="button">Open</button>} />
                 <button type="button">Outside</button>
             </>
         );
 
-        const trigger = getByText("Open");
-        const outside = getByText("Outside");
-        const dropdown = container.querySelector(".pure-menu-has-children") as HTMLElement;
+        fireEvent.click(screen.getByRole("button", { name: "Open" }));
+        expect(screen.getByRole("menuitem", { name: "Item" })).toBeTruthy();
 
-        fireEvent.click(trigger);
-        expect(dropdown.classList.contains("pure-menu-active")).toBe(true);
-
-        fireEvent.mouseDown(outside);
-        expect(dropdown.classList.contains("pure-menu-active")).toBe(false);
+        fireEvent.mouseDown(screen.getByRole("button", { name: "Outside" }));
+        expect(document.querySelector("[data-popright-menu]")).toBeNull();
     });
 
-    test("toggles active class when trigger uses ToolbarButton click handling", () => {
-        const { container, getByText } = render(
-            <Dropdown trigger={<ToolbarButton text="Insert" icon="ui-add" />}>
-                <li>Item</li>
-            </Dropdown>
-        );
-
-        const trigger = getByText("Insert");
-        const dropdown = container.querySelector(".pure-menu-has-children") as HTMLElement;
-
-        expect(dropdown.classList.contains("pure-menu-active")).toBe(false);
-
-        fireEvent.click(trigger);
-        expect(dropdown.classList.contains("pure-menu-active")).toBe(true);
-    });
-
-    test("closes by default when clicking a menu item", () => {
-        const { container, getByText } = render(
-            <Dropdown trigger={<button type="button">Open</button>}>
-                <li>
-                    <button type="button">Item Action</button>
-                </li>
-            </Dropdown>
-        );
-
-        const trigger = getByText("Open");
-        const itemAction = getByText("Item Action");
-        const dropdown = container.querySelector(".pure-menu-has-children") as HTMLElement;
-
-        fireEvent.click(trigger);
-        expect(dropdown.classList.contains("pure-menu-active")).toBe(true);
-
-        fireEvent.click(itemAction);
-        expect(dropdown.classList.contains("pure-menu-active")).toBe(false);
-    });
-
-    test("can remain open on item click when closeOnItemClick is false", () => {
-        const { container, getByText } = render(
+    test("works with ToolbarButton triggers", () => {
+        render(
             <Dropdown
-                closeOnItemClick={false}
-                trigger={<button type="button">Open</button>}>
-                <li>
-                    <button type="button">Item Action</button>
-                </li>
-            </Dropdown>
+                items={items}
+                trigger={<ToolbarButton text="Insert" icon="ui-add" />}
+            />
         );
 
-        const trigger = getByText("Open");
-        const itemAction = getByText("Item Action");
-        const dropdown = container.querySelector(".pure-menu-has-children") as HTMLElement;
+        fireEvent.click(screen.getByRole("button", { name: "Insert" }));
+        expect(screen.getByRole("menuitem", { name: "Item" })).toBeTruthy();
+    });
 
-        fireEvent.click(trigger);
-        expect(dropdown.classList.contains("pure-menu-active")).toBe(true);
+    test("closes after selecting a menu item", () => {
+        render(
+            <Dropdown items={items} trigger={<button type="button">Open</button>} />
+        );
 
-        fireEvent.click(itemAction);
-        expect(dropdown.classList.contains("pure-menu-active")).toBe(true);
+        fireEvent.click(screen.getByRole("button", { name: "Open" }));
+        fireEvent.click(screen.getByRole("menuitem", { name: "Item" }));
+
+        expect(items[0].onSelect).toHaveBeenCalledTimes(1);
+        expect(document.querySelector("[data-popright-menu]")).toBeNull();
     });
 });

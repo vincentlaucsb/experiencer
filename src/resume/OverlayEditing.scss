@@ -1,17 +1,23 @@
 @use "../sass/colors/semantic" as colors;
+@use "../sass/colors/themes";
 @use "../sass/variables";
 
 .resume-overlay-editor {
+    // Document-local editors stay visually attached to the light print canvas.
+    @include themes.light-theme;
+
+    color-scheme: light;
     display: flex;
     flex-direction: column;
     min-width: 320px;
     max-width: 600px;
     margin-top: -1rem;
     margin-left: -1rem;
-  background: colors.$surface-raised;
+    background: colors.$surface-raised;
+    color: colors.$text-primary;
     border: 1px solid colors.$border-subtle;
     border-radius: 4px;
-    box-shadow: colors.$shadow-soft;
+    box-shadow: colors.$shadow-medium;
 }
 
 .resume-overlay-editor--image {
@@ -36,9 +42,11 @@
 
 .resume-overlay-input {
     width: 100%;
+    background: colors.$surface-raised;
     border: 1px solid colors.$border-strong;
     border-radius: 3px;
     box-sizing: border-box;
+    color: colors.$text-primary;
 
     &:focus {
         outline: none;

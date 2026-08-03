@@ -15,8 +15,7 @@ test("shows the current preference and applies a selected theme", () => {
     render(<ThemeMenu />);
 
     fireEvent.click(screen.getByRole("button", { name: "Theme: System" }));
-    const darkOption = screen.getByRole("button", { name: "Dark" });
-    expect(darkOption.getAttribute("aria-pressed")).toBe("false");
+    const darkOption = screen.getByRole("menuitem", { name: "Dark" });
 
     fireEvent.click(darkOption);
 

@@ -12,6 +12,9 @@ export interface ToolbarItemData extends BasicToolbarItemData {
     /** Whether or not text should be hidden when displayed on toolbar */
     condensedButton?: boolean;
 
+    /** Render a menu divider when this item is used in a Popright menu. */
+    separator?: boolean;
+
     content?: React.ReactElement;
     items?: ToolbarItemData[];
     shortcut?: string;

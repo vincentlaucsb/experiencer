@@ -71,12 +71,12 @@ test("renders optional File-menu extension items", () => {
     render(
         <TopNavBar
             {...baseProps}
-            fileMenuItems={<li><button type="button">Document extension</button></li>}
+            fileMenuItems={[{ id: "document-extension", label: "Document extension" }]}
         />
     );
 
     fireEvent.click(screen.getByRole("button", { name: "File" }));
-    expect(screen.getByRole("button", { name: "Document extension" })).toBeTruthy();
+    expect(screen.getByRole("menuitem", { name: "Document extension" })).toBeTruthy();
 });
 
 test("shows injected document labels in the active-document control", () => {
@@ -142,6 +142,7 @@ test("renames the active document from the top of the document selector", async 
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Canonical Resume" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Rename…" }));
     const form = screen.getByRole("form", { name: "Rename current resume" });
     const input = within(form).getByRole("textbox", { name: "Resume name" });
 

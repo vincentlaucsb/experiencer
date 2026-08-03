@@ -246,6 +246,27 @@ export default class ResumeNodeTree implements ResumeNode {
         this.addToIndex(newNode, path);
     }
 
+    /** Insert a fresh-ID copy immediately before or after a node's sibling position. */
+    insertSibling(id: string | IdType, node: ResumeNode, before: boolean): string | undefined {
+        const hierarchicalId = typeof id === 'string' ? this.getHierarchicalId(id) : id;
+        if (!hierarchicalId || hierarchicalId.length === 0) {
+            return undefined;
+        }
+
+        const parentNode = this.getParentOfId(hierarchicalId);
+        if (!parentNode.childNodes) {
+            return undefined;
+        }
+
+        const sourceIndex = hierarchicalId[hierarchicalId.length - 1];
+        const insertIndex = sourceIndex + (before ? 0 : 1);
+        const newNode = assignIds(deepCopy(node));
+        parentNode.childNodes.splice(insertIndex, 0, newNode);
+        this.rebuildIndex();
+
+        return newNode.uuid;
+    }
+
     /**
      * Delete a child node from the tree.
      * Also removes all descendants and updates indices.

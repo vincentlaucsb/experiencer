@@ -8,4 +8,6 @@ export interface SelectedNodeActions {
     moveUp?: Action;
     moveDown?: Action;
     pasteClipboard?: Action;
+    duplicateBefore?: Action;
+    duplicateAfter?: Action;
 }

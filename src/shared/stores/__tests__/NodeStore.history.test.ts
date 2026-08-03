@@ -93,6 +93,38 @@ describe('NodeStore history recording', () => {
         expect(mockRecordHistory).toHaveBeenCalledTimes(2);
     });
 
+    test('duplicateNode inserts a fresh-ID sibling and records one history entry', () => {
+        const store = makeStore([
+            {
+                type: 'Section',
+                childNodes: [
+                    {
+                        type: 'Entry',
+                        title: ['Original'],
+                        childNodes: [{ type: 'Markdown', value: 'Nested content' }]
+                    },
+                    { type: 'Entry', title: ['Following'] }
+                ]
+            }
+        ]);
+
+        const section = store.data.childNodes[0];
+        const original = section.childNodes?.[0];
+        if (!original) {
+            throw new Error('Expected original entry');
+        }
+
+        const duplicateUuid = store.duplicateNode(original.uuid, false);
+        const duplicate = section.childNodes?.[1];
+
+        expect(mockRecordHistory).toHaveBeenCalledTimes(1);
+        expect(duplicateUuid).toBe(duplicate?.uuid);
+        expect(duplicate?.title).toEqual(['Original']);
+        expect(duplicate?.uuid).not.toBe(original.uuid);
+        expect(duplicate?.childNodes?.[0]?.uuid).not.toBe(original.childNodes?.[0]?.uuid);
+        expect(section.childNodes?.[2]?.title).toEqual(['Following']);
+    });
+
     test('addNode records history for valid insert', () => {
         const store = makeStore([
             { type: 'Section', childNodes: [] },

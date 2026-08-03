@@ -95,3 +95,24 @@
         font-style: italic;
     }
 }
+
+/* Keep the selected source editor inside the existing overlay contract. */
+.resume-overlay-editor--markdown .resume-markdown-editor {
+    width: min(70vw, 560px);
+    min-width: 0;
+
+    .w-md-editor {
+        border: 1px solid colors.$document-border;
+        border-radius: 3px;
+        box-shadow: none;
+        font-family: inherit;
+    }
+
+    .w-md-editor-text-pre,
+    .w-md-editor-text-input,
+    .w-md-editor-preview {
+        font-family: inherit;
+        font-size: inherit;
+        line-height: inherit;
+    }
+}

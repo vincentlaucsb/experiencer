@@ -6,12 +6,13 @@ import FileLoader from "./FileLoader";
 import FileSaver from "./FileSaver";
 import Dropdown from "./menus/Dropdown";
 import PureMenu, { PureMenuItem } from "./menus/PureMenu";
+import { createPoprightIcon } from "./menus/poprightMenu";
+import type { MenuItem } from "popright";
 import Modal from "./Modal";
 import GitHubLight from "@/assets/icons/GitHub-Mark-Light-120px-plus.png";
 import ExperiencerMark from "@/assets/brand/experiencer-mark-on-dark.svg?url";
 import { Action } from "@/types";
 import { Button } from "./Buttons";
-import ToolbarButton, { ToolbarButtonProps } from "./toolbar/ToolbarButton";
 import { isEditingMode, workspaceStore } from "@/shared/stores/workspaceStore";
 import { useWorkspaceSnapshot } from "@/shared/stores/workspaceStoreHooks";
 import loadData from "@/shared/stores/loadData";
@@ -44,7 +45,7 @@ export interface TopNavBarProps {
     accountLabel?: string;
     signOut?: Action;
     signIn?: Action;
-    fileMenuItems?: React.ReactNode;
+    fileMenuItems?: MenuItem[];
     documentItems?: React.ReactNode;
     extraItems?: React.ReactNode;
 
@@ -57,13 +58,9 @@ export interface TopNavBarProps {
 /** The top nav bar for the resume editor */
 export function TopNavBar(props: TopNavBarProps) {
     let [isOpen, setOpen] = React.useState(false);
+    const [isRenameOpen, setRenameOpen] = React.useState(false);
     const [renameTitle, setRenameTitle] = React.useState("");
     const Item = PureMenuItem;
-    const IconicItem = (props: ToolbarButtonProps) => (
-        <PureMenuItem>
-            <ToolbarButton {...props} dropdownChild={true} />
-        </PureMenuItem>
-    );
 
     let [modalContent, setModal] = React.useState(<></>);
     let [title, setTitle] = React.useState("");
@@ -96,6 +93,78 @@ export function TopNavBar(props: TopNavBarProps) {
         ].filter(Boolean).join(" · ")
         : "Documents";
 
+    const fileMenuItems: MenuItem[] = [
+        {
+            id: "new",
+            label: "New",
+            icon: createPoprightIcon("paper"),
+            onSelect: () => props.new()
+        },
+        {
+            id: "load",
+            label: "Load",
+            icon: createPoprightIcon("folder-open"),
+            onSelect: () => openLoader()
+        },
+        {
+            id: "save",
+            label: "Save",
+            disabled: !props.isEditing,
+            onSelect: () => props.saveLocal()
+        },
+        ...(props.fileMenuItems || []),
+        {
+            id: "save-as",
+            label: "Save As",
+            icon: createPoprightIcon("save"),
+            disabled: !props.isEditing,
+            onSelect: () => openSaver()
+        },
+        {
+            id: "export-html",
+            label: "Export to HTML/CSS",
+            icon: createPoprightIcon("file-html5"),
+            disabled: !props.isEditing,
+            onSelect: () => props.exportHtml()
+        },
+        {
+            id: "export-png",
+            label: "Export to PNG",
+            icon: createPoprightIcon("image"),
+            disabled: !props.isEditing,
+            onSelect: () => props.exportToPng()
+        },
+        {
+            id: "print",
+            label: "Print",
+            icon: createPoprightIcon("printer"),
+            disabled: !props.isEditing,
+            onSelect: () => props.print()
+        }
+    ];
+
+    const documentMenuItems: MenuItem[] = [
+        ...(activeDocument && props.renameDocument ? [{
+            id: "rename",
+            label: "Rename…",
+            icon: createPoprightIcon("edit"),
+            onSelect: () => {
+                setRenameTitle(activeDocument.title);
+                setRenameOpen(true);
+            }
+        }] : []),
+        ...(props.documents || []).map((document, index) => ({
+            id: `document-${document.id}-${index}`,
+            label: [
+                document.title,
+                `v${document.version}`,
+                props.documentLabels?.[document.id]
+            ].filter(Boolean).join(" · "),
+            icon: createPoprightIcon(document.id === props.activeDocumentId ? "check" : "paper"),
+            onSelect: () => props.selectDocument?.(document.id)
+        }))
+    ];
+
     React.useEffect(() => {
         setRenameTitle(activeDocument?.title ?? "");
     }, [activeDocument?.id, activeDocument?.title]);
@@ -104,6 +173,37 @@ export function TopNavBar(props: TopNavBarProps) {
         <>
             <Modal isOpen={isOpen} title={title} close={() => setOpen(false)} className="top-nav-modal">
                 {modalContent}
+            </Modal>
+            <Modal
+                isOpen={isRenameOpen}
+                title="Rename resume"
+                close={() => setRenameOpen(false)}
+                className="top-nav-modal"
+            >
+                {activeDocument && props.renameDocument ? (
+                    <AsyncActionForm
+                        aria-label="Rename current resume"
+                        className="document-selector-rename-form"
+                        save={async () => {
+                            const result = await props.renameDocument?.(activeDocument.id, renameTitle) ?? null;
+                            if (result === null) {
+                                setRenameOpen(false);
+                            }
+                            return result;
+                        }}
+                        cancel={() => setRenameOpen(false)}
+                    >
+                        <label>
+                            <span>Resume name</span>
+                            <input
+                                {...nonCredentialInputAttributes}
+                                maxLength={RESUME_TITLE_MAX_LENGTH}
+                                value={renameTitle}
+                                onChange={(event) => setRenameTitle(event.target.value)}
+                            />
+                        </label>
+                    </AsyncActionForm>
+                ) : <></>}
             </Modal>
             <div id="brand" className="app-px-1">
                 <h1
@@ -119,16 +219,11 @@ export function TopNavBar(props: TopNavBarProps) {
                 </h1>
                 {props.proBadge ? <span className="pro-badge">{props.proBadge}</span> : <></>}
                 <PureMenu id="top-menu" horizontal divProps={{ className: "app-ml-4" }}>
-                    <Dropdown className="toolbar-dropdown" trigger={<Button>File</Button>}>
-                        <IconicItem icon="paper" onClick={() => props.new()} text="New" />
-                        <IconicItem icon="folder-open" onClick={openLoader} text="Load" />
-                        <IconicItem disabled={!props.isEditing} onClick={props.saveLocal} text="Save" />
-                        {props.fileMenuItems}
-                        <IconicItem disabled={!props.isEditing} icon="save" onClick={openSaver} text="Save As" />
-                        <IconicItem disabled={!props.isEditing} icon="file-html5" onClick={props.exportHtml} text="Export to HTML/CSS" />
-                        <IconicItem disabled={!props.isEditing} icon="image" onClick={props.exportToPng} text="Export to PNG" />
-                        <IconicItem disabled={!props.isEditing} icon="printer" onClick={props.print} text="Print" />
-                    </Dropdown>
+                    <Dropdown
+                        className="toolbar-dropdown"
+                        items={fileMenuItems}
+                        trigger={<Button>File</Button>}
+                    />
                     <ThemeMenu />
                     {props.isEditing ? (
                         <Item onClick={props.toggleHelp}>
@@ -140,10 +235,10 @@ export function TopNavBar(props: TopNavBarProps) {
                     {props.isEditing && props.documents?.length ? (
                         <Dropdown
                             className="toolbar-dropdown document-selector"
+                            items={documentMenuItems}
                             trigger={(
                                 <Button
                                     className="document-selector-trigger"
-                                    onClick={() => setRenameTitle(activeDocument?.title ?? "")}
                                     title={activeDocumentLabel}
                                 >
                                     <span className="document-selector-label">
@@ -151,44 +246,7 @@ export function TopNavBar(props: TopNavBarProps) {
                                     </span>
                                 </Button>
                             )}
-                        >
-                            {activeDocument && props.renameDocument ? (
-                                <PureMenuItem className="document-selector-rename">
-                                    <AsyncActionForm
-                                        aria-label="Rename current resume"
-                                        className="document-selector-rename-form"
-                                        onClick={(event) => event.stopPropagation()}
-                                        save={() => props.renameDocument?.(
-                                            activeDocument.id,
-                                            renameTitle
-                                        ) ?? Promise.resolve(null)}
-                                        cancel={() => setRenameTitle(activeDocument.title)}
-                                    >
-                                        <label>
-                                            <span>Resume name</span>
-                                            <input
-                                                {...nonCredentialInputAttributes}
-                                                maxLength={RESUME_TITLE_MAX_LENGTH}
-                                                value={renameTitle}
-                                                onChange={(event) => setRenameTitle(event.target.value)}
-                                            />
-                                        </label>
-                                    </AsyncActionForm>
-                                </PureMenuItem>
-                            ) : <></>}
-                            {props.documents.map((document) => (
-                                <IconicItem
-                                    key={document.id}
-                                    icon={document.id === props.activeDocumentId ? "check" : "paper"}
-                                    onClick={() => props.selectDocument?.(document.id)}
-                                    text={[
-                                        document.title,
-                                        `v${document.version}`,
-                                        props.documentLabels?.[document.id]
-                                    ].filter(Boolean).join(" · ")}
-                                />
-                            ))}
-                        </Dropdown>
+                        />
                     ) : <></>}
                 </PureMenu>
                 {props.isEditing && props.saveStatus

@@ -1,5 +1,9 @@
 @use "../../sass/colors/semantic" as colors;
 
+.entry {
+    position: relative;
+}
+
 .entry-field-adder {
     display: inline-flex;
     align-items: center;
@@ -29,4 +33,20 @@
         }
     }
 
+}
+
+.entry-field-help {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.5rem;
+    z-index: 1;
+    padding: 0.2rem 0.4rem;
+    background: colors.$surface-raised;
+    border: 1px solid colors.$border-subtle;
+    border-radius: 3px;
+    color: colors.$text-secondary;
+    font-size: 0.7rem;
+    line-height: 1.2;
+    pointer-events: none;
+    white-space: nowrap;
 }

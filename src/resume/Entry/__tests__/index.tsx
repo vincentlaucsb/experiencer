@@ -96,6 +96,7 @@ test("selected entries expose a direct add-field action", () => {
 
     expect(screen.queryByRole("menu")).toBeNull();
     expect(screen.getByRole("textbox")).toBeTruthy();
+    expect(screen.getByText("Right-click fields for more options")).toBeTruthy();
 });
 
 test("editing entries expose a compact add-field control", () => {
@@ -116,6 +117,7 @@ test("editing entries expose a compact add-field control", () => {
         subtitle={["Some Job Title"]}
     />);
 
+    expect(screen.getByText("Finish editing to see field options")).toBeTruthy();
     const addFieldButton = screen.getByRole("button", { name: "Add field" });
     expect(addFieldButton.className).toContain("entry-field-adder__trigger");
     expect(addFieldButton.className).toContain("pure-button-primary");

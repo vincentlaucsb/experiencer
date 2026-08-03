@@ -41,6 +41,8 @@ export interface CssEditorProps extends CssUpdateProps {
     cssNode: ReadonlyCssNode;
     liveTree: LiveCssTreeName;
     varSuggestions?: Array<string>;
+    isAncestor?: boolean;
+    showAncestors?: boolean;
 
     /** Whether or not the section is open initially */
     isOpen?: boolean;
@@ -49,7 +51,11 @@ export interface CssEditorProps extends CssUpdateProps {
 export interface CssEditorState {
     highlight: boolean;
     isOpen: boolean;
+    showAllAncestors: boolean;
 }
+
+const PARENT_RULE_TITLE = "Parent rule shown because it may affect the selected node.";
+const VISIBLE_ANCESTOR_LIMIT = 3;
 
 /**
  * Creates props for a CssEditor instance
@@ -120,7 +126,8 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
 
         this.state = {
             highlight: false,
-            isOpen: props.isOpen || false
+            isOpen: props.isOpen || false,
+            showAllAncestors: false
         };
 
         this.mapContainer = this.mapContainer.bind(this);
@@ -295,6 +302,10 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     }
 
     renderChildren() {
+        if (this.props.isAncestor) {
+            return <></>;
+        }
+
         return this.props.cssNode.children.map((css) => {
             return <CssEditor
                 key={css.fullPath.join('-')}
@@ -312,6 +323,46 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         });
     }
 
+    renderAncestors() {
+        if (!this.props.showAncestors || this.props.cssNode.ancestors.length === 0) {
+            return <></>;
+        }
+
+        const ancestors = this.state.showAllAncestors
+            ? this.props.cssNode.ancestors
+            : this.props.cssNode.ancestors.slice(0, VISIBLE_ANCESTOR_LIMIT);
+        const hiddenAncestorCount = this.props.cssNode.ancestors.length - ancestors.length;
+
+        return (
+            <div className="css-ancestor-context" aria-label="Parent CSS rules">
+                {ancestors.map((ancestor) => (
+                    <CssEditor
+                        key={`ancestor-${ancestor.fullPath.join('-')}`}
+                        cssNode={ancestor}
+                        liveTree={this.props.liveTree}
+                        isAncestor
+                        addSelector={this.props.addSelector}
+                        updateName={this.props.updateName}
+                        updateProperty={this.props.updateProperty}
+                        updateDescription={this.props.updateDescription}
+                        updateSelector={this.props.updateSelector}
+                        replaceProperties={this.props.replaceProperties}
+                        deleteKey={this.props.deleteKey}
+                        deleteNode={this.props.deleteNode}
+                    />
+                ))}
+                {hiddenAncestorCount > 0 ? (
+                    <Button
+                        className="css-show-more-parents"
+                        onClick={() => this.setState({ showAllAncestors: true })}
+                    >
+                        Show {hiddenAncestorCount} more parent{hiddenAncestorCount === 1 ? "" : "s"}
+                    </Button>
+                ) : <></>}
+            </div>
+        );
+    }
+
     render() {
         const isNestedCategory = this.path.length > 1;
         const headingSpacingClasses = isNestedCategory ? " app-my-0 app-py-2 app-px-5" : " app-my-1";
@@ -322,6 +373,14 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
         const heading = <h2 className={`css-title-heading${headingSpacingClasses}`} onClick={() => this.setState({ isOpen: !this.state.isOpen })}>
             <span className="css-title-trigger">{caret}</span>
             {this.sectionName}
+            {this.props.isAncestor ? (
+                <span
+                    className="css-parent-badge"
+                    title={PARENT_RULE_TITLE}
+                >
+                    PARENT
+                </span>
+            ) : <></>}
             {this.highlighter}
             <React.Suspense fallback={null}>
                 <CssEditorToolbar
@@ -344,6 +403,7 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
                 {this.renderHighlightBoxes()}
                 {heading}
                 {content}
+                {this.renderAncestors()}
             </section>
         );
     }

@@ -62,6 +62,17 @@ export default class CssNode {
         return Array.from(this._children.values());
     }
 
+    /** Return ancestors from the direct parent up to the tree root. */
+    get ancestors() {
+        const ancestors: CssNode[] = [];
+        let current = this.parent;
+        while (current) {
+            ancestors.push(current);
+            current = current.parent;
+        }
+        return ancestors;
+    }
+
     get fullPath() {
         let parent = this.parent;
         let path = [ this.name ];

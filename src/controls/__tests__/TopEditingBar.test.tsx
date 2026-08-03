@@ -27,6 +27,8 @@ function createProps(): EditingBarProps {
         delete: jest.fn(),
         moveUp: jest.fn(),
         moveDown: jest.fn(),
+        duplicateBefore: jest.fn(),
+        duplicateAfter: jest.fn(),
         pasteClipboard: jest.fn(),
         saveLocal: jest.fn(),
         undo: jest.fn(),
@@ -122,7 +124,7 @@ describe("TopEditingBar Insert visibility", () => {
         const sectionOption = screen.getByText("Section");
         expect(entryOption).toBeTruthy();
         expect(entryOption.compareDocumentPosition(sectionOption) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-        expect(screen.getByRole("button", { name: "Experience Entry" }).querySelector(".toolbar-icon-brand")).toBeTruthy();
+        expect(screen.getByRole("menuitem", { name: "Experience Entry" })).toBeTruthy();
         expect(screen.getByText("Text")).toBeTruthy();
         expect(screen.queryByText("Markdown")).toBeNull();
         expect(screen.queryByText("Entry")).toBeNull();
@@ -148,5 +150,36 @@ describe("TopEditingBar Insert visibility", () => {
         const reviewButton = screen.getByRole("button", { name: "Review with AI" });
         expect(reviewButton).toBeTruthy();
         expect(reviewButton.querySelector(".toolbar-icon-brand")).toBeTruthy();
+    });
+
+    test("offers sibling duplication in the Clipboard menu", async () => {
+        const nodes = assignIds([
+            {
+                type: Section.type,
+                childNodes: [{ type: "Entry" }]
+            }
+        ] as BasicResumeNode[]);
+        const entryUuid = nodes[0].childNodes?.[0]?.uuid;
+        if (!entryUuid) {
+            throw new Error("Expected entry UUID");
+        }
+
+        act(() => {
+            resumeNodeStore.setNodes(nodes);
+            useEditorStore.getState().selectNode(entryUuid);
+        });
+
+        render(<TopEditingBar {...createProps()} />);
+        await act(async () => {
+            await Promise.resolve();
+        });
+
+        act(() => {
+            screen.getByText("Clipboard").click();
+        });
+
+        expect(screen.getByText("Insert Copy Before")).toBeTruthy();
+        expect(screen.getByText("Insert Copy After")).toBeTruthy();
+        expect(screen.getByRole("separator")).toBeTruthy();
     });
 });

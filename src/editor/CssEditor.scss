@@ -1,4 +1,6 @@
 @use "../sass/colors/semantic" as colors;
+@use "../sass/colors/palette";
+@use "../sass/badges";
 @use "../sass/variables";
 @use "../sass/zindex";
 
@@ -46,6 +48,7 @@ section.css-category {
         display: flex;
         align-items: center; /** Vertical alignment */
         justify-content: flex-start;
+        column-gap: 0.5rem;
 
         span.css-title {
             flex-shrink: 0;
@@ -105,6 +108,22 @@ section.css-category {
 }
 
 /** || Nested Categories */
+.css-ancestor-context {
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid colors.$border-subtle;
+}
+
+.css-parent-badge {
+    @include badges.badge(palette.$optimistic-teal, $filled: false);
+    flex-shrink: 0;
+}
+
+.css-show-more-parents {
+    margin: 0.5rem 0;
+    font-size: 0.85em;
+}
+
 section.css-category-1 {
     /** All nested categories */
     section.css-category {

@@ -82,6 +82,7 @@ export const useResumeActions = () => {
         updateNodeFields: (id: string | IdType, patch: Partial<Record<string, NodeProperty>>) => resumeNodeStore.updateNodeFields(id, patch),
         moveNodeUp: (id: string | IdType) => resumeNodeStore.moveNodeUp(id),
         moveNodeDown: (id: string | IdType) => resumeNodeStore.moveNodeDown(id),
+        duplicateNode: (id: string | IdType, before: boolean) => resumeNodeStore.duplicateNode(id, before),
         
         // Utility
         getNode: (id: IdType) => resumeNodeStore.getNode(id),

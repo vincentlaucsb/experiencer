@@ -1,0 +1,68 @@
+@use "sass:color";
+@use "sass:math";
+@use "colors/palette";
+
+@function _linear-channel($channel) {
+    $normalized: math.div($channel, 255);
+
+    @if $normalized <= 0.03928 {
+        @return math.div($normalized, 12.92);
+    }
+
+    @return math.pow(math.div($normalized + 0.055, 1.055), 2.4);
+}
+
+@function _luminance($value) {
+    $red: _linear-channel(color.channel($value, "red", $space: rgb));
+    $green: _linear-channel(color.channel($value, "green", $space: rgb));
+    $blue: _linear-channel(color.channel($value, "blue", $space: rgb));
+
+    @return (0.2126 * $red) + (0.7152 * $green) + (0.0722 * $blue);
+}
+
+@function _contrast-ratio($first, $second) {
+    $first-luminance: _luminance($first);
+    $second-luminance: _luminance($second);
+    $lighter: math.max($first-luminance, $second-luminance);
+    $darker: math.min($first-luminance, $second-luminance);
+
+    @return math.div($lighter + 0.05, $darker + 0.05);
+}
+
+@function _best-foreground($background, $light-foreground, $dark-foreground) {
+    @if _contrast-ratio($background, $light-foreground) >= _contrast-ratio($background, $dark-foreground) {
+        @return $light-foreground;
+    }
+
+    @return $dark-foreground;
+}
+
+/** Apply a contrast-safe badge treatment to a semantic background color. */
+@mixin badge($background, $border: $background, $filled: true) {
+    $light-foreground: palette.$white;
+    $dark-foreground: palette.$deep-ink;
+    $foreground: _best-foreground($background, $light-foreground, $dark-foreground);
+
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+    font-size: 0.65em;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    text-transform: uppercase;
+    vertical-align: middle;
+
+    @if $filled {
+        border: 1px solid $border;
+        border-radius: 0.2rem;
+        background-color: $background;
+        color: $foreground !important;
+        padding: 0.2rem 0.4rem;
+    } @else {
+        border: 0;
+        background-color: transparent;
+        color: $background !important;
+        padding: 0;
+    }
+}

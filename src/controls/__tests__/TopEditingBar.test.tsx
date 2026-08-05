@@ -186,4 +186,14 @@ describe("TopEditingBar Insert visibility", () => {
         expect(screen.getByText("Insert Copy After")).toBeTruthy();
         expect(screen.getByRole("separator")).toBeTruthy();
     });
+
+    test("offers Paste when no node is selected so content can be added to the root", async () => {
+        render(<TopEditingBar {...createProps()} />);
+
+        await act(async () => {
+            await Promise.resolve();
+        });
+
+        expect(screen.getByRole("button", { name: "Paste" })).toBeTruthy();
+    });
 });

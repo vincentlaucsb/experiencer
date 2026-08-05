@@ -30,6 +30,7 @@ import addCssClasses from "@/shared/stores/resumeStore/addCssClasses";
 import useSelectedNodeActions from "@/shared/hooks/useSelectedNodeActions";
 import addHtmlId from "@/shared/stores/addHtmlId";
 import ensureCssNodeForType from "@/shared/stores/ensureCssNodeForType";
+import { ResumeHotKeyMap } from "../ResumeHotkeys";
 
 interface EditingBarSubProps extends EditingBarProps {
     isOverflowing: boolean;
@@ -238,6 +239,16 @@ export function TopEditingBar(props: EditingBarProps) {
     }
     else {
         data.set("Page Setup", getPageSetupSection(pageSize, setPageSize, isOverflowing));
+
+        data.set("Clipboard", {
+            icon: "clip-board",
+            items: [{
+                onClick: props.pasteClipboard,
+                icon: "ui-clip-board",
+                text: "Paste",
+                shortcut: ResumeHotKeyMap.PASTE_SELECTED["sequence"]
+            }]
+        });
 
         data.set("Resume Components", {
             items: [

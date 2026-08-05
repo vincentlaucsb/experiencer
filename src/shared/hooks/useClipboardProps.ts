@@ -19,7 +19,7 @@ export default function useClipboardProps() {
                 : undefined;
             cutToClipboard(selectedNode);
         },
-        pasteClipboard: clipboard && selectedNodeId
+        pasteClipboard: clipboard
             ? () => pasteFromClipboard(selectedNodeId)
             : undefined
     };

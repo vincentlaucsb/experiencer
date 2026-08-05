@@ -3,8 +3,6 @@ import { resumeNodeStore } from '@/shared/stores/resumeNodeStore';
 import { useClipboardStore } from './store';
 
 export default function pasteFromClipboard(targetUuid: string | undefined) {
-    if (!targetUuid) return;
-
     const clipboard = useClipboardStore.getState().clipboard;
     if (!clipboard) return;
 

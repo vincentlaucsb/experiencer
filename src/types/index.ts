@@ -52,6 +52,15 @@ export interface CssNodeDump {
     properties: Array<[string, string]>;
 }
 
+/** A document-scoped external font that the host may make available to the editor. */
+export interface ResumeFont {
+    provider: 'builtin' | 'google';
+    family: string;
+    category?: string;
+    variants?: string[];
+    subsets?: string[];
+}
+
 export type EditorMode = 'normal'
     | 'landing'
     | 'help'
@@ -77,6 +86,8 @@ export interface ResumeSaveData {
     childNodes: Array<BasicResumeNode>;
     /** Saved physical page size. Missing legacy values load as Letter. */
     pageSize?: PageSize;
+    /** Document-scoped fonts retained independently from CSS declarations. */
+    fonts?: ResumeFont[];
 }
 
 /**

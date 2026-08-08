@@ -1,4 +1,8 @@
-﻿import { extractFontFamiliesFromCss, getGoogleFontsUrl } from "@/shared/utils/fonts";
+import { extractFontFamiliesFromCss, getGoogleFontsUrl } from "@/shared/utils/fonts";
+import { getBuiltinFontStylesheet, getGoogleFontRequests } from '@/shared/fonts/builtinFonts';
+
+import type { GoogleFontRequest } from "@/shared/utils/fonts";
+import type { ResumeFont } from '@/types';
 
 function escapeStylesheetForHtml(stylesheet: string) {
     // A style element is parsed as raw HTML text, so CSS backslashes do not
@@ -6,9 +10,16 @@ function escapeStylesheetForHtml(stylesheet: string) {
     return stylesheet.replace(/</g, '\\3C ');
 }
 
-export default function generateHtml(stylesheet: string, bodyHtml: string) {
-    const fontFamilies = extractFontFamiliesFromCss(stylesheet);
-    const googleFontsUrl = getGoogleFontsUrl(fontFamilies);
+export default function generateHtml(
+    stylesheet: string,
+    bodyHtml: string,
+    requestedFontFamilies?: GoogleFontRequest[]
+) {
+    const fontFamilies = requestedFontFamilies ?? extractFontFamiliesFromCss(stylesheet);
+    const googleFontsUrl = getGoogleFontsUrl(getGoogleFontRequests(fontFamilies));
+    const builtinStylesheet = getBuiltinFontStylesheet(
+        fontFamilies.filter((font): font is ResumeFont => typeof font !== 'string')
+    );
     const safeStylesheet = escapeStylesheetForHtml(stylesheet);
     const fontsLinkTag = googleFontsUrl
         ? `\n        <link href="${googleFontsUrl}" rel="stylesheet">`
@@ -21,6 +32,7 @@ export default function generateHtml(stylesheet: string, bodyHtml: string) {
         <title>Resume</title>
         <meta charset="utf-8">
         <style>
+            ${builtinStylesheet}
             ${safeStylesheet}
         </style>
         ${fontsLinkTag}

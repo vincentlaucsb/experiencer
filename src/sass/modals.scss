@@ -1,5 +1,9 @@
 ﻿@use "colors/semantic" as colors;
 
+:root {
+    --xp-modal-top-offset: 6vh;
+}
+
 /** All modals */
 div[class*='ReactModal__Content'] {
     .modal-heading {
@@ -28,7 +32,7 @@ div[class*='ReactModal__Content'] {
     width: 50%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 20vh;
+    margin-top: var(--xp-modal-top-offset);
 }
 
 /** Modals created by top nav menu */
@@ -55,7 +59,6 @@ div[class*='ReactModal__Content'] {
 .live-css-changes-modal {
     width: min(48rem, calc(100% - 2rem)) !important;
     max-height: 84vh;
-    margin-top: 8vh !important;
 
     .live-css-changes-modal-body > p {
         margin-top: 0;

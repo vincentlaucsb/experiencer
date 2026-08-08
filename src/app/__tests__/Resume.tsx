@@ -176,6 +176,43 @@ test('Resume Select Parent + Child Test', async () => {
     }
 })
 
+test('print mode disables node selection and clears an existing selection', async () => {
+    const template = ResumeTemplates.templates.Integrity;
+    const nodes = assignIds(template.childNodes);
+    const tree = {
+        type: 'Resume',
+        uuid: 'print-test-root',
+        childNodes: nodes
+    };
+
+    const view = render(
+        <ResumeView
+            mode="normal"
+            stylesheet=""
+            tree={tree}
+        />
+    );
+
+    const header = getByText(view.container, 'Randy Marsh');
+    await selectNode(header);
+    expect(useEditorStore.getState().selectedNodeId).toBeTruthy();
+
+    view.rerender(
+        <ResumeView
+            mode="printing"
+            stylesheet=""
+            tree={tree}
+        />
+    );
+
+    expect(useEditorStore.getState().selectedNodeId).toBeUndefined();
+    expect(view.container.querySelector('[data-selected]')).toBeNull();
+
+    await selectNode(header);
+    expect(useEditorStore.getState().selectedNodeId).toBeUndefined();
+    expect(view.container.querySelector('[data-selected]')).toBeNull();
+});
+
 test('CSS editor reopens for a new selected node of the same type', async () => {
     const tegridy = ResumeTemplates.templates.Integrity;
     setupResumeForTest(tegridy);
@@ -222,7 +259,8 @@ test('Template switcher previews the selected template', async () => {
 
     expect(screen.getByLabelText('Integrity template preview')).toBeTruthy();
     expect(screen.getByText('Randy Marsh')).toBeTruthy();
-    expect(document.getElementById('resume-preview-google-fonts')).not.toBeNull();
+    expect(document.querySelector('style[data-resume-preview-builtin-fonts]')?.textContent)
+        .toContain('/fonts/builtin/');
     expect(integrityOption?.classList.contains('pure-menu-selected')).toBe(true);
 
     await act(async () => {

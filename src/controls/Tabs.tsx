@@ -5,12 +5,13 @@ import "./Tabs.scss";
 import { Button } from "./Buttons";
 
 export interface TabProps {
-    children: Array<ReactElement>;
+    children: React.ReactNode;
 }
 
 export default function Tabs(props: TabProps) {
-    if (Array.isArray(props.children)) {
-        let keys = (props.children).map((node) => {
+    const children = flattenChildren(props.children);
+    if (children.length > 0) {
+        let keys = children.map((node) => {
             if (node.key) {
                 return node.key;
             }
@@ -51,10 +52,17 @@ export default function Tabs(props: TabProps) {
             </div>
 
             <div className="tabs-children app-p-4" aria-labelledby={activeTabId} id={activePanelId} role="tabpanel">
-                {props.children[activeIndex]}
+                {children[activeIndex]}
             </div>
         </div>
     }
 
     throw new Error("Tabs has no children");
+}
+
+function flattenChildren(children: React.ReactNode): ReactElement[] {
+    if (Array.isArray(children)) {
+        return children.flatMap(flattenChildren);
+    }
+    return React.isValidElement(children) ? [children] : [];
 }

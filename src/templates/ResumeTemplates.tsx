@@ -6,43 +6,44 @@ import { streamlineCoverLetterNodes, streamlineCoverLetterCss } from "./Streamli
 import { ResumeSaveData } from "@/types";
 import { assuredCoverLetterNodes, assuredCoverLetterCss } from "./AssuredCoveredLetter";
 import PageSize from "@/types/PageSize";
+import { withTemplateFonts } from "@/shared/fonts/templateFonts";
 
 /** Provides ID-assigned save data for the built-in OSS templates. */
 export default class ResumeTemplates {
     static templates = {
-        "Assured": {
+        "Assured": withTemplateFonts({
             builtinCss: assuredCss().dump(),
             childNodes: assignIds(assuredNodes()),
             rootCss: assuredRootCss().dump(),
             pageSize: PageSize.Letter
-        } as ResumeSaveData,
+        } as ResumeSaveData),
 
-        "Assured: Cover Letter": {
+        "Assured: Cover Letter": withTemplateFonts({
             builtinCss: assuredCoverLetterCss().dump(),
             childNodes: assignIds(assuredCoverLetterNodes()),
             rootCss: assuredRootCss().dump(),
             pageSize: PageSize.Letter
-        } as ResumeSaveData,
+        } as ResumeSaveData),
 
-        "Integrity": {
+        "Integrity": withTemplateFonts({
             builtinCss: randyMarshCss().dump(),
             childNodes: assignIds(randyMarsh()),
             rootCss: randyMarshRootCss().dump(),
             pageSize: PageSize.Letter
-        } as ResumeSaveData,
+        } as ResumeSaveData),
 
-        "Streamline": {
+        "Streamline": withTemplateFonts({
             builtinCss: streamlineCss().dump(),
             childNodes: assignIds(streamlineNodes()),
             rootCss: streamlineRootCss().dump(),
             pageSize: PageSize.Letter
-        } as ResumeSaveData,
+        } as ResumeSaveData),
 
-        "Streamline: Cover Letter": {
+        "Streamline: Cover Letter": withTemplateFonts({
             builtinCss: streamlineCoverLetterCss().dump(),
             childNodes: assignIds(streamlineCoverLetterNodes()),
             rootCss: streamlineRootCss().dump(),
             pageSize: PageSize.Letter
-        } as ResumeSaveData
+        } as ResumeSaveData)
     }
 }

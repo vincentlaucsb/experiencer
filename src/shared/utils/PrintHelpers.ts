@@ -3,6 +3,7 @@ import { useEditorStore } from '@/shared/stores/editorStore';
 import { workspaceStore } from '@/shared/stores/workspaceStore';
 import generateHtml from '@/editor/GenerateHtml';
 import PageSize from '@/types/PageSize';
+import { documentFontsStore } from '@/shared/stores/documentFontsStore';
 
 /**
  * Print the resume using browser's print dialog.
@@ -47,8 +48,11 @@ export function exportResumeAsHtml(
     requestAnimationFrame(() => {
         const resumeHtml = resumeElement ? resumeElement.outerHTML : '';
         const stylesheetWithPageSize = `${pageSizeRule}\n${stylesheet}`;
+        const generatedHtml = documentFontsStore.data
+            ? generateHtml(stylesheetWithPageSize, resumeHtml, documentFontsStore.data)
+            : generateHtml(stylesheetWithPageSize, resumeHtml);
         const blob = new Blob(
-            [generateHtml(stylesheetWithPageSize, resumeHtml)],
+            [generatedHtml],
             { type: "text/html;charset=utf-8" }
         );
 

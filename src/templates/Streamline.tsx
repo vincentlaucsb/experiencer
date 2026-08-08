@@ -52,6 +52,7 @@ export function streamlineCss() {
         'font-family': 'var(--sans-serif)',
         'margin': '0 0 var(--x-small-spacing) 0',
         'font-size': 'var(--header-title-size)',
+        'font-weight': '400',
     });
     titleGroup.mustFindNode('Subtitle').setProperties({
         'margin': '0',

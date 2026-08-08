@@ -39,6 +39,7 @@ import { workspaceStore } from '@/shared/stores/workspaceStore';
 import { useWorkspaceSnapshot } from '@/shared/stores/workspaceStoreHooks';
 import { useResumeTree, resumeNodeStore } from '@/shared/stores/resumeNodeStore';
 import { useTreeStylesheet } from '@/shared/stores/cssStoreHooks';
+import { useDocumentFonts } from '@/shared/stores/documentFontsStore';
 
 // Types
 import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode } from '@/types';
@@ -80,6 +81,11 @@ export interface AdditionalTemplateGroup {
     heading: React.ReactNode;
     templates: AdditionalTemplateOption[];
     emptyState?: React.ReactNode;
+}
+
+export interface AdditionalSidebarTab {
+    key: string;
+    content: React.ReactNode;
 }
 
 export interface ResumeDocumentGroup {
@@ -144,10 +150,13 @@ export interface ResumeProps {
     documentMenuItems?: React.ReactNode;
     additionalTemplateGroups?: AdditionalTemplateGroup[];
     overlays?: React.ReactNode;
+    additionalSidebarTabs?: AdditionalSidebarTab[];
 }
 
 export type ResumeWrapperProps = Partial<Omit<ResumeProps, 'selectedNodeId' | 'isEditingSelected'>> & {
     resumeRepository?: ResumeRepository;
+    /** Let an embedding application own library initialization when it has a feature runtime. */
+    initializeLibrary?: boolean;
     proBadge?: string;
     accountLabel?: string;
     signOut?: () => void;
@@ -457,11 +466,24 @@ export function Resume(props: ResumeProps) {
                     </code>
                 </pre>
             </div>
+            {(props.additionalSidebarTabs ?? []).map((tab) => (
+                <React.Fragment key={tab.key}>{tab.content}</React.Fragment>
+            ))}
         </Tabs>
     };
 
     // Main Render Logic
     const { mode } = props;
+    useEffect(() => {
+        const selectionEnabled = mode !== 'printing';
+        useEditorStore.getState().setSelectionEnabled(selectionEnabled);
+
+        return () => {
+            // Do not leave the shared editor interaction lock behind when this host changes mode or unmounts.
+            useEditorStore.getState().setSelectionEnabled(true);
+        };
+    }, [mode]);
+
     const hlBoxContainer = createContainer("hl-box-container");
     const resume = (
         <>
@@ -469,11 +491,12 @@ export function Resume(props: ResumeProps) {
                 nodes={resumeNodes}
                 pageSize={pageSize}
                 containerRef={resumeRef}
-                beforeNodes={<ResumeHotKeys />}
+                readOnly={mode === 'printing'}
+                beforeNodes={mode === 'printing' ? undefined : <ResumeHotKeys />}
                 updateResumeData={updateData}
                 updateResumeDataFields={updateDataFields}
             />
-            {createPortal(
+            {mode !== 'printing' && createPortal(
                 <React.Suspense fallback={null}>
                     <SelectedNodeHighlightBox />
                 </React.Suspense>,
@@ -581,6 +604,7 @@ function ResumeContainer(props: ResumeWrapperProps) {
         libraryStore.getSnapshot
     );
     const stylesheet = useTreeStylesheet();
+    const documentFonts = useDocumentFonts();
     const workspace = useWorkspaceSnapshot();
     const pageSize = usePageSize();
     const selectedNodeId = useSelectedNodeId();
@@ -605,8 +629,10 @@ function ResumeContainer(props: ResumeWrapperProps) {
         if (!props.mode) {
             workspaceStore.reset();
         }
-        void libraryStore.initialize();
-    }, [libraryStore]);
+        if (props.initializeLibrary !== false) {
+            void libraryStore.initialize();
+        }
+    }, [libraryStore, props.initializeLibrary, props.mode]);
 
     const requestDeleteDocument = React.useCallback((id: string) => {
         const document = library.documents.find((item) => item.id === id);
@@ -633,7 +659,10 @@ function ResumeContainer(props: ResumeWrapperProps) {
     }, [documentPendingDelete, libraryStore]);
 
     useHandlePrint();
-    useStylesheet(mode === "changingTemplate" ? "" : stylesheet);
+    useStylesheet(mode === "changingTemplate" ? "" : stylesheet, {
+        fontFamilies: documentFonts,
+        documentFonts
+    });
 
     return (
         <>

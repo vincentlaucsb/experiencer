@@ -37,6 +37,16 @@ describe('fonts utility', () => {
         expect(url).toBe('https://fonts.googleapis.com/css?family=Merriweather|Open+Sans&display=swap');
     });
 
+    test('preserves registered font variants when building the stylesheet URL', () => {
+        const url = getGoogleFontsUrl([{
+            provider: 'google',
+            family: 'Source Sans 3',
+            variants: ['regular', '700']
+        }]);
+
+        expect(url).toBe('https://fonts.googleapis.com/css?family=Source+Sans+3:regular,700&display=swap');
+    });
+
     test('returns empty URL for empty families', () => {
         expect(getGoogleFontsUrl([])).toBe('');
     });

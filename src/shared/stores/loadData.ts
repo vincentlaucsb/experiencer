@@ -6,6 +6,9 @@ import { assignIds } from "../utils/assignIds";
 import { workspaceStore } from "./workspaceStore";
 import { useEditorStore } from "./editorStore";
 import PageSize from "@/types/PageSize";
+import { documentFontsStore } from './documentFontsStore';
+import { extractFontFamiliesFromCss } from '@/shared/utils/fonts';
+import { isBuiltinFontFamily } from '@/shared/fonts/builtinFonts';
 
 function normalizeLegacyNodeTypes(nodes: any[] | undefined): any[] {
     if (!nodes) {
@@ -24,17 +27,8 @@ function normalizeLegacyNodeTypes(nodes: any[] | undefined): any[] {
     });
 }
 
-/**
- * Load resume data into the stores
- * @param data Serialized resume data to load
- * @param mode Workspace mode to enter after loading (default: 'normal')
- * @param documentId Persisted document opened by this load, when applicable
- */
-export default function loadData(
-    data: object,
-    mode: EditorMode = 'normal',
-    documentId?: string
-) {
+/** Hydrates the editor stores from serialized resume data without changing workspace state. */
+export function hydrateResumeData(data: object) {
     let savedData = data as ResumeSaveData;
     const normalizedChildNodes = normalizeLegacyNodeTypes(savedData.childNodes as any[]);
     const nodes = assignIds(normalizedChildNodes);
@@ -46,9 +40,29 @@ export default function loadData(
     
     cssStore.loadCss(savedData.builtinCss);
     rootCssStore.loadCss(savedData.rootCss);
+    documentFontsStore.load(savedData.fonts ?? extractFontFamiliesFromCss(
+        `${rootCssStore.getStylesheet()}\n\n${cssStore.getStylesheet()}`
+    ).map((family) => ({
+        provider: isBuiltinFontFamily(family) ? 'builtin' as const : 'google' as const,
+        family
+    })));
     useEditorStore.getState().loadPageSize(
         savedData.pageSize === PageSize.A4 ? PageSize.A4 : PageSize.Letter
     );
+}
+
+/**
+ * Load resume data into the stores and enter the requested workspace mode.
+ * @param data Serialized resume data to load
+ * @param mode Workspace mode to enter after loading (default: 'normal')
+ * @param documentId Persisted document opened by this load, when applicable
+ */
+export default function loadData(
+    data: object,
+    mode: EditorMode = 'normal',
+    documentId?: string
+) {
+    hydrateResumeData(data);
 
     workspaceStore.transitionTo(mode, documentId);
 }

@@ -1,3 +1,5 @@
+import type { ResumeFont } from '@/types';
+
 const GENERIC_FAMILIES = new Set([
     'serif',
     'sans-serif',
@@ -14,6 +16,8 @@ const GENERIC_FAMILIES = new Set([
 ]);
 
 const GOOGLE_FONTS_BASE_URL = 'https://fonts.googleapis.com/css?family=';
+
+export type GoogleFontRequest = string | ResumeFont;
 
 function normalizeFamily(value: string): string {
     return value.replace(/^['"]+|['"]+$/g, '').trim();
@@ -59,21 +63,38 @@ export function extractFontFamiliesFromCss(stylesheet: string): string[] {
     return Array.from(families);
 }
 
-export function getGoogleFontsUrl(fontFamilies: string[]): string {
-    const uniqueFamilies = Array.from(new Set(fontFamilies.map((family) => family.trim()).filter(Boolean)));
+export function getGoogleFontsUrl(fontFamilies: GoogleFontRequest[]): string {
+    const uniqueFamilies: GoogleFontRequest[] = [];
+    for (const family of fontFamilies) {
+        const name = typeof family === 'string' ? family.trim() : family.family.trim();
+        if (!name || uniqueFamilies.some((item) => {
+            const other = typeof item === 'string' ? item : item.family;
+            return other.localeCompare(name, undefined, { sensitivity: 'accent' }) === 0;
+        })) {
+            continue;
+        }
+        uniqueFamilies.push(typeof family === 'string' ? name : { ...family, family: name });
+    }
     if (uniqueFamilies.length === 0) {
         return '';
     }
 
     const familyParam = uniqueFamilies
-        .map((family) => encodeURIComponent(family).replace(/%20/g, '+'))
+        .map((family) => {
+            if (typeof family === 'string') {
+                return encodeURIComponent(family).replace(/%20/g, '+');
+            }
+            const variants = family.variants?.filter(Boolean).join(',');
+            const suffix = variants ? `:${variants}` : '';
+            return `${encodeURIComponent(family.family).replace(/%20/g, '+')}${suffix}`;
+        })
         .join('|');
 
     return `${GOOGLE_FONTS_BASE_URL}${familyParam}&display=swap`;
 }
 
 export function ensureGoogleFontsLink(
-    fontFamilies: string[],
+    fontFamilies: GoogleFontRequest[],
     targetDocument: Document | undefined = typeof document === 'undefined'
         ? undefined
         : document,

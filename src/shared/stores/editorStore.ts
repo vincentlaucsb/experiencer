@@ -6,6 +6,7 @@ interface EditorState {
     // Selection state
     selectedNodeId: string | undefined;
     isEditingSelected: boolean;
+    selectionEnabled: boolean;
 
     // UI state
     leftPaneElement: HTMLDivElement | null;
@@ -17,6 +18,7 @@ interface EditorState {
     selectNode: (nodeId: string) => void;
     editNode: (nodeId: string) => void;
     unselectNode: () => void;
+    setSelectionEnabled: (enabled: boolean) => void;
     toggleEdit: () => void;
     setLeftPaneElement: (element: HTMLDivElement | null) => void;
     setPageSize: (pageSize: PageSize) => void;
@@ -30,6 +32,7 @@ export const useEditorStore = create<EditorState>()(
             // Initial state
             selectedNodeId: undefined,
             isEditingSelected: false,
+            selectionEnabled: true,
             leftPaneElement: null,
             pageSize: PageSize.Letter,
             savedPageSize: PageSize.Letter,
@@ -37,16 +40,37 @@ export const useEditorStore = create<EditorState>()(
 
             // Actions
             selectNode: (nodeId: string) =>
-                set({ selectedNodeId: nodeId, isEditingSelected: false }, false, 'selectNode'),
+                set((state) => state.selectionEnabled
+                    ? { selectedNodeId: nodeId, isEditingSelected: false }
+                    : state, false, 'selectNode'),
 
             editNode: (nodeId: string) =>
-                set({ selectedNodeId: nodeId, isEditingSelected: true }, false, 'editNode'),
+                set((state) => state.selectionEnabled
+                    ? { selectedNodeId: nodeId, isEditingSelected: true }
+                    : state, false, 'editNode'),
 
             unselectNode: () =>
                 set({ selectedNodeId: undefined, isEditingSelected: false }, false, 'unselectNode'),
 
+            setSelectionEnabled: (enabled: boolean) =>
+                set((state) => {
+                    if (state.selectionEnabled === enabled && enabled) {
+                        return state;
+                    }
+
+                    return enabled
+                        ? { selectionEnabled: true }
+                        : {
+                            selectionEnabled: false,
+                            selectedNodeId: undefined,
+                            isEditingSelected: false
+                        };
+                }, false, 'setSelectionEnabled'),
+
             toggleEdit: () =>
-                set((state) => ({ isEditingSelected: !state.isEditingSelected }), false, 'toggleEdit'),
+                set((state) => state.selectionEnabled
+                    ? { isEditingSelected: !state.isEditingSelected }
+                    : state, false, 'toggleEdit'),
 
             setLeftPaneElement: (element: HTMLDivElement | null) =>
                 set((state) => {
@@ -91,6 +115,8 @@ export const usePageSize = () => useEditorStore((state) => state.pageSize);
 export const useHasUnsavedPageSizeChanges = () =>
     useEditorStore((state) => state.hasUnsavedPageSizeChanges);
 export const useIsNodeSelected = (nodeId: string) => 
-    useEditorStore((state) => state.selectedNodeId === nodeId);
+    useEditorStore((state) => state.selectionEnabled && state.selectedNodeId === nodeId);
 export const useIsNodeEditing = (nodeId: string) => 
-    useEditorStore((state) => state.selectedNodeId === nodeId && state.isEditingSelected);
+    useEditorStore((state) =>
+        state.selectionEnabled && state.selectedNodeId === nodeId && state.isEditingSelected
+    );

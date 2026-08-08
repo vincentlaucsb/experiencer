@@ -10,6 +10,8 @@ import {
     ensureGoogleFontsLink,
     extractFontFamiliesFromCss
 } from "@/shared/utils/fonts";
+import { getBuiltinFontStylesheet } from '@/shared/fonts/builtinFonts';
+import { getGoogleFontRequests } from '@/shared/fonts/builtinFonts';
 import { ResumeNode, ResumeSaveData } from "@/types";
 import PageSize from "@/types/PageSize";
 
@@ -81,11 +83,13 @@ function InlinePreview(
 ) {
     useGoogleFontsStylesheet(props.preview.stylesheet, {
         linkId: "resume-preview-google-fonts",
-        removeOnUnmount: true
+        removeOnUnmount: true,
+        fontFamilies: props.data.fonts
     });
 
     return (
         <>
+            <style data-resume-preview-builtin-fonts>{getBuiltinFontStylesheet(props.data.fonts)}</style>
             <style>{props.preview.stylesheet}</style>
             <ResumeRenderer
                 nodes={props.preview.nodes}
@@ -108,11 +112,17 @@ function IsolatedPreview(
         if (!frameDocument) return;
 
         copyApplicationStyles(document, frameDocument);
+        frameDocument.head.querySelector('[data-resume-preview-builtin-fonts]')?.remove();
+        const builtinStyles = frameDocument.createElement('style');
+        builtinStyles.setAttribute('data-resume-preview-builtin-fonts', '');
+        builtinStyles.textContent = getBuiltinFontStylesheet(props.data.fonts);
+        frameDocument.head.appendChild(builtinStyles);
         ensureGoogleFontsLink(
-            extractFontFamiliesFromCss(props.preview.stylesheet),
+            getGoogleFontRequests(props.data.fonts
+                ?? extractFontFamiliesFromCss(props.preview.stylesheet)),
             frameDocument
         );
-    }, [frameDocument, props.preview.stylesheet]);
+    }, [frameDocument, props.data.fonts, props.preview.stylesheet]);
 
     const contents = frameDocument && createPortal(
         <>

@@ -13,6 +13,7 @@ import { workspaceStore } from "@/shared/stores/workspaceStore";
 import { cssStore, rootCssStore } from "@/shared/stores/cssStoreHooks";
 import { ResumeDocument } from "@/shared/repositories/ResumeRepository";
 import { useEditorStore } from "@/shared/stores/editorStore";
+import { documentFontsStore } from './documentFontsStore';
 
 export interface ResumeLibrarySnapshot {
     documents: ResumeDocumentSummary[];
@@ -82,6 +83,7 @@ export default class ResumeLibraryStore implements ResumeLibraryController {
         resumeNodeStore.hasUnsavedChanges()
         || cssStore.hasUnsavedChanges()
         || rootCssStore.hasUnsavedChanges()
+        || documentFontsStore.hasUnsavedChanges()
         || useEditorStore.getState().hasUnsavedPageSizeChanges;
 
     saveCurrentDocument = async (): Promise<ResumeDocument | undefined> => {
@@ -124,6 +126,7 @@ export default class ResumeLibraryStore implements ResumeLibraryController {
             resumeNodeStore.clearUnsavedChanges();
             cssStore.clearUnsavedChanges();
             rootCssStore.clearUnsavedChanges();
+            documentFontsStore.clearUnsavedChanges();
             useEditorStore.getState().clearPageSizeUnsavedChanges();
             await this.refreshDocuments();
             return saved;
@@ -231,6 +234,7 @@ export default class ResumeLibraryStore implements ResumeLibraryController {
         resumeNodeStore.clearUnsavedChanges();
         cssStore.clearUnsavedChanges();
         rootCssStore.clearUnsavedChanges();
+        documentFontsStore.clearUnsavedChanges();
         await this.repository.setActiveId(document.id);
         this.setSnapshot({
             activeDocumentId: document.id,

@@ -10,6 +10,8 @@ export interface ToolbarSection {
     icon?: string;
     iconTone?: "brand";
     items: Array<ToolbarItemData>;
+    /** Lower values collapse earlier when the toolbar runs out of room. */
+    collapsePriority?: number;
 }
 
 export type ToolbarData = Map<string, ToolbarSection>;
@@ -17,8 +19,10 @@ export type ToolbarData = Map<string, ToolbarSection>;
 export interface ToolbarProps {
     data: ToolbarData;
 
-    /** Determines whether or not to use compact form */
+    /** Determines whether or not to use compact form for every section. */
     collapse: boolean;
+    /** Sections that should use their compact dropdown representation. */
+    collapsedSections?: ReadonlySet<string>;
 }
 
 /**
@@ -43,17 +47,38 @@ export default function Toolbar(props: ToolbarProps) {
         );
     }
 
-    // Default representation
+    // Default representation, with optional per-section compaction.
     return <React.Fragment>
         {Array.from(props.data).map(([key, section]) => {
+            const isCollapsed = props.collapsedSections?.has(key) || false;
+            const priority = section.collapsePriority ?? 50;
+
             return (
-                <div className="toolbar-section app-py-1-5 app-px-2" key={key}>
-                    <PureMenu horizontal>
-                        {section.items.map((item: ToolbarItemData, index: number) =>
-                            <ToolbarItemFactory key={index} {...item} />
-                        )}
-                    </PureMenu>
-                    <span className="toolbar-label app-text-light-accent">{key}</span>
+                <div
+                    className={`toolbar-section${isCollapsed ? " toolbar-section-collapsed" : ""} app-py-1-5 app-px-2`}
+                    data-toolbar-section={key}
+                    data-toolbar-collapse-priority={priority}
+                    key={key}
+                >
+                    {isCollapsed ? (
+                        <PureMenu horizontal>
+                            <ToolbarSectionDropdown
+                                text={key}
+                                icon={section.icon}
+                                iconTone={section.iconTone}
+                                items={section.items}
+                            />
+                        </PureMenu>
+                    ) : (
+                        <PureMenu horizontal>
+                            {section.items.map((item: ToolbarItemData, index: number) =>
+                                <ToolbarItemFactory key={index} {...item} />
+                            )}
+                        </PureMenu>
+                    )}
+                    {isCollapsed ? <></> : (
+                        <span className="toolbar-label app-text-light-accent">{key}</span>
+                    )}
                 </div>
             );
         })}

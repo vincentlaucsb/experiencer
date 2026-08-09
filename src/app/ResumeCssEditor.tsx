@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { useCssStore } from "@/shared/stores/cssStoreHooks";
-import { useResumeNodeByUuid } from "@/shared/stores/resumeNodeStore";
+import {
+    resumeNodeStore,
+    useResumeNodeByUuid
+} from "@/shared/stores/resumeNodeStore";
 import CssNode, { ReadonlyCssNode } from "@/shared/CssTree";
 import type { ResumeNode } from "@/types";
 import CssEditor, { makeCssEditorProps } from "@/editor/CssEditor";
@@ -19,6 +22,7 @@ import {
 
 import ComponentTypes from "@/resume/schema/ComponentTypes";
 import makeCssVarSuggestions from "@/shared/utils/makeCssVarSuggestions";
+import findApplicableCssAncestors from "@/shared/utils/findApplicableCssAncestors";
 
 interface ResumeCssEditorProps {
     css: CssNode;
@@ -38,6 +42,19 @@ function changesSignature(changes: ReadonlyArray<ScopedLiveCssTreeChange>) {
         path: change.path,
         declarations: Array.from(change.declarations.entries())
     })));
+}
+
+function findCssRule(css: CssNode, htmlId: string) {
+    return css.findNodeBySelector(`#${htmlId}`);
+}
+
+function findParentCssRules(selectedNode: ResumeNode, css: CssNode) {
+    const ancestorNodes = resumeNodeStore
+        .getParentUuids(selectedNode.uuid)
+        .map((uuid) => resumeNodeStore.getNodeByUuid(uuid))
+        .filter((node): node is ResumeNode => Boolean(node));
+
+    return findApplicableCssAncestors(ancestorNodes, css);
 }
 
 function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss }: ResumeCssEditorProps) {
@@ -117,6 +134,7 @@ function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss 
     if (selectedNode) {
         let generalCssEditor = <></>
         let specificCssEditor = <></>
+        const parentCssRules = findParentCssRules(selectedNode, css);
 
         const rootNode = css.findNode(
             ComponentTypes.instance.cssName(selectedNode.type)) as CssNode;
@@ -127,20 +145,24 @@ function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss 
                 cssNode={new ReadonlyCssNode(rootNode)}
                 isOpen={true}
                 showAncestors
+                additionalAncestors={parentCssRules}
                 liveTree="resume"
                 {...makeCssEditorProps(updateCss)}
             />
         }
 
-        if (selectedNode.htmlId && css.findNode([`#${selectedNode.htmlId}`])) {
-            const specificRoot = css.findNode([`#${selectedNode.htmlId}`]) as CssNode;
-            specificCssEditor = <CssEditor
-                key={`${selectedNode.uuid}-#${selectedNode.htmlId}`}
-                cssNode={new ReadonlyCssNode(specificRoot)}
-                isOpen={true}
-                showAncestors
-                liveTree="resume"
-                {...makeCssEditorProps(updateCss)} />
+        if (selectedNode.htmlId) {
+            const specificRoot = findCssRule(css, selectedNode.htmlId);
+            if (specificRoot) {
+                specificCssEditor = <CssEditor
+                    key={`${selectedNode.uuid}-#${selectedNode.htmlId}`}
+                    cssNode={new ReadonlyCssNode(specificRoot)}
+                    isOpen={true}
+                    showAncestors
+                    additionalAncestors={parentCssRules}
+                    liveTree="resume"
+                    {...makeCssEditorProps(updateCss)} />
+            }
         }
 
         return <>

@@ -275,6 +275,23 @@ export default class CssNode {
         return currentNode;
     }
 
+    /** Find the first CSS node whose local selector contains an exact selector token. */
+    findNodeBySelector(selector: string): CssNode | undefined {
+        const selectors = this.selector.split(',').map((value) => value.trim());
+        if (selectors.includes(selector)) {
+            return this;
+        }
+
+        for (const child of this.children) {
+            const match = child.findNodeBySelector(selector);
+            if (match) {
+                return match;
+            }
+        }
+
+        return undefined;
+    }
+
     /**
      * Walk the path, returning the node at the end.
      * Creates any missing intermediate nodes (and the leaf itself) as empty nodes.

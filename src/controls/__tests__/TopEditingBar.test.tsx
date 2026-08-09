@@ -187,6 +187,141 @@ describe("TopEditingBar Insert visibility", () => {
         expect(reviewButton.querySelector(".toolbar-icon-brand")).toBeTruthy();
     });
 
+    test("progressively collapses AI Review before core editing controls", async () => {
+        const additionalToolbarSections: ToolbarData = new Map([
+            ["AI Review", {
+                icon: "robot",
+                iconTone: "brand",
+                collapsePriority: 0,
+                items: [{
+                    icon: "robot",
+                    iconTone: "brand",
+                    text: "Review with AI",
+                    onClick: jest.fn()
+                }]
+            }]
+        ]);
+
+        render(
+            <TopEditingBar
+                {...createProps()}
+                additionalToolbarSections={additionalToolbarSections}
+            />
+        );
+
+        const toolbar = document.getElementById("toolbar");
+        if (!toolbar) {
+            throw new Error("Expected toolbar element");
+        }
+        const aiSection = toolbar.querySelector('[data-toolbar-section="AI Review"]');
+        if (!aiSection) {
+            throw new Error("Expected AI Review toolbar section");
+        }
+        Object.defineProperty(aiSection, "offsetWidth", {
+            configurable: true,
+            get: () => aiSection.classList.contains("toolbar-section-collapsed") ? 100 : 200
+        });
+        Object.defineProperty(toolbar, "clientWidth", {
+            configurable: true,
+            value: 500
+        });
+        Object.defineProperty(toolbar, "scrollWidth", {
+            configurable: true,
+            get: () => toolbar.querySelector(
+                '[data-toolbar-section="AI Review"]'
+            )?.classList.contains("toolbar-section-collapsed") ? 400 : 1000
+        });
+
+        act(() => {
+            window.dispatchEvent(new Event("resize"));
+        });
+        await act(async () => {
+            await new Promise((resolve) => window.setTimeout(resolve, 150));
+        });
+
+        expect(screen.getByRole("button", { name: "AI Review" })).toBeTruthy();
+        expect(screen.getByLabelText("Save")).toBeTruthy();
+        expect(toolbar.querySelector('[data-toolbar-section="AI Review"]')
+            ?.classList.contains("toolbar-section-collapsed")).toBe(true);
+        expect(toolbar.querySelector('[data-toolbar-section="AI Review"] .toolbar-label')).toBeNull();
+        expect(toolbar.querySelector('[data-toolbar-section="Editing"]')
+            ?.classList.contains("toolbar-section-collapsed")).toBe(false);
+
+        act(() => {
+            window.dispatchEvent(new Event("resize"));
+        });
+        await act(async () => {
+            await new Promise((resolve) => window.setTimeout(resolve, 150));
+        });
+
+        expect(aiSection.classList.contains("toolbar-section-collapsed")).toBe(true);
+    });
+
+    test("restores all collapsed sections after the toolbar gets wider", async () => {
+        const additionalToolbarSections: ToolbarData = new Map([
+            ["AI Review", {
+                icon: "robot",
+                collapsePriority: 0,
+                items: [{
+                    icon: "robot",
+                    text: "Review with AI",
+                    onClick: jest.fn()
+                }]
+            }]
+        ]);
+
+        render(
+            <TopEditingBar
+                {...createProps()}
+                additionalToolbarSections={additionalToolbarSections}
+            />
+        );
+
+        const toolbar = document.getElementById("toolbar");
+        if (!toolbar) {
+            throw new Error("Expected toolbar element");
+        }
+
+        Object.defineProperty(toolbar, "clientWidth", {
+            configurable: true,
+            value: 500
+        });
+        Object.defineProperty(toolbar, "scrollWidth", {
+            configurable: true,
+            get: () => toolbar.querySelectorAll(".toolbar-section-collapsed").length >= 3
+                ? 400
+                : 1000
+        });
+
+        Array.from(toolbar.querySelectorAll("[data-toolbar-section]")).forEach((section) => {
+            Object.defineProperty(section, "offsetWidth", {
+                configurable: true,
+                get: () => section.classList.contains("toolbar-section-collapsed") ? 100 : 200
+            });
+        });
+
+        act(() => {
+            window.dispatchEvent(new Event("resize"));
+        });
+        await act(async () => {
+            await new Promise((resolve) => window.setTimeout(resolve, 150));
+        });
+        expect(toolbar.querySelectorAll(".toolbar-section-collapsed").length).toBe(3);
+
+        Object.defineProperty(toolbar, "clientWidth", {
+            configurable: true,
+            value: 2000
+        });
+        act(() => {
+            window.dispatchEvent(new Event("resize"));
+        });
+        await act(async () => {
+            await new Promise((resolve) => window.setTimeout(resolve, 150));
+        });
+
+        expect(toolbar.querySelectorAll(".toolbar-section-collapsed").length).toBe(0);
+    });
+
     test("offers sibling duplication in the Clipboard menu", async () => {
         const nodes = assignIds([
             {

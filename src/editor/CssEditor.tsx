@@ -43,6 +43,7 @@ export interface CssEditorProps extends CssUpdateProps {
     varSuggestions?: Array<string>;
     isAncestor?: boolean;
     showAncestors?: boolean;
+    additionalAncestors?: ReadonlyArray<ReadonlyCssNode>;
 
     /** Whether or not the section is open initially */
     isOpen?: boolean;
@@ -324,18 +325,32 @@ export default class CssEditor extends React.Component<CssEditorProps, CssEditor
     }
 
     renderAncestors() {
-        if (!this.props.showAncestors || this.props.cssNode.ancestors.length === 0) {
+        if (!this.props.showAncestors) {
             return <></>;
         }
 
-        const ancestors = this.state.showAllAncestors
-            ? this.props.cssNode.ancestors
-            : this.props.cssNode.ancestors.slice(0, VISIBLE_ANCESTOR_LIMIT);
-        const hiddenAncestorCount = this.props.cssNode.ancestors.length - ancestors.length;
+        const ancestors = [...this.props.cssNode.ancestors];
+        const seenPaths = new Set(ancestors.map((ancestor) => ancestor.fullPath.join('\u0000')));
+        for (const ancestor of this.props.additionalAncestors || []) {
+            const pathKey = ancestor.fullPath.join('\u0000');
+            if (!seenPaths.has(pathKey)) {
+                ancestors.push(ancestor);
+                seenPaths.add(pathKey);
+            }
+        }
+
+        if (ancestors.length === 0) {
+            return <></>;
+        }
+
+        const visibleAncestors = this.state.showAllAncestors
+            ? ancestors
+            : ancestors.slice(0, VISIBLE_ANCESTOR_LIMIT);
+        const hiddenAncestorCount = ancestors.length - visibleAncestors.length;
 
         return (
             <div className="css-ancestor-context" aria-label="Parent CSS rules">
-                {ancestors.map((ancestor) => (
+                {visibleAncestors.map((ancestor) => (
                     <CssEditor
                         key={`ancestor-${ancestor.fullPath.join('-')}`}
                         cssNode={ancestor}

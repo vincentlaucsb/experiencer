@@ -78,6 +78,29 @@ describe('CssNode - Navigation & Selectors', () => {
         expect(result).toBeUndefined();
     });
 
+    test('findNodeBySelector finds named nodes by their local selector', () => {
+        const root = CssNode.load({
+            name: 'Resume CSS',
+            selector: '#resume',
+            properties: [],
+            children: [{
+                name: 'Contact',
+                selector: '#streamline-pro-contact',
+                properties: [],
+                children: [{
+                    name: 'Contact Links',
+                    selector: '.link, .text-content a',
+                    properties: [],
+                    children: []
+                }]
+            }]
+        });
+
+        expect(root.findNodeBySelector('#streamline-pro-contact')?.name).toBe('Contact');
+        expect(root.findNodeBySelector('.text-content a')?.name).toBe('Contact Links');
+        expect(root.findNodeBySelector('#missing')).toBeUndefined();
+    });
+
     test('mustFindNode success returns node', () => {
         const root = makeCssTree();
         const result = root.mustFindNode(['Lists']);

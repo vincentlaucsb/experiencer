@@ -34,6 +34,15 @@ div#toolbar {
         &:last-child {
             border-right: none;
         }
+
+        &.toolbar-section-collapsed {
+            justify-content: center;
+
+            .pure-menu-horizontal > .pure-menu-list {
+                display: flex;
+                flex-wrap: nowrap;
+            }
+        }
     }
 
     .page-size-control {

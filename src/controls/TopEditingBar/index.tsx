@@ -32,8 +32,10 @@ import addHtmlId from "@/shared/stores/addHtmlId";
 import ensureCssNodeForType from "@/shared/stores/ensureCssNodeForType";
 import { ResumeHotKeyMap } from "../ResumeHotkeys";
 
+const RESIZE_DEBOUNCE_MS = 120;
+const EXPANSION_BUFFER_PX = 24;
+
 interface EditingBarSubProps extends EditingBarProps {
-    isOverflowing: boolean;
     selectedNode: ResumeNode | undefined;
 }
 
@@ -138,9 +140,6 @@ export interface EditingBarProps extends SelectedNodeActions, EditingSectionProp
     unselect: Action;
 }
 
-/** Screen width at which toolbar should shrink regardless of anything */
-const CLIP_WIDTH = 800;
-
 function getEditingSection(
     props: EditingBarProps,
     pageSize?: PageSize
@@ -172,8 +171,10 @@ function getEditingSection(
 /** A responsive top editing bar */
 export function TopEditingBar(props: EditingBarProps) {
     const toolbarRef = useRef<HTMLDivElement>(null);
-    const [isOverflowing, setIsOverflowing] = useState(false);
-    const [overflowWidth, setOverflowWidth] = useState(-1);
+    const resizeTimerRef = useRef<number | undefined>(undefined);
+    const continueExpansionRef = useRef(false);
+    const expandedSectionWidthsRef = useRef(new Map<string, number>());
+    const [collapsedSections, setCollapsedSections] = useState<ReadonlySet<string>>(new Set());
     
     // Subscribe to store changes - these will cause re-renders
     const selectedNodeId = useEditorStore(state => state.selectedNodeId);
@@ -181,47 +182,136 @@ export function TopEditingBar(props: EditingBarProps) {
     const setPageSize = useEditorStore(state => state.setPageSize);
     const selectedNode = useResumeNodeByUuid(selectedNodeId || '');
 
-    const updateResizer = useCallback(() => {
+    const updateResizer = useCallback((allowExpansion = false) => {
         const container = toolbarRef.current;
         if (container) {
-            // Get width of parent container
-            const parentWidth = container.parentElement ?
-                container.parentElement.clientWidth : window.innerWidth;
+            const sectionElements = Array.from(
+                container.querySelectorAll<HTMLElement>("[data-toolbar-section]")
+            );
+            const availableSections = new Set(
+                sectionElements
+                    .map((section) => section.dataset.toolbarSection)
+                    .filter((key): key is string => Boolean(key))
+            );
+            const staleSections = [...collapsedSections].filter(
+                (key) => !availableSections.has(key)
+            );
 
-            // Case 1: Editing bar is overflowing
-            // Case 2: Editing bar has been shrunk, but parent container
-            //         isn't large enough for editing bar to fully expand
-            // Case 3: Screen width is smaller than a certain breakpoint
-            const shouldOverflow = (container.scrollWidth > container.clientWidth)
-                || (parentWidth < overflowWidth)
-                || (window.innerWidth < CLIP_WIDTH);
-
-            // This sets the breakpoint at which the editing bar should collapse
-            if (overflowWidth < 0 && shouldOverflow) {
-                setOverflowWidth(container.scrollWidth);
+            if (staleSections.length > 0) {
+                setCollapsedSections((current) => {
+                    const next = new Set(current);
+                    staleSections.forEach((key) => next.delete(key));
+                    return next;
+                });
+                return;
             }
 
-            setIsOverflowing(shouldOverflow);
+            sectionElements.forEach((section) => {
+                const key = section.dataset.toolbarSection;
+                if (!key) {
+                    return;
+                }
+
+                const width = Math.max(
+                    section.offsetWidth,
+                    section.getBoundingClientRect().width
+                );
+                if (!collapsedSections.has(key) && width > 0) {
+                    expandedSectionWidthsRef.current.set(key, width);
+                }
+            });
+
+            const isOverflowing = container.scrollWidth > container.clientWidth;
+
+            if (isOverflowing) {
+                const nextSection = sectionElements
+                    .filter((section) => !collapsedSections.has(section.dataset.toolbarSection || ""))
+                    .sort((left, right) => (
+                        Number(left.dataset.toolbarCollapsePriority || 50)
+                        - Number(right.dataset.toolbarCollapsePriority || 50)
+                    ))[0];
+
+                if (nextSection?.dataset.toolbarSection) {
+                    setCollapsedSections((current) => new Set([
+                        ...current,
+                        nextSection.dataset.toolbarSection!
+                    ]));
+                }
+            }
+            else if (allowExpansion && collapsedSections.size > 0) {
+                const sectionToExpand = sectionElements
+                    .filter((section) => collapsedSections.has(section.dataset.toolbarSection || ""))
+                    .sort((left, right) => (
+                        Number(right.dataset.toolbarCollapsePriority || 50)
+                        - Number(left.dataset.toolbarCollapsePriority || 50)
+                    ))[0];
+
+                const sectionKey = sectionToExpand?.dataset.toolbarSection;
+                const expandedWidth = sectionKey
+                    ? expandedSectionWidthsRef.current.get(sectionKey)
+                    : undefined;
+                const collapsedWidth = sectionToExpand
+                    ? Math.max(
+                        sectionToExpand.offsetWidth,
+                        sectionToExpand.getBoundingClientRect().width
+                    )
+                    : 0;
+                const widthToRecover = Math.max(
+                    EXPANSION_BUFFER_PX,
+                    (expandedWidth || collapsedWidth) - collapsedWidth + EXPANSION_BUFFER_PX
+                );
+                const availableWidth = container.clientWidth - container.scrollWidth;
+
+                if (sectionKey && availableWidth >= widthToRecover) {
+                    continueExpansionRef.current = true;
+                    setCollapsedSections((current) => {
+                        const next = new Set(current);
+                        next.delete(sectionKey);
+                        return next;
+                    });
+                }
+            }
         }
-    }, [overflowWidth]);
+    }, [collapsedSections]);
 
     useEffect(() => {
-        window.addEventListener("resize", updateResizer);
-        updateResizer(); // Initial resize
+        const handleResize = () => {
+            if (resizeTimerRef.current !== undefined) {
+                window.clearTimeout(resizeTimerRef.current);
+            }
+
+            resizeTimerRef.current = window.setTimeout(() => {
+                resizeTimerRef.current = undefined;
+                updateResizer(true);
+            }, RESIZE_DEBOUNCE_MS);
+        };
+
+        window.addEventListener("resize", handleResize);
+        const continueExpansion = continueExpansionRef.current;
+        continueExpansionRef.current = false;
+        updateResizer(continueExpansion); // Initial/layout resize
 
         return () => {
-            window.removeEventListener("resize", updateResizer);
+            window.removeEventListener("resize", handleResize);
+            if (resizeTimerRef.current !== undefined) {
+                window.clearTimeout(resizeTimerRef.current);
+                resizeTimerRef.current = undefined;
+            }
         };
     }, [updateResizer]);
 
     // Update overflow when selection changes
     useEffect(() => {
-        updateResizer();
-    }, [selectedNodeId, updateResizer]);
+        updateResizer(true);
+        // The resize effect handles recalculation after collapse state changes.
+        // This effect only needs to run when the selected node changes.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedNodeId]);
 
     let data = new Map<string, ToolbarSection>([
         ["Editing", {
             icon: 'ui-edit',
+            collapsePriority: 100,
             items: getEditingSection(props, selectedNode ? pageSize : undefined)
         }],
     ]);
@@ -229,7 +319,6 @@ export function TopEditingBar(props: EditingBarProps) {
     if (selectedNode) {
         let selectedNodeOptions = SelectedNodeToolbar({
             ...props,
-            isOverflowing,
             selectedNode
         });
 
@@ -238,7 +327,10 @@ export function TopEditingBar(props: EditingBarProps) {
         });
     }
     else {
-        data.set("Page Setup", getPageSetupSection(pageSize, setPageSize, isOverflowing));
+        data.set(
+            "Page Setup",
+            getPageSetupSection(pageSize, setPageSize, collapsedSections.has("Page Setup"))
+        );
 
         data.set("Clipboard", {
             icon: "clip-board",
@@ -288,8 +380,12 @@ export function TopEditingBar(props: EditingBarProps) {
         data.set(key, section);
     });
 
-    const children = <Toolbar data={data} collapse={isOverflowing} />;
-    const className = isOverflowing ? "toolbar-collapsed" : "";
+    const children = <Toolbar
+        data={data}
+        collapse={false}
+        collapsedSections={collapsedSections}
+    />;
+    const className = collapsedSections.size > 0 ? "toolbar-has-collapsed-sections" : "";
     return <div ref={toolbarRef} id="toolbar" className={className}>{children}</div>;
 }
 

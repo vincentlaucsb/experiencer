@@ -73,8 +73,13 @@ function TemplatePreview(props: { pageSize: PageSize; templateKey: string }) {
 export interface AdditionalTemplateOption {
     id: string;
     title: string;
-    loadPreview: () => Promise<ResumeSaveData>;
+    loadPreview?: () => Promise<ResumeSaveData>;
+    previewImage?: string;
+    previewAlt?: string;
+    previewLabel?: string;
     use: () => Promise<void> | void;
+    useLabel?: string;
+    useDescription?: React.ReactNode;
 }
 
 export interface AdditionalTemplateGroup {
@@ -114,6 +119,7 @@ type AdditionalTemplatePreviewState = {
     key?: string;
     status: 'idle' | 'loading' | 'ready' | 'error';
     data?: ResumeSaveData;
+    image?: string;
     message?: string;
 };
 
@@ -228,6 +234,25 @@ export function Resume(props: ResumeProps) {
             key: selectedAdditionalTemplateKey,
             status: 'loading'
         });
+
+        if (additionalTemplate.previewImage) {
+            setAdditionalPreview({
+                key: selectedAdditionalTemplateKey,
+                status: 'ready',
+                image: additionalTemplate.previewImage
+            });
+            return;
+        }
+
+        if (!additionalTemplate.loadPreview) {
+            setAdditionalPreview({
+                key: selectedAdditionalTemplateKey,
+                status: 'error',
+                message: 'This template preview is unavailable.'
+            });
+            return;
+        }
+
         additionalTemplate.loadPreview()
             .then((data) => {
                 if (!cancelled) {
@@ -349,14 +374,40 @@ export function Resume(props: ResumeProps) {
                             {group.templates.length
                                 ? group.templates.map((template) => {
                                     const key = `${group.id}:${template.id}`;
+                                    const selected = selectedAdditionalTemplateKey === key;
                                     return (
-                                        <PureMenuItem
-                                            key={key}
-                                            selected={selectedAdditionalTemplateKey === key}
-                                            onClick={() => selectAdditionalTemplate(group.id, template.id)}
-                                        >
-                                            <PureMenuLink>{template.title}</PureMenuLink>
-                                        </PureMenuItem>
+                                        <React.Fragment key={key}>
+                                            <PureMenuItem
+                                                selected={selected}
+                                                onClick={() => selectAdditionalTemplate(group.id, template.id)}
+                                            >
+                                                <PureMenuLink>{template.title}</PureMenuLink>
+                                            </PureMenuItem>
+                                            {selected
+                                                ? (
+                                                    <PureMenuItem className="template-selector-selected-action">
+                                                        {template.useDescription
+                                                            ? (
+                                                                <p className="template-selector-action-description">
+                                                                    {template.useDescription}
+                                                                </p>
+                                                            )
+                                                            : <></>}
+                                                        <Button
+                                                            className="template-selector-primary-action"
+                                                            disabled={templateActionStatus === 'using'
+                                                                || additionalPreview.status !== 'ready'}
+                                                            onClick={useSelectedTemplate}
+                                                            variant="primary"
+                                                        >
+                                                            {templateActionStatus === 'using'
+                                                                ? 'Creating…'
+                                                                : template.useLabel ?? 'Use this Template'}
+                                                        </Button>
+                                                    </PureMenuItem>
+                                                )
+                                                : <></>}
+                                        </React.Fragment>
                                     );
                                 })
                                 : (
@@ -370,15 +421,18 @@ export function Resume(props: ResumeProps) {
                 {templateActionError
                     ? <p className="template-selector-error" role="alert">{templateActionError}</p>
                     : <></>}
-                <Button
-                    className="template-selector-primary-action"
-                    disabled={templateActionStatus === 'using'
-                        || Boolean(additionalTemplate && additionalPreview.status !== 'ready')}
-                    onClick={useSelectedTemplate}
-                    variant="primary"
-                >
-                    {templateActionStatus === 'using' ? 'Creating…' : 'Use this Template'}
-                </Button>
+                {!additionalTemplate
+                    ? (
+                        <Button
+                            className="template-selector-primary-action"
+                            disabled={templateActionStatus === 'using'}
+                            onClick={useSelectedTemplate}
+                            variant="primary"
+                        >
+                            {templateActionStatus === 'using' ? 'Creating…' : 'Use this Template'}
+                        </Button>
+                    )
+                    : <></>}
             </div>
         );
     };
@@ -397,6 +451,19 @@ export function Resume(props: ResumeProps) {
         }
 
         if (additionalPreview.status !== 'ready' || !additionalPreview.data) {
+            if (additionalPreview.status === 'ready' && additionalPreview.image) {
+                return (
+                    <div className="template-preview-image">
+                        <div className="template-preview-label">
+                            {additionalTemplate.previewLabel ?? 'Preview only'}
+                        </div>
+                        <img
+                            src={additionalPreview.image}
+                            alt={additionalTemplate.previewAlt ?? `${additionalTemplate.title} template preview`}
+                        />
+                    </div>
+                );
+            }
             return (
                 <div className="template-preview-status" role="status">
                     Loading template preview…

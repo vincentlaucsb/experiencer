@@ -330,6 +330,44 @@ test('Template switcher supports additional groups, async previews, and independ
     await waitFor(() => expect(useCustomTemplate).toHaveBeenCalledTimes(1));
 });
 
+test('Template switcher supports image-backed previews without loading template data', async () => {
+    const usePreviewTemplate = jest.fn(async () => undefined);
+    render(
+        <ResumeView
+            mode="changingTemplate"
+            stylesheet=""
+            tree={{ type: "Resume", uuid: "test-root", childNodes: [] }}
+            additionalTemplateGroups={[{
+                id: "preview-templates",
+                heading: <span>Preview templates</span>,
+                templates: [{
+                    id: "locked",
+                    title: "Locked Preview",
+                    previewImage: "/template-previews/locked.png",
+                    previewAlt: "Locked Preview screenshot",
+                    previewLabel: "Premium preview only",
+                    use: usePreviewTemplate,
+                    useLabel: "Upgrade to use",
+                    useDescription: "Unlock this template with the premium plan."
+                }]
+            }]}
+        />
+    );
+
+    fireEvent.click(screen.getByText('Locked Preview'));
+
+    await waitFor(() => {
+        expect(screen.getByAltText('Locked Preview screenshot').getAttribute('src'))
+            .toBe('/template-previews/locked.png');
+    });
+    expect(screen.getByRole('button', { name: 'Upgrade to use' })).toBeTruthy();
+    expect(screen.getByText('Premium preview only')).toBeTruthy();
+    expect(screen.getByText('Unlock this template with the premium plan.')).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Upgrade to use' }));
+    await waitFor(() => expect(usePreviewTemplate).toHaveBeenCalledTimes(1));
+});
+
 test('Template switcher renders an additional group empty state', () => {
     render(
         <ResumeView

@@ -9,7 +9,6 @@
     "@types/react-dom": "^19.2.3",
     "@uiw/react-md-editor": "4.1.1",
     "file-saver": "^2.0.5",
-    "npm": "^11.13.0",
     "popright": "^0.1.2",
     "purecss": "^3.0.0",
     "react": "^19.2.4",

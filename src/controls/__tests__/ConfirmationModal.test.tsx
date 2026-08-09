@@ -19,6 +19,10 @@ test("renders an accessible confirmation dialog and exposes both outcomes", () =
     );
 
     const dialog = screen.getByRole("dialog", { name: "Delete resume" });
+    expect(dialog.getAttribute("aria-modal")).toBe("true");
+    expect(dialog.getAttribute("aria-labelledby")).toBeTruthy();
+    expect(document.getElementById(dialog.getAttribute("aria-labelledby") || "")?.textContent)
+        .toContain("Delete resume");
     fireEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
     fireEvent.click(within(dialog).getByRole("button", { name: "Delete" }));
 

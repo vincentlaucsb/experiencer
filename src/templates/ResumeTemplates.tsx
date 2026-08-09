@@ -5,6 +5,7 @@ import { streamlineNodes, streamlineCss, streamlineRootCss } from "./Streamline"
 import { streamlineCoverLetterNodes, streamlineCoverLetterCss } from "./StreamlineCoverLetter";
 import { ResumeSaveData } from "@/types";
 import { assuredCoverLetterNodes, assuredCoverLetterCss } from "./AssuredCoveredLetter";
+import { integrityCoverLetterNodes, integrityCoverLetterCss } from "./IntegrityCoverLetter";
 import PageSize from "@/types/PageSize";
 import { withTemplateFonts } from "@/shared/fonts/templateFonts";
 
@@ -28,6 +29,13 @@ export default class ResumeTemplates {
         "Integrity": withTemplateFonts({
             builtinCss: randyMarshCss().dump(),
             childNodes: assignIds(randyMarsh()),
+            rootCss: randyMarshRootCss().dump(),
+            pageSize: PageSize.Letter
+        } as ResumeSaveData),
+
+        "Integrity: Cover Letter": withTemplateFonts({
+            builtinCss: integrityCoverLetterCss().dump(),
+            childNodes: assignIds(integrityCoverLetterNodes()),
             rootCss: randyMarshRootCss().dump(),
             pageSize: PageSize.Letter
         } as ResumeSaveData),

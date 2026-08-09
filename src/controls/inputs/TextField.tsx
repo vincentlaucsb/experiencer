@@ -15,6 +15,8 @@ interface ContextMenuOption {
 interface TextFieldProps {
     value?: string;
     label?: string;
+    id?: string;
+    ariaLabel?: string;
     defaultText?: string;
     /** Start the newly-created field in edit mode. */
     startEditing?: boolean;
@@ -99,13 +101,15 @@ export default class TextField extends React.Component<TextFieldProps, TextField
 
         let label = <></>
         if (props.label) {
-            label = <label>{props.label || "Value"}</label>
+            label = <label htmlFor={props.id}>{props.label || "Value"}</label>
         }
 
         if (this.state.isEditing) {
             const inputProps = {
                 ...nonCredentialInputAttributes,
                 autoFocus: true,
+                id: props.id,
+                "aria-label": props.ariaLabel || props.label || props.defaultText || "Text field",
                 onChange: (event: React.ChangeEvent<HTMLInputElement>) => this.setState({ value: event.target.value }),
                 onKeyDown: this.onKeyDown,
                 value: this.state.value

@@ -4,6 +4,7 @@ import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttr
 import { Button } from "@/controls/Buttons";
 
 interface ValueFieldProps {
+    label: string;
     value?: string;
     isEditing: boolean;
     updateText: (value: string) => void;
@@ -29,7 +30,7 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
 
     get deleter() {
         return (this.props.delete) ? <Button
-            aria-label="Delete property"
+            aria-label={`Delete property ${this.props.label}`}
             variant="error"
             onClick={this.props.delete}
         >
@@ -76,6 +77,7 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
                 <input
                     {...nonCredentialInputAttributes}
                     autoFocus
+                    aria-label={`${this.props.label} value`}
                     onChange={(event) => this.setState({ value: event.target.value })}
                     onKeyDown={this.keyDownHandler}
                     value={this.state.value}
@@ -231,6 +233,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
             keyAdder = <tr>
                 <th scope="row" className="app-pr-3" {...this.inputContainerProps()}>
                     <ValueField
+                        label="New property name"
                         isEditing={this.state.isAddingKey}
                         updateText={this.addNewKey}
                         suggestions={this.props.keySuggestions}
@@ -261,6 +264,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                             <th className="property-key app-pr-3">{key}</th>
                             <td className="property-value">
                                 <ValueField
+                                    label={key}
                                     isEditing={this.state.activeKey === key}
                                     updateText={this.updateText.bind(this, key)}
                                     value={value}

@@ -64,6 +64,7 @@ export default class FileLoader extends React.Component<FileLoaderProps, FileLoa
     render() {
         return (
             <form id="file-loader">
+                <label htmlFor="customFile">Resume file</label>
                 <input type="file" onChange={this.onFileSelect} ref={this.fileInput} id="customFile" />
             </form>
         );

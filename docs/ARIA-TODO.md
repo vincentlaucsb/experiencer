@@ -31,26 +31,29 @@ This document tracks accessibility/ARIA work for Experiencer, including complete
 ## Future Work
 
 ### Navigation & Menus
-- [ ] Add keyboard arrow-key navigation within dropdown menus.
-- [ ] Add `role="menuitem"` semantics and focus behavior where appropriate.
-- [ ] Add clear focus-visible styling review for all menu and toolbar controls.
+- [x] Add keyboard arrow-key navigation within dropdown menus. Popright 0.1.2 owns
+  Arrow/Home/End/Enter behavior; the adapter now exposes the menu relationship.
+- [x] Add `role="menuitem"` semantics and focus behavior where appropriate. Popright
+  renders menu roots/items and owns focus restoration.
+- [x] Add clear focus-visible styling review for all menu and toolbar controls. Shared
+  buttons, Popright menus, tabs, and the node tree now expose visible focus indicators.
 
 ### Forms & Inputs
-- [ ] Add explicit `<label>` / `aria-labelledby` coverage for editor inputs that currently rely on visual context.
-- [ ] Add `aria-describedby` for fields with helper/error text.
-- [ ] Review modal form controls for initial focus placement and return-focus behavior.
+- [x] Add explicit `<label>` / `aria-labelledby` coverage for editor inputs that currently rely on visual context.
+- [x] Add `aria-describedby` for fields with helper/error text.
+- [x] Review modal form controls for initial focus placement and return-focus behavior.
 
 ### Dialogs & Overlays
-- [ ] Audit modal semantics (`role="dialog"`, `aria-modal`, labelled title linkage).
-- [ ] Add/verify focus trapping in all open modal states.
-- [ ] Ensure escape-to-close behavior is consistent and announced correctly.
+- [x] Audit modal semantics (`role="dialog"`, `aria-modal`, labelled title linkage).
+- [x] Add/verify focus trapping in all open modal states.
+- [x] Ensure escape-to-close behavior is consistent and announced correctly.
 
 ### Editor-Specific Components
-- [ ] Evaluate ARIA roles for tree and node selection views (NodeTree, highlight/selection affordances).
+- [x] Evaluate ARIA roles for tree and node selection views (NodeTree, highlight/selection affordances).
 - [ ] Add status announcements for key editing actions where useful (insert/delete/move).
 
 ### Verification
-- [ ] Add accessibility-focused tests for keyboard interaction flows (menu, tabs, modal).
+- [x] Add accessibility-focused tests for keyboard interaction flows (menu, tabs, modal).
 - [ ] Run a lightweight manual screen reader pass (NVDA/VoiceOver) on key flows.
 - [ ] Run automated checks (axe or equivalent) on core views.
 

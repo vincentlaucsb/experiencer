@@ -9,6 +9,11 @@
     li {
         list-style-type: none;
         cursor: pointer;
+
+        &:focus-visible {
+            outline: 3px solid colors.$focus-ring;
+            outline-offset: 2px;
+        }
     }
 
     .tree-item-selected {

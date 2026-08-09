@@ -1,145 +1,133 @@
 import html2canvas from 'html2canvas';
 
-/**
- * Exports the resume as a PNG image and opens it in a popup window
- * @param resumeElement - The DOM element containing the resume
- */
-export async function exportResumeToPng(resumeElement: HTMLElement | null) {
+function createAbortError(): Error {
+    const error = new Error('PNG export was cancelled.');
+    error.name = 'AbortError';
+    return error;
+}
+
+function throwIfAborted(signal?: AbortSignal): void {
+    if (signal?.aborted) {
+        throw createAbortError();
+    }
+}
+
+/** Replaces html2canvas's oversized text-based list markers in the capture clone. */
+export function normalizeListMarkersForPng(document: Document): void {
+    const resume = document.querySelector<HTMLElement>('#resume');
+    if (!resume) return;
+
+    resume.querySelectorAll<HTMLElement>('ul > li, ol > li').forEach((item) => {
+        const list = item.parentElement;
+        if (!list) return;
+
+        const computedStyle = document.defaultView?.getComputedStyle(item);
+        const listStyleType = computedStyle?.listStyleType;
+        if (!listStyleType || listStyleType === 'none') return;
+
+        let markerStyle: CSSStyleDeclaration | undefined;
+        const userAgent = document.defaultView?.navigator.userAgent ?? '';
+        if (!/jsdom/i.test(userAgent)) {
+            try {
+                markerStyle = document.defaultView?.getComputedStyle(item, '::marker');
+            } catch {
+                // Browsers without pseudo-element style support use the item style fallback.
+            }
+        }
+
+        const fontSizePx = Number.parseFloat(computedStyle?.fontSize ?? '');
+        const computedLineHeightPx = Number.parseFloat(computedStyle?.lineHeight ?? '');
+        const lineHeightPx = Number.isFinite(computedLineHeightPx)
+            ? computedLineHeightPx
+            : Number.isFinite(fontSizePx)
+              ? fontSizePx * 1.2
+              : 16 * 1.2;
+
+        const marker = document.createElement('span');
+        const itemIndex = Array.from(list.children)
+            .filter((child) => child.tagName === 'LI')
+            .indexOf(item) + 1;
+        const isOrderedList = list.tagName === 'OL';
+        const isCircleMarker = listStyleType === 'circle';
+        const markerText = isOrderedList ? `${itemIndex}.` : '';
+
+        marker.textContent = markerText;
+        marker.setAttribute('aria-hidden', 'true');
+        marker.style.position = 'absolute';
+        marker.style.left = '-1.15em';
+        marker.style.top = `${lineHeightPx / 2}px`;
+        marker.style.transform = 'translateY(-50%)';
+        marker.style.width = isOrderedList ? '0.9em' : '0.5em';
+        marker.style.height = isOrderedList ? 'auto' : '0.5em';
+        marker.style.fontSize = markerStyle?.fontSize || (isOrderedList ? '0.65em' : 'inherit');
+        marker.style.lineHeight = isOrderedList ? '1' : '0.5em';
+        marker.style.textAlign = 'center';
+        if (!isOrderedList) {
+            marker.style.backgroundColor = markerStyle?.color || computedStyle.color || '#000000';
+            marker.style.borderRadius = isCircleMarker || listStyleType === 'disc' ? '50%' : '0';
+        }
+
+        item.style.listStyleType = 'none';
+        item.style.position = 'relative';
+        item.insertBefore(marker, item.firstChild);
+    });
+}
+
+function canvasToBlob(canvas: HTMLCanvasElement, signal?: AbortSignal): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+        let settled = false;
+
+        const cleanup = () => {
+            signal?.removeEventListener('abort', handleAbort);
+        };
+
+        const finish = (callback: () => void) => {
+            if (settled) return;
+            settled = true;
+            cleanup();
+            callback();
+        };
+
+        const handleAbort = () => finish(() => reject(createAbortError()));
+        signal?.addEventListener('abort', handleAbort, { once: true });
+
+        try {
+            canvas.toBlob((blob) => {
+                finish(() => {
+                    if (signal?.aborted) {
+                        reject(createAbortError());
+                    } else if (blob) {
+                        resolve(blob);
+                    } else {
+                        reject(new Error('Failed to create a PNG from the resume.'));
+                    }
+                });
+            }, 'image/png');
+        } catch (error) {
+            finish(() => reject(error));
+        }
+    });
+}
+
+/** Captures the resume element as a PNG blob without owning presentation UI. */
+export async function captureResumePng(
+    resumeElement: HTMLElement | null,
+    signal?: AbortSignal
+): Promise<Blob> {
     if (!resumeElement) {
-        console.error('Resume element not found');
-        return;
+        throw new Error('Resume element not found.');
     }
 
-    try {
-        // Generate canvas from the resume element with higher resolution
-        const canvas = await html2canvas(resumeElement, {
-            scale: 6, // Increase scale for higher resolution
-            useCORS: true,
-            logging: false,
-            backgroundColor: '#ffffff'
-        });
+    throwIfAborted(signal);
 
-        // Convert canvas to blob
-        canvas.toBlob((blob) => {
-            if (!blob) {
-                console.error('Failed to create blob from canvas');
-                return;
-            }
+    const canvas = await html2canvas(resumeElement, {
+        scale: 6,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+        onclone: normalizeListMarkersForPng
+    });
 
-            const url = URL.createObjectURL(blob);
-            
-            // Open in popup window
-            const popupWindow = window.open('', 'Resume PNG', 'width=900,height=1100');
-            if (popupWindow) {
-                popupWindow.document.write(`
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <title>Resume Screenshot</title>
-                        <style>
-                            body {
-                                margin: 0;
-                                padding: 20px;
-                                background-color: #f0f0f0;
-                                display: flex;
-                                justify-content: center;
-                                align-items: flex-start;
-                                font-family: Arial, sans-serif;
-                            }
-                            .container {
-                                background: white;
-                                padding: 20px;
-                                border-radius: 8px;
-                                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                                max-width: 800px;
-                            }
-                            img {
-                                width: 100%;
-                                height: auto;
-                                display: block;
-                            }
-                            .controls {
-                                margin-top: 20px;
-                                display: flex;
-                                gap: 10px;
-                                justify-content: center;
-                            }
-                            button {
-                                padding: 10px 20px;
-                                font-size: 14px;
-                                border: 1px solid #ccc;
-                                border-radius: 4px;
-                                background: #f5f5f5;
-                                cursor: pointer;
-                                transition: background 0.2s;
-                            }
-                            button:hover {
-                                background: #e0e0e0;
-                            }
-                            .copy-feedback {
-                                margin-top: 10px;
-                                text-align: center;
-                                color: #4caf50;
-                                font-size: 14px;
-                                display: none;
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="container">
-                            <img id="resumeImage" src="${url}" alt="Resume Screenshot" />
-                            <div class="controls">
-                                <button onclick="copyToClipboard()">Copy to Clipboard</button>
-                                <button onclick="downloadImage()">Download</button>
-                                <button onclick="window.close()">Close</button>
-                            </div>
-                            <div class="copy-feedback" id="copyFeedback">✓ Copied to clipboard!</div>
-                        </div>
-                        <script>
-                            function copyToClipboard() {
-                                const img = document.getElementById('resumeImage');
-                                const canvas = document.createElement('canvas');
-                                const ctx = canvas.getContext('2d');
-                                const image = new Image();
-                                
-                                image.onload = function() {
-                                    canvas.width = image.width;
-                                    canvas.height = image.height;
-                                    ctx.drawImage(image, 0, 0);
-                                    
-                                    canvas.toBlob(blob => {
-                                        const item = new ClipboardItem({ 'image/png': blob });
-                                        navigator.clipboard.write([item]).then(() => {
-                                            const feedback = document.getElementById('copyFeedback');
-                                            feedback.style.display = 'block';
-                                            setTimeout(() => {
-                                                feedback.style.display = 'none';
-                                            }, 2000);
-                                        }).catch(err => {
-                                            alert('Failed to copy image to clipboard');
-                                            console.error(err);
-                                        });
-                                    });
-                                };
-                                
-                                image.src = img.src;
-                            }
-                            
-                            function downloadImage() {
-                                const link = document.createElement('a');
-                                link.href = '${url}';
-                                link.download = 'resume-' + new Date().getTime() + '.png';
-                                link.click();
-                            }
-                        </script>
-                    </body>
-                    </html>
-                `);
-                popupWindow.document.close();
-            }
-        });
-    } catch (error) {
-        console.error('Error exporting resume to PNG:', error);
-        alert('Failed to export resume. Please try again.');
-    }
+    throwIfAborted(signal);
+    return canvasToBlob(canvas, signal);
 }

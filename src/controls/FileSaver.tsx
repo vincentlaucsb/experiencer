@@ -20,7 +20,7 @@ export default function FileSaver(props: FileSaverProps) {
     return (
         <form id="file-saver" className="pure-form pure-form-stacked">
             <div>
-                <label form="filename">Filename</label>
+                <label htmlFor="filename">Filename</label>
                 <input
                     {...nonCredentialInputAttributes}
                     onChange={onChange}

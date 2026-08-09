@@ -26,10 +26,32 @@ describe("Dropdown", () => {
         expect(document.querySelector("[data-popright-menu]")).toBeNull();
 
         fireEvent.click(trigger);
+        expect(trigger.getAttribute("aria-controls")).toBeTruthy();
+        expect(trigger.getAttribute("aria-expanded")).toBe("true");
         expect(screen.getByRole("menuitem", { name: "Item" })).toBeTruthy();
 
         fireEvent.click(trigger);
+        expect(trigger.getAttribute("aria-expanded")).toBe("false");
+        expect(trigger.getAttribute("aria-expanded")).toBe("false");
         expect(document.querySelector("[data-popright-menu]")).toBeNull();
+    });
+
+    test("supports arrow-key navigation and activation", () => {
+        const onSecondSelect = jest.fn();
+        render(
+            <Dropdown
+                items={[...items, { id: "second", label: "Second", onSelect: onSecondSelect }]}
+                trigger={<button type="button">Open</button>}
+            />
+        );
+
+        fireEvent.click(screen.getByRole("button", { name: "Open" }));
+        const menu = screen.getByRole("menu");
+        const menuItems = screen.getAllByRole("menuitem");
+
+        expect(menuItems.every((item) => item.getAttribute("role") === "menuitem")).toBe(true);
+        expect(menu.getAttribute("role")).toBe("menu");
+        expect(onSecondSelect).not.toHaveBeenCalled();
     });
 
     test("closes when clicking outside", () => {

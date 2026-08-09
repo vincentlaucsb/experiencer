@@ -39,6 +39,75 @@ div[class*='ReactModal__Content'] {
 .top-nav-modal {
 }
 
+.png-export-modal {
+    width: min(56rem, calc(100% - 2rem)) !important;
+    max-height: 88vh;
+
+    .png-export-content {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .png-export-purpose {
+        margin: 0;
+        color: colors.$text-secondary;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .png-export-status {
+        display: grid;
+        justify-items: center;
+        gap: 0.75rem;
+        min-height: 10rem;
+        align-content: center;
+        text-align: center;
+
+        p {
+            margin: 0;
+        }
+    }
+
+    .png-export-status-detail,
+    .png-export-feedback {
+        color: colors.$text-secondary;
+        font-size: 0.9rem;
+    }
+
+    .png-export-result {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .png-export-image-frame {
+        max-height: 68vh;
+        overflow: auto;
+        padding: 1rem;
+        background: colors.$surface-muted;
+        border: 1px solid colors.$border-subtle;
+        text-align: center;
+
+        img {
+            display: block;
+            width: min(100%, 52rem);
+            height: auto;
+            margin: 0 auto;
+        }
+    }
+
+    .png-export-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 0.75rem;
+    }
+
+    .png-export-feedback {
+        margin: 0;
+        text-align: right;
+    }
+}
+
 .confirmation-modal {
     width: min(30rem, calc(100% - 2rem)) !important;
 

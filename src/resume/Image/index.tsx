@@ -97,13 +97,14 @@ export default function Image({ updateDataFields, ...props }: ImageProps) {
                     {...nonCredentialInputAttributes}
                     className="resume-overlay-input resume-overlay-textarea app-p-2"
                     id={`${props.uuid}-image-src`}
+                    aria-describedby={`${props.uuid}-image-src-help${imageError ? ` ${props.uuid}-image-error` : ""}`}
                     value={tempSrc}
                     onChange={(e) => setTempSrc(e.target.value)}
                     onPaste={handleSourcePaste}
                     placeholder="https://example.com/image.png or data:image/png;base64,..."
                     autoFocus
                 />
-                <small className="resume-overlay-helper-text">
+                <small id={`${props.uuid}-image-src-help`} className="resume-overlay-helper-text">
                     Paste or choose a JPEG, PNG, or WebP. Large images are compressed automatically.
                 </small>
                 <input
@@ -119,7 +120,7 @@ export default function Image({ updateDataFields, ...props }: ImageProps) {
                     </small>
                 )}
                 {imageError && (
-                    <small className="resume-overlay-helper-text" role="alert">
+                    <small id={`${props.uuid}-image-error`} className="resume-overlay-helper-text" role="alert">
                         {imageError}
                     </small>
                 )}

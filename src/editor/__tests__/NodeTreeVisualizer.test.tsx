@@ -89,4 +89,34 @@ describe("NodeTreeVisualizer", () => {
         expect(screen.getByText("https://example.com/fallback.png")).toBeTruthy();
         expect(screen.getByText("UnknownType").closest("span")?.classList.contains("tree-item-UnknownType")).toBe(true);
     });
+
+    test("exposes tree selection through keyboard navigation", () => {
+        const selectNode = jest.fn();
+        const nodes = [{
+            type: "Section",
+            uuid: "section-1",
+            value: "Experience",
+            childNodes: [{
+                type: "Entry",
+                uuid: "entry-1",
+                title: ["Acme Corp"]
+            }]
+        }] as ResumeNode[];
+
+        render(
+            <NodeTreeVisualizer
+                childNodes={nodes}
+                selectNode={selectNode}
+            />
+        );
+
+        const [section] = screen.getAllByRole("treeitem");
+        expect(section.getAttribute("aria-level")).toBe("1");
+        expect(section.getAttribute("aria-expanded")).toBe("true");
+        expect(section.getAttribute("tabindex")).toBe("0");
+
+        fireEvent.keyDown(section, { key: "ArrowRight" });
+        expect(selectNode).toHaveBeenCalledWith("entry-1");
+        expect(screen.getAllByRole("treeitem")[1].getAttribute("tabindex")).toBe("-1");
+    });
 });

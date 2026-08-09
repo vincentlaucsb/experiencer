@@ -79,6 +79,7 @@ export function DescriptionListItem(props: DescriptionItemProps) {
     const isSelected = useEditorStore(state => state.selectedNodeId === props.uuid);
 
     const term = <TextField
+        id={`${props.uuid}-term`}
         label="Term"
         onChange={(text: string) => { props.updateData("value", text) }}
         value={props.value}

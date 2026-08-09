@@ -8,63 +8,84 @@ import { BasicResumeNode } from "@/types";
 import MarkdownText from "@/resume/Markdown";
 import Link from "@/resume/Link";
 
+/** Applies the shared Assured header and contact treatment to either document variant. */
+export function addAssuredHeaderCss(css: CssNode): CssNode {
+    css.addNode('Icon', {
+        'display': 'inline-block',
+        'vertical-align': 'middle'
+    }, '.icon');
+
+    const header = css.mustFindNode("Header").setProperties({
+        "background": "#e8e8e8",
+        "margin-bottom": "var(--large-spacing)",
+        "padding": "var(--header-padding)",
+        "gap": "var(--small-spacing)"
+    });
+
+    header.mustFindNode('Title Group').setProperties({
+        "margin-right": "auto"
+    });
+    header.mustFindNode('Title Group').mustFindNode('Title').setProperties({
+        "font-family": "var(--serif)",
+        "font-weight": "normal",
+        "line-height": "1.05"
+    });
+    header.mustFindNode('Title Group').mustFindNode('Subtitle').setProperties({
+        "font-family": "var(--sans-serif)",
+        "font-weight": "normal",
+        "line-height": "1.1",
+        "margin-top": "0.12em"
+    });
+
+    const contact = css.addNode("Contact Information", {
+        "grid-template-columns": "minmax(0, 1fr) 24px",
+        "grid-column-gap": "0.45em",
+        "grid-row-gap": "0.1em",
+        "align-items": "center",
+        "margin-left": "var(--spacing)",
+        "width": "auto",
+        "height": "auto"
+    }, "#contact, #social-media");
+
+    contact.addNode('Text', {
+        'text-align': 'right',
+        'font-size': '0.8rem',
+        'margin': '0',
+        'line-height': '24px',
+        'white-space': 'nowrap'
+    }, '.link, .text-content, p');
+
+    contact.addNode('Icon', {
+        'height': '22px',
+        'width': '22px',
+        'vertical-align': 'middle'
+    }, 'svg.icon, img.icon');
+
+    return css;
+}
+
 export function assuredCss() {
     let css = getDefaultCss().setProperties({
         "font-family": "var(--sans-serif)",
         "font-size": "11pt"
     });
 
-    css.addNode('Icon', {
-        'display': 'inline-block',
-        'vertical-align': 'middle'
-    }, '.icon');
+    addAssuredHeaderCss(css);
 
     css.addNode('Markdown Lists', {
         'padding-left': 'var(--spacing)'
     }, '.text-content ul, .text-content ol');
 
-    /** Header */
-    const header = css.mustFindNode("Header").setProperties({
-        "background": "#e8e8e8",
-        "margin-bottom": "var(--large-spacing)",
-        "padding-left": "var(--edge-margin)",
-        "padding-right": "var(--edge-margin)",
-        "padding-top": "var(--x-large-spacing)",
-        "padding-bottom": "var(--large-spacing)",
-    }).setProperties({"margin-right": "auto"}, 'Title Group'
-    );
-
-    /** Contact Information */
-    let contact = css.addNode("Contact Information", {
-        "grid-template-columns": "1fr 30px",
-        "grid-column-gap": "var(--small-spacing)",
-        "margin-left": "var(--spacing)",
-        "width": "auto",
-        "height": "auto",
-    }, "#contact, #social-media");
-    
-    contact.addNode('Text', {
-        'text-align': 'right',
-        'font-size': '0.8rem',
-        'margin': '0',
-        'line-height': '24px'
-    }, '.link, .text-content, p');
-
-    contact.addNode('Icon', {
-        'height': '24px',
-        'vertical-align': 'middle'
-    }, 'svg.icon, img.icon');
-
     /** Section */
     css.mustFindNode('Section').setProperties({
-        'margin-bottom': 'var(--xx-large-spacing)'
+        'margin-bottom': 'var(--x-large-spacing)'
         }).setProperties({
             'padding-top': 'var(--small-spacing)'
         }, 'Content'
         ).setProperties({
             "font-family": "var(--serif)",
             "font-weight": "700",
-            "font-size": "18pt",
+            "font-size": "17pt",
             "color": "var(--accent)"
         }, 'Title');
 
@@ -72,8 +93,9 @@ export function assuredCss() {
     css.addNode('#main', {
         'padding-left': 'var(--edge-margin)',
         'padding-right': 'var(--edge-margin)',
-        'grid-template-columns': '1fr 200px',
-        'grid-column-gap': 'var(--large-spacing)'
+        'grid-template-columns': 'minmax(0, 1fr) minmax(180px, 200px)',
+        'grid-column-gap': 'var(--large-spacing)',
+        'align-items': 'start'
     });
 
     const sidebar = css.addNode('#sidebar', {});
@@ -89,9 +111,18 @@ export function assuredCss() {
         });
 
         subtitleFields.setProperties({
+            "color": "#555555",
+            "font-size": "0.92em",
             "margin-left": "auto",
+            "padding-left": "var(--spacing)",
             "text-align": "right"
         }, "Last Field");
+
+        subtitleFields.setProperties({
+            "color": "#555555",
+            "font-size": "0.92em",
+            "column-gap": "var(--spacing)"
+        });
     }
 
     return css;
@@ -101,6 +132,7 @@ export function assuredRootCss(): CssNode {
     return getRootCss().setProperties((current) => {
         const next = new Map<string, string>(current);
         next.set('--accent', '#315eaa');
+        next.set('--header-padding', '0.25in var(--edge-margin) 0.15in');
         return next;
     });
 }
@@ -187,10 +219,20 @@ export function assuredNodes(): Array<BasicResumeNode> {
             {
                 "type": "Entry",
                 "title": ["Some Startup"],
-                "subtitle": ["Software Engineer", "San Francisco, CA", "September 2016 -- Present"],
+                "subtitle": ["Software Engineer", "San Francisco, CA", "September 2016 -- 2020"],
                 "childNodes": [
                     makeList([
                         'Did things while looking at a computer monitor'
+                    ])
+                ]
+            } as BasicEntryProps,
+            {
+                "type": "Entry",
+                "title": ["Some Other Startup"],
+                "subtitle": ["Senior Software Engineer", "Oakland, CA", "2020 -- Present"],
+                "childNodes": [
+                    makeList([
+                        'Kept the servers running by refreshing the page with confidence'
                     ])
                 ]
             } as BasicEntryProps
@@ -215,6 +257,16 @@ export function assuredNodes(): Array<BasicResumeNode> {
                 childNodes: [
                     makeList([
                         "Created an app which allows you to view your crush's Amazon wish list"
+                    ])
+                ]
+            },
+            {
+                "type": "Entry",
+                "title": ["Snack Overflow"],
+                "subtitle": ["Tech stack: React, TypeScript, and CSS"],
+                childNodes: [
+                    makeList([
+                        'Built a dashboard for tracking office snacks before they mysteriously disappear'
                     ])
                 ]
             }

@@ -72,6 +72,7 @@ export default function Header({ updateDataFields, ...props }: HeaderProps) {
             {...nonCredentialInputAttributes}
             ref={titleRef}
             id={`${props.uuid}-title`}
+            aria-label="Title"
             type="text"
             value={props.value || ""}
             onChange={(e) => props.updateData("value", e.target.value)}
@@ -82,6 +83,7 @@ export default function Header({ updateDataFields, ...props }: HeaderProps) {
             {...nonCredentialInputAttributes}
             ref={subtitleRef}
             id={`${props.uuid}-subtitle`}
+            aria-label="Subtitle"
             type="text"
             value={props.subtitle || ""}
             onChange={(e) => props.updateData("subtitle", e.target.value)}

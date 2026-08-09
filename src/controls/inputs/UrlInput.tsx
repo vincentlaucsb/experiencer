@@ -10,6 +10,7 @@ interface UrlInputProps {
 export default function UrlInput(props: UrlInputProps) {
     let [url, setUrl] = React.useState(props.url || "");
     const inputRef = React.useRef<HTMLInputElement>(null);
+    const inputId = `link-url-${React.useId().replace(/:/g, "")}`;
 
     // Sync internal state when prop changes (e.g., when switching between links)
     useEffect(() => {
@@ -34,13 +35,13 @@ export default function UrlInput(props: UrlInputProps) {
     return (
         <form onSubmit={handleSubmit} className="pure-form">
             <fieldset>
-                <label htmlFor="link-url">
+                <label htmlFor={inputId}>
                     <span style={{ marginRight: '8px', fontWeight: 'bold' }}>URL:</span>
                 </label>
                 <input
                     {...nonCredentialInputAttributes}
                     ref={inputRef}
-                    id="link-url"
+                    id={inputId}
                     type="url"
                     value={url}
                     onChange={handleChange}

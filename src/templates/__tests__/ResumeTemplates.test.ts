@@ -15,4 +15,22 @@ describe('built-in templates', () => {
         expect(stylesheet).toContain('font-weight: 400;');
         expect(stylesheet).not.toMatch(/header hgroup > h1 \{[^}]*font-weight: 700;/s);
     });
+
+    test('Assured résumé and cover letter share the same header treatment', () => {
+        const resumeStylesheet = CssNode.load(ResumeTemplates.templates.Assured.builtinCss).stylesheet();
+        const coverLetterStylesheet = CssNode.load(ResumeTemplates.templates['Assured: Cover Letter'].builtinCss).stylesheet();
+
+        for (const stylesheet of [resumeStylesheet, coverLetterStylesheet]) {
+            expect(stylesheet).toContain('background: #e8e8e8;');
+            expect(stylesheet).toContain('padding: var(--header-padding);');
+            expect(stylesheet).toContain('grid-template-columns: minmax(0, 1fr) 24px;');
+        }
+        expect(resumeStylesheet).toContain('font-size: 17pt;');
+        expect(resumeStylesheet).toContain('font-family: var(--serif);');
+        expect(resumeStylesheet).toContain('font-family: var(--sans-serif);');
+        expect(resumeStylesheet).not.toContain('font-size: 1.05em;');
+        expect(resumeStylesheet).toContain('column-gap: var(--spacing);');
+        expect(resumeStylesheet).toContain('padding-left: var(--spacing);');
+        expect(coverLetterStylesheet).not.toContain('background: #eeeeee;');
+    });
 });

@@ -1,5 +1,5 @@
 import { BasicResumeNode } from "@/types";
-import { assuredHeader } from "./Assured";
+import { addAssuredHeaderCss, assuredHeader } from "./Assured";
 import MarkdownText from "@/resume/Markdown";
 import Group from "@/resume/Group";
 import getDefaultCss from "./CssTemplates";
@@ -77,30 +77,7 @@ export function assuredCoverLetterCss() {
         "font-size": "11pt"
     });
 
-    /** Header */
-    const header = css.mustFindNode("Header").setProperties({
-        "background": "#eeeeee",
-        "padding": "var(--edge-margin)",
-        "padding-bottom": "var(--large-spacing)",
-    }).setProperties({"margin-right": "auto"}, 'Title Group'
-    ).addNode('Markdown', {
-        'text-align': 'right',
-        'font-size': '10pt'
-    }, '.text-content');
-
-    /** Contact Information */
-    let contact = css.addNode("Contact Information", {
-        "grid-template-columns": "1fr 30px",
-        "grid-column-gap": "var(--small-spacing)",
-        "margin-left": "var(--spacing)",
-        "width": "auto",
-        "height": "auto",
-    }, "#contact, #social-media");
-
-    contact.addNode('Icon', {
-        'height': '24px',
-        'vertical-align': 'middle'
-    }, 'svg.icon, img.icon');
+    addAssuredHeaderCss(css);
 
     /** Letter */
     let content = css.addNode("#content", {

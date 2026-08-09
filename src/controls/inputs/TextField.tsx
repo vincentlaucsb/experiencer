@@ -2,6 +2,7 @@ import React, { MouseEvent } from "react";
 import { ContextMenu } from "@popright/react";
 import type { MenuItem } from "popright";
 import InlineMarkdown from "@/resume/helpers/InlineMarkdown";
+import useAutoExpandInput from "@/resume/hooks/useAutoExpandInput";
 
 import { isNullOrUndefined } from "@/shared/utils/isNullOrUndefined";
 import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
@@ -20,6 +21,7 @@ interface TextFieldProps {
     displayClassName?: string;
     displayValue?: string;
     static?: boolean;
+    autoExpand?: boolean;
 
     contextMenuOptions?: Array<ContextMenuOption>;
     
@@ -31,6 +33,13 @@ interface TextFieldProps {
 export interface TextFieldState {
     value: string;
     isEditing: boolean;
+}
+
+function AutoExpandInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
+    const inputRef = React.useRef<HTMLInputElement>(null);
+    useAutoExpandInput(inputRef);
+
+    return <input {...props} ref={inputRef} />;
 }
 
 /** Switches resume text between rendered Markdown and an inline editing control. */
@@ -94,6 +103,14 @@ export default class TextField extends React.Component<TextFieldProps, TextField
         }
 
         if (this.state.isEditing) {
+            const inputProps = {
+                ...nonCredentialInputAttributes,
+                autoFocus: true,
+                onChange: (event: React.ChangeEvent<HTMLInputElement>) => this.setState({ value: event.target.value }),
+                onKeyDown: this.onKeyDown,
+                value: this.state.value
+            };
+
             return <span
                 onBlur={(event: React.FocusEvent) => {
                     // Avoid triggering event if delete button
@@ -103,13 +120,7 @@ export default class TextField extends React.Component<TextFieldProps, TextField
                     }
                 }}>
                 {label}
-                <input
-                    {...nonCredentialInputAttributes}
-                    autoFocus
-                    onChange={(event) => this.setState({ value: event.target.value })}
-                    onKeyDown={this.onKeyDown}
-                    value={this.state.value}
-                />
+                {props.autoExpand ? <AutoExpandInput {...inputProps} /> : <input {...inputProps} />}
             </span>
         }
 

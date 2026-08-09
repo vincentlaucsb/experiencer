@@ -2,6 +2,7 @@ import { assignIds } from "@/shared/utils/assignIds";
 import ComponentTypes from "@/resume/schema/ComponentTypes";
 import Entry from "@/resume/Entry";
 import Section from "@/resume/Section";
+import { DescriptionListItemType, DescriptionListType } from "@/resume/List";
 import type { AddChild, ResumeNode } from "@/types";
 import type { ToolbarItemData } from "../toolbar/ToolbarButton";
 
@@ -43,7 +44,7 @@ export function addOptions(data: AddOptionProps): ToolbarItemData {
     const node = nodeInfo(options);
     return {
         onClick: () => data.addChild(data.id, assignIds(node.node)),
-        text: `Add ${node.text}`
+        text: getInsertOptionText(options, node.text, data.parentNode)
     };
 }
 
@@ -52,6 +53,10 @@ export function hasChildInsertOptions(options: string | Array<string>): boolean 
 }
 
 function getInsertOptionText(nodeType: string, defaultText: string, parentNode: ResumeNode): string {
+    if (nodeType === DescriptionListItemType && parentNode.type === DescriptionListType) {
+        return 'Add Term';
+    }
+
     const sectionName = parentNode.type === Section.type ? parentNode.value?.trim() : undefined;
 
     if (nodeType === Entry.type && parentNode.type === Section.type) {

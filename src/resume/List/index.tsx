@@ -64,6 +64,7 @@ function getDefinitions(props: DescriptionItemProps, isSelected: boolean) {
                     onChange={(data: string) => updater(index, data)}
                     value={text}
                     defaultText="Enter a value"
+                    autoExpand
                     contextMenuOptions={definitionOptions}
                     displayProcessors={[process]}
                 />

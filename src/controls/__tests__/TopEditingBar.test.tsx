@@ -6,6 +6,7 @@ import { act, render, screen } from "@testing-library/react";
 import TopEditingBarWrapper, { TopEditingBar, EditingBarProps } from "@/controls/TopEditingBar";
 import MarkdownText from "@/resume/Markdown";
 import Section from "@/resume/Section";
+import { DescriptionListItemType, DescriptionListType } from "@/resume/List";
 import registerNodes from "@/resume/schema";
 import { resumeNodeStore } from "@/shared/stores/resumeNodeStore";
 import { useEditorStore } from "@/shared/stores/editorStore";
@@ -85,6 +86,36 @@ describe("TopEditingBar Insert visibility", () => {
 
         expect(screen.queryByText("Insert")).toBeNull();
         expect(screen.getByLabelText("Delete")).toBeTruthy();
+    });
+
+    test("labels Description List insertion as Add Term", async () => {
+        const nodes = assignIds([
+            {
+                type: DescriptionListType,
+                childNodes: [{
+                    type: DescriptionListItemType,
+                    value: "Operations",
+                    definitions: ["Planning systems"]
+                }]
+            }
+        ] as BasicResumeNode[]);
+
+        act(() => {
+            resumeNodeStore.setNodes(nodes);
+            useEditorStore.getState().selectNode(nodes[0].uuid);
+        });
+
+        render(<TopEditingBar {...createProps()} />);
+
+        await act(async () => {
+            await Promise.resolve();
+        });
+
+        act(() => {
+            screen.getByRole("button", { name: "Insert" }).click();
+        });
+
+        expect(screen.getByRole("menuitem", { name: "Add Term" })).toBeTruthy();
     });
 
     test("labels an Entry insert with the selected section name", async () => {

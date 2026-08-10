@@ -64,11 +64,11 @@ function getSectionCss(): CssNode {
 function getEntryCss(): CssNode {
     let entryCss = new CssNode(Entry.type, {
         'display': 'block'
-    }, 'resume-entry');
+    }, '.entry');
 
     entryCss.addNode('Adjacent Entries', {
         'margin-top': 'var(--large-spacing)'
-    }, '+ resume-entry');
+    }, '+ .entry');
 
     let entryTitleCss = entryCss.addNode('Title Block',
         { 'margin-bottom': 'var(--small-spacing)' }, '> hgroup');
@@ -139,7 +139,7 @@ function getPageBreakCss(): CssNode {
         'page-break-after': 'always',
         'break-inside': 'avoid',
         'page-break-inside': 'avoid'
-    }, 'resume-page-break');
+    }, '.page-break');
 
     return pageBreakCss;
 }
@@ -164,9 +164,9 @@ export default function getDefaultCss(): CssNode {
     let dlCss = defaultCss.addNode('Description List', { }, 'dl');
     dlCss.addNode('Definitions', { 'padding-left': '0.5rem' }, 'dd');
 
-    defaultCss.addNode('Row', {}, 'resume-row');
-    defaultCss.addNode('Column', {}, 'resume-column');
-    defaultCss.addNode('Grid', {}, 'resume-grid');
+    defaultCss.addNode('Row', {}, '.row');
+    defaultCss.addNode('Column', {}, '.column');
+    defaultCss.addNode('Grid', {}, '.grid-container');
     defaultCss.addNode(getHeaderCss());
     defaultCss.addNode(getSectionCss());
     defaultCss.addNode(getEntryCss());

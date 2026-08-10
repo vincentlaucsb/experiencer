@@ -1,4 +1,5 @@
 import { isNullOrUndefined } from "@/shared/utils/isNullOrUndefined";
+import normalizeResumeElementSelectors from "@/shared/utils/normalizeResumeElementSelectors";
 import { CssNodeDump } from "@/types";
 import { ReadonlyCssNode } from './ReadonlyCssNode';
 
@@ -364,7 +365,8 @@ export default class CssNode {
     /** Return a CSS stylesheet */
     stylesheet() {
         const cssProperties = this.formatProperties();
-        const thisCss = this.properties.size > 0 ? `${this.fullSelector} {\n${cssProperties}\n}` : ``;
+        const selector = normalizeResumeElementSelectors(this.fullSelector);
+        const thisCss = this.properties.size > 0 ? `${selector} {\n${cssProperties}\n}` : ``;
 
         let childStylesheets = new Array<string>();
 

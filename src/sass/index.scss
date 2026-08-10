@@ -153,7 +153,7 @@ button img {
             min-height: 297mm;
         }
 
-        resume-page-break.page-break-editing {
+        .page-break.page-break-editing {
             position: relative;
             display: block;
             width: calc(100% + (2 * var(--edge-margin)));

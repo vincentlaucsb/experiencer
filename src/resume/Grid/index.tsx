@@ -25,7 +25,7 @@ export default function Grid({ children, ...props }: ResumeComponentProps) {
         </span>  : <></>
 
     return (
-        <Container {...props} displayAs="resume-grid" className="grid-container"
+        <Container {...props} displayAs="div" className="grid-container"
             style={style}>
             {helperText}
             {children}

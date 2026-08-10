@@ -134,11 +134,11 @@ test('Resume Select Parent + Child Test', async () => {
         return elem.classList.contains('field');
     })[0];
 
-    const entry = entryText.closest('resume-entry');
+    const entry = entryText.closest('article.entry');
     expect(entry).not.toBeNull();
 
     if (!entry) {
-        throw new Error('Expected resume-entry node to exist');
+        throw new Error('Expected semantic entry node to exist');
     }
 
     const entryUuid = entry.getAttribute('data-uuid');

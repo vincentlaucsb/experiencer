@@ -62,7 +62,7 @@ export default class Row extends React.PureComponent<RowProps> {
 
     render() { 
         return (
-            <Container {...this.props} displayAs="resume-row" className="row" style={this.style}>
+            <Container {...this.props} displayAs="div" className="row" style={this.style}>
                 {this.props.children}
             </Container>
         );

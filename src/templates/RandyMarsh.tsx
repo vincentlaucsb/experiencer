@@ -52,11 +52,11 @@ export function randyMarshCss() {
             }, 'Title'
             ).addNode('Grid', {
                 'grid-template-columns': 'var(--year-column-width) 1fr'
-            }, 'resume-grid'
+            }, '.grid-container'
             ).addNode('Entry', {
                 'border-left': '1px solid var(--text-color)',
                 'padding-left': 'var(--large-spacing)',
-            }, 'resume-entry');
+            }, '.entry');
 
     /** Entry CSS */
     randyCss.mustFindNode("Entry").setProperties(

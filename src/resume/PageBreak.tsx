@@ -12,7 +12,7 @@ function PageBreak(props: ResumeComponentProps) {
         <Container
             {...props}
             className={className}
-            displayAs="resume-page-break"
+            displayAs="div"
         >
             {!isPrinting ? (
                 <span className="page-break-label">

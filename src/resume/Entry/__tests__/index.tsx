@@ -47,7 +47,7 @@ test('Entry Class Names Test', async () => {
         subtitle={subtitle}
     />);
 
-    const entryRoot = container.querySelector('resume-entry');
+    const entryRoot = container.querySelector('article.entry');
     expect(entryRoot).not.toBeNull();
 
     const subtitleContainer = container.querySelector('.subtitle') as Element;

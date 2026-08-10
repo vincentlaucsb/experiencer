@@ -101,7 +101,7 @@ export function assuredCss() {
     const sidebar = css.addNode('#sidebar', {});
     sidebar.addNode('Last Subtitle Field', {
         'margin-left': '0'
-    }, 'resume-entry > hgroup > h4 span.field-last');
+    }, '.entry > hgroup > h4 span.field-last');
 
     const subtitleFields = css.findNode(["Entry", "Title Block", "Subtitle"]);
     if (subtitleFields) {

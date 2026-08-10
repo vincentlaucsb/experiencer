@@ -44,7 +44,7 @@ export default class Column extends React.PureComponent<ResumeComponentProps> {
         }
 
         return <Container {...this.props}
-            displayAs="resume-column"
+            displayAs="div"
             className={this.className}
             style={this.style}>
             {this.props.children}

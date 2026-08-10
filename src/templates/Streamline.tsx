@@ -69,7 +69,7 @@ export function streamlineCss() {
     const contactText = contact.addNode('Contact Text', {}, '.text-content');
     contactText.addNode('Content', { margin: '0 !important' }, '> p');
 
-    const contactRow = contact.addNode('Contact Row', {}, 'resume-row');
+    const contactRow = contact.addNode('Contact Row', {}, '.row');
 
     contactRow.addNode('Contact Row Items', {
         'display': 'inline-flex !important',

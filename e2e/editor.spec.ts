@@ -15,19 +15,46 @@ test('switches page size and adds a new section', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Enter a title' })).toBeVisible();
 });
 
-test('opens and exits print preview from the file menu', async ({ page }) => {
+test('opens a resume-only print preview in a new tab', async ({ page, context }) => {
+  await context.addInitScript(() => {
+    window.print = () => undefined;
+  });
   await createResumeFromTemplate(page);
 
   await page.getByRole('button', { name: 'File' }).click();
-  await page.getByRole('button', { name: 'Print' }).click();
+  const popupPromise = page.waitForEvent('popup');
+  await page.getByRole('menuitem', { name: 'Print' }).click();
+  const printPreview = await popupPromise;
 
-  await expect(page.locator('#print-preview-actions')).toBeVisible();
-  await expect(page.locator('#app-header')).toBeHidden();
-
-  await page.getByRole('button', { name: 'Exit Print Preview' }).click();
-
+  await expect(printPreview.locator('#resume')).toBeVisible();
+  await expect(printPreview.locator('#app-header')).toHaveCount(0);
+  await expect(printPreview.locator('#toolbar')).toHaveCount(0);
   await expect(page.locator('#app-header')).toBeVisible();
-  await expect(page.locator('#toolbar')).toBeVisible();
+});
+
+test('routes the print keyboard shortcut to the resume-only tab', async ({ page, context }) => {
+  await context.addInitScript(() => {
+    window.print = () => undefined;
+  });
+  await createResumeFromTemplate(page);
+
+  const popupPromise = page.waitForEvent('popup');
+  await page.keyboard.press(process.platform === 'darwin' ? 'Meta+P' : 'Control+P');
+  const printPreview = await popupPromise;
+
+  await expect(printPreview.locator('#resume')).toBeVisible();
+  await expect(printPreview.locator('#app-header')).toHaveCount(0);
+});
+
+test('downloads HTML and font assets as a ZIP package', async ({ page }) => {
+  await createResumeFromTemplate(page);
+
+  await page.getByRole('button', { name: 'File' }).click();
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByRole('menuitem', { name: 'Export HTML/CSS package' }).click();
+  const download = await downloadPromise;
+
+  expect(download.suggestedFilename()).toBe('resume.zip');
 });
 
 test('context menu has its base layout and surface styling', async ({ page }) => {
@@ -58,7 +85,7 @@ test('template preview does not inherit the active resume stylesheet', async ({ 
   await createResumeFromTemplate(page, 'Assured');
 
   await page.getByRole('button', { name: 'File' }).click();
-  await page.getByRole('button', { name: 'New', exact: true }).click();
+  await page.getByRole('menuitem', { name: 'New', exact: true }).click();
   await page.getByText('Integrity', { exact: true }).click();
 
   const preview = page.getByLabel('Integrity template preview');

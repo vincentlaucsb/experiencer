@@ -11,6 +11,7 @@ export interface BuiltinFontFace {
 export interface BuiltinFontDefinition extends ResumeFont {
     provider: 'builtin';
     faces: BuiltinFontFace[];
+    licenseUrl: string;
 }
 
 const definitions = new Map(

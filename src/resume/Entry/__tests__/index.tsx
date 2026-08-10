@@ -49,6 +49,7 @@ test('Entry Class Names Test', async () => {
 
     const entryRoot = container.querySelector('article.entry');
     expect(entryRoot).not.toBeNull();
+    expect(entryRoot?.classList.contains('entry--selected')).toBe(false);
 
     const subtitleContainer = container.querySelector('.subtitle') as Element;
 
@@ -88,7 +89,9 @@ test("selected entries expose a direct add-field action", () => {
         useEditorStore.getState().selectNode(uuid);
     });
 
-    render(<StatefulEntry uuid={uuid} />);
+    const { container } = render(<StatefulEntry uuid={uuid} />);
+
+    expect(container.querySelector('article.entry')?.classList.contains('entry--selected')).toBe(true);
 
     act(() => {
         screen.getByRole("button", { name: "Add field" }).click();

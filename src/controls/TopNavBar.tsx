@@ -122,7 +122,7 @@ export function TopNavBar(props: TopNavBarProps) {
         },
         {
             id: "export-html",
-            label: "Export to HTML/CSS",
+            label: "Export HTML/CSS package",
             icon: createPoprightIcon("file-html5"),
             disabled: !props.isEditing,
             onSelect: () => props.exportHtml()
@@ -266,7 +266,7 @@ export function TopNavBar(props: TopNavBarProps) {
 
 export type TopNavBarWrapperProps = Omit<
     TopNavBarProps,
-    'loadData' | 'isEditing' | 'print' |
+    'loadData' | 'isEditing' |
     'saveLocal' | 'saveFile' | 'toggleHelp' | 'toggleLanding'
 > & {
     loadData?: (data: object, title?: string) => void;
@@ -285,7 +285,7 @@ export default function TopNavBarWrapper(props: TopNavBarWrapperProps) {
         isEditing,
         toggleHelp: workspaceStore.toggleHelp,
         toggleLanding: () => workspaceStore.showLanding(),
-        print: workspaceStore.startPrinting,
+        print: props.print ?? workspaceStore.startPrinting,
         saveLocal: props.saveLocal ?? saveLocal,
         saveFile
     };

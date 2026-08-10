@@ -13,11 +13,14 @@ function escapeStylesheetForHtml(stylesheet: string) {
 export default function generateHtml(
     stylesheet: string,
     bodyHtml: string,
-    requestedFontFamilies?: GoogleFontRequest[]
+    requestedFontFamilies?: GoogleFontRequest[],
+    bundledFontStylesheet?: string
 ) {
     const fontFamilies = requestedFontFamilies ?? extractFontFamiliesFromCss(stylesheet);
-    const googleFontsUrl = getGoogleFontsUrl(getGoogleFontRequests(fontFamilies));
-    const builtinStylesheet = getBuiltinFontStylesheet(
+    const googleFontsUrl = bundledFontStylesheet === undefined
+        ? getGoogleFontsUrl(getGoogleFontRequests(fontFamilies))
+        : '';
+    const builtinStylesheet = bundledFontStylesheet ?? getBuiltinFontStylesheet(
         fontFamilies.filter((font): font is ResumeFont => typeof font !== 'string')
     );
     const safeStylesheet = escapeStylesheetForHtml(stylesheet);

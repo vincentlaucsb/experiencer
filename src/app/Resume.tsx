@@ -11,7 +11,7 @@ import '@/sass/index.scss';
 
 // Utilities
 import { createContainer } from '@/shared/utils/createContainer';
-import { exportResumeAsHtml } from '@/shared/utils/PrintHelpers';
+import { exportResumeAsHtml, printResume } from '@/shared/utils/PrintHelpers';
 import { captureResumePng } from '@/shared/utils/ExportPng';
 
 // Components
@@ -41,6 +41,7 @@ import { useWorkspaceSnapshot } from '@/shared/stores/workspaceStoreHooks';
 import { useResumeTree, resumeNodeStore } from '@/shared/stores/resumeNodeStore';
 import { useTreeStylesheet } from '@/shared/stores/cssStoreHooks';
 import { useDocumentFonts } from '@/shared/stores/documentFontsStore';
+import { showToast } from '@/shared/stores/toastStore';
 
 // Types
 import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode } from '@/types';
@@ -491,10 +492,20 @@ export function Resume(props: ResumeProps) {
 
     // Serialization
     const exportHtml = useCallback(() => {
-        // TODO: Make this user defineable
-        const filename = 'resume.html';
-        exportResumeAsHtml(resumeRef.current, props.stylesheet ?? '', filename);
+        void exportResumeAsHtml(resumeRef.current, props.stylesheet ?? '', 'resume.zip')
+            .catch((error: unknown) => showToast(
+                error instanceof Error ? error.message : 'Could not export the HTML package.'
+            ));
     }, [props.stylesheet]);
+
+    const printDocument = useCallback(() => {
+        void printResume(resumeRef.current, props.stylesheet ?? '')
+            .catch((error: unknown) => showToast(
+                error instanceof Error ? error.message : 'Could not open the print preview.'
+            ));
+    }, [props.stylesheet]);
+
+    useHandlePrint(printDocument);
 
     const exportToPng = useCallback(() => {
         setPngCopyPhase('idle');
@@ -591,14 +602,13 @@ export function Resume(props: ResumeProps) {
         workspaceStore.finishPrinting();
     }, []);
 
-    const openPrintDialog = useCallback(() => {
-        window.print();
-    }, []);
+    const openPrintDialog = printDocument;
 
     // Helper Component Props
     const topMenuProps: TopNavBarWrapperProps = {
         exportHtml: exportHtml,
         exportToPng: exportToPng,
+        print: printDocument,
         new: openTemplateSelector,
         documents: props.documents,
         documentLabels: props.documentLabels,
@@ -834,7 +844,6 @@ function ResumeContainer(props: ResumeWrapperProps) {
         await libraryStore.deleteDocument(id);
     }, [documentPendingDelete, libraryStore]);
 
-    useHandlePrint();
     useStylesheet(mode === "changingTemplate" ? "" : stylesheet, {
         fontFamilies: documentFonts,
         documentFonts

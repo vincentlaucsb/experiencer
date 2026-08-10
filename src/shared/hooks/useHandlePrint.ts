@@ -16,7 +16,7 @@ function getPageSizeCss(pageSize: PageSize) {
  * Listens for browser print events and updates editor mode accordingly.
  * Ensures that the editor switches to 'printing' mode during print preview and reverts back after printing.
  */
-export default function useHandlePrint() {
+export default function useHandlePrint(requestIsolatedPrint?: () => void) {
     const pageSize = useEditorStore((state) => state.pageSize);
 
     useEffect(() => {
@@ -33,6 +33,17 @@ export default function useHandlePrint() {
     }, [pageSize]);
 
     useEffect(() => {
+        const handlePrintShortcut = (event: KeyboardEvent) => {
+            if (!requestIsolatedPrint || event.defaultPrevented) {
+                return;
+            }
+
+            if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'p') {
+                event.preventDefault();
+                requestIsolatedPrint();
+            }
+        };
+
         const handleBeforePrint = () => {
             workspaceStore.startPrinting();
         };
@@ -41,12 +52,14 @@ export default function useHandlePrint() {
             workspaceStore.finishPrinting();
         };
 
+        window.addEventListener('keydown', handlePrintShortcut);
         window.addEventListener('beforeprint', handleBeforePrint);
         window.addEventListener('afterprint', handleAfterPrint);
 
         return () => {
+            window.removeEventListener('keydown', handlePrintShortcut);
             window.removeEventListener('beforeprint', handleBeforePrint);
             window.removeEventListener('afterprint', handleAfterPrint);
         };
-    }, []);
+    }, [requestIsolatedPrint]);
 }

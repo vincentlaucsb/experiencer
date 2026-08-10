@@ -9,6 +9,13 @@ describe('built-in templates', () => {
         }
     });
 
+    test('keep built-in template content in normal document flow', () => {
+        for (const template of Object.values(ResumeTemplates.templates)) {
+            const stylesheet = CssNode.load(template.builtinCss).stylesheet();
+            expect(stylesheet).not.toMatch(/position:\s*(?:relative|absolute|fixed|sticky)/i);
+        }
+    });
+
     test('Streamline keeps its header title at regular weight', () => {
         const stylesheet = CssNode.load(ResumeTemplates.templates.Streamline.builtinCss).stylesheet();
 

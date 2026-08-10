@@ -116,7 +116,11 @@ export default function Entry(props: EntryProps) {
 
     /** hgroup onclick stops event from bubbling up to resume */
     return (
-        <Container {...props} className={`entry${isEditing ? " entry--editing" : ""}`} displayAs="article">
+        <Container
+            {...props}
+            className={`entry${isSelected ? " entry--selected" : ""}${isEditing ? " entry--editing" : ""}`}
+            displayAs="article"
+        >
             <hgroup onClick={(event) => {
                 if (isEditing) {
                     event.stopPropagation();

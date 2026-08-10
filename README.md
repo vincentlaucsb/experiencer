@@ -22,6 +22,10 @@ You get to focus on your content, and avoid hating yourself as well.
 The outputted HTML and CSS follows best practices, so if something doesn't go right, you won't be left debugging
 a rat's nest of `<div>` tags or trying to figure out what `.css-class-2412husad-asda` does.
 
+Printing opens a résumé-only browser tab so the PDF renderer never sees the editor's hidden application UI.
+HTML/CSS export downloads a ZIP containing `resume.html`, the selected font files, and applicable font notices
+or licenses, allowing the exported document to retain its typography offline.
+
 ### Powerful CSS Editing
 The CSS editor allows you to nest a set of rules within another, therefore giving you SASS-like abilities combined with instantaneous feedback. Other features include:
  * A highlighter which allows you to see what elements a selector applies to

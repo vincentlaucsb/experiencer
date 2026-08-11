@@ -35,6 +35,17 @@
 
 }
 
+.entry-field-actions {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.35rem;
+
+    .entry-field-adder {
+        margin-left: 0;
+    }
+}
+
 .entry-field-help {
     position: absolute;
     top: 0.25rem;

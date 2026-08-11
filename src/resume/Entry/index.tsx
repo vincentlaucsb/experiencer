@@ -40,12 +40,15 @@ function getFieldClassName(index: number, arr: string[]) {
 export default function Entry(props: EntryProps) {
     const isEditing = useIsNodeEditing(props.uuid);
     const isSelected = useIsNodeSelected(props.uuid);
-    const [newSubtitleIndex, setNewSubtitleIndex] = React.useState<number | undefined>();
+    const [newField, setNewField] = React.useState<{
+        key: 'title' | 'subtitle';
+        index: number;
+    }>();
 
-    const addSubtitleField = () => {
-        const subtitle = props.subtitle || [];
-        setNewSubtitleIndex(subtitle.length);
-        props.updateData("subtitle", [...subtitle, ""]);
+    const addField = (key: 'title' | 'subtitle') => {
+        const fields = props[key] || [];
+        setNewField({ key, index: fields.length });
+        props.updateData(key, [...fields, ""]);
     };
 
     const getFields = (key: 'title' | 'subtitle') => {
@@ -81,14 +84,15 @@ export default function Entry(props: EntryProps) {
             return fields.map((text, index, arr) => {
                 /** Conditionally add line break */
                 let lineBreak = <></>
-                if (props.subtitleBreaks && props.subtitleBreaks.indexOf(index) >= 0) {
+                if (key === 'subtitle' && props.subtitleBreaks?.includes(index)) {
                     lineBreak = <hr style={{
                         flexBasis: "100%",
                         border: 0
                     }}/>
                 }
 
-                const textFieldOptions = key === "subtitle" ? [
+                const canDelete = key === "subtitle" || arr.length > 1;
+                const textFieldOptions = canDelete ? [
                     {
                         text: `Delete "${text}"`,
                         onClick: () => deleter(key, index)
@@ -99,7 +103,7 @@ export default function Entry(props: EntryProps) {
                     <TextField
                         displayClassName={getFieldClassName(index, arr)}
                         static={!isSelected}
-                        startEditing={key === "subtitle" && newSubtitleIndex === index}
+                        startEditing={newField?.key === key && newField.index === index}
                         onChange={(data: string) => updater(key, index, data)}
                         value={text || ""}
                         defaultText="Enter a value"
@@ -126,12 +130,20 @@ export default function Entry(props: EntryProps) {
                     event.stopPropagation();
                 }
             }}>
-                <h3 className="title">{getFields('title')}</h3>
+                <h3 className="title">
+                    {getFields('title')}
+                    {isEditing && <FieldAdder compact label="Add title" onAdd={() => addField('title')} />}
+                </h3>
                 <h4 className="subtitle">
                     {getFields('subtitle')}
-                    {isEditing && <FieldAdder compact onAdd={addSubtitleField} />}
+                    {isEditing && <FieldAdder compact label="Add detail" onAdd={() => addField('subtitle')} />}
                 </h4>
-                {isSelected && !isEditing && <FieldAdder onAdd={addSubtitleField} />}
+                {isSelected && !isEditing && (
+                    <span className="entry-field-actions no-print">
+                        <FieldAdder label="Add title" onAdd={() => addField('title')} />
+                        <FieldAdder label="Add detail" onAdd={() => addField('subtitle')} />
+                    </span>
+                )}
             </hgroup>
             {isSelected && (
                 <div className="entry-field-help no-print">

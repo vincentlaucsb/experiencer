@@ -82,9 +82,10 @@ async function capturePrintableResume(
 }
 
 function pageSizeRule(pageSize: PageSize): string {
-    return pageSize === PageSize.A4
+    const pageRule = pageSize === PageSize.A4
         ? '@page { size: A4; margin: 0; }'
         : '@page { size: Letter; margin: 0; }';
+    return `${pageRule}\n@media print { #resume { min-height: 0 !important; } }`;
 }
 
 function showPrintLoadingState(printWindow: Window): void {

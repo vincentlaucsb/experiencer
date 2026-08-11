@@ -7,6 +7,7 @@ import Entry from "../";
 import { useEditorStore } from "@/shared/stores/editorStore";
 
 function StatefulEntry({ uuid }: { uuid: string }) {
+    const [title, setTitle] = useState(["Some Company"]);
     const [subtitle, setSubtitle] = useState(["Some Job Title"]);
 
     return <Entry
@@ -15,12 +16,15 @@ function StatefulEntry({ uuid }: { uuid: string }) {
         uuid={uuid}
         isLast={false}
         updateData={(key, value) => {
+            if (key === "title") {
+                setTitle(value as string[]);
+            }
             if (key === "subtitle") {
                 setSubtitle(value as string[]);
             }
         }}
         updateDataFields={() => { }}
-        title={["Some Company"]}
+        title={title}
         subtitle={subtitle}
     />;
 }
@@ -45,6 +49,7 @@ test('Entry Class Names Test', async () => {
         updateDataFields={() => { }}
         title={title}
         subtitle={subtitle}
+        subtitleBreaks={[1]}
     />);
 
     const entryRoot = container.querySelector('article.entry');
@@ -52,6 +57,10 @@ test('Entry Class Names Test', async () => {
     expect(entryRoot?.classList.contains('entry--selected')).toBe(false);
 
     const subtitleContainer = container.querySelector('.subtitle') as Element;
+    const titleContainer = container.querySelector('.title') as Element;
+
+    expect(titleContainer.querySelectorAll('hr')).toHaveLength(0);
+    expect(subtitleContainer.querySelectorAll('hr')).toHaveLength(1);
 
     const allSubtitleFields = subtitleContainer.querySelectorAll('.field');
     expect(allSubtitleFields).not.toBeNull();
@@ -82,7 +91,7 @@ test('Entry Class Names Test', async () => {
     }
 })
 
-test("selected entries expose a direct add-field action", () => {
+test("selected entries expose direct title and detail actions", () => {
     const uuid = "selected-entry";
 
     act(() => {
@@ -94,15 +103,18 @@ test("selected entries expose a direct add-field action", () => {
     expect(container.querySelector('article.entry')?.classList.contains('entry--selected')).toBe(true);
 
     act(() => {
-        screen.getByRole("button", { name: "Add field" }).click();
+        screen.getByRole("button", { name: "Add title" }).click();
     });
 
     expect(screen.queryByRole("menu")).toBeNull();
     expect(screen.getByRole("textbox")).toBeTruthy();
+    expect(container.querySelectorAll('.title .field')).toHaveLength(1);
+    expect(container.querySelectorAll('.title input')).toHaveLength(1);
+    expect(screen.getByRole("button", { name: "Add detail" })).toBeTruthy();
     expect(screen.getByText("Right-click fields for more options")).toBeTruthy();
 });
 
-test("editing entries expose a compact add-field control", () => {
+test("editing entries expose compact title and detail controls", () => {
     const uuid = "editing-entry";
 
     act(() => {
@@ -121,8 +133,10 @@ test("editing entries expose a compact add-field control", () => {
     />);
 
     expect(screen.getByText("Finish editing to see field options")).toBeTruthy();
-    const addFieldButton = screen.getByRole("button", { name: "Add field" });
-    expect(addFieldButton.className).toContain("entry-field-adder__trigger");
-    expect(addFieldButton.className).toContain("pure-button-primary");
-    expect(addFieldButton.className).toContain("pure-button-outline");
+    const addTitleButton = screen.getByRole("button", { name: "Add title" });
+    const addDetailButton = screen.getByRole("button", { name: "Add detail" });
+    expect(addTitleButton.className).toContain("entry-field-adder__trigger");
+    expect(addTitleButton.className).toContain("pure-button-primary");
+    expect(addTitleButton.className).toContain("pure-button-outline");
+    expect(addDetailButton.className).toContain("pure-button-outline");
 });

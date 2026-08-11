@@ -54,12 +54,19 @@ describe('resume printing and HTML export', () => {
         await exportResumeAsHtml(resumeElement, stylesheet, 'resume.html');
 
         expect(generateHtmlMock).toHaveBeenCalledWith(
-            expect.stringContaining(`@page { size: ${pageSizeLabel}; margin: 0; }\n${stylesheet}`),
+            expect.stringContaining(`@page { size: ${pageSizeLabel}; margin: 0; }`),
+            resumeElement.outerHTML
+        );
+        expect(generateHtmlMock).toHaveBeenCalledWith(
+            expect.stringContaining(stylesheet),
             resumeElement.outerHTML
         );
         expect(buildPackageMock).toHaveBeenCalledWith(expect.objectContaining({
             stylesheet: expect.stringContaining(`@page { size: ${pageSizeLabel}; margin: 0; }`),
             resumeHtml: resumeElement.outerHTML
+        }));
+        expect(buildPackageMock).toHaveBeenCalledWith(expect.objectContaining({
+            stylesheet: expect.stringContaining('#resume { min-height: 0 !important; }')
         }));
         expect(saveAsMock).toHaveBeenCalledWith(expect.any(Blob), 'resume.zip');
     });

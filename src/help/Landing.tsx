@@ -9,6 +9,8 @@ import type { ResumeDocumentAction, ResumeDocumentGroup } from "@/app/Resume";
 import AsyncActionForm from "@/controls/AsyncActionForm";
 import { RESUME_TITLE_MAX_LENGTH } from "@/shared/repositories/ResumeRepository";
 import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
+import GitHubLight from "@/assets/icons/GitHub-Mark-Light-120px-plus.png";
+import SocialLinks from "./SocialLinks";
 
 interface LandingProps {
     className?: string;
@@ -24,6 +26,19 @@ interface LandingProps {
     openDocument?: (id: string) => void;
     deleteDocument?: (id: string) => void;
     renameDocument?: (id: string, title: string) => Promise<string | null>;
+    renderLead?: (actions: LandingActions, context: LandingContext) => React.ReactNode;
+    showSocialLinks?: boolean;
+}
+
+export interface LandingActions {
+    createResume: () => void;
+    loadResume: () => void;
+    returnToResume?: () => void;
+}
+
+export interface LandingContext {
+    documentCount: number;
+    hasResumableSession: boolean;
 }
 
 function MenuItem (props: {
@@ -45,7 +60,8 @@ export default function Landing(props: LandingProps) {
     const [editingTitle, setEditingTitle] = React.useState("");
     let modalContent = <FileLoader close={() => setOpen(false)} loadData={props.loadData} />
 
-    const returnButton = (props.hasLocalResume ?? Boolean(localStorage.getItem(Globals.localStorageKey))) ?
+    const hasResumableSession = props.hasLocalResume ?? Boolean(localStorage.getItem(Globals.localStorageKey));
+    const returnButton = hasResumableSession ?
         <MenuItem onClick={props.loadLocal} icon="hand-drawn-alt-left">
             Return to editing resume
         </MenuItem> : <></>
@@ -59,22 +75,32 @@ export default function Landing(props: LandingProps) {
     const documentsById = new Map(
         props.documents?.map((document) => [document.id, document]) ?? []
     );
+    const lead = props.renderLead?.({
+        createResume: props.new,
+        loadResume: () => setOpen(true),
+        returnToResume: hasResumableSession ? props.loadLocal : undefined
+    }, {
+        documentCount: props.documents?.length ?? 0,
+        hasResumableSession
+    });
 
     return (
         <>
             <Modal title="Load File" isOpen={isOpen} close={() => setOpen(false)} className="landing-modal">
                 {modalContent}
             </Modal>
-            <div id="landing" className="app-px-2">
-                <h2>Getting Started</h2>
-                <p>Welcome to Experiencer, a powerful tool that can help you create attractive resumes.</p>
-                <p>Click on the <strong>New</strong> button in the top left to get started. Once you start
-                    editing your resume, a <strong>Help</strong> button with more information will appear (also in the top left).</p>
-                <PureMenu divProps={{ className: "landing-menu" }}>
-                    {returnButton}
-                    <MenuItem onClick={() => props.new()} icon="paper">New</MenuItem>
-                    <MenuItem onClick={() => setOpen(true)} icon="folder-open">Load</MenuItem>
-                </PureMenu>
+            <div id="landing" className={['app-px-2', props.className].filter(Boolean).join(' ')}>
+                {lead ?? <>
+                    <h2>Getting Started</h2>
+                    <p>Welcome to Experiencer, a powerful tool that can help you create attractive resumes.</p>
+                    <p>Click on the <strong>New</strong> button in the top left to get started. Once you start
+                        editing your resume, a <strong>Help</strong> button with more information will appear (also in the top left).</p>
+                    <PureMenu divProps={{ className: "landing-menu" }}>
+                        {returnButton}
+                        <MenuItem onClick={() => props.new()} icon="paper">New</MenuItem>
+                        <MenuItem onClick={() => setOpen(true)} icon="folder-open">Load</MenuItem>
+                    </PureMenu>
+                </>}
                 {props.documents?.length || groups.some((group) => group.showWhenEmpty) ? (
                     <section className="resume-library" aria-label="Resume library">
                         {groups.map((group) => {
@@ -181,6 +207,12 @@ export default function Landing(props: LandingProps) {
                         })}
                     </section>
                 ) : <></>}
+                {props.showSocialLinks === false ? <></> : <SocialLinks links={[{
+                    href: "https://github.com/vincentlaucsb/experiencer",
+                    label: "View Experiencer on GitHub",
+                    imageSrc: GitHubLight,
+                    imageAlt: "GitHub"
+                }]} />}
             </div>
         </>
     );

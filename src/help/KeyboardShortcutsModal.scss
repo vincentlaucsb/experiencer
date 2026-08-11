@@ -1,0 +1,55 @@
+@use "../sass/colors/semantic" as colors;
+
+.keyboard-shortcuts-modal {
+    max-height: min(42rem, calc(100vh - 2rem));
+    max-width: min(42rem, calc(100vw - 2rem));
+    overflow: auto;
+    width: 100%;
+
+    .keyboard-shortcuts {
+        display: grid;
+        gap: 1.25rem;
+
+        h4 {
+            margin: 0 0 0.6rem;
+        }
+
+        dl {
+            display: grid;
+            gap: 0.65rem 1rem;
+            grid-template-columns: minmax(0, 1fr) auto;
+            margin: 0;
+        }
+
+        dt,
+        dd {
+            margin: 0;
+        }
+
+        dd {
+            white-space: nowrap;
+        }
+
+        kbd {
+            background: colors.$surface-muted;
+            border: 1px solid colors.$border-strong;
+            border-radius: 3px;
+            box-shadow: 0 1px 0 colors.$border-strong;
+            display: inline-block;
+            font: inherit;
+            min-width: 1.8rem;
+            padding: 0.15rem 0.4rem;
+            text-align: center;
+        }
+    }
+}
+
+@media screen and (max-width: 32rem) {
+    .keyboard-shortcuts-modal .keyboard-shortcuts dl {
+        grid-template-columns: 1fr;
+
+        dd {
+            margin-bottom: 0.35rem;
+        }
+    }
+}

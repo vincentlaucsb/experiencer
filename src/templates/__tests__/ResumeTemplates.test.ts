@@ -40,4 +40,18 @@ describe('built-in templates', () => {
         expect(resumeStylesheet).toContain('padding-left: var(--spacing);');
         expect(coverLetterStylesheet).not.toContain('background: #eeeeee;');
     });
+
+    test.each([
+        ['Assured: Cover Letter', 'Joe Blow'],
+        ['Integrity: Cover Letter', 'Randy Marsh'],
+        ['Streamline: Cover Letter', 'Dinesh Chugtai']
+    ])('%s includes a handwritten signature and typed-name fallback', (templateName, name) => {
+        const template = ResumeTemplates.templates[templateName];
+        const serialized = JSON.stringify(template);
+        const stylesheet = CssNode.load(template.builtinCss).stylesheet();
+
+        expect(serialized).toContain(`Handwritten signature of ${name}`);
+        expect(serialized).toContain(name);
+        expect(stylesheet).toContain('object-fit: contain;');
+    });
 });

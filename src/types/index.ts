@@ -63,7 +63,6 @@ export interface ResumeFont {
 
 export type EditorMode = 'normal'
     | 'landing'
-    | 'help'
     | 'changingTemplate'
     | 'printing';
 

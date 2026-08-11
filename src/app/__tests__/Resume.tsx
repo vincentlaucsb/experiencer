@@ -330,6 +330,32 @@ test('Template switcher supports additional groups, async previews, and independ
     await waitFor(() => expect(useCustomTemplate).toHaveBeenCalledTimes(1));
 });
 
+test('Template switcher sorts templates alphabetically within each section', () => {
+    render(
+        <ResumeView
+            mode="changingTemplate"
+            stylesheet=""
+            tree={{ type: "Resume", uuid: "test-root", childNodes: [] }}
+            additionalTemplateGroups={[{
+                id: "saved-templates",
+                heading: <span>My Templates</span>,
+                templates: [
+                    { id: "zulu", title: "Zulu Resume", use: jest.fn() },
+                    { id: "alpha", title: "Alpha Resume", use: jest.fn() }
+                ]
+            }]}
+        />
+    );
+
+    const assured = screen.getByText('Assured');
+    const integrity = screen.getByText('Integrity');
+    const alpha = screen.getByText('Alpha Resume');
+    const zulu = screen.getByText('Zulu Resume');
+
+    expect(assured.compareDocumentPosition(integrity) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(alpha.compareDocumentPosition(zulu) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});
+
 test('Template switcher supports image-backed previews without loading template data', async () => {
     const usePreviewTemplate = jest.fn(async () => undefined);
     render(

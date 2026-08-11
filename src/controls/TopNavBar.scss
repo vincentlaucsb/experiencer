@@ -75,7 +75,28 @@ header#app-header {
 /** || Top Nav Bar */
 #brand {
     align-items: center;
+    box-sizing: border-box;
+    justify-content: space-between;
     min-width: 0;
+    width: 100%;
+
+    .brand-primary,
+    .brand-secondary {
+        align-items: center;
+        display: flex;
+        min-width: 0;
+    }
+
+    .brand-primary {
+        flex: 1 1 auto;
+        flex-wrap: wrap;
+    }
+
+    .brand-secondary {
+        flex: 0 1 auto;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
 
     h1 {
         display: inline-flex;
@@ -138,13 +159,6 @@ header#app-header {
         white-space: nowrap;
     }
 
-    // GitHub Icon
-    .github-mark {
-        vertical-align: middle;
-        color: colors.$text-on-inverse;
-        width: 32px;
-    }
-
     .pro-badge,
     .save-status,
     .account-label {
@@ -176,6 +190,19 @@ header#app-header {
         opacity: 0.85;
     }
 
+    &.is-landing {
+        flex-wrap: nowrap;
+
+        .brand-primary {
+            flex-wrap: nowrap;
+        }
+
+        .brand-primary > #top-menu {
+            flex: 0 1 auto;
+            width: auto;
+        }
+    }
+
 }
 
 /** Give dynamic Pro and document controls a dedicated row before they collide. */
@@ -183,7 +210,11 @@ header#app-header {
     #brand {
         flex-wrap: wrap;
 
-        > #top-menu {
+        .brand-primary {
+            flex: 1 1 100%;
+        }
+
+        .brand-primary > #top-menu {
             flex: 1 0 100%;
             order: 1;
             margin-left: 0 !important;
@@ -197,6 +228,72 @@ header#app-header {
         .document-selector {
             flex: 1 1 min(100%, 28rem);
             max-width: none;
+        }
+
+        .brand-secondary {
+            margin-left: auto;
+        }
+
+        &.is-landing {
+            flex-wrap: nowrap;
+
+            .brand-primary {
+                flex: 1 1 auto;
+                flex-wrap: nowrap;
+            }
+
+            .brand-primary > #top-menu {
+                flex: 0 1 auto;
+                order: 0;
+                margin-left: 1rem !important;
+                border-top: 0;
+
+                > .pure-menu-list {
+                    width: auto;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 760px) {
+    #brand.is-landing {
+        flex-wrap: wrap;
+
+        .brand-primary {
+            flex: 1 1 100%;
+            flex-wrap: wrap;
+        }
+
+        .brand-primary > #top-menu {
+            flex: 1 0 100%;
+            order: 1;
+            margin-left: 0 !important;
+            border-top: 1px solid colors.$border-chrome;
+
+            > .pure-menu-list {
+                width: 100%;
+            }
+        }
+
+        .brand-secondary {
+            margin-left: auto;
+        }
+    }
+}
+
+/** Keep the full desktop header on one line; narrower widths use the existing wrapped layout. */
+@media screen and (min-width: variables.$screen-large) {
+    #brand.is-editing {
+        flex-wrap: nowrap;
+
+        .brand-primary {
+            flex-wrap: nowrap;
+        }
+
+        .brand-primary > #top-menu {
+            flex: 0 1 auto;
+            width: auto;
         }
     }
 }

@@ -1,7 +1,9 @@
 import Group from "@/resume/Group";
 import Header, { BasicHeaderProps } from "@/resume/Header";
+import Image, { BasicImageProps } from "@/resume/Image";
 import MarkdownText from "@/resume/Markdown";
 import { randyMarsh, randyMarshCss } from "./RandyMarsh";
+import randyMarshSignature from "./assets/signatures/randy-marsh.png?inline";
 import type { BasicResumeNode } from "@/types";
 
 function getCurrentDate(): string {
@@ -59,9 +61,23 @@ I would bring that same mix of curiosity, persistence, and unconventional proble
                     ]
                 },
                 {
-                    type: MarkdownText.type,
+                    type: Group.type,
                     htmlId: "letter-signature",
-                    value: "Sincerely,\n\nRandy Marsh"
+                    childNodes: [
+                        {
+                            type: MarkdownText.type,
+                            value: "Sincerely,"
+                        },
+                        {
+                            type: Image.type,
+                            value: randyMarshSignature,
+                            altText: "Handwritten signature of Randy Marsh"
+                        } as BasicImageProps,
+                        {
+                            type: MarkdownText.type,
+                            value: "Randy Marsh"
+                        }
+                    ]
                 }
             ]
         }
@@ -95,10 +111,21 @@ export function integrityCoverLetterCss() {
         "margin-bottom": "var(--spacing)"
     }, "#body");
 
-    css.addNode("Letter Signature", {
+    const signature = css.addNode("Letter Signature", {
         "margin-top": "var(--large-spacing)",
-        "white-space": "pre-line"
     }, "#letter-signature");
+    signature.addNode("Signature Text", {
+        "margin": "0"
+    }, ".text-content, .text-content p");
+    signature.addNode("Signature Image", {
+        "display": "block",
+        "width": "auto",
+        "height": "64px",
+        "max-width": "100%",
+        "margin": "0.35em 0 0.15em",
+        "object-fit": "contain",
+        "object-position": "left center"
+    }, "img");
 
     return css;
 }

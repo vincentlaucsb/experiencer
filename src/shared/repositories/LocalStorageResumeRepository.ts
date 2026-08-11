@@ -88,11 +88,23 @@ export default class LocalStorageResumeRepository extends BaseResumeRepository {
     }
 
     async delete(id: string): Promise<void> {
+        const documents = this.readIndex();
+        const deletedDocument = documents.some((document) => document.id === id);
+        const remainingDocuments = documents.filter((document) => document.id !== id);
+
         localStorage.removeItem(documentKey(id));
-        this.writeIndex(this.readIndex().filter((document) => document.id !== id));
+        this.writeIndex(remainingDocuments);
+
+        // The unindexed key is retained only as a compatibility mirror for older clients.
+        // It must disappear with the final document or migration will recreate the deletion.
+        if (deletedDocument && remainingDocuments.length === 0) {
+            localStorage.removeItem(Globals.localStorageKey);
+            localStorage.removeItem(activeIdKey);
+            return;
+        }
 
         if (localStorage.getItem(activeIdKey) === id) {
-            const next = this.readIndex()[0];
+            const next = remainingDocuments[0];
             if (next) {
                 localStorage.setItem(activeIdKey, next.id);
             } else {

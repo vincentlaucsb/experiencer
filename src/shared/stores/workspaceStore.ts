@@ -1,6 +1,6 @@
 import { EditorMode } from "@/types";
 
-export type EditingWorkspaceMode = "normal" | "help";
+export type EditingWorkspaceMode = "normal";
 export type NonEditingWorkspaceMode = "landing" | "changingTemplate";
 
 export type WorkspaceSnapshot =
@@ -32,7 +32,7 @@ const initialSnapshot: WorkspaceSnapshot = {
 };
 
 export function isEditingMode(mode: EditorMode): mode is EditingWorkspaceMode {
-    return mode === "normal" || mode === "help";
+    return mode === "normal";
 }
 
 /**
@@ -133,23 +133,6 @@ export class WorkspaceStore {
         return true;
     };
 
-    toggleHelp = () => {
-        if (this.snapshot.mode === "help") {
-            this.setSnapshot({
-                mode: "normal",
-                activeDocumentId: this.snapshot.activeDocumentId
-            });
-            return;
-        }
-
-        if (this.snapshot.mode === "normal") {
-            this.setSnapshot({
-                mode: "help",
-                activeDocumentId: this.snapshot.activeDocumentId
-            });
-        }
-    };
-
     startPrinting = () => {
         if (!isEditingMode(this.snapshot.mode)) {
             return false;
@@ -197,10 +180,6 @@ export class WorkspaceStore {
                 break;
             case "normal":
                 this.openDocument(documentId);
-                break;
-            case "help":
-                this.openDocument(documentId);
-                this.toggleHelp();
                 break;
             case "printing":
                 this.openDocument(documentId);

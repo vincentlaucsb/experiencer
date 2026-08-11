@@ -5,11 +5,10 @@ import "./TopNavBar.scss";
 import FileLoader from "./FileLoader";
 import FileSaver from "./FileSaver";
 import Dropdown from "./menus/Dropdown";
-import PureMenu, { PureMenuItem } from "./menus/PureMenu";
+import PureMenu from "./menus/PureMenu";
 import { createPoprightIcon } from "./menus/poprightMenu";
 import type { MenuItem } from "popright";
 import Modal from "./Modal";
-import GitHubLight from "@/assets/icons/GitHub-Mark-Light-120px-plus.png";
 import ExperiencerMark from "@/assets/brand/experiencer-mark-on-dark.svg?url";
 import { Action } from "@/types";
 import { Button } from "./Buttons";
@@ -24,6 +23,7 @@ import {
 import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
 import AsyncActionForm from "./AsyncActionForm";
 import ThemeMenu from "./ThemeMenu";
+import KeyboardShortcutsModal from "@/help/KeyboardShortcutsModal";
 
 export interface TopNavBarProps {
     isEditing: boolean;
@@ -47,21 +47,21 @@ export interface TopNavBarProps {
     signIn?: Action;
     fileMenuItems?: MenuItem[];
     documentItems?: React.ReactNode;
-    extraItems?: React.ReactNode;
+    helpMenuItems?: MenuItem[];
+    secondaryItems?: React.ReactNode;
 
     /** Sidebar Actions */
     new: Action;
     toggleLanding: Action;
-    toggleHelp: Action;
 }
 
 /** The top nav bar for the resume editor */
 export function TopNavBar(props: TopNavBarProps) {
     let [isOpen, setOpen] = React.useState(false);
     const [isRenameOpen, setRenameOpen] = React.useState(false);
+    const [isShortcutsOpen, setShortcutsOpen] = React.useState(false);
     const [renameTitle, setRenameTitle] = React.useState("");
-    const Item = PureMenuItem;
-
+    const helpTriggerRef = React.useRef<HTMLButtonElement>(null);
     let [modalContent, setModal] = React.useState(<></>);
     let [title, setTitle] = React.useState("");
 
@@ -164,6 +164,37 @@ export function TopNavBar(props: TopNavBarProps) {
             onSelect: () => props.selectDocument?.(document.id)
         }))
     ];
+    const helpMenuItems: MenuItem[] = [
+        {
+            id: "documentation",
+            label: "Documentation (opens in a new tab)",
+            icon: createPoprightIcon("book-alt"),
+            onSelect: () => {
+                const documentationWindow = window.open(
+                    "/docs/",
+                    "_blank",
+                    "noopener,noreferrer"
+                );
+                if (documentationWindow) {
+                    documentationWindow.opener = null;
+                }
+            }
+        },
+        {
+            id: "keyboard-shortcuts",
+            label: "Keyboard shortcuts",
+            icon: createPoprightIcon("keyboard"),
+            onSelect: () => setShortcutsOpen(true)
+        },
+        ...(props.helpMenuItems?.length
+            ? [{ type: "separator" } as MenuItem, ...props.helpMenuItems]
+            : [])
+    ];
+
+    const closeShortcuts = () => {
+        setShortcutsOpen(false);
+        window.requestAnimationFrame(() => helpTriggerRef.current?.focus());
+    };
 
     React.useEffect(() => {
         setRenameTitle(activeDocument?.title ?? "");
@@ -171,6 +202,7 @@ export function TopNavBar(props: TopNavBarProps) {
 
     return (
         <>
+            <KeyboardShortcutsModal isOpen={isShortcutsOpen} close={closeShortcuts} />
             <Modal isOpen={isOpen} title={title} close={() => setOpen(false)} className="top-nav-modal">
                 {modalContent}
             </Modal>
@@ -205,60 +237,69 @@ export function TopNavBar(props: TopNavBarProps) {
                     </AsyncActionForm>
                 ) : <></>}
             </Modal>
-            <div id="brand" className="app-px-1">
-                <h1
-                    aria-label="Go to landing page"
-                    className="app-m-3"
-                    onClick={props.toggleLanding}
-                    onKeyDown={onBrandKeyDown}
-                    role="button"
-                    tabIndex={0}
-                >
-                    <img className="brand-mark" src={ExperiencerMark} alt="" aria-hidden="true" />
-                    <span>Experiencer</span>
-                </h1>
-                {props.proBadge ? <span className="pro-badge">{props.proBadge}</span> : <></>}
-                <PureMenu id="top-menu" horizontal divProps={{ className: "app-ml-4" }}>
-                    <Dropdown
-                        className="toolbar-dropdown"
-                        items={fileMenuItems}
-                        trigger={<Button>File</Button>}
-                    />
-                    <ThemeMenu />
-                    {props.isEditing ? (
-                        <Item onClick={props.toggleHelp}>
-                            <Button>Help</Button>
-                        </Item>
-                    ) : <></>}
-                    {props.extraItems}
-                    {props.isEditing ? props.documentItems : <></>}
-                    {props.isEditing && props.documents?.length ? (
+            <div id="brand" className={`app-px-1 ${props.isEditing ? 'is-editing' : 'is-landing'}`}>
+                <div className="brand-primary">
+                    <h1
+                        aria-label="Go to landing page"
+                        className="app-m-3"
+                        onClick={props.toggleLanding}
+                        onKeyDown={onBrandKeyDown}
+                        role="button"
+                        tabIndex={0}
+                    >
+                        <img className="brand-mark" src={ExperiencerMark} alt="" aria-hidden="true" />
+                        <span>Experiencer</span>
+                    </h1>
+                    {props.proBadge ? <span className="pro-badge">{props.proBadge}</span> : <></>}
+                    <PureMenu id="top-menu" horizontal divProps={{ className: "app-ml-4" }}>
+                        {props.isEditing ? (
+                            <>
+                            <Dropdown
+                                className="toolbar-dropdown"
+                                items={fileMenuItems}
+                                trigger={<Button>File</Button>}
+                            />
+                            <ThemeMenu />
+                            </>
+                        ) : <></>}
                         <Dropdown
                             className="toolbar-dropdown"
-                            wrapperClassName="document-selector"
-                            items={documentMenuItems}
-                            trigger={(
-                                <Button
-                                    className="document-selector-trigger"
-                                    title={activeDocumentLabel}
-                                >
-                                    <span className="document-selector-label">
-                                        {activeDocumentLabel}
-                                    </span>
-                                </Button>
-                            )}
+                            items={helpMenuItems}
+                            trigger={<Button ref={helpTriggerRef}>Help</Button>}
                         />
-                    ) : <></>}
-                </PureMenu>
-                {props.isEditing && props.saveStatus
-                    ? <span className="save-status">{props.saveStatus}</span>
-                    : <></>}
-                {props.accountLabel ? <span className="account-label">{props.accountLabel}</span> : <></>}
-                {props.signOut ? <Button onClick={props.signOut}>Sign out</Button> : <></>}
-                {props.signIn ? <Button onClick={props.signIn}>Login with Google for Pro access</Button> : <></>}
-                <a href="https://github.com/vincentlaucsb/experiencer" aria-label="View Experiencer on GitHub">
-                    <img className="github-mark" src={GitHubLight} alt="GitHub" />
-                </a>
+                        {props.isEditing ? (
+                            <>
+                            {props.documentItems}
+                            {props.documents?.length ? (
+                                <Dropdown
+                                    className="toolbar-dropdown"
+                                    wrapperClassName="document-selector"
+                                    items={documentMenuItems}
+                                    trigger={(
+                                        <Button
+                                            className="document-selector-trigger"
+                                            title={activeDocumentLabel}
+                                        >
+                                            <span className="document-selector-label">
+                                                {activeDocumentLabel}
+                                            </span>
+                                        </Button>
+                                    )}
+                                />
+                            ) : <></>}
+                            </>
+                        ) : <></>}
+                    </PureMenu>
+                </div>
+                <div className="brand-secondary">
+                    {props.isEditing && props.saveStatus
+                        ? <span className="save-status">{props.saveStatus}</span>
+                        : <></>}
+                    {props.accountLabel ? <span className="account-label">{props.accountLabel}</span> : <></>}
+                    {props.secondaryItems}
+                    {props.signOut ? <Button onClick={props.signOut}>Sign out</Button> : <></>}
+                    {props.signIn ? <Button onClick={props.signIn}>Log in</Button> : <></>}
+                </div>
             </div>
         </>
     );
@@ -267,7 +308,7 @@ export function TopNavBar(props: TopNavBarProps) {
 export type TopNavBarWrapperProps = Omit<
     TopNavBarProps,
     'loadData' | 'isEditing' |
-    'saveLocal' | 'saveFile' | 'toggleHelp' | 'toggleLanding'
+    'saveLocal' | 'saveFile' | 'toggleLanding'
 > & {
     loadData?: (data: object, title?: string) => void;
     saveLocal?: Action;
@@ -283,7 +324,6 @@ export default function TopNavBarWrapper(props: TopNavBarWrapperProps) {
         ...props,
         loadData: props.loadData ?? loadImportedData,
         isEditing,
-        toggleHelp: workspaceStore.toggleHelp,
         toggleLanding: () => workspaceStore.showLanding(),
         print: props.print ?? workspaceStore.startPrinting,
         saveLocal: props.saveLocal ?? saveLocal,

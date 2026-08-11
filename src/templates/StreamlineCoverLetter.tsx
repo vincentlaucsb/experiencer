@@ -2,7 +2,7 @@ import Group from "@/resume/Group";
 import Image, { BasicImageProps } from "@/resume/Image";
 import MarkdownText from "@/resume/Markdown";
 
-import { getJoeBlowSignature } from "./AssuredCoveredLetter";
+import dineshChugtaiSignature from "./assets/signatures/dinesh-chugtai.png?inline";
 import getDefaultCss from "./CssTemplates";
 import { streamlineHeader } from "./Streamline";
 
@@ -29,8 +29,6 @@ function getCurrentDate(): string {
 }
 
 export function streamlineCoverLetterNodes(): Array<BasicResumeNode> {
-    const signature = getJoeBlowSignature();
-
     return [
         streamlineHeader(),
         {
@@ -71,8 +69,8 @@ Thank you for your time and consideration.`
                 {
                     type: Image.type,
                     htmlId: "signature-image",
-                    value: signature,
-                    altText: "Signature"
+                    value: dineshChugtaiSignature,
+                    altText: "Handwritten signature of Dinesh Chugtai"
 
                 } as BasicImageProps,
                 {
@@ -181,8 +179,13 @@ export function streamlineCoverLetterCss() {
         "text-align": "right",
         "font-size": "12pt"
     }, "#signature").addNode("Signature", {
+        "display": "block",
+        "width": "auto",
         "height": "72px",
-        "margin-top": "var(--small-spacing)"
+        "max-width": "100%",
+        "margin": "var(--small-spacing) 0 0.15em auto",
+        "object-fit": "contain",
+        "object-position": "right center"
     }, "img");
 
     return css;

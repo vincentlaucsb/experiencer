@@ -12,7 +12,27 @@ const GENERIC_FAMILIES = new Set([
     'ui-monospace',
     'emoji',
     'math',
-    'fangsong'
+    'fangsong',
+    // Installed system families should not be treated as document-managed web fonts.
+    'arial',
+    'helvetica',
+    'helvetica neue',
+    'times',
+    'times new roman',
+    'georgia',
+    'verdana',
+    'tahoma',
+    'trebuchet ms',
+    'courier',
+    'courier new',
+    'consolas',
+    'lucida console',
+    'monaco',
+    'segoe ui',
+    'calibri',
+    'cambria',
+    '-apple-system',
+    'blinkmacsystemfont'
 ]);
 
 const GOOGLE_FONTS_BASE_URL = 'https://fonts.googleapis.com/css?family=';
@@ -20,7 +40,7 @@ const GOOGLE_FONTS_BASE_URL = 'https://fonts.googleapis.com/css?family=';
 export type GoogleFontRequest = string | ResumeFont;
 
 function normalizeFamily(value: string): string {
-    return value.replace(/^['"]+|['"]+$/g, '').trim();
+    return value.trim().replace(/^['"]+|['"]+$/g, '').trim();
 }
 
 function splitFamilies(value: string): string[] {

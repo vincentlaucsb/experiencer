@@ -23,8 +23,12 @@ This is a framework-neutral state machine; React subscriptions live separately i
 Non-editing modes (`landing` and `changingTemplate`) never expose an
 `activeDocumentId`. They may retain a `suspendedDocumentId` so the user can return to
 the prior editing session. Use semantic transitions such as `openDocument`,
-`showLanding`, `showTemplateSelector`, `toggleHelp`, and `startPrinting`; do not add
+`showLanding`, `showTemplateSelector`, and `startPrinting`; do not add
 another writable mode field to a component or store.
+
+Help is transient navigation UI owned by `TopNavBar`; it is not a workspace mode. The Help
+dropdown opens public documentation or the keyboard-shortcuts modal and may receive generic
+host-supplied menu commands.
 
 ### 3. `resumeStore.ts` - Resume Data Structure
 Manages the resume content tree using `ResumeNodeTree` class.

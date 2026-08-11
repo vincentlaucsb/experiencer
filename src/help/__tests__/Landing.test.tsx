@@ -3,6 +3,63 @@ import Landing from "../Landing";
 
 beforeEach(() => localStorage.clear());
 
+test("renders social links on the landing page", () => {
+    render(
+        <Landing
+            loadData={jest.fn()}
+            loadLocal={jest.fn()}
+            new={jest.fn()}
+        />
+    );
+
+    const socialMedia = screen.getByRole("navigation", { name: "Social media" });
+    const github = within(socialMedia).getByRole("link", {
+        name: "View Experiencer on GitHub"
+    });
+
+    expect(github.getAttribute("href")).toBe("https://github.com/vincentlaucsb/experiencer");
+});
+
+test("lets an embedding product replace the landing lead without replacing the library", () => {
+    const createResume = jest.fn();
+    const loadLocal = jest.fn();
+    const renderLead = jest.fn((actions) => (
+        <button onClick={actions.createResume}>Product action</button>
+    ));
+
+    render(
+        <Landing
+            documents={[{
+                id: "resume-1",
+                title: "Local Resume",
+                schemaVersion: 1,
+                version: 1,
+                updatedAt: "2026-07-28T00:00:00Z"
+            }]}
+            hasLocalResume
+            loadData={jest.fn()}
+            loadLocal={loadLocal}
+            new={createResume}
+            renderLead={renderLead}
+            showSocialLinks={false}
+        />
+    );
+
+    expect(screen.queryByRole("heading", { name: "Getting Started" })).toBeNull();
+    expect(screen.getByText("Local Resume")).toBeTruthy();
+    expect(screen.queryByRole("navigation", { name: "Social media" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Product action" }));
+    expect(createResume).toHaveBeenCalledTimes(1);
+    expect(renderLead).toHaveBeenCalledWith(
+        expect.objectContaining({
+            createResume,
+            loadResume: expect.any(Function),
+            returnToResume: loadLocal
+        }),
+        { documentCount: 1, hasResumableSession: true }
+    );
+});
+
 test("renders grouped documents and invokes origin-specific secondary actions", () => {
     const copy = jest.fn();
     render(

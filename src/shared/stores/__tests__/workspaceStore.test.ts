@@ -42,24 +42,23 @@ test("non-editing modes cannot retain an active document", () => {
     expect(isEditingMode(store.getSnapshot().mode)).toBe(false);
 });
 
-test("printing starts only from an editing mode and restores its origin", () => {
+test("printing starts only from editing and restores the document", () => {
     const store = new WorkspaceStore();
 
     expect(store.startPrinting()).toBe(false);
     expect(store.getSnapshot().mode).toBe("landing");
 
     store.openDocument("resume-1");
-    store.toggleHelp();
     expect(store.startPrinting()).toBe(true);
     expect(store.getSnapshot()).toEqual({
         mode: "printing",
         activeDocumentId: "resume-1",
-        returnMode: "help"
+        returnMode: "normal"
     });
 
     store.finishPrinting();
     expect(store.getSnapshot()).toEqual({
-        mode: "help",
+        mode: "normal",
         activeDocumentId: "resume-1"
     });
 });

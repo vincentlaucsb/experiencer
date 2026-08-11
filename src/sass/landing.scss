@@ -7,6 +7,37 @@
     margin-right: auto;
 }
 
+.landing-social {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+
+    ul {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    a {
+        display: inline-flex;
+        border-radius: 4px;
+
+        &:focus-visible {
+            outline: 3px solid colors.$focus-ring;
+            outline-offset: 4px;
+        }
+    }
+
+    img {
+        display: block;
+        width: 2rem;
+        height: 2rem;
+    }
+}
+
 .landing-menu {
     .pure-menu-item {
         padding: 0;

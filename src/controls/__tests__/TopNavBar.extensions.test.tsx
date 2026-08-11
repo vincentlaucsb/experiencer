@@ -12,22 +12,92 @@ const baseProps = {
     saveLocal: jest.fn(),
     print: jest.fn(),
     new: jest.fn(),
-    toggleLanding: jest.fn(),
-    toggleHelp: jest.fn()
+    toggleLanding: jest.fn()
 };
 
-test("renders optional top-menu extension items without knowing their feature", () => {
-    const { rerender } = render(<TopNavBar {...baseProps} />);
-    expect(screen.queryByRole("button", { name: "Extension action" })).toBeNull();
+test("keeps Help visible while hiding document menus on the landing page", () => {
+    render(<TopNavBar {...baseProps} isEditing={false} />);
 
-    rerender(
+    expect(screen.queryByRole("button", { name: "File" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Theme" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Help" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Help" }));
+    expect(screen.getByRole("menuitem", { name: /Documentation/ })).toBeTruthy();
+    expect(screen.getByRole("menuitem", { name: "Keyboard shortcuts" })).toBeTruthy();
+    expect(screen.queryByRole("separator")).toBeNull();
+    expect(screen.queryByText(/feedback/i)).toBeNull();
+});
+
+test("appends focused Help extensions after a separator", () => {
+    const openFeedback = jest.fn();
+    render(
         <TopNavBar
             {...baseProps}
-            extraItems={<button type="button">Extension action</button>}
+            helpMenuItems={[{
+                id: "feedback",
+                label: "Send feedback",
+                onSelect: openFeedback
+            }]}
         />
     );
 
-    expect(screen.getByRole("button", { name: "Extension action" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Help" }));
+    const items = screen.getAllByRole("menuitem");
+    expect(items.at(-1)?.textContent).toContain("Send feedback");
+    expect(screen.getByRole("separator")).toBeTruthy();
+    fireEvent.click(screen.getByRole("menuitem", { name: "Send feedback" }));
+    expect(openFeedback).toHaveBeenCalledTimes(1);
+});
+
+test("opens documentation safely in a new tab", () => {
+    const openedWindow = { opener: {} } as Window;
+    const open = jest.spyOn(window, "open").mockReturnValue(openedWindow);
+    render(<TopNavBar {...baseProps} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Help" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: /Documentation/ }));
+
+    expect(open).toHaveBeenCalledWith("/docs/", "_blank", "noopener,noreferrer");
+    expect(openedWindow.opener).toBeNull();
+});
+
+test("opens and closes the semantic keyboard-shortcuts modal", async () => {
+    render(<TopNavBar {...baseProps} />);
+    const help = screen.getByRole("button", { name: "Help" });
+
+    fireEvent.click(help);
+    fireEvent.click(screen.getByRole("menuitem", { name: "Keyboard shortcuts" }));
+
+    const dialog = screen.getByRole("dialog", { name: "Keyboard shortcuts" });
+    expect(within(dialog).getAllByText("Ctrl").length).toBeGreaterThan(0);
+    expect(dialog.querySelectorAll("kbd").length).toBeGreaterThan(0);
+    fireEvent.click(within(dialog).getByRole("button", { name: "Close Keyboard shortcuts" }));
+
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Keyboard shortcuts" })).toBeNull());
+    await waitFor(() => expect(document.activeElement).toBe(help));
+});
+
+test("renders optional account-area items next to authentication controls", () => {
+    render(
+        <TopNavBar
+            {...baseProps}
+            isEditing={false}
+            secondaryItems={<a href="/pricing">Pricing</a>}
+            signIn={jest.fn()}
+        />
+    );
+
+    const pricing = screen.getByRole("link", { name: "Pricing" });
+    const signIn = screen.getByRole("button", { name: "Log in" });
+    expect(pricing.getAttribute("href")).toBe("/pricing");
+    expect(pricing.compareDocumentPosition(signIn) & Node.DOCUMENT_POSITION_FOLLOWING)
+        .toBeTruthy();
+});
+
+test("does not render the repository link in the editor header", () => {
+    render(<TopNavBar {...baseProps} />);
+
+    expect(screen.queryByRole("link", { name: "View Experiencer on GitHub" })).toBeNull();
 });
 
 test("shows document-scoped controls only while editing", () => {

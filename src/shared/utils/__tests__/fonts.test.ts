@@ -31,6 +31,19 @@ describe('fonts utility', () => {
         expect(extractFontFamiliesFromCss(stylesheet)).toEqual(['Merriweather', 'Open Sans']);
     });
 
+    test('ignores common installed system families', () => {
+        const stylesheet = `
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+            h1 {
+                font-family: "Segoe UI", "Helvetica Neue", Merriweather, serif;
+            }
+        `;
+
+        expect(extractFontFamiliesFromCss(stylesheet)).toEqual(['Merriweather']);
+    });
+
     test('builds a Google Fonts URL from families', () => {
         const url = getGoogleFontsUrl(['Merriweather', 'Open Sans']);
 

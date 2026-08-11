@@ -71,6 +71,18 @@ test("local save rejects stale versions and updates the existing document", asyn
     expect((await repository.list())).toHaveLength(1);
 });
 
+test("deleting the final local resume does not migrate its legacy mirror back", async () => {
+    localStorage.clear();
+    const repository = new LocalStorageResumeRepository();
+    const created = await repository.create(input);
+
+    await repository.delete(created.id);
+
+    expect(localStorage.getItem("experiencer")).toBeNull();
+    expect(await repository.getActiveId()).toBeUndefined();
+    expect(await repository.list()).toEqual([]);
+});
+
 test("local title mutations reject names longer than 200 characters", async () => {
     localStorage.clear();
     const repository = new LocalStorageResumeRepository();

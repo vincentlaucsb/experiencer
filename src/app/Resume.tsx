@@ -26,8 +26,7 @@ import Tabs from '@/controls/Tabs';
 import Toast from '@/controls/Toast';
 import PureMenu, { PureMenuLink, PureMenuItem } from '@/controls/menus/PureMenu';
 import NodeTreeVisualizer from '@/editor/NodeTreeVisualizer';
-import Help from '@/help/Help';
-import Landing from '@/help/Landing';
+import Landing, { LandingActions, LandingContext } from '@/help/Landing';
 import ResumePreview from '@/resume/ResumePreview';
 import ResumeRenderer from '@/resume/ResumeRenderer';
 import ResumeTemplates from '@/templates/ResumeTemplates';
@@ -161,8 +160,12 @@ export interface ResumeProps {
     createDocumentFromTemplate?: (key?: string) => void;
     importDocument?: (data: object, title?: string) => void;
     fileMenuItems?: MenuItem[];
-    topMenuItems?: React.ReactNode;
+    helpMenuItems?: MenuItem[];
+    topSecondaryItems?: React.ReactNode;
     documentMenuItems?: React.ReactNode;
+    renderLandingLead?: (actions: LandingActions, context: LandingContext) => React.ReactNode;
+    landingClassName?: string;
+    showLandingSocialLinks?: boolean;
     additionalTemplateGroups?: AdditionalTemplateGroup[];
     overlays?: React.ReactNode;
     additionalSidebarTabs?: AdditionalSidebarTab[];
@@ -284,7 +287,7 @@ export function Resume(props: ResumeProps) {
     // Returns true if we are actively editing a resume
     const isEditing = (() => {
         const mode = props.mode || 'landing';
-        return mode === 'normal' || mode === 'help';
+        return mode === 'normal';
     })();
     const activeDocumentTitle = props.documents?.find(
         (document) => document.id === props.activeDocumentId
@@ -354,7 +357,16 @@ export function Resume(props: ResumeProps) {
     }, []);
 
     const renderTemplateChanger = () => {
-        const templateNames = Object.keys(ResumeTemplates.templates);
+        const compareTitles = (left: string, right: string) => left.localeCompare(
+            right,
+            undefined,
+            { sensitivity: 'base' }
+        );
+        const templateNames = Object.keys(ResumeTemplates.templates).sort(compareTitles);
+        const additionalTemplateGroups = (props.additionalTemplateGroups ?? []).map((group) => ({
+            ...group,
+            templates: [...group.templates].sort((left, right) => compareTitles(left.title, right.title))
+        }));
         return (
             <div id="template-selector">
                 <PureMenu>
@@ -367,7 +379,7 @@ export function Resume(props: ResumeProps) {
                             <PureMenuLink>{key}</PureMenuLink>
                         </PureMenuItem>
                     )}
-                    {(props.additionalTemplateGroups ?? []).map((group) => (
+                    {additionalTemplateGroups.map((group) => (
                         <React.Fragment key={group.id}>
                             <PureMenuItem className="template-selector-group-heading">
                                 {group.heading}
@@ -624,7 +636,8 @@ export function Resume(props: ResumeProps) {
         signOut: props.signOut,
         signIn: props.signIn,
         fileMenuItems: props.fileMenuItems,
-        extraItems: props.topMenuItems,
+        helpMenuItems: props.helpMenuItems,
+        secondaryItems: props.topSecondaryItems,
         documentItems: props.documentMenuItems
     };
 
@@ -707,12 +720,6 @@ export function Resume(props: ResumeProps) {
 
     // Render the final layout based on editor mode
     switch (mode) {
-        case 'help':
-            return <ResizableSidebarLayout
-                topNav={editingTop}
-                main={resume}
-                sidebar={<Help close={workspaceStore.toggleHelp} />}
-            />
         case 'changingTemplate':
             return <StaticSidebarLayout
                 topNav={editingTop}
@@ -723,6 +730,7 @@ export function Resume(props: ResumeProps) {
             return <DefaultLayout
                 topNav={editingTop}
                 main={<Landing
+                    className={props.landingClassName}
                     loadLocal={() => {
                         if (props.hasSuspendedSession) {
                             workspaceStore.returnToEditing();
@@ -746,6 +754,8 @@ export function Resume(props: ResumeProps) {
                     openDocument={props.selectDocument}
                     deleteDocument={props.deleteDocument}
                     renameDocument={props.renameDocument}
+                    renderLead={props.renderLandingLead}
+                    showSocialLinks={props.showLandingSocialLinks}
                 />
                 } />
         case 'printing':

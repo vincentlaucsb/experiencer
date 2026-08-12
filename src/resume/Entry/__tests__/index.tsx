@@ -112,6 +112,8 @@ test("selected entries expose direct title and detail actions", () => {
     expect(container.querySelectorAll('.title input')).toHaveLength(1);
     expect(screen.getByRole("button", { name: "Add detail" })).toBeTruthy();
     expect(screen.getByText("Right-click fields for more options")).toBeTruthy();
+    expect(container.querySelector("[data-selection-hint]")?.getAttribute("data-selection-hint"))
+        .toBe("Right-click fields for more options");
 });
 
 test("editing entries expose compact title and detail controls", () => {

@@ -55,6 +55,10 @@ header#app-header {
     z-index: $selection-overlay;
 }
 
+#hl-box-container > .resume-selection-hint {
+    z-index: $selection-overlay + 1;
+}
+
 /** Modal overlays cover all application chrome. */
 .ReactModal__Overlay {
     z-index: $modal;

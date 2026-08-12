@@ -33,6 +33,7 @@ export function SelectedNodeHighlightBox() {
             className="resume-hl-box resume-hl-box-selected-node"
             elem={selectedElement}
             leftPaneElement={leftPaneElement}
+            selectionHint={selectedElement.getAttribute("data-selection-hint") ?? undefined}
         />
     );
 }

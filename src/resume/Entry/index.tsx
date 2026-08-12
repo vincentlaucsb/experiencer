@@ -122,6 +122,11 @@ export default function Entry(props: EntryProps) {
     return (
         <Container
             {...props}
+            attributes={{
+                "data-selection-hint": isEditing
+                    ? "Finish editing to see field options"
+                    : "Right-click fields for more options"
+            }}
             className={`entry${isSelected ? " entry--selected" : ""}${isEditing ? " entry--editing" : ""}`}
             displayAs="article"
         >
@@ -146,7 +151,7 @@ export default function Entry(props: EntryProps) {
                 )}
             </hgroup>
             {isSelected && (
-                <div className="entry-field-help no-print">
+                <div className="entry-field-help no-print" aria-hidden="true">
                     {isEditing
                         ? "Finish editing to see field options"
                         : "Right-click fields for more options"}

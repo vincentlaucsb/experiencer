@@ -11,6 +11,7 @@ interface HighlightBoxProps {
     attributes?: any;
     className: string;
     calcStyle?: (bounds: DOMRect, style: CSSStyleDeclaration) => any;
+    selectionHint?: string;
 }
 
 function defaultCalcStyle(bounds: DOMRect, style: CSSStyleDeclaration) {
@@ -78,13 +79,28 @@ export function HighlightBox(props: HighlightBoxProps) {
 
     if (node && bounds && computedStyle) {
         return (
-            <div className={props.className}
-                style={{
-                    position: "fixed",
-                    ...calcStyle(bounds, computedStyle),
-                }}
-                {...props.attributes}
-            />
+            <>
+                <div className={props.className}
+                    style={{
+                        position: "fixed",
+                        ...calcStyle(bounds, computedStyle),
+                    }}
+                    {...props.attributes}
+                />
+                {props.selectionHint ? (
+                    <div
+                        className="resume-selection-hint"
+                        role="note"
+                        style={{
+                            position: "fixed",
+                            top: `${bounds.top + 4}px`,
+                            right: `${Math.max(4, window.innerWidth - bounds.right + 4)}px`
+                        }}
+                    >
+                        {props.selectionHint}
+                    </div>
+                ) : <></>}
+            </>
         );
     }
 

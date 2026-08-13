@@ -82,6 +82,58 @@ function assertNoReservedEditorHost(selector: Selector): void {
     });
 }
 
+function removeReservedEditorHostFromSelector(selector: Selector): boolean {
+    const nodes = selector.children.toArray();
+    let removed = false;
+    for (let index = nodes.length - 1; index >= 0; index -= 1) {
+        const node = nodes[index];
+        if (node.type !== 'IdSelector' || node.name !== 'resume') continue;
+
+        removed = true;
+        nodes.splice(index, 1);
+        if (nodes[index]?.type === 'Combinator') {
+            nodes.splice(index, 1);
+        } else if (nodes[index - 1]?.type === 'Combinator') {
+            nodes.splice(index - 1, 1);
+        }
+    }
+
+    if (!removed) return false;
+    if (nodes.length === 0) {
+        nodes.push({ type: 'PseudoClassSelector', name: 'root', children: null });
+    }
+    selector.children = new List<CssNode>().fromArray(nodes);
+    return true;
+}
+
+/** Validate one selector entered through the CSS editor. */
+export function validateAuthoredCssSelector(selector: string): string {
+    const selectors = parseStrict(selector, 'selectorList');
+    if (selectors.type !== 'SelectorList') {
+        throw new Error('Expected a CSS selector.');
+    }
+    selectors.children.forEach((node) => {
+        if (node.type === 'Selector') assertNoReservedEditorHost(node);
+    });
+    return selector;
+}
+
+/** Remove the private editor host from a selector loaded from saved data. */
+export function removeReservedEditorHost(selector: string): string {
+    const selectors = parseStrict(selector, 'selectorList');
+    if (selectors.type !== 'SelectorList') {
+        throw new Error('Expected a CSS selector.');
+    }
+    let removed = false;
+    walk(selectors, {
+        visit: 'Selector',
+        leave(node) {
+            removed = removeReservedEditorHostFromSelector(node) || removed;
+        }
+    });
+    return removed ? generate(selectors) : selector;
+}
+
 function scopeSelector(selector: Selector): void {
     assertNoReservedEditorHost(selector);
     const nodes = selector.children.toArray();

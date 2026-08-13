@@ -8,7 +8,7 @@ import {
 } from '@/shared/utils/transformResumeStylesheet';
 import type { ResumeFont, ResumeNode, ResumeSaveData } from '@/types';
 import PageSize from '@/types/PageSize';
-import { normalizeLegacyResumeCssRoots } from './normalizeLegacyResumeCssRoots';
+import { normalizeResumeCssSelectors } from './normalizeResumeCssSelectors';
 
 export type ResumeRenderTarget =
     | 'editor'
@@ -43,7 +43,7 @@ export interface PreparedResumeDocument extends ResumeDocumentSource {
 
 /** Serialize the authored stylesheet stored in the two CSS trees. */
 export function getAuthoredResumeStylesheet(data: ResumeSaveData): string {
-    const normalizedData = normalizeLegacyResumeCssRoots(data);
+    const normalizedData = normalizeResumeCssSelectors(data);
     return `${CssNode.load(normalizedData.rootCss).stylesheet()}\n\n${
         CssNode.load(normalizedData.builtinCss).stylesheet()
     }`;

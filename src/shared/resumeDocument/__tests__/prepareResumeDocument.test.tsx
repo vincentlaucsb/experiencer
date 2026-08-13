@@ -40,18 +40,19 @@ test('the public review target alone emits the server-owned #resume shell', asyn
     expect(markup).not.toContain('data-resume-host="editor"');
 });
 
-test('legacy editor-host CSS roots migrate without weakening authored selector validation', () => {
+test('saved editor-host selectors are removed without weakening the pipeline invariant', () => {
     const legacyTemplate = deepCopy(ResumeTemplates.templates.Integrity);
     legacyTemplate.builtinCss.selector = '#resume';
+    legacyTemplate.builtinCss.children[0].selector = '#resume .authored-rule';
 
     const legacySource = createResumeDocumentSource(legacyTemplate, 'Legacy resume');
     expect(legacySource.stylesheet).toContain('body');
+    expect(legacySource.stylesheet).toContain('.authored-rule');
     expect(legacySource.stylesheet).not.toContain('#resume');
     expect(() => prepareResumeDocument(legacySource, 'editor')).not.toThrow();
     expect(() => prepareResumeDocument(legacySource, 'export')).not.toThrow();
 
-    legacyTemplate.builtinCss.children[0].selector = '#resume .authored-rule';
-    const invalidSource = createResumeDocumentSource(legacyTemplate, 'Invalid resume');
+    const invalidSource = { ...legacySource, stylesheet: '#resume .authored-rule {}' };
     expect(() => prepareResumeDocument(invalidSource, 'export'))
         .toThrow('#resume is reserved');
 });

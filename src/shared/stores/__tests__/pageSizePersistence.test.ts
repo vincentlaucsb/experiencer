@@ -47,10 +47,14 @@ describe('page-size persistence', () => {
         const legacyData = savedData();
         legacyData.builtinCss.selector = '#resume';
         legacyData.rootCss.selector = '#resume';
+        legacyData.builtinCss.children.push(
+            new CssNode('Entry', {}, '#resume .entry').dump()
+        );
 
         loadData(legacyData);
 
         expect(cssStore.data.selector).toBe('body');
         expect(rootCssStore.data.selector).toBe(':root');
+        expect(cssStore.data.children[0].selector).toBe('.entry');
     });
 });

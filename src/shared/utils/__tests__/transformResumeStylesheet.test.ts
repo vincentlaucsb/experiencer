@@ -1,6 +1,8 @@
 import {
+    removeReservedEditorHost,
     scopeCssSelectorForEditor,
     scopeResumeStylesheetToEditor,
+    validateAuthoredCssSelector,
     validateAuthoredResumeStylesheet
 } from '@/shared/utils/transformResumeStylesheet';
 
@@ -55,10 +57,22 @@ test('preserves comments while transforming parsed CSS', () => {
 });
 
 test('rejects the editor-only host in authored CSS', () => {
+    expect(() => validateAuthoredCssSelector('#resume .entry'))
+        .toThrow('#resume is reserved');
     expect(() => validateAuthoredResumeStylesheet('#resume .entry { color: red; }'))
         .toThrow('#resume is reserved');
     expect(() => scopeResumeStylesheetToEditor('#resume .entry { color: red; }'))
         .toThrow('#resume is reserved');
+});
+
+test('removes the editor host from saved selector lists and functional selectors', () => {
+    expect(removeReservedEditorHost(
+        '#resume .entry, #resume > .other, :is(#resume .nested, .plain)'
+    )).toBe('.entry,.other,:is(.nested,.plain)');
+    expect(removeReservedEditorHost('#resume.highlighted')).toBe('.highlighted');
+    expect(removeReservedEditorHost('#resume')).toBe(':root');
+    expect(removeReservedEditorHost('.entry, .other')).toBe('.entry, .other');
+    expect(removeReservedEditorHost('[href="#resume"]')).toBe('[href="#resume"]');
 });
 
 test('rejects invalid authored CSS instead of partially transforming it', () => {

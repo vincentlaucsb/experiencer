@@ -22,6 +22,7 @@ import {
 } from "@/shared/utils/liveCssBaseline";
 import { showToast } from "@/shared/stores/toastStore";
 import { Button } from "@/controls/Buttons";
+import { validateAuthoredCssSelector } from '@/shared/utils/transformResumeStylesheet';
 
 // Lazy-load CssEditorToolbar since it's only shown in CSS editor sections
 const CssEditorToolbar = React.lazy(() => import("./CssEditorToolbar"));
@@ -65,8 +66,19 @@ const VISIBLE_ANCESTOR_LIMIT = 3;
 export function makeCssEditorProps(
     updateTree: (updater: (cssTreeRoot: CssNode) => void) => void
 ): CssUpdateProps {
+    const acceptSelector = (selector: string): boolean => {
+        try {
+            validateAuthoredCssSelector(selector);
+            return true;
+        } catch (error) {
+            showToast(error instanceof Error ? error.message : 'Invalid CSS selector.');
+            return false;
+        }
+    };
+
     return {
         addSelector: (path, name, selector) => {
+            if (!acceptSelector(selector)) return;
             updateTree((cssTreeRoot) => {
                 cssTreeRoot.mustFindNode(Array.from(path)).addNode(name, {}, selector);
             });
@@ -91,6 +103,7 @@ export function makeCssEditorProps(
         },
 
         updateSelector: (path, value) => {
+            if (!acceptSelector(value)) return;
             updateTree((cssTreeRoot) => {
                 cssTreeRoot.mustFindNode(Array.from(path)).selector = value;
             });

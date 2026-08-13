@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import PageSize from "@/types/PageSize";
 import { useEditorStore } from "../stores/editorStore";
-import { workspaceStore } from "../stores/workspaceStore";
 
 const PRINT_PAGE_SIZE_STYLE_ID = 'print-page-size-style';
 
@@ -11,10 +10,7 @@ function getPageSizeCss(pageSize: PageSize) {
 }
 
 /**
- * Custom hook to handle print mode toggling for the resume editor,
- * i.e. when the user hits Ctrl+P or uses the browser's print functionality.
- * Listens for browser print events and updates editor mode accordingly.
- * Ensures that the editor switches to 'printing' mode during print preview and reverts back after printing.
+ * Registers the browser print shortcut and keeps the document's page-size rule current.
  */
 export default function useHandlePrint(requestIsolatedPrint?: () => void) {
     const pageSize = useEditorStore((state) => state.pageSize);
@@ -44,22 +40,10 @@ export default function useHandlePrint(requestIsolatedPrint?: () => void) {
             }
         };
 
-        const handleBeforePrint = () => {
-            workspaceStore.startPrinting();
-        };
-
-        const handleAfterPrint = () => {
-            workspaceStore.finishPrinting();
-        };
-
         window.addEventListener('keydown', handlePrintShortcut);
-        window.addEventListener('beforeprint', handleBeforePrint);
-        window.addEventListener('afterprint', handleAfterPrint);
 
         return () => {
             window.removeEventListener('keydown', handlePrintShortcut);
-            window.removeEventListener('beforeprint', handleBeforePrint);
-            window.removeEventListener('afterprint', handleAfterPrint);
         };
     }, [requestIsolatedPrint]);
 }

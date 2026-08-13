@@ -1,24 +1,16 @@
 import Container from "@/resume/infrastructure/Container";
-
-import { useIsPrinting } from "@/shared/stores/printStore";
-
 import ResumeComponentProps from "@/types";
 
 function PageBreak(props: ResumeComponentProps) {
-    const isPrinting = useIsPrinting();
-    const className = isPrinting ? "page-break page-break-printing" : "page-break page-break-editing";
-
     return (
         <Container
             {...props}
-            className={className}
+            className="page-break page-break-editing"
             displayAs="div"
         >
-            {!isPrinting ? (
-                <span className="page-break-label">
-                    Page Break
-                </span>
-            ) : null}
+            <span className="page-break-label">
+                Page Break
+            </span>
         </Container>
     );
 }

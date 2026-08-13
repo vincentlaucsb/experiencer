@@ -149,6 +149,7 @@ export interface ResumeProps {
     saveStatus?: string;
     proBadge?: string;
     accountLabel?: string;
+    editingStorage?: "local" | "cloud";
     signOut?: () => void;
     signIn?: () => void;
     saveCurrentDocument?: () => void;
@@ -610,12 +611,6 @@ export function Resume(props: ResumeProps) {
         };
     }, []);
 
-    const exitPrintPreview = useCallback(() => {
-        workspaceStore.finishPrinting();
-    }, []);
-
-    const openPrintDialog = printDocument;
-
     // Helper Component Props
     const topMenuProps: TopNavBarWrapperProps = {
         exportHtml: exportHtml,
@@ -633,6 +628,7 @@ export function Resume(props: ResumeProps) {
         isEditing,
         proBadge: props.proBadge,
         accountLabel: props.accountLabel,
+        editingStorage: props.editingStorage,
         signOut: props.signOut,
         signIn: props.signIn,
         fileMenuItems: props.fileMenuItems,
@@ -663,15 +659,6 @@ export function Resume(props: ResumeProps) {
 
     // Main Render Logic
     const { mode } = props;
-    useEffect(() => {
-        const selectionEnabled = mode !== 'printing';
-        useEditorStore.getState().setSelectionEnabled(selectionEnabled);
-
-        return () => {
-            // Do not leave the shared editor interaction lock behind when this host changes mode or unmounts.
-            useEditorStore.getState().setSelectionEnabled(true);
-        };
-    }, [mode]);
 
     const hlBoxContainer = createContainer("hl-box-container");
     const resume = (
@@ -690,12 +677,11 @@ export function Resume(props: ResumeProps) {
                 nodes={resumeNodes}
                 pageSize={pageSize}
                 containerRef={resumeRef}
-                readOnly={mode === 'printing'}
-                beforeNodes={mode === 'printing' ? undefined : <ResumeHotKeys />}
+                beforeNodes={<ResumeHotKeys />}
                 updateResumeData={updateData}
                 updateResumeDataFields={updateDataFields}
             />
-            {mode !== 'printing' && createPortal(
+            {createPortal(
                 <React.Suspense fallback={null}>
                     <SelectedNodeHighlightBox />
                 </React.Suspense>,
@@ -705,7 +691,7 @@ export function Resume(props: ResumeProps) {
         </>
     );
     
-    const editingTop = mode === 'printing' ? <></> : (
+    const editingTop = (
         <header id="app-header" className="no-print app-mb-4">
             {props.overlays}
             <TopNavBar {...topMenuProps} />
@@ -758,24 +744,6 @@ export function Resume(props: ResumeProps) {
                     showSocialLinks={props.showLandingSocialLinks}
                 />
                 } />
-        case 'printing':
-            return (
-                <>
-                    <div id="print-preview-actions" className="no-print app-gap-4 app-p-4">
-                        <Button className="print-preview-exit" onClick={exitPrintPreview}>
-                            Exit Print Preview
-                        </Button>
-                        <Button
-                            className="print-preview-print"
-                            variant="primary"
-                            onClick={openPrintDialog}
-                        >
-                            Print
-                        </Button>
-                    </div>
-                    {resume}
-                </>
-            );
         default:
             return <ResizableSidebarLayout
                 topNav={editingTop}

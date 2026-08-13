@@ -2,10 +2,10 @@ import React from "react";
 import Container from "@/resume/infrastructure/Container";
 import { process } from "@/shared/utils/processText";
 import { useIsNodeEditing, useEditorStore } from "@/shared/stores/editorStore";
-import { useIsPrinting } from "@/shared/stores/printStore";
 import ResumeComponentProps from "@/types";
 import useEditingControls from "../hooks/useEditingControls";
 import useEditing from "../hooks/useEditing";
+import useAutoExpandInput from "../hooks/useAutoExpandInput";
 import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
 
 interface LinkBase {
@@ -25,7 +25,6 @@ function getSafeHref(url?: string) {
  * Represents an external link in the resume
  */
 function Link(props: LinkProps) {
-    const isPrinting = useIsPrinting();
     const isEditing = useIsNodeEditing(props.uuid);
     const toggleEdit = useEditorStore((state) => state.toggleEdit);
     const displayText = process(props.value) as string || "Link text";
@@ -36,6 +35,8 @@ function Link(props: LinkProps) {
         isEditing,
         (newValue) => props.updateData("value", newValue)
     );
+    const inputRef = React.useRef<HTMLInputElement>(null);
+    useAutoExpandInput(inputRef);
 
     useEditingControls({
         isEditing,
@@ -45,11 +46,12 @@ function Link(props: LinkProps) {
         ctrlEnter: false
     });
 
-    if (isEditing && !isPrinting) {
+    if (isEditing) {
         return (
             <Container displayAs="span" className="link-editing" {...props}>
                 <input
                     {...nonCredentialInputAttributes}
+                    ref={inputRef}
                     type="text"
                     value={editValue}
                     onChange={(e) => setEditValue(e.target.value)}
@@ -60,25 +62,12 @@ function Link(props: LinkProps) {
         );
     }
 
-    // In the editor, render as span to prevent navigation
-    // In print/export mode, render as actual link
-    if (!isPrinting) {
-        return (
-            <Container 
-                displayAs="span" 
-                className="link" 
-                {...props}
-            >
-                {displayText}
-            </Container>
-        );
-    }
-
     return (
         <Container 
             displayAs="a" 
             className="link" 
             {...props} 
+            onClick={(event) => event.preventDefault()}
             attributes={{
                 href: url,
                 target: "_blank",

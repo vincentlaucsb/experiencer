@@ -31,8 +31,8 @@ import useSelectedNodeActions from "@/shared/hooks/useSelectedNodeActions";
 import addHtmlId from "@/shared/stores/addHtmlId";
 import ensureCssNodeForType from "@/shared/stores/ensureCssNodeForType";
 import { ResumeHotKeyMap } from "../ResumeHotkeys";
+import { measureHorizontalOverflow, observeHorizontalOverflow } from "@/shared/utils/overflow";
 
-const RESIZE_DEBOUNCE_MS = 120;
 const EXPANSION_BUFFER_PX = 24;
 
 interface EditingBarSubProps extends EditingBarProps {
@@ -171,7 +171,6 @@ function getEditingSection(
 /** A responsive top editing bar */
 export function TopEditingBar(props: EditingBarProps) {
     const toolbarRef = useRef<HTMLDivElement>(null);
-    const resizeTimerRef = useRef<number | undefined>(undefined);
     const continueExpansionRef = useRef(false);
     const expandedSectionWidthsRef = useRef(new Map<string, number>());
     const [collapsedSections, setCollapsedSections] = useState<ReadonlySet<string>>(new Set());
@@ -221,7 +220,7 @@ export function TopEditingBar(props: EditingBarProps) {
                 }
             });
 
-            const isOverflowing = container.scrollWidth > container.clientWidth;
+            const isOverflowing = measureHorizontalOverflow(container).isOverflowing;
 
             if (isOverflowing) {
                 const nextSection = sectionElements
@@ -275,28 +274,25 @@ export function TopEditingBar(props: EditingBarProps) {
     }, [collapsedSections]);
 
     useEffect(() => {
-        const handleResize = () => {
-            if (resizeTimerRef.current !== undefined) {
-                window.clearTimeout(resizeTimerRef.current);
-            }
+        const container = toolbarRef.current;
+        if (!container) return;
 
-            resizeTimerRef.current = window.setTimeout(() => {
-                resizeTimerRef.current = undefined;
-                updateResizer(true);
-            }, RESIZE_DEBOUNCE_MS);
-        };
-
-        window.addEventListener("resize", handleResize);
         const continueExpansion = continueExpansionRef.current;
         continueExpansionRef.current = false;
-        updateResizer(continueExpansion); // Initial/layout resize
+        let initialMeasurement = true;
+        const stopObserving = observeHorizontalOverflow(
+            container,
+            () => {
+                const allowExpansion = initialMeasurement
+                    ? continueExpansion
+                    : true;
+                initialMeasurement = false;
+                updateResizer(allowExpansion);
+            }
+        );
 
         return () => {
-            window.removeEventListener("resize", handleResize);
-            if (resizeTimerRef.current !== undefined) {
-                window.clearTimeout(resizeTimerRef.current);
-                resizeTimerRef.current = undefined;
-            }
+            stopObserving();
         };
     }, [updateResizer]);
 

@@ -2,7 +2,6 @@ import { saveAs } from 'file-saver';
 import generateHtml from '@/editor/GenerateHtml';
 import { documentFontsStore } from '@/shared/stores/documentFontsStore';
 import { useEditorStore } from '@/shared/stores/editorStore';
-import { workspaceStore } from '@/shared/stores/workspaceStore';
 import { buildHtmlExportPackage } from '@/shared/utils/HtmlExportPackage';
 import PageSize from '@/types/PageSize';
 
@@ -56,29 +55,33 @@ async function capturePrintableResume(
     resumeElement: HTMLElement | null,
     stylesheet: string
 ): Promise<{ html: string; resumeHtml: string; stylesheet: string }> {
-    const previousWorkspace = workspaceStore.getSnapshot();
     const pageSize = useEditorStore.getState().pageSize;
     const stylesheetWithPageSize = `${pageSizeRule(pageSize)}\n${stylesheet}`;
-    const alreadyPrinting = previousWorkspace.mode === 'printing';
 
     useEditorStore.getState().unselectNode();
-    if (!alreadyPrinting && !workspaceStore.startPrinting()) {
-        throw new Error('Open a resume before printing or exporting it.');
+    await nextAnimationFrame(window);
+
+    const resumeHtml = createPrintableResumeHtml(resumeElement);
+    const html = documentFontsStore.data
+        ? generateHtml(stylesheetWithPageSize, resumeHtml, documentFontsStore.data)
+        : generateHtml(stylesheetWithPageSize, resumeHtml);
+    return { html, resumeHtml, stylesheet: stylesheetWithPageSize };
+}
+
+/** Creates a print-safe snapshot without changing the live editor's workspace state. */
+export function createPrintableResumeHtml(resumeElement: HTMLElement | null): string {
+    if (!resumeElement) {
+        throw new Error('The resume could not be rendered.');
     }
 
-    try {
-        await nextAnimationFrame(window);
-        const resumeHtml = resumeElement?.outerHTML;
-        if (!resumeHtml) {
-            throw new Error('The resume could not be rendered.');
-        }
-        const html = documentFontsStore.data
-            ? generateHtml(stylesheetWithPageSize, resumeHtml, documentFontsStore.data)
-            : generateHtml(stylesheetWithPageSize, resumeHtml);
-        return { html, resumeHtml, stylesheet: stylesheetWithPageSize };
-    } finally {
-        if (!alreadyPrinting) workspaceStore.restore(previousWorkspace);
-    }
+    const printableResume = resumeElement.cloneNode(true) as HTMLElement;
+    printableResume.querySelectorAll('.no-print').forEach((element) => element.remove());
+    printableResume.querySelectorAll('.page-break-label').forEach((element) => element.remove());
+    printableResume.querySelectorAll('.page-break-editing').forEach((element) => {
+        element.classList.remove('page-break-editing');
+    });
+
+    return printableResume.outerHTML;
 }
 
 function pageSizeRule(pageSize: PageSize): string {

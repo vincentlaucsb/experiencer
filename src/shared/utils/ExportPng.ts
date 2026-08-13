@@ -17,6 +17,9 @@ export function normalizeListMarkersForPng(document: Document): void {
     const resume = document.querySelector<HTMLElement>('#resume');
     if (!resume) return;
 
+    // Page boundaries are editor guidance only and must not become part of an AI-review image.
+    resume.querySelectorAll('.resume-page-boundaries').forEach((boundary) => boundary.remove());
+
     resume.querySelectorAll<HTMLElement>('ul > li, ol > li').forEach((item) => {
         const list = item.parentElement;
         if (!list) return;

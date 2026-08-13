@@ -3,8 +3,11 @@ import generateHtml from '@/editor/GenerateHtml';
 import { documentFontsStore } from '@/shared/stores/documentFontsStore';
 import { useEditorStore } from '@/shared/stores/editorStore';
 import { buildHtmlExportPackage } from '@/shared/utils/HtmlExportPackage';
-import { exportResumeAsHtml, printResume } from '@/shared/utils/PrintHelpers';
-import { workspaceStore } from '@/shared/stores/workspaceStore';
+import {
+    createPrintableResumeHtml,
+    exportResumeAsHtml,
+    printResume
+} from '@/shared/utils/PrintHelpers';
 import PageSize from '@/types/PageSize';
 
 jest.mock('file-saver', () => ({
@@ -35,7 +38,6 @@ describe('resume printing and HTML export', () => {
                 callback(0);
                 return 1;
             });
-        workspaceStore.openDocument('resume-1');
         useEditorStore.setState({ pageSize: PageSize.Letter });
         documentFontsStore.load(undefined);
     });
@@ -83,8 +85,26 @@ describe('resume printing and HTML export', () => {
         );
         expect(printWindow.focus).toHaveBeenCalled();
         expect(printWindow.print).toHaveBeenCalled();
-        expect(workspaceStore.getSnapshot().mode).toBe('normal');
         openSpy.mockRestore();
+    });
+
+    test('removes editor-only nodes from the printable snapshot', () => {
+        const resumeElement = createResumeElement();
+        resumeElement.innerHTML = `
+            <div class="resume-page-boundaries no-print"></div>
+            <div class="page-break page-break-editing">
+                <span class="page-break-label">Page Break</span>
+            </div>
+            <p>Resume</p>
+        `;
+
+        const html = createPrintableResumeHtml(resumeElement);
+
+        expect(html).toContain('Resume');
+        expect(html).not.toContain('resume-page-boundaries');
+        expect(html).not.toContain('page-break-label');
+        expect(html).not.toContain('page-break-editing');
+        expect(html).toContain('class="page-break"');
     });
 
     test('reports a blocked print-preview window', async () => {

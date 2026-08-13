@@ -9,21 +9,12 @@ export type WorkspaceSnapshot =
         activeDocumentId?: never;
         suspendedDocumentId?: string;
         hasSuspendedSession: boolean;
-        returnMode?: never;
     }
     | {
         mode: EditingWorkspaceMode;
         activeDocumentId?: string;
         suspendedDocumentId?: never;
         hasSuspendedSession?: never;
-        returnMode?: never;
-    }
-    | {
-        mode: "printing";
-        activeDocumentId?: string;
-        suspendedDocumentId?: never;
-        hasSuspendedSession?: never;
-        returnMode: EditingWorkspaceMode;
     };
 
 const initialSnapshot: WorkspaceSnapshot = {
@@ -66,15 +57,6 @@ export class WorkspaceStore {
     };
 
     rememberDocument = (documentId?: string) => {
-        if (this.snapshot.mode === "printing") {
-            this.setSnapshot({
-                mode: "printing",
-                activeDocumentId: documentId,
-                returnMode: this.snapshot.returnMode
-            });
-            return;
-        }
-
         if (isEditingMode(this.snapshot.mode)) {
             this.setSnapshot({
                 mode: this.snapshot.mode,
@@ -93,8 +75,7 @@ export class WorkspaceStore {
     };
 
     showLanding = (returnDocumentId?: string) => {
-        const wasEditing = isEditingMode(this.snapshot.mode)
-            || this.snapshot.mode === "printing";
+        const wasEditing = isEditingMode(this.snapshot.mode);
         const suspendedDocumentId = wasEditing
             ? this.snapshot.activeDocumentId
             : this.snapshot.suspendedDocumentId;
@@ -107,8 +88,7 @@ export class WorkspaceStore {
     };
 
     showTemplateSelector = () => {
-        const wasEditing = isEditingMode(this.snapshot.mode)
-            || this.snapshot.mode === "printing";
+        const wasEditing = isEditingMode(this.snapshot.mode);
         this.setSnapshot({
             mode: "changingTemplate",
             suspendedDocumentId: wasEditing
@@ -120,50 +100,13 @@ export class WorkspaceStore {
     };
 
     returnToEditing = () => {
-        if (
-            !isEditingMode(this.snapshot.mode)
-            && this.snapshot.mode !== "printing"
-            && !this.snapshot.hasSuspendedSession
-        ) {
+        if (!isEditingMode(this.snapshot.mode) && !this.snapshot.hasSuspendedSession) {
             return false;
         }
         const documentId = this.snapshot.activeDocumentId
             ?? this.snapshot.suspendedDocumentId;
         this.openDocument(documentId);
         return true;
-    };
-
-    startPrinting = () => {
-        if (!isEditingMode(this.snapshot.mode)) {
-            return false;
-        }
-
-        this.setSnapshot({
-            mode: "printing",
-            activeDocumentId: this.snapshot.activeDocumentId,
-            returnMode: this.snapshot.mode
-        });
-        return true;
-    };
-
-    finishPrinting = () => {
-        if (this.snapshot.mode !== "printing") {
-            return;
-        }
-
-        this.setSnapshot({
-            mode: this.snapshot.returnMode,
-            activeDocumentId: this.snapshot.activeDocumentId
-        });
-    };
-
-    togglePrinting = () => {
-        if (this.snapshot.mode === "printing") {
-            this.finishPrinting();
-            return;
-        }
-
-        this.startPrinting();
     };
 
     /**
@@ -181,15 +124,7 @@ export class WorkspaceStore {
             case "normal":
                 this.openDocument(documentId);
                 break;
-            case "printing":
-                this.openDocument(documentId);
-                this.startPrinting();
-                break;
         }
-    };
-
-    restore = (snapshot: WorkspaceSnapshot) => {
-        this.setSnapshot(snapshot);
     };
 
     private setSnapshot(snapshot: WorkspaceSnapshot) {

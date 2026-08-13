@@ -4,43 +4,13 @@
 import { render } from "@testing-library/react";
 import Link from "@/resume/Link";
 import { useEditorStore } from "@/shared/stores/editorStore";
-import { usePrintStore } from "@/shared/stores/printStore";
 
 afterEach(() => {
-    usePrintStore.getState().setPrinting(false);
     useEditorStore.getState().unselectNode();
 });
 
-/** Verify Link renders as span in editor mode */
-test('Link renders as span when not printing', () => {
-    usePrintStore.getState().setPrinting(false);
-
-    const { container } = render(
-        <Link
-            id={[0]}
-            type={Link.type}
-            uuid="test-uuid"
-            isLast={false}
-            updateData={() => { }}
-            updateDataFields={() => { }}
-            value="Test Link"
-            url="https://example.com"
-        />
-    );
-
-    const span = container.querySelector('span.link');
-    expect(span).toBeTruthy();
-    expect(span?.textContent).toBe('Test Link');
-    
-    // Should NOT be an anchor tag
-    const anchor = container.querySelector('a');
-    expect(anchor).toBeNull();
-});
-
-/** Verify Link renders as <a> tag when printing */
-test('Link renders as anchor tag when isPrinting is true', () => {
-    usePrintStore.getState().setPrinting(true);
-
+/** Verify the live editor exposes safe links without navigating on selection. */
+test('Link renders as an anchor in the editor', () => {
     const { container } = render(
         <Link
             id={[0]}
@@ -62,10 +32,8 @@ test('Link renders as anchor tag when isPrinting is true', () => {
     expect(anchor?.getAttribute('rel')).toBe('noopener noreferrer');
 });
 
-/** Verify Link displays default text when value is empty */
+/** Verify Link displays default text when value is empty. */
 test('Link shows default text when value is empty', () => {
-    usePrintStore.getState().setPrinting(false);
-
     const { container } = render(
         <Link
             id={[0]}
@@ -78,14 +46,11 @@ test('Link shows default text when value is empty', () => {
         />
     );
 
-    const span = container.querySelector('span.link');
-    expect(span?.textContent).toBe('Link text');
+    expect(container.querySelector('a.link')?.textContent).toBe('Link text');
 });
 
-/** Verify Link uses # as default href when url is empty */
-test('Link uses # as default href when url is empty in print mode', () => {
-    usePrintStore.getState().setPrinting(true);
-
+/** Verify Link uses # as default href when url is empty. */
+test('Link uses # as default href when url is empty', () => {
     const { container } = render(
         <Link
             id={[0]}
@@ -98,8 +63,7 @@ test('Link uses # as default href when url is empty in print mode', () => {
         />
     );
 
-    const anchor = container.querySelector('a.link');
-    expect(anchor?.getAttribute('href')).toBe('#');
+    expect(container.querySelector('a.link')?.getAttribute('href')).toBe('#');
 });
 
 test.each([
@@ -107,9 +71,7 @@ test.each([
     'data:text/html,<script>alert(1)</script>',
     'vbscript:msgbox(1)',
     '/unexpected-relative-path',
-])('Link replaces unsafe exported URL %s with a non-navigating target', (url) => {
-    usePrintStore.getState().setPrinting(true);
-
+])('Link replaces unsafe URL %s with a non-navigating target', (url) => {
     const { container } = render(
         <Link
             id={[0]}
@@ -131,9 +93,7 @@ test.each([
     'http://example.com',
     'mailto:hello@example.com',
     'tel:+15555550123',
-])('Link preserves supported exported URL %s', (url) => {
-    usePrintStore.getState().setPrinting(true);
-
+])('Link preserves supported URL %s', (url) => {
     const { container } = render(
         <Link
             id={[0]}
@@ -150,11 +110,8 @@ test.each([
     expect(container.querySelector('a.link')?.getAttribute('href')).toBe(url);
 });
 
-/** Verify Link enters edit mode when selected */
+/** Verify Link enters edit mode when selected. */
 test('Link shows input when in edit mode', () => {
-    usePrintStore.getState().setPrinting(false);
-
-    // Set the node as editing
     useEditorStore.getState().editNode('test-uuid');
 
     const { container } = render(
@@ -170,10 +127,7 @@ test('Link shows input when in edit mode', () => {
         />
     );
 
-    // Link uses inline editing, so find the input within the container
     const input = container.querySelector('.link-editing input') as HTMLInputElement;
     expect(input).toBeTruthy();
     expect(input?.value).toBe('Test Link');
-    
-    // Clean up handled in afterEach
 });

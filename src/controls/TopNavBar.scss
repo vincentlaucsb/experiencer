@@ -27,7 +27,9 @@ header#app-header {
         background: inherit;
         color: inherit;
 
-        > i[class*="icofont"] + .button-text {
+        > i[class*="icofont"] + .button-text,
+        > i[class*="icofont"] + .top-nav-trigger-label,
+        > i[class*="icofont"] + .top-nav-auth-label {
             margin-left: 0.5rem;
         }
 
@@ -123,6 +125,28 @@ header#app-header {
         flex: 0 0 auto;
     }
 
+    .top-nav-document-extension,
+    .top-nav-secondary-extension {
+        display: inline-flex;
+        min-width: 0;
+    }
+
+    .account-mode-icon {
+        display: inline-flex;
+        position: relative;
+        width: 1.1em;
+
+        &--local::after {
+            border-top: 2px solid currentColor;
+            content: "";
+            left: -0.1em;
+            position: absolute;
+            top: 50%;
+            transform: rotate(-45deg);
+            width: 1.3em;
+        }
+    }
+
     .pure-menu-horizontal {
         display: flex;
         flex-direction: column;
@@ -200,6 +224,56 @@ header#app-header {
         .brand-primary > #top-menu {
             flex: 0 1 auto;
             width: auto;
+        }
+    }
+
+    &[data-nav-density="1"],
+    &[data-nav-density="2"],
+    &[data-nav-density="3"],
+    &[data-nav-density="4"] {
+        .brand-wordmark {
+            display: none;
+        }
+    }
+
+    &[data-nav-density="2"],
+    &[data-nav-density="3"],
+    &[data-nav-density="4"] {
+        .account-label-text,
+        .save-status {
+            display: none;
+        }
+
+        .account-label {
+            border: 0;
+            padding-left: 0.35rem;
+            padding-right: 0.35rem;
+        }
+    }
+
+    &[data-nav-density="3"],
+    &[data-nav-density="4"] {
+        .pro-badge,
+        .top-nav-document-extension,
+        .top-nav-secondary-extension,
+        .top-nav-trigger-label,
+        .top-nav-auth-label {
+            display: none;
+        }
+
+        .document-selector {
+            flex: 0 0 auto;
+        }
+
+        .pure-button {
+            padding-left: 0.65em;
+            padding-right: 0.65em;
+        }
+    }
+
+    &[data-nav-density="4"] {
+        .document-selector {
+            display: none;
         }
     }
 
@@ -282,18 +356,25 @@ header#app-header {
     }
 }
 
-/** Keep the full desktop header on one line; narrower widths use the existing wrapped layout. */
-@media screen and (min-width: variables.$screen-large) {
+/** Keep editing controls in one row so the resume canvas gets the available height and width. */
+@media screen {
     #brand.is-editing {
         flex-wrap: nowrap;
 
         .brand-primary {
+            flex: 1 1 auto;
             flex-wrap: nowrap;
         }
 
         .brand-primary > #top-menu {
             flex: 0 1 auto;
+            margin-left: 1rem !important;
+            order: 0;
             width: auto;
+
+            > .pure-menu-list {
+                width: auto;
+            }
         }
     }
 }

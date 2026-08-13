@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 
 import { TopNavBar } from "@/controls/TopNavBar";
+import { PureMenuItem } from "@/controls/menus/PureMenu";
 
 const baseProps = {
     isEditing: true,
@@ -94,6 +95,49 @@ test("renders optional account-area items next to authentication controls", () =
         .toBeTruthy();
 });
 
+test("shows the storage mode beside the account label", () => {
+    const { rerender, container } = render(
+        <TopNavBar
+            {...baseProps}
+            accountLabel="Local editing"
+            editingStorage="local"
+        />
+    );
+
+    expect(screen.getByTitle("Local editing")).toBeTruthy();
+    expect(container.querySelector(".account-mode-icon--local")).toBeTruthy();
+
+    rerender(
+        <TopNavBar
+            {...baseProps}
+            accountLabel="casey@example.com"
+            editingStorage="cloud"
+        />
+    );
+
+    expect(container.querySelector(".account-mode-icon--cloud")).toBeTruthy();
+    expect(container.querySelector(".account-mode-icon--local")).toBeNull();
+});
+
+test("settles a responsive density change without an expansion feedback loop", async () => {
+    const { container } = render(<TopNavBar {...baseProps} />);
+    const brand = container.querySelector<HTMLElement>("#brand");
+    if (!brand) throw new Error("Expected the top navigation brand");
+
+    Object.defineProperty(brand, "clientWidth", {
+        configurable: true,
+        value: 400
+    });
+    Object.defineProperty(brand, "scrollWidth", {
+        configurable: true,
+        get: () => brand.dataset.navDensity === "0" ? 1000 : 300
+    });
+
+    window.dispatchEvent(new Event("resize"));
+    await waitFor(() => expect(brand.dataset.navDensity).toBe("1"));
+    expect(brand.dataset.navDensity).toBe("1");
+});
+
 test("does not render the repository link in the editor header", () => {
     render(<TopNavBar {...baseProps} />);
 
@@ -105,7 +149,11 @@ test("shows document-scoped controls only while editing", () => {
         <TopNavBar
             {...baseProps}
             isEditing={false}
-            documentItems={<button type="button">Document action</button>}
+            documentItems={(
+                <PureMenuItem className="top-nav-document-extension">
+                    <button type="button">Document action</button>
+                </PureMenuItem>
+            )}
             documents={[{
                 id: "resume-1",
                 title: "Canonical Resume",
@@ -122,7 +170,11 @@ test("shows document-scoped controls only while editing", () => {
     rerender(
         <TopNavBar
             {...baseProps}
-            documentItems={<button type="button">Document action</button>}
+            documentItems={(
+                <PureMenuItem className="top-nav-document-extension">
+                    <button type="button">Document action</button>
+                </PureMenuItem>
+            )}
             documents={[{
                 id: "resume-1",
                 title: "Canonical Resume",

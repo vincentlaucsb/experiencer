@@ -29,6 +29,8 @@ export interface ContainerProps {
     displayAs?: string;
     emptyText?: string; // TODO: Do something
     htmlId?: string;
+    /** Optional element behavior that runs before the shared selection handler. */
+    onClick?: (event: React.MouseEvent<Element>) => void;
     style?: React.CSSProperties;
 }
 
@@ -70,6 +72,7 @@ export function ContainerPresentation(props: ContainerPresentationProps) {
     /** Props for managing selection and focus */
     const selectTriggerProps = {
         onClick: (event: React.MouseEvent) => {
+            props.onClick?.(event);
             if (props.isSelected) {
                 props.onEdit(props.uuid);
             }

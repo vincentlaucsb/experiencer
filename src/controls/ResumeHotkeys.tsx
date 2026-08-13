@@ -9,8 +9,6 @@ import useSelectedNodeActions from "@/shared/hooks/useSelectedNodeActions";
 import { saveLocal } from "@/shared/stores/saveResume";
 
 export interface ResumeHotKeysProps extends SelectedNodeActions {
-    /** Editor Modes */
-    togglePrintMode: Action;
     reset: Action;
     undo?: Action;
     redo?: Action;
@@ -69,11 +67,6 @@ export const ResumeHotKeyMap: KeyMap = {
         sequence: "esc"
     } as ExtendedKeyMapOptions,
 
-    PRINT_MODE: {
-        name: 'Print Mode',
-        description: 'Toggle between normal and print mode',
-        sequence: "shift+p"
-    } as ExtendedKeyMapOptions
 };
 
 /** Maps editor commands to keyboard shortcuts without owning command behavior. */
@@ -120,9 +113,6 @@ export class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
                 this.props.delete();
             },
 
-            PRINT_MODE: (event) => {
-                this.props.togglePrintMode();
-            }
         };
 
         return handlers;
@@ -140,12 +130,9 @@ export default function ResumeHotKeysWrapper() {
     const undoRedoProps = useUndoRedoProps();
     const { unselectNode } = useEditorStore.getState();
     const selectedNodeActions = useSelectedNodeActions();
-    const togglePrintMode = workspaceStore.togglePrinting;
-    
     return <ResumeHotKeys
         {...selectedNodeActions}
         {...undoRedoProps}
-        togglePrintMode={togglePrintMode}
         reset={() => {
             unselectNode();
             workspaceStore.returnToEditing();

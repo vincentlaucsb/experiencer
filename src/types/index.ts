@@ -63,8 +63,7 @@ export interface ResumeFont {
 
 export type EditorMode = 'normal'
     | 'landing'
-    | 'changingTemplate'
-    | 'printing';
+    | 'changingTemplate';
 
 /**
  * Live app node type used at runtime (adds UUIDs for identity).

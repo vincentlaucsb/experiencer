@@ -23,7 +23,7 @@ paths:
 ## Code Quality Mistakes
 9. ❌ Don't use class components for new code
 10. ❌ Don't mutate state directly - use setState or hooks
-11. ❌ Don't forget to test in print/export mode (isPrinting)
+11. ❌ Don't forget to test print/export snapshots
 12. ❌ Don't skip adding .type property to new components
 13. ❌ Don't compose Resume node types within other Resume node types (use primitives instead)
 

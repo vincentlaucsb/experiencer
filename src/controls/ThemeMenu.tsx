@@ -20,7 +20,7 @@ const options: Array<{
     { preference: "dark", label: "Dark", icon: "moon" }
 ];
 
-export default function ThemeMenu() {
+export default function ThemeMenu(props: { compact?: boolean } = {}) {
     const theme = useThemeSnapshot();
     const currentLabel = options.find(
         ({ preference }) => preference === theme.preference
@@ -41,7 +41,12 @@ export default function ThemeMenu() {
         <Dropdown
             className="toolbar-dropdown theme-menu"
             items={items}
-            trigger={<Button aria-label={`Theme: ${currentLabel}`}>Theme</Button>}
+            trigger={(
+                <Button aria-label={`Theme: ${currentLabel}`}>
+                    <i className="icofont-settings" aria-hidden="true" />
+                    {!props.compact ? <span className="top-nav-trigger-label">Theme</span> : <></>}
+                </Button>
+            )}
         />
     );
 }

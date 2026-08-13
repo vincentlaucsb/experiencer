@@ -74,7 +74,7 @@
 - [ ] PDF export with print CSS optimization
 - [ ] Multiple format support: JSON, YAML, plain text
 - ✅ ~~Custom page size options (A4, Letter)~~ — Letter/A4 toggle in editing bar; `@page { size }` injected on HTML export
-- ✅ ~~Print preview mode~~ — dedicated print-preview bar with Exit/Print buttons
+- ✅ ~~Browser printing~~ — File → Print opens a print-safe resume snapshot in a browser print window
 - [ ] Mobile preview: Real-time preview on mobile while editing on desktop
 **Estimated effort**: 3-5 hours
 
@@ -166,7 +166,7 @@ Similar situation to react-contextmenu - type compatibility issues with modern R
    - **Reevaluate if**: users repeatedly report confusing pagination or overlapping mental model between visual breaks and print output.
 
 - [ ] Resume host architecture: keep resume rendering in same-document `#resume` container rather than moving editing to an iframe.
-   - **Current approach**: render resume directly in app DOM for WYSIWYG interactions (selection, overlays, context menus, live CSS, print-preview parity).
+   - **Current approach**: render resume directly in app DOM for WYSIWYG interactions (selection, overlays, context menus, live CSS, and browser-print snapshot parity).
    - **Reason**: iframe isolation is cleaner for CSS boundaries, but significantly increases complexity for event routing, portals/highlight overlays, and editing fidelity.
    - **Reevaluate if**: CSS collision issues become frequent/high-impact, or we introduce a dedicated read-only preview surface where iframe isolation provides clear value.
 

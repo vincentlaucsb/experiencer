@@ -23,6 +23,7 @@ interface TextFieldProps {
     displayClassName?: string;
     displayValue?: string;
     static?: boolean;
+    /** Expand the inline editor to fit its value; opt out only for fixed-width utility fields. */
     autoExpand?: boolean;
 
     contextMenuOptions?: Array<ContextMenuOption>;
@@ -124,7 +125,9 @@ export default class TextField extends React.Component<TextFieldProps, TextField
                     }
                 }}>
                 {label}
-                {props.autoExpand ? <AutoExpandInput {...inputProps} /> : <input {...inputProps} />}
+                {props.autoExpand !== false
+                    ? <AutoExpandInput {...inputProps} />
+                    : <input {...inputProps} />}
             </span>
         }
 

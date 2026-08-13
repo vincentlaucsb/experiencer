@@ -23,6 +23,7 @@ test("does not start PNG capture when already cancelled", async () => {
 test("normalizes list markers only in the PNG clone", () => {
     document.body.innerHTML = `
         <div id="resume">
+            <div class="resume-page-boundaries">Editor-only page guide</div>
             <ul><li style="list-style-type: square">First</li><li style="list-style-type: square">Second</li></ul>
         </div>
     `;
@@ -30,6 +31,7 @@ test("normalizes list markers only in the PNG clone", () => {
     normalizeListMarkersForPng(document);
 
     const items = Array.from(document.querySelectorAll<HTMLElement>("#resume li"));
+    expect(document.querySelector(".resume-page-boundaries")).toBeNull();
     expect(items[0].style.listStyleType).toBe("none");
     expect(items[0].querySelector("span")?.textContent).toBe("");
     expect(items[0].querySelector("span")?.style.width).toBe("0.5em");

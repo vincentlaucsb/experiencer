@@ -42,27 +42,6 @@ test("non-editing modes cannot retain an active document", () => {
     expect(isEditingMode(store.getSnapshot().mode)).toBe(false);
 });
 
-test("printing starts only from editing and restores the document", () => {
-    const store = new WorkspaceStore();
-
-    expect(store.startPrinting()).toBe(false);
-    expect(store.getSnapshot().mode).toBe("landing");
-
-    store.openDocument("resume-1");
-    expect(store.startPrinting()).toBe(true);
-    expect(store.getSnapshot()).toEqual({
-        mode: "printing",
-        activeDocumentId: "resume-1",
-        returnMode: "normal"
-    });
-
-    store.finishPrinting();
-    expect(store.getSnapshot()).toEqual({
-        mode: "normal",
-        activeDocumentId: "resume-1"
-    });
-});
-
 test("remembering a persisted document does not invent a live suspended session", () => {
     const store = new WorkspaceStore();
 

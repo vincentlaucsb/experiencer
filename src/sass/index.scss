@@ -105,6 +105,7 @@ button img {
     }
 
     #resume {
+        position: relative;
         background: colors.$document-paper;
         color: colors.$document-ink;
         color-scheme: light;
@@ -117,25 +118,10 @@ button img {
 }
 
 @media screen {
-    #print-preview-actions {
-        position: sticky;
-        top: 0;
-        z-index: zindex.$header;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: colors.$surface-inverse;
-        border-bottom: 1px solid colors.$surface-interactive;
-
-        .pure-button {
-            font-size: 1rem;
-            font-weight: 600;
-            padding: 0.7em 1.2em;
-        }
-
-    }
-
     #resume {
+        // Page-boundary guides are editor-only absolute overlays; keep their
+        // coordinate system anchored to the resume without affecting exports.
+        position: relative;
         background: colors.$document-paper;
         color: colors.$document-ink;
         color-scheme: light;
@@ -151,6 +137,41 @@ button img {
         &[data-page-size="a4"] {
             width: 210mm;
             min-height: 297mm;
+        }
+
+        .resume-page-boundaries {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            width: 100%;
+            height: 0;
+            pointer-events: none;
+        }
+
+        .resume-page-boundary {
+            position: absolute;
+            right: 0;
+            left: 0;
+            border-top: 3px dashed colors.$document-muted;
+        }
+
+        .resume-page-boundary-label {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: inline-block;
+            max-width: calc(100% - 2rem);
+            padding: 0 0.5rem;
+            background: colors.$document-paper;
+            color: colors.$document-accent;
+            font-family: variables.$monospace;
+            font-size: 9pt;
+            letter-spacing: 0.08em;
+            text-align: center;
+            text-transform: uppercase;
+            white-space: nowrap;
         }
 
         .page-break.page-break-editing {

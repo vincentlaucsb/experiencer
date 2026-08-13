@@ -78,7 +78,7 @@ src/
 ### Core Components
 - **Resume.tsx**: Main app component (650 lines) - orchestrates everything
 - **Helpers.tsx**: Utility functions, includes `isNullOrUndefined` helper
-- **ResumeContext.tsx**: Context for isPrinting state
+- **PrintHelpers.ts**: Builds print-safe HTML snapshots without changing editor state
 - **NodeTree.tsx**: Tree data structure for resume hierarchy
 
 ### Critical Utilities
@@ -241,7 +241,7 @@ When working on a specific feature:
 4. Check `ComponentTypes.tsx` for available component types
 5. Look at existing templates in `templates/` for patterns
 6. Review `Helpers.tsx` for utility functions
-7. Check `ResumeContext.tsx` for available context values
+7. Check `PrintHelpers.ts` for print/export snapshot behavior
 
 ## Additional Resources
 - React 18 docs: https://react.dev

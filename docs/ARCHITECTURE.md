@@ -588,7 +588,6 @@ state = {
 ### Context Values
 ```typescript
 {
-    isPrinting: boolean;
     updateComponent: (uuid: string, updates: Partial<ResumeNode>) => void;
     updateSelectedRef: (ref: HTMLElement | null) => void;
     updateClicked: (clicked: boolean) => void;

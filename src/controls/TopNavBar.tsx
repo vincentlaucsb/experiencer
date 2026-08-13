@@ -24,6 +24,7 @@ import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttr
 import AsyncActionForm from "./AsyncActionForm";
 import ThemeMenu from "./ThemeMenu";
 import KeyboardShortcutsModal from "@/help/KeyboardShortcutsModal";
+import useHorizontalOverflow from "@/shared/hooks/useHorizontalOverflow";
 
 export interface TopNavBarProps {
     isEditing: boolean;
@@ -43,6 +44,7 @@ export interface TopNavBarProps {
     saveStatus?: string;
     proBadge?: string;
     accountLabel?: string;
+    editingStorage?: "local" | "cloud";
     signOut?: Action;
     signIn?: Action;
     fileMenuItems?: MenuItem[];
@@ -62,8 +64,36 @@ export function TopNavBar(props: TopNavBarProps) {
     const [isShortcutsOpen, setShortcutsOpen] = React.useState(false);
     const [renameTitle, setRenameTitle] = React.useState("");
     const helpTriggerRef = React.useRef<HTMLButtonElement>(null);
+    const brandRef = React.useRef<HTMLDivElement>(null);
+    const lastMeasuredWidthRef = React.useRef<number | undefined>(undefined);
+    const [navDensity, setNavDensity] = React.useState(0);
     let [modalContent, setModal] = React.useState(<></>);
     let [title, setTitle] = React.useState("");
+    const overflowMeasurement = useHorizontalOverflow(brandRef);
+
+    React.useEffect(() => {
+        if (overflowMeasurement.clientWidth <= 0) return;
+
+        const hasWidthChanged = lastMeasuredWidthRef.current !== undefined
+            && lastMeasuredWidthRef.current !== overflowMeasurement.clientWidth;
+        lastMeasuredWidthRef.current = overflowMeasurement.clientWidth;
+
+        setNavDensity((density) => {
+            if (overflowMeasurement.isOverflowing && density < 4) {
+                return density + 1;
+            }
+            // Expansion is only attempted after a real width change. This prevents
+            // hiding and immediately restoring the same item in a layout feedback loop.
+            if (!overflowMeasurement.isOverflowing && hasWidthChanged && density > 0) {
+                return density - 1;
+            }
+            return density;
+        });
+    }, [
+        overflowMeasurement.clientWidth,
+        overflowMeasurement.isOverflowing,
+        overflowMeasurement.scrollWidth
+    ]);
 
     let openLoader = () => {
         setOpen(true);
@@ -237,7 +267,12 @@ export function TopNavBar(props: TopNavBarProps) {
                     </AsyncActionForm>
                 ) : <></>}
             </Modal>
-            <div id="brand" className={`app-px-1 ${props.isEditing ? 'is-editing' : 'is-landing'}`}>
+            <div
+                id="brand"
+                ref={brandRef}
+                data-nav-density={navDensity}
+                className={`app-px-1 ${props.isEditing ? 'is-editing' : 'is-landing'}`}
+            >
                 <div className="brand-primary">
                     <h1
                         aria-label="Go to landing page"
@@ -248,7 +283,7 @@ export function TopNavBar(props: TopNavBarProps) {
                         tabIndex={0}
                     >
                         <img className="brand-mark" src={ExperiencerMark} alt="" aria-hidden="true" />
-                        <span>Experiencer</span>
+                        <span className="brand-wordmark">Experiencer</span>
                     </h1>
                     {props.proBadge ? <span className="pro-badge">{props.proBadge}</span> : <></>}
                     <PureMenu id="top-menu" horizontal divProps={{ className: "app-ml-4" }}>
@@ -257,15 +292,25 @@ export function TopNavBar(props: TopNavBarProps) {
                             <Dropdown
                                 className="toolbar-dropdown"
                                 items={fileMenuItems}
-                                trigger={<Button>File</Button>}
+                                trigger={(
+                                    <Button aria-label="File">
+                                        <i className="icofont-file" aria-hidden="true" />
+                                        <span className="top-nav-trigger-label">File</span>
+                                    </Button>
+                                )}
                             />
-                            <ThemeMenu />
+                            <ThemeMenu compact={navDensity >= 3} />
                             </>
                         ) : <></>}
                         <Dropdown
                             className="toolbar-dropdown"
                             items={helpMenuItems}
-                            trigger={<Button ref={helpTriggerRef}>Help</Button>}
+                            trigger={(
+                                <Button ref={helpTriggerRef} aria-label="Help">
+                                    <i className="icofont-question-circle" aria-hidden="true" />
+                                    <span className="top-nav-trigger-label">Help</span>
+                                </Button>
+                            )}
                         />
                         {props.isEditing ? (
                             <>
@@ -279,8 +324,10 @@ export function TopNavBar(props: TopNavBarProps) {
                                         <Button
                                             className="document-selector-trigger"
                                             title={activeDocumentLabel}
+                                            aria-label={activeDocumentLabel}
                                         >
-                                            <span className="document-selector-label">
+                                            <i className="icofont-paper" aria-hidden="true" />
+                                            <span className="document-selector-label top-nav-trigger-label">
                                                 {activeDocumentLabel}
                                             </span>
                                         </Button>
@@ -295,10 +342,36 @@ export function TopNavBar(props: TopNavBarProps) {
                     {props.isEditing && props.saveStatus
                         ? <span className="save-status">{props.saveStatus}</span>
                         : <></>}
-                    {props.accountLabel ? <span className="account-label">{props.accountLabel}</span> : <></>}
-                    {props.secondaryItems}
-                    {props.signOut ? <Button onClick={props.signOut}>Sign out</Button> : <></>}
-                    {props.signIn ? <Button onClick={props.signIn}>Log in</Button> : <></>}
+                    {props.accountLabel ? (
+                        <span
+                            className={`account-label account-label--${props.editingStorage ?? "unknown"}`}
+                            title={props.accountLabel}
+                            aria-label={props.accountLabel}
+                        >
+                            {props.editingStorage ? (
+                                <span
+                                    className={`account-mode-icon account-mode-icon--${props.editingStorage}`}
+                                    aria-hidden="true"
+                                >
+                                    <i className="icofont-cloud" />
+                                </span>
+                            ) : <></>}
+                            <span className="account-label-text">{props.accountLabel}</span>
+                        </span>
+                    ) : <></>}
+                    <span className="top-nav-secondary-extension">{props.secondaryItems}</span>
+                    {props.signOut ? (
+                        <Button onClick={props.signOut} aria-label="Sign out">
+                            <i className="icofont-sign-out" aria-hidden="true" />
+                            <span className="top-nav-auth-label">Sign out</span>
+                        </Button>
+                    ) : <></>}
+                    {props.signIn ? (
+                        <Button onClick={props.signIn} aria-label="Log in">
+                            <i className="icofont-sign-in" aria-hidden="true" />
+                            <span className="top-nav-auth-label">Log in</span>
+                        </Button>
+                    ) : <></>}
                 </div>
             </div>
         </>
@@ -325,7 +398,7 @@ export default function TopNavBarWrapper(props: TopNavBarWrapperProps) {
         loadData: props.loadData ?? loadImportedData,
         isEditing,
         toggleLanding: () => workspaceStore.showLanding(),
-        print: props.print ?? workspaceStore.startPrinting,
+        print: props.print,
         saveLocal: props.saveLocal ?? saveLocal,
         saveFile
     };

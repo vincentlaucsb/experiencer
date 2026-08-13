@@ -36,8 +36,7 @@ const shortcutGroups: readonly ShortcutGroup[] = [
     {
         title: "Application navigation",
         shortcuts: [
-            ["Clear the selection and return to editing", "Escape"],
-            ["Toggle print preview", "Shift", "P"]
+            ["Clear the selection and return to editing", "Escape"]
         ]
     }
 ];

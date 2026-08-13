@@ -16,12 +16,6 @@ Located in `src/stores/editorStore.ts` for frequently-changing state:
 
 **Why Zustand?** Context API caused full tree re-renders on every selection change. Zustand allows selective subscriptions so only affected components update.
 
-### React Context (Low-Frequency State)
-Located in `src/components/ResumeContext.tsx` for infrequent state:
-- `isPrinting`: Print mode indicator
-- `updateComponent()`: Update component data callback
-- `updateSelectedRef()`, `updateClicked()`: UI callbacks
-
 ### Local Component State
 Use `useState` for component-specific state:
 - Form input values
@@ -88,39 +82,6 @@ class MyComponent extends React.Component {
 ```
 
 **IMPORTANT**: Class components use `getState()` which does NOT subscribe to updates. This is intentional for class components that already extend `React.PureComponent` for optimization.
-
-### Using Context
-
-**Function components:**
-```typescript
-import { useContext } from "react";
-import ResumeContext from "./ResumeContext";
-
-function MyComponent() {
-    const context = useContext(ResumeContext);
-    
-    if (context.isPrinting) {
-        return <PrintView />;
-    }
-    return <NormalView />;
-}
-```
-
-**Class components:**
-```typescript
-import ResumeContext from "./ResumeContext";
-
-class MyComponent extends React.Component {
-    static contextType = ResumeContext;
-    
-    render() {
-        if (this.context.isPrinting) {
-            return <PrintView />;
-        }
-        return <NormalView />;
-    }
-}
-```
 
 ## Adding New State
 

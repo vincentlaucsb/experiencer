@@ -48,7 +48,6 @@ export default function ResumeComponentFactory(props: FactoryProps) {
                 ...elem,
                 updateResumeData: props.updateResumeData,
                 updateResumeDataFields: props.updateResumeDataFields,
-
                 index: idx,
                 numSiblings: arr.length,
 

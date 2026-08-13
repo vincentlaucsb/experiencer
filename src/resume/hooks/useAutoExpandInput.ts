@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 
 /**
  * Hook to make input elements auto-expand to fit their content width
@@ -11,7 +11,7 @@ import { useEffect } from 'react';
  * useAutoExpandInput(titleRef, subtitleRef);
  */
 export default function useAutoExpandInput(...refs: React.RefObject<HTMLInputElement | null>[]) {
-    useEffect(() => {
+    useLayoutEffect(() => {
         const handleInput = (input: HTMLInputElement) => {
             input.style.width = '0px';
             input.style.width = input.scrollWidth + 'px';

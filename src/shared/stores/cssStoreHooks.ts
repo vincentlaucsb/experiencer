@@ -4,7 +4,7 @@ import CssNode from '@/shared/CssTree';
 import { CssNodeDump } from '@/types';
 
 // Default CSS trees
-const createDefaultCss = () => new CssNode("Resume CSS", {}, "#resume");
+const createDefaultCss = () => new CssNode("Resume CSS", {}, "body");
 const createDefaultRootCss = () => new CssNode(":root", {}, ":root");
 
 // Singleton instances

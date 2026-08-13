@@ -27,7 +27,7 @@ import Toast from '@/controls/Toast';
 import PureMenu, { PureMenuLink, PureMenuItem } from '@/controls/menus/PureMenu';
 import NodeTreeVisualizer from '@/editor/NodeTreeVisualizer';
 import Landing, { LandingActions, LandingContext } from '@/help/Landing';
-import ResumePreview from '@/resume/ResumePreview';
+import { ResumePreviewFrame } from '@/resume/ResumePreview';
 import ResumeRenderer from '@/resume/ResumeRenderer';
 import ResumeTemplates from '@/templates/ResumeTemplates';
 import builtinTemplatePreviewImages from '@/templates/builtinTemplatePreviewImages';
@@ -45,6 +45,8 @@ import { showToast } from '@/shared/stores/toastStore';
 
 // Types
 import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode } from '@/types';
+import type { ResumeFont } from '@/types';
+import type { ResumeDocumentSource } from '@/shared/resumeDocument/prepareResumeDocument';
 import useHandlePrint from '@/shared/hooks/useHandlePrint';
 import useStylesheet from '@/shared/hooks/useStylesheet';
 import { useEffect } from 'react';
@@ -137,6 +139,7 @@ export interface ResumeProps {
     nodes?: Array<ResumeNode>;
     stylesheet: string;
     tree: ResumeNode;
+    documentFonts?: ResumeFont[];
     documents?: ResumeDocumentSummary[];
     documentLabels?: Record<string, string>;
     documentGroups?: ResumeDocumentGroup[];
@@ -200,6 +203,21 @@ export function Resume(props: ResumeProps) {
     const [templateActionError, setTemplateActionError] = React.useState<string>();
     const resumeNodes = props.tree.childNodes || [];
     const pageSize = props.pageSize || PageSize.Letter;
+    const outputDocument = React.useMemo<ResumeDocumentSource>(() => ({
+        nodes: resumeNodes,
+        stylesheet: props.stylesheet ?? '',
+        pageSize,
+        fonts: props.documentFonts,
+        ariaLabel: props.documents?.find((item) => item.id === props.activeDocumentId)?.title
+            ?? 'Resume'
+    }), [
+        pageSize,
+        props.activeDocumentId,
+        props.documentFonts,
+        props.documents,
+        props.stylesheet,
+        resumeNodes
+    ]);
     const additionalTemplate = React.useMemo(() => {
         if (!selectedAdditionalTemplateKey) {
             return undefined;
@@ -485,11 +503,11 @@ export function Resume(props: ResumeProps) {
         }
 
         return (
-            <ResumePreview
+            <ResumePreviewFrame
                 data={additionalPreview.data}
                 pageSize={pageSize}
                 ariaLabel={`${additionalTemplate.title} template preview`}
-                isolated
+                target="isolated-preview"
                 iframeClassName="template-preview-frame"
             />
         );
@@ -506,18 +524,18 @@ export function Resume(props: ResumeProps) {
 
     // Serialization
     const exportHtml = useCallback(() => {
-        void exportResumeAsHtml(resumeRef.current, props.stylesheet ?? '', 'resume.zip')
+        void exportResumeAsHtml(outputDocument, 'resume.zip')
             .catch((error: unknown) => showToast(
                 error instanceof Error ? error.message : 'Could not export the HTML package.'
             ));
-    }, [props.stylesheet]);
+    }, [outputDocument]);
 
     const printDocument = useCallback(() => {
-        void printResume(resumeRef.current, props.stylesheet ?? '')
+        void printResume(outputDocument)
             .catch((error: unknown) => showToast(
                 error instanceof Error ? error.message : 'Could not open the print preview.'
             ));
-    }, [props.stylesheet]);
+    }, [outputDocument]);
 
     useHandlePrint(printDocument);
 
@@ -535,7 +553,7 @@ export function Resume(props: ResumeProps) {
         pngAbortController.current = controller;
         let active = true;
 
-        void captureResumePng(resumeRef.current, controller.signal)
+        void captureResumePng(outputDocument, controller.signal)
             .then((blob) => {
                 if (!active || controller.signal.aborted) return;
 
@@ -561,7 +579,7 @@ export function Resume(props: ResumeProps) {
                 pngAbortController.current = undefined;
             }
         };
-    }, [pngExport.status]);
+    }, [outputDocument, pngExport.status]);
 
     const closePngExport = useCallback(() => {
         pngAbortController.current?.abort();
@@ -677,6 +695,7 @@ export function Resume(props: ResumeProps) {
             <ResumeRenderer
                 nodes={resumeNodes}
                 pageSize={pageSize}
+                root="editor-host"
                 containerRef={resumeRef}
                 beforeNodes={<ResumeHotKeys />}
                 updateResumeData={updateData}
@@ -848,6 +867,7 @@ function ResumeContainer(props: ResumeWrapperProps) {
                 selectedNodeId={selectedNodeId}
                 isEditingSelected={isEditingSelected}
                 stylesheet={stylesheet}
+                documentFonts={documentFonts}
                 tree={tree}
                 documents={library.documents}
                 activeDocumentId={workspace.activeDocumentId}

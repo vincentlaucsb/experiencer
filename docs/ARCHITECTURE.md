@@ -149,8 +149,22 @@ These foundational data structures are placed at the root of `/shared` rather th
 | `isNullOrUndefined.ts` | `isNullOrUndefined(v)` | Type guard for `null \| undefined` |
 | `processText.ts` | `process(text)` | Replace `--`/`---` with en/em dash |
 | `stripNodeProperties.ts` | `stripNodeProperties(nodes, keys)` | Recursively remove keys from a node tree (non-mutating); returns `BasicResumeNode[]` |
-| `getResumeMinHeight.ts` | `getResumeMinHeight(nodes, pageSize)` | Compute `#resume` min-height from page-break count |
+| `getResumeMinHeight.ts` | `getResumeMinHeight(nodes, pageSize)` | Compute the document canvas min-height from page-break count |
 | `PrintHelpers.ts` | `exportResumeAsHtml`, `printResume` | HTML export and print utilities |
+
+### Resume Document Rendering
+
+Saved résumé CSS is standalone document CSS: templates target `:root`, `body`, and
+ordinary content selectors. `src/shared/resumeDocument/prepareResumeDocument.ts`
+defines the canonical rendering targets and validates that authored CSS never uses
+the reserved editor host selector `#resume`.
+
+The interactive editor alone renders a `#resume` host. Its stylesheet adapter uses
+a browser-compatible CSS AST to scope every selector in a selector list to that host.
+Read-only previews render into isolated iframe bodies, while print, HTML export, PNG,
+and render-service output use the document body and `ResumeRenderer` descendants
+directly. Those output paths install only the authored stylesheet and requested font
+stylesheets; Experiencer application styles are not document dependencies.
 
 ### Store Utilities (`src/shared/stores/`)
 

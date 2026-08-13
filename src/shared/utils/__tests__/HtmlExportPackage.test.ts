@@ -11,7 +11,7 @@ describe('buildHtmlExportPackage', () => {
         }) as unknown as typeof fetch;
 
         const archive = await buildHtmlExportPackage({
-            stylesheet: '#resume { font-family: "Source Sans 3", sans-serif; }',
+            stylesheet: 'body { font-family: "Source Sans 3", sans-serif; }',
             resumeHtml: '<main id="resume">Casey Kanban</main>',
             documentFonts: [{ provider: 'builtin', family: 'Source Sans 3' }],
             baseUrl: 'https://app.example/editor',
@@ -37,7 +37,7 @@ describe('buildHtmlExportPackage', () => {
         }) as unknown as typeof fetch;
 
         const archive = await buildHtmlExportPackage({
-            stylesheet: '#resume { font-family: Test, sans-serif; }',
+            stylesheet: 'body { font-family: Test, sans-serif; }',
             resumeHtml: '<main id="resume">Resume</main>',
             documentFonts: [{ provider: 'google', family: 'Test' }],
             baseUrl: 'https://app.example/editor',

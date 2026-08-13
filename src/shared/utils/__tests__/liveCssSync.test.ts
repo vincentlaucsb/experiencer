@@ -88,7 +88,7 @@ test("does not fall back to computed styles when no authored rule exists", () =>
 });
 
 test("finds changes throughout a CSS tree", () => {
-    const root = new CssNode("Resume", { color: "black" }, "#resume");
+    const root = new CssNode("Resume", { color: "black" }, "body");
     root.addNode("Image", { "max-width": "100%" }, "img");
     root.addNode("Header", { display: "block" }, "header");
     addEditorStylesheet(`
@@ -123,7 +123,7 @@ test("finds changes in editor-scoped rules while retaining authored selectors", 
 });
 
 test("treats a deleted authored rule as removed declarations", () => {
-    const root = new CssNode("Resume", {}, "#resume");
+    const root = new CssNode("Resume", {}, "body");
     root.addNode("Image", {
         "max-width": "100%",
         "max-height": "100%"
@@ -139,7 +139,7 @@ test("treats a deleted authored rule as removed declarations", () => {
 });
 
 test("does not report removals before the editor stylesheet exists", () => {
-    const root = new CssNode("Resume", { color: "black" }, "#resume");
+    const root = new CssNode("Resume", { color: "black" }, "body");
 
     expect(inspectLiveCssTree(new ReadonlyCssNode(root))).toEqual([]);
 });

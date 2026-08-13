@@ -22,7 +22,7 @@ afterEach(() => {
 });
 
 test("filters identical browser normalization noise", () => {
-    const css = new CssNode("Resume CSS", {}, "#resume");
+    const css = new CssNode("Resume CSS", {}, "body");
     css.addNode("Lists", {
         "padding-left": "var(--large-spacing)"
     }, "ul");
@@ -41,7 +41,7 @@ test("filters identical browser normalization noise", () => {
 });
 
 test("keeps a genuine edit on a noisy rule without importing baseline declarations", () => {
-    const css = new CssNode("Resume CSS", {}, "#resume");
+    const css = new CssNode("Resume CSS", {}, "body");
     css.addNode("Lists", {
         "padding-left": "var(--large-spacing)"
     }, "ul");
@@ -73,7 +73,7 @@ test("keeps a genuine edit on a noisy rule without importing baseline declaratio
 });
 
 test("suppresses scans until the current stylesheet baseline is ready", () => {
-    const css = new CssNode("Resume CSS", { color: "black" }, "#resume");
+    const css = new CssNode("Resume CSS", { color: "black" }, "body");
     const rootCss = new CssNode(":root", {}, ":root");
     addEditorStylesheet("#resume { color: red; }");
     const changes = inspectScopedLiveCssChanges(css, rootCss);

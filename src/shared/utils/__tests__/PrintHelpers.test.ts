@@ -1,13 +1,8 @@
 import { saveAs } from 'file-saver';
 import generateHtml from '@/editor/GenerateHtml';
 import { documentFontsStore } from '@/shared/stores/documentFontsStore';
-import { useEditorStore } from '@/shared/stores/editorStore';
 import { buildHtmlExportPackage } from '@/shared/utils/HtmlExportPackage';
-import {
-    createPrintableResumeHtml,
-    exportResumeAsHtml,
-    printResume
-} from '@/shared/utils/PrintHelpers';
+import { exportResumeAsHtml, printResume } from '@/shared/utils/PrintHelpers';
 import PageSize from '@/types/PageSize';
 
 jest.mock('file-saver', () => ({
@@ -23,11 +18,15 @@ jest.mock('@/shared/utils/HtmlExportPackage', () => ({
     buildHtmlExportPackage: jest.fn(async () => new Blob(['zip'], { type: 'application/zip' }))
 }));
 
+jest.mock('@/shared/resumeDocument/renderResumeMarkup', () => ({
+    renderResumeMarkup: jest.fn(() => '<p>Resume</p>')
+}));
+
 describe('resume printing and HTML export', () => {
     const saveAsMock = saveAs as jest.MockedFunction<typeof saveAs>;
     const generateHtmlMock = generateHtml as jest.MockedFunction<typeof generateHtml>;
     const buildPackageMock = buildHtmlExportPackage as jest.MockedFunction<typeof buildHtmlExportPackage>;
-    const stylesheet = '#resume { font-size: 10pt; }';
+    const stylesheet = 'body { font-size: 10pt; }';
     let requestAnimationFrameSpy: jest.SpyInstance;
 
     beforeEach(() => {
@@ -38,7 +37,6 @@ describe('resume printing and HTML export', () => {
                 callback(0);
                 return 1;
             });
-        useEditorStore.setState({ pageSize: PageSize.Letter });
         documentFontsStore.load(undefined);
     });
 
@@ -50,22 +48,20 @@ describe('resume printing and HTML export', () => {
         [PageSize.A4, 'A4'],
         [PageSize.Letter, 'Letter']
     ])('packages a %s resume with its page rule', async (pageSize, pageSizeLabel) => {
-        useEditorStore.setState({ pageSize });
-        const resumeElement = createResumeElement();
-
-        await exportResumeAsHtml(resumeElement, stylesheet, 'resume.html');
+        const source = createSource(pageSize);
+        await exportResumeAsHtml(source, 'resume.html');
 
         expect(generateHtmlMock).toHaveBeenCalledWith(
             expect.stringContaining(`@page { size: ${pageSizeLabel}; margin: 0; }`),
-            resumeElement.innerHTML
+            '<p>Resume</p>'
         );
         expect(generateHtmlMock).toHaveBeenCalledWith(
             expect.stringContaining('body { font-size: 10pt; }'),
-            resumeElement.innerHTML
+            '<p>Resume</p>'
         );
         expect(buildPackageMock).toHaveBeenCalledWith(expect.objectContaining({
             stylesheet: expect.stringContaining(`@page { size: ${pageSizeLabel}; margin: 0; }`),
-            resumeHtml: resumeElement.innerHTML
+            resumeHtml: '<p>Resume</p>'
         }));
         expect(buildPackageMock).toHaveBeenCalledWith(expect.objectContaining({
             stylesheet: expect.stringContaining('body { min-height: 0 !important; }')
@@ -77,7 +73,7 @@ describe('resume printing and HTML export', () => {
         const printWindow = createPrintWindow();
         const openSpy = jest.spyOn(window, 'open').mockReturnValue(printWindow);
 
-        await printResume(createResumeElement(), stylesheet);
+        await printResume(createSource(PageSize.Letter));
 
         expect(openSpy).toHaveBeenCalledWith('', '_blank');
         expect(printWindow.document.write).toHaveBeenLastCalledWith(
@@ -88,50 +84,23 @@ describe('resume printing and HTML export', () => {
         openSpy.mockRestore();
     });
 
-    test('removes editor-only nodes from the printable snapshot', () => {
-        const resumeElement = createResumeElement();
-        resumeElement.innerHTML = `
-            <div class="resume-page-boundaries no-print"></div>
-            <div class="page-break page-break-editing">
-                <span class="page-break-label">Page Break</span>
-            </div>
-            <p>Resume</p>
-        `;
-
-        const html = createPrintableResumeHtml(resumeElement);
-
-        expect(html).toContain('Resume');
-        expect(html).not.toContain('resume-page-boundaries');
-        expect(html).not.toContain('page-break-label');
-        expect(html).not.toContain('page-break-editing');
-        expect(html).toContain('class="page-break"');
-        expect(html).not.toContain('id="resume"');
-    });
-
-    test('maps legacy editor container CSS to the standalone body', async () => {
-        await exportResumeAsHtml(createResumeElement(), stylesheet);
-
-        expect(generateHtmlMock).toHaveBeenCalledWith(
-            expect.stringContaining('body { font-size: 10pt; }'),
-            expect.any(String)
-        );
-    });
-
     test('reports a blocked print-preview window', async () => {
         const openSpy = jest.spyOn(window, 'open').mockReturnValue(null);
 
-        await expect(printResume(createResumeElement(), stylesheet))
+        await expect(printResume(createSource(PageSize.Letter)))
             .rejects.toThrow('print preview was blocked');
 
         openSpy.mockRestore();
     });
 });
 
-function createResumeElement() {
-    const resumeElement = document.createElement('main');
-    resumeElement.id = 'resume';
-    resumeElement.innerHTML = '<p>Resume</p>';
-    return resumeElement;
+function createSource(pageSize: PageSize) {
+    return {
+        nodes: [],
+        stylesheet: 'body { font-size: 10pt; }',
+        pageSize,
+        ariaLabel: 'Resume'
+    };
 }
 
 function createPrintWindow(): Window {

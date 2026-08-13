@@ -9,6 +9,7 @@ import PageSize from "@/types/PageSize";
 import { documentFontsStore } from './documentFontsStore';
 import { extractFontFamiliesFromCss } from '@/shared/utils/fonts';
 import { isBuiltinFontFamily } from '@/shared/fonts/builtinFonts';
+import { normalizeLegacyResumeCssRoots } from '@/shared/resumeDocument/normalizeLegacyResumeCssRoots';
 
 function normalizeLegacyNodeTypes(nodes: any[] | undefined): any[] {
     if (!nodes) {
@@ -29,7 +30,7 @@ function normalizeLegacyNodeTypes(nodes: any[] | undefined): any[] {
 
 /** Hydrates the editor stores from serialized resume data without changing workspace state. */
 export function hydrateResumeData(data: object) {
-    let savedData = data as ResumeSaveData;
+    const savedData = normalizeLegacyResumeCssRoots(data as ResumeSaveData);
     const normalizedChildNodes = normalizeLegacyNodeTypes(savedData.childNodes as any[]);
     const nodes = assignIds(normalizedChildNodes);
 

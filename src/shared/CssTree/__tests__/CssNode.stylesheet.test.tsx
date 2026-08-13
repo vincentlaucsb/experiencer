@@ -1,14 +1,6 @@
 import CssNode from "..";
 
 describe('CssNode - Stylesheet Generation', () => {
-    test('renders legacy custom-element selectors against standard renderer classes', () => {
-        const root = new CssNode('Resume', {}, '#resume');
-        root.addNode('Entries', { display: 'block' }, 'resume-entry + resume-entry');
-
-        expect(root.stylesheet()).toContain('#resume .entry + .entry');
-        expect(root.dump().children[0].selector).toBe('resume-entry + resume-entry');
-    });
-
     test('stylesheet with single property', () => {
         const node = new CssNode('Text Field', {
             "font-family": "Tahoma, sans-serif"

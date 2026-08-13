@@ -1,4 +1,9 @@
 import html2canvas from 'html2canvas';
+import { mountResumeDocument } from '@/shared/resumeDocument/mountResumeDocument';
+import {
+    prepareResumeDocument,
+    type ResumeDocumentSource
+} from '@/shared/resumeDocument/prepareResumeDocument';
 
 function createAbortError(): Error {
     const error = new Error('PNG export was cancelled.');
@@ -14,7 +19,8 @@ function throwIfAborted(signal?: AbortSignal): void {
 
 /** Replaces html2canvas's oversized text-based list markers in the capture clone. */
 export function normalizeListMarkersForPng(document: Document): void {
-    const resume = document.querySelector<HTMLElement>('#resume');
+    const resume = document.querySelector<HTMLElement>('[data-resume-document]')
+        ?? document.body;
     if (!resume) return;
 
     // Page boundaries are editor guidance only and must not become part of an AI-review image.
@@ -114,23 +120,24 @@ function canvasToBlob(canvas: HTMLCanvasElement, signal?: AbortSignal): Promise<
 
 /** Captures the resume element as a PNG blob without owning presentation UI. */
 export async function captureResumePng(
-    resumeElement: HTMLElement | null,
+    source: ResumeDocumentSource,
     signal?: AbortSignal
 ): Promise<Blob> {
-    if (!resumeElement) {
-        throw new Error('Resume element not found.');
+    throwIfAborted(signal);
+    const mounted = await mountResumeDocument(prepareResumeDocument(source, 'png'));
+    try {
+        throwIfAborted(signal);
+        const canvas = await html2canvas(mounted.document.body, {
+            scale: 6,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff',
+            onclone: normalizeListMarkersForPng
+        });
+
+        throwIfAborted(signal);
+        return await canvasToBlob(canvas, signal);
+    } finally {
+        mounted.dispose();
     }
-
-    throwIfAborted(signal);
-
-    const canvas = await html2canvas(resumeElement, {
-        scale: 6,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff',
-        onclone: normalizeListMarkersForPng
-    });
-
-    throwIfAborted(signal);
-    return canvasToBlob(canvas, signal);
 }

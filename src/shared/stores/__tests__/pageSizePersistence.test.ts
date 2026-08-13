@@ -3,9 +3,10 @@ import PageSize from '@/types/PageSize';
 
 import { useEditorStore } from '../editorStore';
 import loadData from '../loadData';
+import { cssStore, rootCssStore } from '../cssStoreHooks';
 
 const savedData = (pageSize?: 'letter' | 'a4') => ({
-    builtinCss: new CssNode('Resume CSS', {}, '#resume').dump(),
+    builtinCss: new CssNode('Resume CSS', {}, 'body').dump(),
     rootCss: new CssNode(':root', {}, ':root').dump(),
     childNodes: [],
     pageSize
@@ -40,5 +41,16 @@ describe('page-size persistence', () => {
 
         useEditorStore.getState().setPageSize(PageSize.Letter);
         expect(useEditorStore.getState().hasUnsavedPageSizeChanges).toBe(false);
+    });
+
+    test('migrates legacy editor-host CSS roots while loading', () => {
+        const legacyData = savedData();
+        legacyData.builtinCss.selector = '#resume';
+        legacyData.rootCss.selector = '#resume';
+
+        loadData(legacyData);
+
+        expect(cssStore.data.selector).toBe('body');
+        expect(rootCssStore.data.selector).toBe(':root');
     });
 });

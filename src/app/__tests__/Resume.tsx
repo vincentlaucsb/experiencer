@@ -221,7 +221,7 @@ test('Template switcher previews the selected template', async () => {
     const integrityOption = screen.getByText('Integrity').closest('.pure-menu-item');
 
     await waitFor(() => expect(screen.getByAltText('Integrity template preview')).toBeTruthy());
-    expect(document.querySelector('style[data-resume-preview-builtin-fonts]')).toBeNull();
+    expect(document.getElementById('resume-document-builtin-fonts')).toBeNull();
     expect(integrityOption?.classList.contains('pure-menu-selected')).toBe(true);
 
     await act(async () => {
@@ -235,7 +235,7 @@ test('Template switcher previews the selected template', async () => {
     expect(integrityOption?.classList.contains('pure-menu-selected')).toBe(false);
 
     view.unmount();
-    expect(document.getElementById('resume-preview-google-fonts')).toBeNull();
+    expect(document.getElementById('resume-document-google-fonts')).toBeNull();
 });
 
 test('Template switcher only commits the selected template from the action button', async () => {

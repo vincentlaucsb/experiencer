@@ -1,15 +1,18 @@
 import { saveAs } from 'file-saver';
 import generateHtml from '@/editor/GenerateHtml';
 import { documentFontsStore } from '@/shared/stores/documentFontsStore';
-import { useEditorStore } from '@/shared/stores/editorStore';
+import {
+    prepareResumeDocument,
+    type ResumeDocumentSource,
+    type ResumeRenderTarget
+} from '@/shared/resumeDocument/prepareResumeDocument';
+import { renderResumeMarkup } from '@/shared/resumeDocument/renderResumeMarkup';
 import { buildHtmlExportPackage } from '@/shared/utils/HtmlExportPackage';
 import PageSize from '@/types/PageSize';
-import { scopeStylesheetForStandaloneResume } from '@/shared/utils/scopeStylesheetForEditor';
 
 /** Opens a resume-only tab and invokes the browser print dialog after its assets settle. */
 export async function printResume(
-    resumeElement: HTMLElement | null,
-    stylesheet: string
+    source: ResumeDocumentSource
 ): Promise<void> {
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
@@ -19,7 +22,7 @@ export async function printResume(
 
     let capture: Awaited<ReturnType<typeof capturePrintableResume>>;
     try {
-        capture = await capturePrintableResume(resumeElement, stylesheet);
+        capture = await capturePrintableResume(source, 'print');
     } catch (error) {
         printWindow.close();
         throw error;
@@ -38,11 +41,10 @@ export async function printResume(
 
 /** Exports a resume-only HTML document and its font dependencies as a ZIP package. */
 export async function exportResumeAsHtml(
-    resumeElement: HTMLElement | null,
-    stylesheet: string,
+    source: ResumeDocumentSource,
     filename: string = 'resume.zip'
 ): Promise<void> {
-    const capture = await capturePrintableResume(resumeElement, stylesheet);
+    const capture = await capturePrintableResume(source, 'export');
     const archive = await buildHtmlExportPackage({
         stylesheet: capture.stylesheet,
         resumeHtml: capture.resumeHtml,
@@ -53,38 +55,16 @@ export async function exportResumeAsHtml(
 }
 
 async function capturePrintableResume(
-    resumeElement: HTMLElement | null,
-    stylesheet: string
+    source: ResumeDocumentSource,
+    target: Extract<ResumeRenderTarget, 'print' | 'export'>
 ): Promise<{ html: string; resumeHtml: string; stylesheet: string }> {
-    const pageSize = useEditorStore.getState().pageSize;
-    const stylesheetWithPageSize = `${pageSizeRule(pageSize)}\n${
-        scopeStylesheetForStandaloneResume(stylesheet)
-    }`;
-
-    useEditorStore.getState().unselectNode();
-    await nextAnimationFrame(window);
-
-    const resumeHtml = createPrintableResumeHtml(resumeElement);
+    const prepared = prepareResumeDocument(source, target);
+    const stylesheetWithPageSize = `${pageSizeRule(prepared.pageSize)}\n${prepared.stylesheet}`;
+    const resumeHtml = await renderResumeMarkup(prepared);
     const html = documentFontsStore.data
         ? generateHtml(stylesheetWithPageSize, resumeHtml, documentFontsStore.data)
         : generateHtml(stylesheetWithPageSize, resumeHtml);
     return { html, resumeHtml, stylesheet: stylesheetWithPageSize };
-}
-
-/** Creates a print-safe snapshot without changing the live editor's workspace state. */
-export function createPrintableResumeHtml(resumeElement: HTMLElement | null): string {
-    if (!resumeElement) {
-        throw new Error('The resume could not be rendered.');
-    }
-
-    const printableResume = resumeElement.cloneNode(true) as HTMLElement;
-    printableResume.querySelectorAll('.no-print').forEach((element) => element.remove());
-    printableResume.querySelectorAll('.page-break-label').forEach((element) => element.remove());
-    printableResume.querySelectorAll('.page-break-editing').forEach((element) => {
-        element.classList.remove('page-break-editing');
-    });
-
-    return printableResume.innerHTML;
 }
 
 function pageSizeRule(pageSize: PageSize): string {

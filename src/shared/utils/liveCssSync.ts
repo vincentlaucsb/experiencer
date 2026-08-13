@@ -1,5 +1,5 @@
 import { ReadonlyCssNode } from "@/shared/CssTree";
-import { scopeCssSelectorForEditor } from "@/shared/utils/scopeStylesheetForEditor";
+import { scopeCssSelectorForEditor } from "@/shared/utils/transformResumeStylesheet";
 
 export type LiveCssSyncStatus = "changed" | "not-found" | "unchanged";
 

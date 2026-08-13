@@ -5,6 +5,7 @@ import PageBoundaries from "@/resume/PageBoundaries";
 import getResumeMinHeight from "@/shared/utils/getResumeMinHeight";
 import { IdType, NodeProperty, ResumeNode } from "@/types";
 import PageSize from "@/types/PageSize";
+import type { ResumeDocumentRoot } from '@/shared/resumeDocument/prepareResumeDocument';
 
 export type UpdateResumeData = (
     id: IdType,
@@ -24,14 +25,9 @@ export interface ResumeRendererProps {
     updateResumeDataFields: UpdateResumeDataFields;
     ariaLabel?: string;
     readOnly?: boolean;
+    root: ResumeDocumentRoot;
     containerRef?: React.Ref<HTMLDivElement>;
     beforeNodes?: React.ReactNode;
-    /**
-     * Standalone documents use the HTML body as their canvas. The editor keeps
-     * the wrapper so its scoped stylesheet and selection affordances have a
-     * stable host to target.
-     */
-    renderContainer?: boolean;
 }
 
 /**
@@ -40,7 +36,7 @@ export interface ResumeRendererProps {
  */
 export default function ResumeRenderer(props: ResumeRendererProps) {
     const resumeRef = React.useRef<HTMLDivElement>(null);
-    const renderContainer = props.renderContainer !== false;
+    const renderContainer = props.root !== 'document-body';
 
     const setResumeRef = React.useCallback((element: HTMLDivElement | null) => {
         resumeRef.current = element;
@@ -55,7 +51,7 @@ export default function ResumeRenderer(props: ResumeRendererProps) {
 
     const contents = (
         <>
-            {!props.readOnly && renderContainer && (
+            {props.root === 'editor-host' && !props.readOnly && (
                 <PageBoundaries pageSize={props.pageSize} resumeRef={resumeRef} />
             )}
             {props.beforeNodes}
@@ -77,6 +73,7 @@ export default function ResumeRenderer(props: ResumeRendererProps) {
     return (
         <div
             id="resume"
+            data-resume-host={props.root === 'editor-host' ? 'editor' : 'public-review'}
             aria-label={props.ariaLabel}
             data-page-size={props.pageSize}
             ref={setResumeRef}

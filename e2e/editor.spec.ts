@@ -9,7 +9,8 @@ test('switches page size and adds a new section', async ({ page }) => {
   await expect(page.locator('#resume')).toHaveAttribute('data-page-size', 'a4');
 
   const sectionCount = await page.locator('#resume section').count();
-  await page.getByRole('button', { name: 'Add Section' }).click();
+  await page.getByRole('button', { name: 'Insert' }).click();
+  await page.getByRole('menuitem', { name: 'Section', exact: true }).click();
 
   await expect(page.locator('#resume section')).toHaveCount(sectionCount + 1);
   await expect(page.getByRole('heading', { name: 'Enter a title' })).toBeVisible();
@@ -26,7 +27,9 @@ test('opens a resume-only print preview in a new tab', async ({ page, context })
   await page.getByRole('menuitem', { name: 'Print' }).click();
   const printPreview = await popupPromise;
 
-  await expect(printPreview.locator('#resume')).toBeVisible();
+  await expect(printPreview.locator('#resume')).toHaveCount(0);
+  await expect(printPreview.locator('body')).toContainText('Randy Marsh');
+  await expect(printPreview.locator('body > *').first()).toBeVisible();
   await expect(printPreview.locator('#app-header')).toHaveCount(0);
   await expect(printPreview.locator('#toolbar')).toHaveCount(0);
   await expect(page.locator('#app-header')).toBeVisible();
@@ -42,7 +45,9 @@ test('routes the print keyboard shortcut to the resume-only tab', async ({ page,
   await page.keyboard.press(process.platform === 'darwin' ? 'Meta+P' : 'Control+P');
   const printPreview = await popupPromise;
 
-  await expect(printPreview.locator('#resume')).toBeVisible();
+  await expect(printPreview.locator('#resume')).toHaveCount(0);
+  await expect(printPreview.locator('body')).toContainText('Randy Marsh');
+  await expect(printPreview.locator('body > *').first()).toBeVisible();
   await expect(printPreview.locator('#app-header')).toHaveCount(0);
 });
 
@@ -88,15 +93,10 @@ test('template preview does not inherit the active resume stylesheet', async ({ 
   await page.getByRole('menuitem', { name: 'New', exact: true }).click();
   await page.getByText('Integrity', { exact: true }).click();
 
-  const preview = page.getByLabel('Integrity template preview');
+  const preview = page.getByRole('img', { name: 'Integrity template preview' });
   await expect(preview).toBeVisible();
+  await expect(preview).toHaveAttribute('src', /integrity/i);
   await expect(page.locator('style[data-resume-editor-stylesheet]')).toHaveText('');
-
-  const previewHeaderColor = await preview.locator('header').first().evaluate(
-    (element) => getComputedStyle(element).backgroundColor,
-  );
-
-  expect(previewHeaderColor).not.toBe('rgb(232, 232, 232)');
 });
 
 test('reviews and imports live DevTools changes across CSS sections', async ({ page }) => {
@@ -131,10 +131,11 @@ test('reviews and imports live DevTools changes across CSS sections', async ({ p
   await syncBanner.getByRole('button', { name: 'Review and import' }).click();
 
   const modal = page.getByRole('dialog', { name: 'Import live CSS changes' });
-  await expect(modal).toContainText('#resume img');
+  await expect(modal).toContainText('body img');
   await expect(modal).toContainText('67%');
-  await expect(modal).toContainText('#resume header');
+  await expect(modal).toContainText('body header');
   await expect(modal).toContainText('13px');
+  await expect(modal).not.toContainText('#resume');
   await modal.getByRole('button', { name: 'Import 2 changes' }).click();
 
   await expect(page.getByRole('status')).toHaveText('Imported 2 live CSS changes.');

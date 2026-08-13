@@ -10,7 +10,7 @@ import { BasicResumeNode } from '@/types';
 describe('addHtmlId', () => {
     beforeEach(() => {
         resumeNodeStore.setNodes([]);
-        cssStore.setCss(new CssNode('Resume CSS', {}, '#resume'));
+        cssStore.setCss(new CssNode('Resume CSS', {}, 'body'));
         useEditorStore.setState({ selectedNodeId: undefined, isEditingSelected: false });
         useHistoryStore.getState().clear();
     });

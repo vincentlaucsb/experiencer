@@ -17,7 +17,7 @@ function hasNoUuids(nodes: BasicResumeNode[]): boolean {
 
 beforeEach(() => {
     resumeNodeStore.setNodes([]);
-    cssStore.setCss(new CssNode('Resume CSS', {}, '#resume'));
+    cssStore.setCss(new CssNode('Resume CSS', {}, 'body'));
     rootCssStore.setCss(new CssNode(':root', {}, ':root'));
     useEditorStore.getState().loadPageSize(PageSize.Letter);
 });

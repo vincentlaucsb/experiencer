@@ -9,7 +9,7 @@ import {
 } from "@/shared/utils/liveCssBaseline";
 import type { ResumeFont } from '@/types';
 import { getBuiltinFontStylesheet } from '@/shared/fonts/builtinFonts';
-import scopeStylesheetForEditor from '@/shared/utils/scopeStylesheetForEditor';
+import { scopeResumeStylesheetToEditor } from '@/shared/utils/transformResumeStylesheet';
 
 /**
  * Custom hook to apply a stylesheet to the document head.
@@ -40,7 +40,7 @@ export default function useStylesheet(
     useLayoutEffect(() => {
         const styleElement = styleElementRef.current;
         if (!styleElement) return;
-        const editorStylesheet = scopeStylesheetForEditor(stylesheet);
+        const editorStylesheet = scopeResumeStylesheetToEditor(stylesheet);
         const builtinStylesheet = stylesheet
             ? getBuiltinFontStylesheet(options.documentFonts)
             : '';

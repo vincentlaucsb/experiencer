@@ -21,7 +21,7 @@ describe('useGoogleFontsStylesheet', () => {
             :root {
                 --serif: Merriweather, serif;
             }
-            #resume {
+            body {
                 font-family: var(--serif);
             }
         `;
@@ -35,13 +35,13 @@ describe('useGoogleFontsStylesheet', () => {
 
     test('updates Google Fonts link when stylesheet fonts change', () => {
         const firstStylesheet = `
-            #resume {
+            body {
                 font-family: Merriweather, serif;
             }
         `;
 
         const nextStylesheet = `
-            #resume {
+            body {
                 font-family: Open Sans, sans-serif;
             }
         `;
@@ -60,13 +60,13 @@ describe('useGoogleFontsStylesheet', () => {
 
     test('removes Google Fonts link when stylesheet has no custom fonts', () => {
         const withFonts = `
-            #resume {
+            body {
                 font-family: Merriweather, serif;
             }
         `;
 
         const withoutFonts = `
-            #resume {
+            body {
                 font-size: 12pt;
             }
         `;

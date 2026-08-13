@@ -34,8 +34,10 @@ export default function generateHtml(
     <head>
         <title>Resume</title>
         <meta charset="utf-8">
-        <style>
+        <style id="resume-font-stylesheet">
             ${builtinStylesheet}
+        </style>
+        <style id="resume-document-stylesheet">
             ${safeStylesheet}
         </style>
         ${fontsLinkTag}

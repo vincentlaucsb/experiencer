@@ -6,7 +6,7 @@ import { CssNodeDump } from '@/types';
 describe('CSS Store Hooks - Unsaved Changes', () => {
     beforeEach(() => {
         // Reset stores to clean state
-        cssStore.setCss(new CssNode("Resume CSS", {}, "#resume"));
+        cssStore.setCss(new CssNode("Resume CSS", {}, "body"));
         rootCssStore.setCss(new CssNode(":root", {}, ":root"));
         cssStore.clearUnsavedChanges();
         rootCssStore.clearUnsavedChanges();

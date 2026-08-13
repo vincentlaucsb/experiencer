@@ -3,7 +3,7 @@ import { extractFontFamiliesFromCss, getGoogleFontsUrl } from '@/shared/utils/fo
 describe('fonts utility', () => {
     test('extracts concrete font families from font-family declarations', () => {
         const stylesheet = `
-            #resume {
+            body {
                 font-family: Merriweather, serif;
             }
             h2 {
@@ -20,7 +20,7 @@ describe('fonts utility', () => {
                 --serif: Merriweather, serif;
                 --sans-serif: Open Sans, sans-serif;
             }
-            #resume {
+            body {
                 font-family: var(--serif);
             }
             h2 {

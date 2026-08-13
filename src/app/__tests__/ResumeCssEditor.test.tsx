@@ -26,7 +26,7 @@ describe("ResumeCssEditor", () => {
         const nodes = assignIds([header]);
         contactUuid = nodes[0].childNodes![0].uuid;
         resumeNodeStore.setNodes(nodes);
-        cssStore.setCss(new CssNode("Resume CSS", {}, "#resume"));
+        cssStore.setCss(new CssNode("Resume CSS", {}, "body"));
         rootCssStore.setCss(new CssNode(":root", {}, ":root"));
     });
 
@@ -61,7 +61,7 @@ describe("ResumeCssEditor", () => {
         }]);
         const descriptionListUuid = nodes[0].childNodes![0].uuid;
         resumeNodeStore.setNodes(nodes);
-        cssStore.setCss(new CssNode("Resume CSS", {}, "#resume"));
+        cssStore.setCss(new CssNode("Resume CSS", {}, "body"));
         cssStore.updateCss((css) => {
             css.addNode(new CssNode("Section", { margin: "1rem" }, "section"));
             css.addNode(new CssNode("Description List", {}, "dl"));

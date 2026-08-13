@@ -30,6 +30,7 @@ import Landing, { LandingActions, LandingContext } from '@/help/Landing';
 import ResumePreview from '@/resume/ResumePreview';
 import ResumeRenderer from '@/resume/ResumeRenderer';
 import ResumeTemplates from '@/templates/ResumeTemplates';
+import builtinTemplatePreviewImages from '@/templates/builtinTemplatePreviewImages';
 import ResumeCssEditor from '@/app/ResumeCssEditor';
 import PageSize from '@/types/PageSize';
 
@@ -57,16 +58,14 @@ const SelectedNodeHighlightBox = React.lazy(
     () => import('@/editor/HighlightBox').then(m => ({ default: m.SelectedNodeHighlightBox }))
 );
 
-function TemplatePreview(props: { pageSize: PageSize; templateKey: string }) {
-    const template = ResumeTemplates.templates[props.templateKey]
-        ?? ResumeTemplates.templates.Integrity;
+function TemplatePreview(props: { templateKey: string }) {
+    const image = builtinTemplatePreviewImages[props.templateKey]
+        ?? builtinTemplatePreviewImages.Integrity;
 
     return (
-        <ResumePreview
-            data={template}
-            pageSize={props.pageSize}
-            ariaLabel={`${props.templateKey} template preview`}
-        />
+        <div className="template-preview-image">
+            <img src={image} alt={`${props.templateKey} template preview`} />
+        </div>
     );
 }
 
@@ -453,7 +452,7 @@ export function Resume(props: ResumeProps) {
 
     const renderTemplatePreview = () => {
         if (!additionalTemplate) {
-            return <TemplatePreview pageSize={pageSize} templateKey={selectedTemplateKey} />;
+            return <TemplatePreview templateKey={selectedTemplateKey} />;
         }
 
         if (additionalPreview.status === 'error') {
@@ -490,6 +489,8 @@ export function Resume(props: ResumeProps) {
                 data={additionalPreview.data}
                 pageSize={pageSize}
                 ariaLabel={`${additionalTemplate.title} template preview`}
+                isolated
+                iframeClassName="template-preview-frame"
             />
         );
     };

@@ -107,6 +107,21 @@ test("finds changes throughout a CSS tree", () => {
     expect(countLiveCssDeclarationChanges(changes)).toBe(3);
 });
 
+test("finds changes in editor-scoped rules while retaining authored selectors", () => {
+    const root = new CssNode("Resume", { color: "black" }, ":root");
+    root.addNode("Image", { "max-width": "100%" }, "img");
+    addEditorStylesheet(`
+        #resume { color: black; }
+        #resume img { max-width: 67%; }
+    `);
+
+    const changes = inspectLiveCssTree(new ReadonlyCssNode(root));
+
+    expect(changes).toHaveLength(1);
+    expect(changes[0].selector).toBe(":root img");
+    expect(changes[0].changed).toEqual(["max-width"]);
+});
+
 test("treats a deleted authored rule as removed declarations", () => {
     const root = new CssNode("Resume", {}, "#resume");
     root.addNode("Image", {

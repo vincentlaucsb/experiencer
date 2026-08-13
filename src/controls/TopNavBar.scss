@@ -131,6 +131,12 @@ header#app-header {
         min-width: 0;
     }
 
+    // Keep document actions at their intrinsic width; their nowrap labels must
+    // not paint over the adjacent, intentionally shrinkable selector.
+    .top-nav-document-extension {
+        flex: 0 0 auto;
+    }
+
     .account-mode-icon {
         display: inline-flex;
         position: relative;

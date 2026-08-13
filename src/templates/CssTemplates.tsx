@@ -151,7 +151,7 @@ export default function getDefaultCss(): CssNode {
         'font-size': '10pt',
         'height': '100%',
         'padding': 'var(--edge-margin)',
-    }, '#resume');
+    }, 'body');
 
     defaultCss.addNode('All Elements', { 'margin': '0' }, '*');
 

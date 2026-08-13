@@ -13,6 +13,7 @@ describe('built-in templates', () => {
         for (const template of Object.values(ResumeTemplates.templates)) {
             const stylesheet = CssNode.load(template.builtinCss).stylesheet();
             expect(stylesheet).not.toMatch(/position:\s*(?:relative|absolute|fixed|sticky)/i);
+            expect(stylesheet).not.toContain('#resume');
         }
     });
 

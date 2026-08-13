@@ -14,10 +14,10 @@ afterEach(() => {
         .forEach((style) => style.remove());
 });
 
-test("keeps exactly one current editor stylesheet through Strict Mode effect replay", () => {
+test("keeps exactly one current scoped editor stylesheet through Strict Mode effect replay", () => {
     const view = render(
         <StrictMode>
-            <StylesheetHost stylesheet="#resume { color: red; }" />
+            <StylesheetHost stylesheet=":root { --accent: red; } .entry { color: var(--accent); }" />
         </StrictMode>
     );
 
@@ -25,11 +25,11 @@ test("keeps exactly one current editor stylesheet through Strict Mode effect rep
         "style[data-resume-editor-stylesheet]"
     );
     expect(styles).toHaveLength(1);
-    expect(styles[0].textContent).toBe("#resume { color: red; }");
+    expect(styles[0].textContent).toBe("#resume { --accent: red; } #resume .entry { color: var(--accent); }");
 
     view.rerender(
         <StrictMode>
-            <StylesheetHost stylesheet="#resume { color: blue; }" />
+            <StylesheetHost stylesheet=":root { --accent: blue; } .entry { color: var(--accent); }" />
         </StrictMode>
     );
 
@@ -37,7 +37,7 @@ test("keeps exactly one current editor stylesheet through Strict Mode effect rep
         "style[data-resume-editor-stylesheet]"
     );
     expect(styles).toHaveLength(1);
-    expect(styles[0].textContent).toBe("#resume { color: blue; }");
+    expect(styles[0].textContent).toBe("#resume { --accent: blue; } #resume .entry { color: var(--accent); }");
 
     view.unmount();
     expect(document.querySelector("style[data-resume-editor-stylesheet]")).toBeNull();

@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import TopEditingBarWrapper, { TopEditingBar, EditingBarProps } from "@/controls/TopEditingBar";
 import MarkdownText from "@/resume/Markdown";
@@ -45,6 +45,45 @@ afterEach(() => {
 });
 
 describe("TopEditingBar Insert visibility", () => {
+    test("groups root resume actions under Resume", async () => {
+        render(<TopEditingBar {...createProps()} />);
+
+        expect(screen.getByText("Resume")).toBeTruthy();
+        const insertButton = screen.getByRole("button", { name: "Insert" });
+        fireEvent.click(insertButton);
+
+        await waitFor(() => {
+            expect(screen.getByRole("menuitem", { name: "Section" })).toBeTruthy();
+            expect(screen.getByRole("menuitem", { name: "Page break" })).toBeTruthy();
+            expect(screen.getByRole("menuitem", { name: "Rows" })).toBeTruthy();
+            expect(screen.getByRole("menuitem", { name: "Columns" })).toBeTruthy();
+            expect(screen.getByRole("menuitem", { name: "Grid" })).toBeTruthy();
+        });
+        expect(screen.getByRole("button", { name: "Special characters" })).toBeTruthy();
+    });
+
+    test("copies a selected special character to the clipboard", async () => {
+        const writeText = jest.fn().mockResolvedValue(undefined);
+        Object.defineProperty(navigator, "clipboard", {
+            configurable: true,
+            value: { writeText }
+        });
+
+        render(<TopEditingBar {...createProps()} />);
+        fireEvent.click(screen.getByRole("button", { name: "Special characters" }));
+
+        await waitFor(() => {
+            expect(screen.getByRole("dialog", { name: "Special characters" })).toBeTruthy();
+        });
+        fireEvent.click(screen.getByRole("button", { name: "Em dash: —" }));
+
+        await act(async () => {
+            await Promise.resolve();
+        });
+        expect(writeText).toHaveBeenCalledWith("—");
+        expect(screen.getByRole("status").textContent).toContain("Copied —");
+    });
+
     test("uses provided save handler for repository-backed saves", () => {
         const save = jest.fn();
 

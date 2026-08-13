@@ -69,6 +69,7 @@ export function TopNavBar(props: TopNavBarProps) {
     const [navDensity, setNavDensity] = React.useState(0);
     let [modalContent, setModal] = React.useState(<></>);
     let [title, setTitle] = React.useState("");
+    const [modalClassName, setModalClassName] = React.useState("top-nav-modal");
     const overflowMeasurement = useHorizontalOverflow(brandRef);
 
     React.useEffect(() => {
@@ -98,12 +99,14 @@ export function TopNavBar(props: TopNavBarProps) {
     let openLoader = () => {
         setOpen(true);
         setTitle("Load File");
+        setModalClassName("top-nav-modal file-loader-modal");
         setModal(<FileLoader close={() => setOpen(false)} loadData={props.loadData} />);
     }
 
     let openSaver = () => {
         setOpen(true);
         setTitle("Save File");
+        setModalClassName("top-nav-modal");
         setModal(<FileSaver close={() => setOpen(false)} saveFile={props.saveFile} />);
     }
 
@@ -233,14 +236,14 @@ export function TopNavBar(props: TopNavBarProps) {
     return (
         <>
             <KeyboardShortcutsModal isOpen={isShortcutsOpen} close={closeShortcuts} />
-            <Modal isOpen={isOpen} title={title} close={() => setOpen(false)} className="top-nav-modal">
+            <Modal isOpen={isOpen} title={title} close={() => setOpen(false)} className={modalClassName}>
                 {modalContent}
             </Modal>
             <Modal
                 isOpen={isRenameOpen}
                 title="Rename resume"
                 close={() => setRenameOpen(false)}
-                className="top-nav-modal"
+                className="top-nav-modal rename-resume-modal"
             >
                 {activeDocument && props.renameDocument ? (
                     <AsyncActionForm
@@ -255,9 +258,10 @@ export function TopNavBar(props: TopNavBarProps) {
                         }}
                         cancel={() => setRenameOpen(false)}
                     >
-                        <label>
+                        <label className="rename-resume-field">
                             <span>Resume name</span>
                             <input
+                                className="rename-resume-input"
                                 {...nonCredentialInputAttributes}
                                 maxLength={RESUME_TITLE_MAX_LENGTH}
                                 value={renameTitle}

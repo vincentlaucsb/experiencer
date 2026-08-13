@@ -12,36 +12,19 @@ import {
 } from "@/shared/utils/fonts";
 import { getBuiltinFontStylesheet } from '@/shared/fonts/builtinFonts';
 import { getGoogleFontRequests } from '@/shared/fonts/builtinFonts';
+import getResumeMinHeight from '@/shared/utils/getResumeMinHeight';
 import { ResumeNode, ResumeSaveData } from "@/types";
 import PageSize from "@/types/PageSize";
 
 const noopUpdate = () => {};
-
-const isolatedCanvasStyles = `
-    html, body {
-        margin: 0;
-        background: white;
-    }
-
-    #resume {
-        background: white;
-        width: 8.5in;
-        min-height: 11in;
-        box-sizing: border-box;
-        margin: 0 auto;
-    }
-
-    #resume[data-page-size="a4"] {
-        width: 210mm;
-        min-height: 297mm;
-    }
-`;
 
 export interface ResumePreviewProps {
     data: ResumeSaveData;
     pageSize: PageSize;
     ariaLabel: string;
     isolated?: boolean;
+    /** Render document nodes directly under the host body instead of #resume. */
+    standalone?: boolean;
     iframeTitle?: string;
     iframeClassName?: string;
 }
@@ -86,6 +69,13 @@ function InlinePreview(
         removeOnUnmount: true,
         fontFamilies: props.data.fonts
     });
+    useStandaloneDocumentCanvas(
+        props.standalone === true,
+        document,
+        props.pageSize,
+        props.preview.nodes,
+        props.ariaLabel
+    );
 
     return (
         <>
@@ -98,6 +88,7 @@ function InlinePreview(
                 readOnly
                 updateResumeData={noopUpdate}
                 updateResumeDataFields={noopUpdate}
+                renderContainer={!props.standalone}
             />
         </>
     );
@@ -111,7 +102,12 @@ function IsolatedPreview(
     React.useEffect(() => {
         if (!frameDocument) return;
 
-        copyApplicationStyles(document, frameDocument);
+        frameDocument.head.querySelector('#resume-preview-stylesheet')?.remove();
+        const resumeStyles = frameDocument.createElement('style');
+        resumeStyles.id = 'resume-preview-stylesheet';
+        resumeStyles.textContent = props.preview.stylesheet;
+        frameDocument.head.appendChild(resumeStyles);
+
         frameDocument.head.querySelector('[data-resume-preview-builtin-fonts]')?.remove();
         const builtinStyles = frameDocument.createElement('style');
         builtinStyles.setAttribute('data-resume-preview-builtin-fonts', '');
@@ -124,18 +120,24 @@ function IsolatedPreview(
         );
     }, [frameDocument, props.data.fonts, props.preview.stylesheet]);
 
+    useStandaloneDocumentCanvas(
+        Boolean(frameDocument),
+        frameDocument,
+        props.pageSize,
+        props.preview.nodes,
+        props.ariaLabel
+    );
+
     const contents = frameDocument && createPortal(
-        <>
-            <style>{`${isolatedCanvasStyles}\n${props.preview.stylesheet}`}</style>
-            <ResumeRenderer
-                nodes={props.preview.nodes}
-                pageSize={props.pageSize}
-                ariaLabel={props.ariaLabel}
-                readOnly
-                updateResumeData={noopUpdate}
-                updateResumeDataFields={noopUpdate}
-            />
-        </>,
+        <ResumeRenderer
+            nodes={props.preview.nodes}
+            pageSize={props.pageSize}
+            ariaLabel={props.ariaLabel}
+            readOnly
+            updateResumeData={noopUpdate}
+            updateResumeDataFields={noopUpdate}
+            renderContainer={false}
+        />,
         frameDocument.body
     );
 
@@ -145,6 +147,7 @@ function IsolatedPreview(
             <iframe
                 className={props.iframeClassName}
                 title={props.iframeTitle ?? props.ariaLabel}
+                aria-label={props.ariaLabel}
                 srcDoc="<!doctype html><html><head></head><body></body></html>"
                 onLoad={(event) => setFrameDocument(event.currentTarget.contentDocument)}
             />
@@ -152,20 +155,58 @@ function IsolatedPreview(
     );
 }
 
-function copyApplicationStyles(source: Document, target: Document) {
-    target.head
-        .querySelectorAll("[data-resume-preview-app-style]")
-        .forEach((node) => node.remove());
+/**
+ * Gives a standalone preview the same paper geometry as an exported document.
+ * Its body is deliberately the document root: authored `body` rules must apply
+ * to the resume nodes directly rather than to an editor-only wrapper.
+ */
+function useStandaloneDocumentCanvas(
+    enabled: boolean,
+    target: Document | null,
+    pageSize: PageSize,
+    nodes: ResumeNode[],
+    ariaLabel: string
+) {
+    const minHeight = React.useMemo(
+        () => getResumeMinHeight(nodes, pageSize),
+        [nodes, pageSize]
+    );
 
-    source.head
-        .querySelectorAll<HTMLStyleElement | HTMLLinkElement>(
-            'style, link[rel="stylesheet"]'
-        )
-        .forEach((node) => {
-            if (node.id === "template-google-fonts") return;
+    React.useLayoutEffect(() => {
+        if (!enabled || !target) return;
 
-            const clone = node.cloneNode(true) as HTMLStyleElement | HTMLLinkElement;
-            clone.setAttribute("data-resume-preview-app-style", "");
-            target.head.appendChild(clone);
-        });
+        const body = target.body;
+        const previous = {
+            pageSize: body.dataset.pageSize,
+            ariaLabel: body.getAttribute('aria-label'),
+            documentMarker: body.hasAttribute('data-resume-preview-document'),
+            width: body.style.width,
+            minHeight: body.style.minHeight,
+            boxSizing: body.style.boxSizing,
+            margin: body.style.margin,
+            pointerEvents: body.style.pointerEvents
+        };
+
+        body.dataset.pageSize = pageSize;
+        body.setAttribute('aria-label', ariaLabel);
+        body.setAttribute('data-resume-preview-document', '');
+        body.style.width = pageSize === PageSize.A4 ? '210mm' : '8.5in';
+        body.style.minHeight = minHeight;
+        body.style.boxSizing = 'border-box';
+        body.style.margin = '0 auto';
+        body.style.pointerEvents = 'none';
+
+        return () => {
+            if (previous.pageSize === undefined) delete body.dataset.pageSize;
+            else body.dataset.pageSize = previous.pageSize;
+            if (previous.ariaLabel === null) body.removeAttribute('aria-label');
+            else body.setAttribute('aria-label', previous.ariaLabel);
+            if (!previous.documentMarker) body.removeAttribute('data-resume-preview-document');
+            body.style.width = previous.width;
+            body.style.minHeight = previous.minHeight;
+            body.style.boxSizing = previous.boxSizing;
+            body.style.margin = previous.margin;
+            body.style.pointerEvents = previous.pointerEvents;
+        };
+    }, [ariaLabel, enabled, minHeight, pageSize, target]);
 }

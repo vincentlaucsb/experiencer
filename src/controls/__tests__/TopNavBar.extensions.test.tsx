@@ -265,9 +265,12 @@ test("renames the active document from the top of the document selector", async 
 
     fireEvent.click(screen.getByRole("button", { name: "Canonical Resume" }));
     fireEvent.click(screen.getByRole("menuitem", { name: "Rename…" }));
+    expect(screen.getByRole("dialog", { name: "Rename resume" }).classList)
+        .toContain("rename-resume-modal");
     const form = screen.getByRole("form", { name: "Rename current resume" });
     const input = within(form).getByRole("textbox", { name: "Resume name" });
 
+    expect(input.classList).toContain("rename-resume-input");
     expect(input.getAttribute("autocomplete")).toBe("off");
     fireEvent.change(input, { target: { value: "My Awesome Resume" } });
     fireEvent.click(within(form).getByRole("button", { name: "Save" }));

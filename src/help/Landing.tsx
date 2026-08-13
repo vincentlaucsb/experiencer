@@ -86,7 +86,7 @@ export default function Landing(props: LandingProps) {
 
     return (
         <>
-            <Modal title="Load File" isOpen={isOpen} close={() => setOpen(false)} className="landing-modal">
+            <Modal title="Load File" isOpen={isOpen} close={() => setOpen(false)} className="landing-modal file-loader-modal">
                 {modalContent}
             </Modal>
             <div id="landing" className={['app-px-2', props.className].filter(Boolean).join(' ')}>

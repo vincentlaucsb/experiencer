@@ -57,18 +57,18 @@ describe('resume printing and HTML export', () => {
 
         expect(generateHtmlMock).toHaveBeenCalledWith(
             expect.stringContaining(`@page { size: ${pageSizeLabel}; margin: 0; }`),
-            resumeElement.outerHTML
+            resumeElement.innerHTML
         );
         expect(generateHtmlMock).toHaveBeenCalledWith(
-            expect.stringContaining(stylesheet),
-            resumeElement.outerHTML
+            expect.stringContaining('body { font-size: 10pt; }'),
+            resumeElement.innerHTML
         );
         expect(buildPackageMock).toHaveBeenCalledWith(expect.objectContaining({
             stylesheet: expect.stringContaining(`@page { size: ${pageSizeLabel}; margin: 0; }`),
-            resumeHtml: resumeElement.outerHTML
+            resumeHtml: resumeElement.innerHTML
         }));
         expect(buildPackageMock).toHaveBeenCalledWith(expect.objectContaining({
-            stylesheet: expect.stringContaining('#resume { min-height: 0 !important; }')
+            stylesheet: expect.stringContaining('body { min-height: 0 !important; }')
         }));
         expect(saveAsMock).toHaveBeenCalledWith(expect.any(Blob), 'resume.zip');
     });
@@ -105,6 +105,16 @@ describe('resume printing and HTML export', () => {
         expect(html).not.toContain('page-break-label');
         expect(html).not.toContain('page-break-editing');
         expect(html).toContain('class="page-break"');
+        expect(html).not.toContain('id="resume"');
+    });
+
+    test('maps legacy editor container CSS to the standalone body', async () => {
+        await exportResumeAsHtml(createResumeElement(), stylesheet);
+
+        expect(generateHtmlMock).toHaveBeenCalledWith(
+            expect.stringContaining('body { font-size: 10pt; }'),
+            expect.any(String)
+        );
     });
 
     test('reports a blocked print-preview window', async () => {

@@ -39,6 +39,110 @@ div[class*='ReactModal__Content'] {
 .top-nav-modal {
 }
 
+/** A small focused form; it should not inherit the default half-screen modal width. */
+.rename-resume-modal {
+    width: min(32rem, calc(100% - 2rem)) !important;
+
+    .modal-content {
+        padding: 1.25rem;
+    }
+
+    .document-selector-rename-form {
+        display: grid;
+        width: 100%;
+        gap: 1rem;
+    }
+
+    .rename-resume-field {
+        display: grid;
+        gap: 0.45rem;
+        color: colors.$text-primary;
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+
+    .rename-resume-input {
+        display: block;
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 2.5rem;
+        padding: 0.5rem 0.65rem;
+        border: 1px solid colors.$border-strong;
+        border-radius: 0.25rem;
+        background: colors.$surface-muted;
+        color: colors.$text-primary;
+        font: inherit;
+
+        &:focus-visible {
+            outline: 2px solid colors.$focus-ring;
+            outline-offset: 2px;
+        }
+    }
+
+    .async-action-form-actions {
+        width: 100%;
+        justify-content: flex-end;
+        margin-top: 0.25rem;
+    }
+}
+
+/** File import is one focused choice, not a half-screen settings dialog. */
+.file-loader-modal {
+    width: min(34rem, calc(100% - 2rem)) !important;
+
+    .modal-content {
+        padding: 1.25rem;
+    }
+}
+
+.file-loader-form {
+    display: grid;
+    gap: 1rem;
+
+    .file-loader-copy {
+        display: grid;
+        gap: 0.35rem;
+    }
+
+    .file-loader-label {
+        color: colors.$text-primary;
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+
+    p {
+        margin: 0;
+        color: colors.$text-secondary;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .file-loader-native-input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+
+    .file-loader-picker {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-width: 0;
+    }
+
+    .file-loader-selection {
+        min-width: 0;
+        overflow: hidden;
+        color: colors.$text-secondary;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
 .png-export-modal {
     width: min(56rem, calc(100% - 2rem)) !important;
     max-height: 88vh;

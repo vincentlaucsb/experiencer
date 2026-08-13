@@ -26,6 +26,12 @@ export interface ResumeRendererProps {
     readOnly?: boolean;
     containerRef?: React.Ref<HTMLDivElement>;
     beforeNodes?: React.ReactNode;
+    /**
+     * Standalone documents use the HTML body as their canvas. The editor keeps
+     * the wrapper so its scoped stylesheet and selection affordances have a
+     * stable host to target.
+     */
+    renderContainer?: boolean;
 }
 
 /**
@@ -34,6 +40,7 @@ export interface ResumeRendererProps {
  */
 export default function ResumeRenderer(props: ResumeRendererProps) {
     const resumeRef = React.useRef<HTMLDivElement>(null);
+    const renderContainer = props.renderContainer !== false;
 
     const setResumeRef = React.useCallback((element: HTMLDivElement | null) => {
         resumeRef.current = element;
@@ -46,18 +53,9 @@ export default function ResumeRenderer(props: ResumeRendererProps) {
         }
     }, [props.containerRef]);
 
-    return (
-        <div
-            id="resume"
-            aria-label={props.ariaLabel}
-            data-page-size={props.pageSize}
-            ref={setResumeRef}
-            style={{
-                minHeight: getResumeMinHeight(props.nodes, props.pageSize),
-                ...(props.readOnly ? { pointerEvents: "none" } : {})
-            }}
-        >
-            {!props.readOnly && (
+    const contents = (
+        <>
+            {!props.readOnly && renderContainer && (
                 <PageBoundaries pageSize={props.pageSize} resumeRef={resumeRef} />
             )}
             {props.beforeNodes}
@@ -71,6 +69,23 @@ export default function ResumeRenderer(props: ResumeRendererProps) {
                     numSiblings={all.length}
                 />
             ))}
+        </>
+    );
+
+    if (!renderContainer) return contents;
+
+    return (
+        <div
+            id="resume"
+            aria-label={props.ariaLabel}
+            data-page-size={props.pageSize}
+            ref={setResumeRef}
+            style={{
+                minHeight: getResumeMinHeight(props.nodes, props.pageSize),
+                ...(props.readOnly ? { pointerEvents: "none" } : {})
+            }}
+        >
+            {contents}
         </div>
     );
 }

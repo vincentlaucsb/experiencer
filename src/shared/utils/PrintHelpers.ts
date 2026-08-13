@@ -4,6 +4,7 @@ import { documentFontsStore } from '@/shared/stores/documentFontsStore';
 import { useEditorStore } from '@/shared/stores/editorStore';
 import { buildHtmlExportPackage } from '@/shared/utils/HtmlExportPackage';
 import PageSize from '@/types/PageSize';
+import { scopeStylesheetForStandaloneResume } from '@/shared/utils/scopeStylesheetForEditor';
 
 /** Opens a resume-only tab and invokes the browser print dialog after its assets settle. */
 export async function printResume(
@@ -56,7 +57,9 @@ async function capturePrintableResume(
     stylesheet: string
 ): Promise<{ html: string; resumeHtml: string; stylesheet: string }> {
     const pageSize = useEditorStore.getState().pageSize;
-    const stylesheetWithPageSize = `${pageSizeRule(pageSize)}\n${stylesheet}`;
+    const stylesheetWithPageSize = `${pageSizeRule(pageSize)}\n${
+        scopeStylesheetForStandaloneResume(stylesheet)
+    }`;
 
     useEditorStore.getState().unselectNode();
     await nextAnimationFrame(window);
@@ -81,14 +84,14 @@ export function createPrintableResumeHtml(resumeElement: HTMLElement | null): st
         element.classList.remove('page-break-editing');
     });
 
-    return printableResume.outerHTML;
+    return printableResume.innerHTML;
 }
 
 function pageSizeRule(pageSize: PageSize): string {
     const pageRule = pageSize === PageSize.A4
         ? '@page { size: A4; margin: 0; }'
         : '@page { size: Letter; margin: 0; }';
-    return `${pageRule}\n@media print { #resume { min-height: 0 !important; } }`;
+    return `${pageRule}\n@media print { body { min-height: 0 !important; } }`;
 }
 
 function showPrintLoadingState(printWindow: Window): void {

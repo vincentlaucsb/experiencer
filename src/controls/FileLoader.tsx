@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Action } from "@/types";
+import { Button } from "./Buttons";
 
 interface FileLoaderProps {
     close: Action;
@@ -12,7 +13,7 @@ interface FileLoaderState {
 
 /** Reads a saved resume file and hands its parsed data to the library workflow. */
 export default class FileLoader extends React.Component<FileLoaderProps, FileLoaderState> {
-    fileInput: any;
+    fileInput = React.createRef<HTMLInputElement>();
 
     constructor(props: FileLoaderProps) {
         super(props);
@@ -24,8 +25,6 @@ export default class FileLoader extends React.Component<FileLoaderProps, FileLoa
         this.readFile = this.readFile.bind(this);
         this.onFileSelect = this.onFileSelect.bind(this);
 
-        // See: https://reactjs.org/docs/uncontrolled-components.html#the-file-input-tag
-        this.fileInput = React.createRef();
     }
 
     readFile(file: any) {
@@ -50,8 +49,8 @@ export default class FileLoader extends React.Component<FileLoaderProps, FileLoa
      * Load file as soon as a user selects it
      * @param event
      */
-    onFileSelect(event) {
-        let userFile = this.fileInput.current.files[0];
+    onFileSelect() {
+        const userFile = this.fileInput.current?.files?.[0];
         if (userFile) {
             this.setState({ filename: userFile.name });
             this.readFile(userFile);
@@ -62,10 +61,39 @@ export default class FileLoader extends React.Component<FileLoaderProps, FileLoa
     }
 
     render() {
+        const selectedFileLabel = this.state.filename || "No file selected";
+
         return (
-            <form id="file-loader">
-                <label htmlFor="customFile">Resume file</label>
-                <input type="file" onChange={this.onFileSelect} ref={this.fileInput} id="customFile" />
+            <form id="file-loader" className="file-loader-form">
+                <div className="file-loader-copy">
+                    <span className="file-loader-label">Resume file</span>
+                    <p id="file-loader-description">
+                        Choose an Experiencer resume JSON file to open.
+                    </p>
+                </div>
+                <input
+                    aria-hidden="true"
+                    accept=".json,application/json"
+                    className="file-loader-native-input"
+                    id="customFile"
+                    onChange={this.onFileSelect}
+                    ref={this.fileInput}
+                    tabIndex={-1}
+                    type="file"
+                />
+                <div className="file-loader-picker">
+                    <Button
+                        aria-describedby="file-loader-description"
+                        onClick={() => this.fileInput.current?.click()}
+                        type="button"
+                        variant="primary"
+                    >
+                        Choose file
+                    </Button>
+                    <span aria-live="polite" className="file-loader-selection">
+                        {selectedFileLabel}
+                    </span>
+                </div>
             </form>
         );
     }

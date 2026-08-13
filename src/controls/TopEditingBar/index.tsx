@@ -32,6 +32,7 @@ import addHtmlId from "@/shared/stores/addHtmlId";
 import ensureCssNodeForType from "@/shared/stores/ensureCssNodeForType";
 import { ResumeHotKeyMap } from "../ResumeHotkeys";
 import { measureHorizontalOverflow, observeHorizontalOverflow } from "@/shared/utils/overflow";
+import SpecialCharacterPicker from "../SpecialCharacterPicker";
 
 const EXPANSION_BUFFER_PX = 24;
 
@@ -174,6 +175,7 @@ export function TopEditingBar(props: EditingBarProps) {
     const continueExpansionRef = useRef(false);
     const expandedSectionWidthsRef = useRef(new Map<string, number>());
     const [collapsedSections, setCollapsedSections] = useState<ReadonlySet<string>>(new Set());
+    const [isSpecialCharacterPickerOpen, setSpecialCharacterPickerOpen] = useState(false);
     
     // Subscribe to store changes - these will cause re-renders
     const selectedNodeId = useEditorStore(state => state.selectedNodeId);
@@ -338,35 +340,46 @@ export function TopEditingBar(props: EditingBarProps) {
             }]
         });
 
-        data.set("Resume Components", {
+        data.set("Resume", {
             items: [
                 {
-                    onClick: () => props.addChild(undefined, assignIds({ type: Section.type })),
-                    icon: "book-mark",
-                    text: "Add Section"
+                    icon: "ui-add",
+                    text: "Insert",
+                    items: [
+                        {
+                            onClick: () => props.addChild(undefined, assignIds({ type: Section.type })),
+                            icon: "book-mark",
+                            text: "Section"
+                        },
+                        {
+                            onClick: () => {
+                                props.addChild(undefined, assignIds(ComponentTypes.instance.defaultValue(PageBreak.type).node));
+                                ensureCssNodeForType(PageBreak.type);
+                            },
+                            icon: "page-break",
+                            text: "Page break"
+                        },
+                        {
+                            onClick: () => props.addChild(undefined, assignIds(ComponentTypes.instance.defaultValue(Row.type).node)),
+                            icon: "swoosh-right",
+                            text: "Rows"
+                        },
+                        {
+                            onClick: () => props.addChild(undefined, assignIds(ComponentTypes.instance.defaultValue(Column.type).node)),
+                            icon: "swoosh-down",
+                            text: "Columns"
+                        },
+                        {
+                            onClick: () => props.addChild(undefined, assignIds(ComponentTypes.instance.defaultValue(Grid.type).node)),
+                            icon: "table",
+                            text: "Grid"
+                        }
+                    ]
                 },
                 {
-                    onClick: () => {
-                        props.addChild(undefined, assignIds(ComponentTypes.instance.defaultValue(PageBreak.type).node));
-                        ensureCssNodeForType(PageBreak.type);
-                    },
-                    icon: "page-break",
-                    text: "Add Page Break"
-                },
-                {
-                    onClick: () => props.addChild(undefined, assignIds(ComponentTypes.instance.defaultValue(Row.type).node)),
-                    icon: "swoosh-right",
-                    text: "Add Rows"
-                },
-                {
-                    onClick: () => props.addChild(undefined, assignIds(ComponentTypes.instance.defaultValue(Column.type).node)),
-                    icon: "swoosh-down",
-                    text: "Add Columns"
-                },
-                {
-                    onClick: () => props.addChild(undefined, assignIds(ComponentTypes.instance.defaultValue(Grid.type).node)),
-                    icon: "table",
-                    text: "Add Grid"
+                    onClick: () => setSpecialCharacterPickerOpen(true),
+                    icon: "keyboard",
+                    text: "Special characters"
                 }
             ]
         });
@@ -382,7 +395,15 @@ export function TopEditingBar(props: EditingBarProps) {
         collapsedSections={collapsedSections}
     />;
     const className = collapsedSections.size > 0 ? "toolbar-has-collapsed-sections" : "";
-    return <div ref={toolbarRef} id="toolbar" className={className}>{children}</div>;
+    return (
+        <>
+            <SpecialCharacterPicker
+                isOpen={isSpecialCharacterPickerOpen}
+                close={() => setSpecialCharacterPickerOpen(false)}
+            />
+            <div ref={toolbarRef} id="toolbar" className={className}>{children}</div>
+        </>
+    );
 }
 
 export interface TopEditingBarWrapperProps {

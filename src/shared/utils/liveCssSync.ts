@@ -1,4 +1,5 @@
 import { ReadonlyCssNode } from "@/shared/CssTree";
+import { scopeCssSelectorForEditor } from "@/shared/utils/scopeStylesheetForEditor";
 
 export type LiveCssSyncStatus = "changed" | "not-found" | "unchanged";
 
@@ -152,7 +153,7 @@ export function inspectLiveCssTree(
     function inspectNode(node: ReadonlyCssNode) {
         const previousDeclarations = node.properties;
         let result = inspectLiveCssRule(
-            node.fullSelector,
+            scopeCssSelectorForEditor(node.fullSelector),
             previousDeclarations,
             ownerDocument
         );

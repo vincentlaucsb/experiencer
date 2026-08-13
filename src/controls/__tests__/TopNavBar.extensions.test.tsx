@@ -201,6 +201,30 @@ test("renders optional File-menu extension items", () => {
     expect(screen.getByRole("menuitem", { name: "Document extension" })).toBeTruthy();
 });
 
+test("derives each file modal from the active modal kind", async () => {
+    render(<TopNavBar {...baseProps} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "File" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Save As" }));
+
+    const saveDialog = screen.getByRole("dialog", { name: "Save File" });
+    expect(saveDialog.classList).toContain("top-nav-modal");
+    expect(saveDialog.classList).not.toContain("file-loader-modal");
+    expect(within(saveDialog).getByRole("textbox", { name: "Filename" })).toBeTruthy();
+
+    fireEvent.click(within(saveDialog).getByRole("button", { name: "Close Save File" }));
+    await waitFor(() => {
+        expect(screen.queryByRole("dialog", { name: "Save File" })).toBeNull();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "File" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Load" }));
+
+    const loadDialog = screen.getByRole("dialog", { name: "Load File" });
+    expect(loadDialog.classList).toContain("file-loader-modal");
+    expect(within(loadDialog).getByRole("button", { name: "Choose file" })).toBeTruthy();
+});
+
 test("shows injected document labels in the active-document control", () => {
     render(
         <TopNavBar

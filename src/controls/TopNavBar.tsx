@@ -57,19 +57,21 @@ export interface TopNavBarProps {
     toggleLanding: Action;
 }
 
+type ActiveTopNavModal =
+    | { kind: "load" }
+    | { kind: "save" }
+    | { kind: "rename"; documentId: string }
+    | null;
+
 /** The top nav bar for the resume editor */
 export function TopNavBar(props: TopNavBarProps) {
-    let [isOpen, setOpen] = React.useState(false);
-    const [isRenameOpen, setRenameOpen] = React.useState(false);
+    const [activeModal, setActiveModal] = React.useState<ActiveTopNavModal>(null);
     const [isShortcutsOpen, setShortcutsOpen] = React.useState(false);
     const [renameTitle, setRenameTitle] = React.useState("");
     const helpTriggerRef = React.useRef<HTMLButtonElement>(null);
     const brandRef = React.useRef<HTMLDivElement>(null);
     const lastMeasuredWidthRef = React.useRef<number | undefined>(undefined);
     const [navDensity, setNavDensity] = React.useState(0);
-    let [modalContent, setModal] = React.useState(<></>);
-    let [title, setTitle] = React.useState("");
-    const [modalClassName, setModalClassName] = React.useState("top-nav-modal");
     const overflowMeasurement = useHorizontalOverflow(brandRef);
 
     React.useEffect(() => {
@@ -96,19 +98,7 @@ export function TopNavBar(props: TopNavBarProps) {
         overflowMeasurement.scrollWidth
     ]);
 
-    let openLoader = () => {
-        setOpen(true);
-        setTitle("Load File");
-        setModalClassName("top-nav-modal file-loader-modal");
-        setModal(<FileLoader close={() => setOpen(false)} loadData={props.loadData} />);
-    }
-
-    let openSaver = () => {
-        setOpen(true);
-        setTitle("Save File");
-        setModalClassName("top-nav-modal");
-        setModal(<FileSaver close={() => setOpen(false)} saveFile={props.saveFile} />);
-    }
+    const closeActiveModal = () => setActiveModal(null);
 
     const onBrandKeyDown = (event: React.KeyboardEvent<HTMLHeadingElement>) => {
         if (event.key === 'Enter' || event.key === ' ') {
@@ -137,7 +127,7 @@ export function TopNavBar(props: TopNavBarProps) {
             id: "load",
             label: "Load",
             icon: createPoprightIcon("folder-open"),
-            onSelect: () => openLoader()
+            onSelect: () => setActiveModal({ kind: "load" })
         },
         {
             id: "save",
@@ -151,7 +141,7 @@ export function TopNavBar(props: TopNavBarProps) {
             label: "Save As",
             icon: createPoprightIcon("save"),
             disabled: !props.isEditing,
-            onSelect: () => openSaver()
+            onSelect: () => setActiveModal({ kind: "save" })
         },
         {
             id: "export-html",
@@ -183,7 +173,10 @@ export function TopNavBar(props: TopNavBarProps) {
             icon: createPoprightIcon("edit"),
             onSelect: () => {
                 setRenameTitle(activeDocument.title);
-                setRenameOpen(true);
+                setActiveModal({
+                    kind: "rename",
+                    documentId: activeDocument.id
+                });
             }
         }] : []),
         ...(props.documents || []).map((document, index) => ({
@@ -229,47 +222,72 @@ export function TopNavBar(props: TopNavBarProps) {
         window.requestAnimationFrame(() => helpTriggerRef.current?.focus());
     };
 
-    React.useEffect(() => {
-        setRenameTitle(activeDocument?.title ?? "");
-    }, [activeDocument?.id, activeDocument?.title]);
+    const renameDocument = activeModal?.kind === "rename"
+        ? props.documents?.find((document) => document.id === activeModal.documentId)
+        : undefined;
+    const modalTitle = activeModal?.kind === "load"
+        ? "Load File"
+        : activeModal?.kind === "save"
+            ? "Save File"
+            : activeModal?.kind === "rename"
+                ? "Rename resume"
+                : "";
+    const modalClassName = activeModal?.kind === "load"
+        ? "top-nav-modal file-loader-modal"
+        : activeModal?.kind === "rename"
+            ? "top-nav-modal rename-resume-modal"
+            : "top-nav-modal";
+
+    let modalContent: React.ReactElement = <></>;
+    if (activeModal?.kind === "load") {
+        modalContent = (
+            <FileLoader close={closeActiveModal} loadData={props.loadData} />
+        );
+    } else if (activeModal?.kind === "save") {
+        modalContent = (
+            <FileSaver close={closeActiveModal} saveFile={props.saveFile} />
+        );
+    } else if (activeModal?.kind === "rename" && renameDocument && props.renameDocument) {
+        modalContent = (
+            <AsyncActionForm
+                aria-label="Rename current resume"
+                className="document-selector-rename-form"
+                save={async () => {
+                    const result = await props.renameDocument?.(
+                        renameDocument.id,
+                        renameTitle
+                    ) ?? null;
+                    if (result === null) {
+                        closeActiveModal();
+                    }
+                    return result;
+                }}
+                cancel={closeActiveModal}
+            >
+                <label className="rename-resume-field">
+                    <span>Resume name</span>
+                    <input
+                        className="rename-resume-input"
+                        {...nonCredentialInputAttributes}
+                        maxLength={RESUME_TITLE_MAX_LENGTH}
+                        value={renameTitle}
+                        onChange={(event) => setRenameTitle(event.target.value)}
+                    />
+                </label>
+            </AsyncActionForm>
+        );
+    }
 
     return (
         <>
             <KeyboardShortcutsModal isOpen={isShortcutsOpen} close={closeShortcuts} />
-            <Modal isOpen={isOpen} title={title} close={() => setOpen(false)} className={modalClassName}>
-                {modalContent}
-            </Modal>
             <Modal
-                isOpen={isRenameOpen}
-                title="Rename resume"
-                close={() => setRenameOpen(false)}
-                className="top-nav-modal rename-resume-modal"
+                isOpen={activeModal !== null}
+                title={modalTitle}
+                close={closeActiveModal}
+                className={modalClassName}
             >
-                {activeDocument && props.renameDocument ? (
-                    <AsyncActionForm
-                        aria-label="Rename current resume"
-                        className="document-selector-rename-form"
-                        save={async () => {
-                            const result = await props.renameDocument?.(activeDocument.id, renameTitle) ?? null;
-                            if (result === null) {
-                                setRenameOpen(false);
-                            }
-                            return result;
-                        }}
-                        cancel={() => setRenameOpen(false)}
-                    >
-                        <label className="rename-resume-field">
-                            <span>Resume name</span>
-                            <input
-                                className="rename-resume-input"
-                                {...nonCredentialInputAttributes}
-                                maxLength={RESUME_TITLE_MAX_LENGTH}
-                                value={renameTitle}
-                                onChange={(event) => setRenameTitle(event.target.value)}
-                            />
-                        </label>
-                    </AsyncActionForm>
-                ) : <></>}
+                {modalContent}
             </Modal>
             <div
                 id="brand"

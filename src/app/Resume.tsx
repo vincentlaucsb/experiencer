@@ -12,12 +12,10 @@ import '@/sass/index.scss';
 // Utilities
 import { createContainer } from '@/shared/utils/createContainer';
 import { exportResumeAsHtml, printResume } from '@/shared/utils/PrintHelpers';
-import { captureResumePng } from '@/shared/utils/ExportPng';
 
 // Components
 import { Button } from '@/controls/Buttons';
 import ConfirmationModal from '@/controls/ConfirmationModal';
-import PngExportModal, { PngCopyPhase, PngExportPhase } from '@/controls/PngExportModal';
 import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from '@/controls/Layouts';
 import ResumeHotKeys from '@/controls/ResumeHotkeys';
 import TopEditingBar from '@/controls/TopEditingBar';
@@ -32,6 +30,7 @@ import ResumeRenderer from '@/resume/ResumeRenderer';
 import ResumeTemplates from '@/templates/ResumeTemplates';
 import builtinTemplatePreviewImages from '@/templates/builtinTemplatePreviewImages';
 import ResumeCssEditor from '@/app/ResumeCssEditor';
+import PngExportFeature from '@/app/PngExportFeature';
 import PageSize from '@/types/PageSize';
 
 // Stores
@@ -53,6 +52,7 @@ import { useEffect } from 'react';
 import loadData, { loadLocal } from '@/shared/stores/loadData';
 import { ResumeDocumentSummary, ResumeRepository } from '@/shared/repositories/ResumeRepository';
 import ResumeLibraryStore, { ResumeLibraryController } from '@/shared/stores/resumeLibraryStore';
+import { pngExportStore } from '@/shared/stores/pngExportStore';
 import type { ToolbarData } from '@/controls/toolbar/ToolbarMaker';
 
 // Dynamic imports (lazy-loaded on-demand)
@@ -124,13 +124,6 @@ type AdditionalTemplatePreviewState = {
     message?: string;
 };
 
-type PngExportState = {
-    status: 'idle' | PngExportPhase;
-    blob?: Blob;
-    url?: string;
-    message?: string;
-};
-
 export interface ResumeProps {
     mode?: EditorMode;
     selectedNodeId?: string;
@@ -195,10 +188,6 @@ export function Resume(props: ResumeProps) {
     const [additionalPreview, setAdditionalPreview] = React.useState<AdditionalTemplatePreviewState>({
         status: 'idle'
     });
-    const [pngExport, setPngExport] = React.useState<PngExportState>({ status: 'idle' });
-    const [pngCopyPhase, setPngCopyPhase] = React.useState<PngCopyPhase>('idle');
-    const pngAbortController = useRef<AbortController | undefined>(undefined);
-    const pngUrl = useRef<string | undefined>(undefined);
     const [templateActionStatus, setTemplateActionStatus] = React.useState<'idle' | 'using'>('idle');
     const [templateActionError, setTemplateActionError] = React.useState<string>();
     const resumeNodes = props.tree.childNodes || [];
@@ -540,95 +529,8 @@ export function Resume(props: ResumeProps) {
     useHandlePrint(printDocument);
 
     const exportToPng = useCallback(() => {
-        setPngCopyPhase('idle');
-        setPngExport({ status: 'loading' });
-    }, []);
-
-    useEffect(() => {
-        if (pngExport.status !== 'loading') {
-            return;
-        }
-
-        const controller = new AbortController();
-        pngAbortController.current = controller;
-        let active = true;
-
-        void captureResumePng(outputDocument, controller.signal)
-            .then((blob) => {
-                if (!active || controller.signal.aborted) return;
-
-                const url = URL.createObjectURL(blob);
-                pngUrl.current = url;
-                setPngExport({ status: 'ready', blob, url });
-            })
-            .catch((error: unknown) => {
-                if (!active || controller.signal.aborted) return;
-
-                setPngExport({
-                    status: 'error',
-                    message: error instanceof Error
-                        ? error.message
-                        : 'Could not generate the PNG.'
-                });
-            });
-
-        return () => {
-            active = false;
-            controller.abort();
-            if (pngAbortController.current === controller) {
-                pngAbortController.current = undefined;
-            }
-        };
-    }, [outputDocument, pngExport.status]);
-
-    const closePngExport = useCallback(() => {
-        pngAbortController.current?.abort();
-        pngAbortController.current = undefined;
-        if (pngUrl.current) {
-            URL.revokeObjectURL(pngUrl.current);
-            pngUrl.current = undefined;
-        }
-        setPngExport({ status: 'idle' });
-        setPngCopyPhase('idle');
-    }, []);
-
-    const copyPng = useCallback(async () => {
-        if (pngExport.status !== 'ready' || !pngExport.blob) return;
-
-        setPngCopyPhase('copying');
-        try {
-            if (!navigator.clipboard?.write || typeof ClipboardItem === 'undefined') {
-                throw new Error('Clipboard image access is unavailable.');
-            }
-
-            await navigator.clipboard.write([
-                new ClipboardItem({ 'image/png': pngExport.blob })
-            ]);
-            setPngCopyPhase('copied');
-        } catch {
-            setPngCopyPhase('error');
-        }
-    }, [pngExport]);
-
-    const downloadPng = useCallback(() => {
-        if (pngExport.status !== 'ready' || !pngExport.url) return;
-
-        const link = document.createElement('a');
-        link.href = pngExport.url;
-        link.download = `resume-${Date.now()}.png`;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-    }, [pngExport]);
-
-    useEffect(() => {
-        return () => {
-            pngAbortController.current?.abort();
-            if (pngUrl.current) {
-                URL.revokeObjectURL(pngUrl.current);
-            }
-        };
-    }, []);
+        pngExportStore.start(outputDocument);
+    }, [outputDocument]);
 
     // Helper Component Props
     const topMenuProps: TopNavBarWrapperProps = {
@@ -682,16 +584,7 @@ export function Resume(props: ResumeProps) {
     const hlBoxContainer = createContainer("hl-box-container");
     const resume = (
         <>
-            <PngExportModal
-                isOpen={pngExport.status !== 'idle'}
-                phase={pngExport.status === 'idle' ? 'loading' : pngExport.status}
-                imageUrl={pngExport.url}
-                errorMessage={pngExport.message}
-                copyPhase={pngCopyPhase}
-                onClose={closePngExport}
-                onCopy={() => void copyPng()}
-                onDownload={downloadPng}
-            />
+            <PngExportFeature />
             <ResumeRenderer
                 nodes={resumeNodes}
                 pageSize={pageSize}

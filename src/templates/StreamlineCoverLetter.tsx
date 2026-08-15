@@ -4,7 +4,7 @@ import MarkdownText from "@/resume/Markdown";
 
 import dineshChugtaiSignature from "./assets/signatures/dinesh-chugtai.png?inline";
 import getDefaultCss from "./CssTemplates";
-import { streamlineHeader } from "./Streamline";
+import { addStreamlineHeaderCss, streamlineHeader } from "./Streamline";
 
 import type { BasicResumeNode } from "@/types";
 
@@ -83,62 +83,13 @@ Thank you for your time and consideration.`
 }
 
 export function streamlineCoverLetterCss() {
-    const css = getDefaultCss().setProperties({
+    let css = getDefaultCss().setProperties({
         "font-family": "var(--sans-serif)",
         "font-size": "var(--body-font-size)",
         "line-height": "var(--body-line-height)"
     });
 
-    /** Header */
-    const header = css.mustFindNode("Header").setProperties({
-        "margin-bottom": "var(--small-spacing)",
-        "padding-bottom": "var(--small-spacing)",
-        "padding-top": "var(--edge-margin)",
-        "padding-left": "var(--edge-margin)",
-        "padding-right": "var(--edge-margin)",
-        "margin-left": "0",
-        "margin-right": "0",
-        "margin-top": "0"
-    }).setProperties({ "margin-right": "auto" }, "Title Group");
-
-    const titleGroup = header.mustFindNode("Title Group");
-    titleGroup.addNode("Headers", { "margin": "0 !important" }, "> *");
-
-    titleGroup.mustFindNode("Title").setProperties({
-        "font-family": "var(--sans-serif)",
-        "margin": "0 0 var(--x-small-spacing) 0",
-        "font-size": "var(--header-title-size)"
-    });
-
-    titleGroup.mustFindNode("Subtitle").setProperties({
-        "margin": "0",
-        "font-size": "var(--header-subtitle-size)",
-        "color": "var(--header-subtitle-color)"
-    });
-
-    const contact = header.addNode("#contact", {
-        "font-size": "var(--contact-font-size)",
-        "margin-top": "var(--x-small-spacing)",
-        "line-height": "var(--contact-line-height)"
-    });
-
-    const contactText = contact.addNode("Contact Text", {}, ".text-content");
-    contactText.addNode("Content", { "margin": "0 !important" }, "> p");
-
-    const contactRow = contact.addNode("Contact Row", {}, ".row");
-
-    contactRow.addNode("Contact Row Items", {
-        "display": "inline-flex !important",
-        "align-items": "center"
-    }, "> .text-content, > .link");
-
-    contactRow.addNode("Contact Row Separators", {
-        "content": "\"•\"",
-        "color": "var(--accent)",
-        "font-size": "var(--separator-size)",
-        "margin": "0 var(--separator-spacing)",
-        "opacity": "var(--separator-opacity)"
-    }, "> .text-content + .text-content::before, > .link + .link::before");
+    css = addStreamlineHeaderCss(css);
 
     /** Cover letter body */
     const content = css.addNode("#content", {

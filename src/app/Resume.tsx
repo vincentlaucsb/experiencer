@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { createPortal } from 'react-dom';
 import { useRef, useCallback, useSyncExternalStore } from 'react';
 import type { MenuItem } from 'popright';
 
@@ -10,31 +9,24 @@ import 'purecss/build/pure-min.css';
 import '@/sass/index.scss';
 
 // Utilities
-import { createContainer } from '@/shared/utils/createContainer';
 import { exportResumeAsHtml, printResume } from '@/shared/utils/PrintHelpers';
 
 // Components
 import { Button } from '@/controls/Buttons';
 import ConfirmationModal from '@/controls/ConfirmationModal';
-import { ResizableSidebarLayout, StaticSidebarLayout, DefaultLayout } from '@/controls/Layouts';
-import ResumeHotKeys from '@/controls/ResumeHotkeys';
+import { StaticSidebarLayout, DefaultLayout } from '@/controls/Layouts';
 import TopEditingBar from '@/controls/TopEditingBar';
 import TopNavBar, { TopNavBarWrapperProps } from '@/controls/TopNavBar';
-import Tabs from '@/controls/Tabs';
-import Toast from '@/controls/Toast';
 import PureMenu, { PureMenuLink, PureMenuItem } from '@/controls/menus/PureMenu';
-import NodeTreeVisualizer from '@/editor/NodeTreeVisualizer';
 import Landing, { LandingActions, LandingContext } from '@/help/Landing';
 import { ResumePreviewFrame } from '@/resume/ResumePreview';
-import ResumeRenderer from '@/resume/ResumeRenderer';
 import ResumeTemplates from '@/templates/ResumeTemplates';
 import builtinTemplatePreviewImages from '@/templates/builtinTemplatePreviewImages';
-import ResumeCssEditor from '@/app/ResumeCssEditor';
-import PngExportFeature from '@/app/PngExportFeature';
+import ResumeEditor, { type AdditionalSidebarTab } from '@/app/ResumeEditor';
 import PageSize from '@/types/PageSize';
 
 // Stores
-import { useEditorStore, usePageSize, useSelectedNodeId, useIsEditingSelected } from '@/shared/stores/editorStore';
+import { usePageSize, useSelectedNodeId, useIsEditingSelected } from '@/shared/stores/editorStore';
 import { workspaceStore } from '@/shared/stores/workspaceStore';
 import { useWorkspaceSnapshot } from '@/shared/stores/workspaceStoreHooks';
 import { useResumeTree, resumeNodeStore } from '@/shared/stores/resumeNodeStore';
@@ -43,7 +35,7 @@ import { useDocumentFonts } from '@/shared/stores/documentFontsStore';
 import { showToast } from '@/shared/stores/toastStore';
 
 // Types
-import { IdType, NodeProperty, ResumeSaveData, ResumeNode, EditorMode } from '@/types';
+import { ResumeSaveData, ResumeNode, EditorMode } from '@/types';
 import type { ResumeFont } from '@/types';
 import type { ResumeDocumentSource } from '@/shared/resumeDocument/prepareResumeDocument';
 import useHandlePrint from '@/shared/hooks/useHandlePrint';
@@ -54,11 +46,6 @@ import { ResumeDocumentSummary, ResumeRepository } from '@/shared/repositories/R
 import ResumeLibraryStore, { ResumeLibraryController } from '@/shared/stores/resumeLibraryStore';
 import { pngExportStore } from '@/shared/stores/pngExportStore';
 import type { ToolbarData } from '@/controls/toolbar/ToolbarMaker';
-
-// Dynamic imports (lazy-loaded on-demand)
-const SelectedNodeHighlightBox = React.lazy(
-    () => import('@/editor/HighlightBox').then(m => ({ default: m.SelectedNodeHighlightBox }))
-);
 
 function TemplatePreview(props: { templateKey: string }) {
     const image = builtinTemplatePreviewImages[props.templateKey]
@@ -90,10 +77,7 @@ export interface AdditionalTemplateGroup {
     emptyState?: React.ReactNode;
 }
 
-export interface AdditionalSidebarTab {
-    key: string;
-    content: React.ReactNode;
-}
+export type { AdditionalSidebarTab } from '@/app/ResumeEditor';
 
 export interface ResumeDocumentGroup {
     id: string;
@@ -179,7 +163,6 @@ export type ResumeWrapperProps = Partial<Omit<ResumeProps, 'selectedNodeId' | 'i
 };
 
 export function Resume(props: ResumeProps) {
-    const resumeRef = useRef<HTMLDivElement>(null);
     const applicationTitle = useRef(
         typeof document === 'undefined' ? 'Experiencer' : document.title
     );
@@ -502,15 +485,6 @@ export function Resume(props: ResumeProps) {
         );
     };
 
-    // Creating/Editing Nodes
-    const updateData = useCallback((id: IdType, key: string, data: any) => {
-        resumeNodeStore.updateNode(id, key, data);
-    }, []);
-
-    const updateDataFields = useCallback((id: IdType, patch: Partial<Record<string, NodeProperty>>) => {
-        resumeNodeStore.updateNodeFields(id, patch);
-    }, []);
-
     // Serialization
     const exportHtml = useCallback(() => {
         void exportResumeAsHtml(outputDocument, 'resume.zip')
@@ -558,51 +532,8 @@ export function Resume(props: ResumeProps) {
         documentItems: props.documentMenuItems
     };
 
-    const renderSidebar = () => {
-        return <Tabs>
-            <NodeTreeVisualizer key="Tree" childNodes={resumeNodes}
-                selectNode={(uuid) => useEditorStore.getState().selectNode(uuid)}
-                selectedNode={props.selectedNodeId}
-            />
-            <ResumeCssEditor key="CSS" selectedNodeId={props.selectedNodeId} />
-            <div key="Raw CSS">
-                <pre>
-                    <code>
-                        {props.stylesheet}
-                    </code>
-                </pre>
-            </div>
-            {(props.additionalSidebarTabs ?? []).map((tab) => (
-                <React.Fragment key={tab.key}>{tab.content}</React.Fragment>
-            ))}
-        </Tabs>
-    };
-
     // Main Render Logic
     const { mode } = props;
-
-    const hlBoxContainer = createContainer("hl-box-container");
-    const resume = (
-        <>
-            <PngExportFeature />
-            <ResumeRenderer
-                nodes={resumeNodes}
-                pageSize={pageSize}
-                root="editor-host"
-                containerRef={resumeRef}
-                beforeNodes={<ResumeHotKeys />}
-                updateResumeData={updateData}
-                updateResumeDataFields={updateDataFields}
-            />
-            {createPortal(
-                <React.Suspense fallback={null}>
-                    <SelectedNodeHighlightBox />
-                </React.Suspense>,
-                hlBoxContainer
-            )}
-            <Toast />
-        </>
-    );
     
     const editingTop = (
         <header id="app-header" className="no-print app-mb-4">
@@ -658,10 +589,13 @@ export function Resume(props: ResumeProps) {
                 />
                 } />
         default:
-            return <ResizableSidebarLayout
+            return <ResumeEditor
                 topNav={editingTop}
-                main={resume}
-                sidebar={renderSidebar()}
+                nodes={resumeNodes}
+                pageSize={pageSize}
+                selectedNodeId={props.selectedNodeId}
+                stylesheet={props.stylesheet}
+                additionalSidebarTabs={props.additionalSidebarTabs}
             />
     }
 }

@@ -17,11 +17,15 @@ describe('built-in templates', () => {
         }
     });
 
-    test('Streamline keeps its header title at regular weight', () => {
-        const stylesheet = CssNode.load(ResumeTemplates.templates.Streamline.builtinCss).stylesheet();
+    test('Streamline résumé and cover letter share the regular-weight header treatment', () => {
+        const resumeStylesheet = CssNode.load(ResumeTemplates.templates.Streamline.builtinCss).stylesheet();
+        const coverLetterStylesheet = CssNode.load(ResumeTemplates.templates['Streamline: Cover Letter'].builtinCss).stylesheet();
 
-        expect(stylesheet).toContain('font-weight: 400;');
-        expect(stylesheet).not.toMatch(/header hgroup > h1 \{[^}]*font-weight: 700;/s);
+        for (const stylesheet of [resumeStylesheet, coverLetterStylesheet]) {
+            expect(stylesheet).toContain('font-size: var(--header-title-size);');
+            expect(stylesheet).toContain('font-weight: 400;');
+            expect(stylesheet).not.toMatch(/header hgroup > h1 \{[^}]*font-weight: 700;/s);
+        }
     });
 
     test('Assured résumé and cover letter share the same header treatment', () => {

@@ -12,17 +12,16 @@ import '@/sass/index.scss';
 import { exportResumeAsHtml, printResume } from '@/shared/utils/PrintHelpers';
 
 // Components
-import { Button } from '@/controls/Buttons';
 import ConfirmationModal from '@/controls/ConfirmationModal';
-import { StaticSidebarLayout, DefaultLayout } from '@/controls/Layouts';
+import { DefaultLayout } from '@/controls/Layouts';
 import TopEditingBar from '@/controls/TopEditingBar';
 import TopNavBar, { TopNavBarWrapperProps } from '@/controls/TopNavBar';
-import PureMenu, { PureMenuLink, PureMenuItem } from '@/controls/menus/PureMenu';
 import Landing, { LandingActions, LandingContext } from '@/help/Landing';
-import { ResumePreviewFrame } from '@/resume/ResumePreview';
-import ResumeTemplates from '@/templates/ResumeTemplates';
-import builtinTemplatePreviewImages from '@/templates/builtinTemplatePreviewImages';
 import ResumeEditor, { type AdditionalSidebarTab } from '@/app/ResumeEditor';
+import ResumeTemplateSelector, {
+    type AdditionalTemplateGroup,
+    type AdditionalTemplateOption
+} from '@/app/ResumeTemplateSelector';
 import PageSize from '@/types/PageSize';
 
 // Stores
@@ -35,7 +34,7 @@ import { useDocumentFonts } from '@/shared/stores/documentFontsStore';
 import { showToast } from '@/shared/stores/toastStore';
 
 // Types
-import { ResumeSaveData, ResumeNode, EditorMode } from '@/types';
+import { ResumeNode, EditorMode } from '@/types';
 import type { ResumeFont } from '@/types';
 import type { ResumeDocumentSource } from '@/shared/resumeDocument/prepareResumeDocument';
 import useHandlePrint from '@/shared/hooks/useHandlePrint';
@@ -47,37 +46,11 @@ import ResumeLibraryStore, { ResumeLibraryController } from '@/shared/stores/res
 import { pngExportStore } from '@/shared/stores/pngExportStore';
 import type { ToolbarData } from '@/controls/toolbar/ToolbarMaker';
 
-function TemplatePreview(props: { templateKey: string }) {
-    const image = builtinTemplatePreviewImages[props.templateKey]
-        ?? builtinTemplatePreviewImages.Integrity;
-
-    return (
-        <div className="template-preview-image">
-            <img src={image} alt={`${props.templateKey} template preview`} />
-        </div>
-    );
-}
-
-export interface AdditionalTemplateOption {
-    id: string;
-    title: string;
-    loadPreview?: () => Promise<ResumeSaveData>;
-    previewImage?: string;
-    previewAlt?: string;
-    previewLabel?: string;
-    use: () => Promise<void> | void;
-    useLabel?: string;
-    useDescription?: React.ReactNode;
-}
-
-export interface AdditionalTemplateGroup {
-    id: string;
-    heading: React.ReactNode;
-    templates: AdditionalTemplateOption[];
-    emptyState?: React.ReactNode;
-}
-
 export type { AdditionalSidebarTab } from '@/app/ResumeEditor';
+export type {
+    AdditionalTemplateGroup,
+    AdditionalTemplateOption
+} from '@/app/ResumeTemplateSelector';
 
 export interface ResumeDocumentGroup {
     id: string;
@@ -99,14 +72,6 @@ export type DeleteDocumentConfirmationRequest = (
     document: ResumeDocumentSummary,
     defaultConfirm: () => void
 ) => void;
-
-type AdditionalTemplatePreviewState = {
-    key?: string;
-    status: 'idle' | 'loading' | 'ready' | 'error';
-    data?: ResumeSaveData;
-    image?: string;
-    message?: string;
-};
 
 export interface ResumeProps {
     mode?: EditorMode;
@@ -137,7 +102,7 @@ export interface ResumeProps {
     deleteDocument?: (id: string) => void;
     requestDeleteConfirmation?: DeleteDocumentConfirmationRequest;
     renameDocument?: (id: string, title: string) => Promise<string | null>;
-    createDocumentFromTemplate?: (key?: string) => void;
+    createDocumentFromTemplate?: (key?: string) => Promise<void> | void;
     importDocument?: (data: object, title?: string) => void;
     fileMenuItems?: MenuItem[];
     helpMenuItems?: MenuItem[];
@@ -166,13 +131,6 @@ export function Resume(props: ResumeProps) {
     const applicationTitle = useRef(
         typeof document === 'undefined' ? 'Experiencer' : document.title
     );
-    const [selectedTemplateKey, setSelectedTemplateKey] = React.useState('Integrity');
-    const [selectedAdditionalTemplateKey, setSelectedAdditionalTemplateKey] = React.useState<string>();
-    const [additionalPreview, setAdditionalPreview] = React.useState<AdditionalTemplatePreviewState>({
-        status: 'idle'
-    });
-    const [templateActionStatus, setTemplateActionStatus] = React.useState<'idle' | 'using'>('idle');
-    const [templateActionError, setTemplateActionError] = React.useState<string>();
     const resumeNodes = props.tree.childNodes || [];
     const pageSize = props.pageSize || PageSize.Letter;
     const outputDocument = React.useMemo<ResumeDocumentSource>(() => ({
@@ -190,90 +148,6 @@ export function Resume(props: ResumeProps) {
         props.stylesheet,
         resumeNodes
     ]);
-    const additionalTemplate = React.useMemo(() => {
-        if (!selectedAdditionalTemplateKey) {
-            return undefined;
-        }
-
-        for (const group of props.additionalTemplateGroups ?? []) {
-            for (const template of group.templates) {
-                if (`${group.id}:${template.id}` === selectedAdditionalTemplateKey) {
-                    return template;
-                }
-            }
-        }
-
-        return undefined;
-    }, [props.additionalTemplateGroups, selectedAdditionalTemplateKey]);
-
-    useEffect(() => {
-        if (selectedAdditionalTemplateKey && !additionalTemplate) {
-            setSelectedAdditionalTemplateKey(undefined);
-            setTemplateActionError('This template is no longer available.');
-            setAdditionalPreview({ status: 'idle' });
-            return;
-        }
-
-        if (!selectedAdditionalTemplateKey) {
-            setAdditionalPreview({ status: 'idle' });
-            return;
-        }
-        if (!additionalTemplate) {
-            setAdditionalPreview({ status: 'idle' });
-            return;
-        }
-
-        let cancelled = false;
-        setAdditionalPreview({
-            key: selectedAdditionalTemplateKey,
-            status: 'loading'
-        });
-
-        if (additionalTemplate.previewImage) {
-            setAdditionalPreview({
-                key: selectedAdditionalTemplateKey,
-                status: 'ready',
-                image: additionalTemplate.previewImage
-            });
-            return;
-        }
-
-        if (!additionalTemplate.loadPreview) {
-            setAdditionalPreview({
-                key: selectedAdditionalTemplateKey,
-                status: 'error',
-                message: 'This template preview is unavailable.'
-            });
-            return;
-        }
-
-        additionalTemplate.loadPreview()
-            .then((data) => {
-                if (!cancelled) {
-                    setAdditionalPreview({
-                        key: selectedAdditionalTemplateKey,
-                        status: 'ready',
-                        data
-                    });
-                }
-            })
-            .catch((error: unknown) => {
-                if (!cancelled) {
-                    setAdditionalPreview({
-                        key: selectedAdditionalTemplateKey,
-                        status: 'error',
-                        message: error instanceof Error
-                            ? error.message
-                            : 'Could not load this template preview.'
-                    });
-                }
-            });
-
-        return () => {
-            cancelled = true;
-        };
-    }, [additionalTemplate, selectedAdditionalTemplateKey]);
-
     // Returns true if we are actively editing a resume
     const isEditing = (() => {
         const mode = props.mode || 'landing';
@@ -297,47 +171,6 @@ export function Resume(props: ResumeProps) {
         };
     }, [activeDocumentTitle]);
 
-    // Change Templates
-    const loadTemplate = useCallback((key = 'Integrity') => {
-        if (props.createDocumentFromTemplate) {
-            props.createDocumentFromTemplate(key);
-            return;
-        }
-
-        const template: ResumeSaveData = ResumeTemplates.templates[key];
-        loadData(template, 'changingTemplate');
-    }, [props.createDocumentFromTemplate]);
-
-    const selectBuiltInTemplate = useCallback((key: string) => {
-        setSelectedAdditionalTemplateKey(undefined);
-        setSelectedTemplateKey(key);
-        setTemplateActionError(undefined);
-    }, []);
-
-    const selectAdditionalTemplate = useCallback((groupId: string, templateId: string) => {
-        setSelectedAdditionalTemplateKey(`${groupId}:${templateId}`);
-        setTemplateActionError(undefined);
-    }, []);
-
-    const useSelectedTemplate = useCallback(async () => {
-        setTemplateActionError(undefined);
-        if (!additionalTemplate) {
-            loadTemplate(selectedTemplateKey);
-            return;
-        }
-
-        setTemplateActionStatus('using');
-        try {
-            await additionalTemplate.use();
-        } catch (error: unknown) {
-            setTemplateActionError(error instanceof Error
-                ? error.message
-                : 'Could not create a document from this template.');
-        } finally {
-            setTemplateActionStatus('idle');
-        }
-    }, [additionalTemplate, loadTemplate, selectedTemplateKey]);
-
     const openTemplateSelector = useCallback(() => {
         workspaceStore.showTemplateSelector();
     }, []);
@@ -345,145 +178,6 @@ export function Resume(props: ResumeProps) {
     const importLocalData = useCallback((data: object) => {
         loadData(data);
     }, []);
-
-    const renderTemplateChanger = () => {
-        const compareTitles = (left: string, right: string) => left.localeCompare(
-            right,
-            undefined,
-            { sensitivity: 'base' }
-        );
-        const templateNames = Object.keys(ResumeTemplates.templates).sort(compareTitles);
-        const additionalTemplateGroups = (props.additionalTemplateGroups ?? []).map((group) => ({
-            ...group,
-            templates: [...group.templates].sort((left, right) => compareTitles(left.title, right.title))
-        }));
-        return (
-            <div id="template-selector">
-                <PureMenu>
-                    {templateNames.map((key: string) =>
-                        <PureMenuItem
-                            key={key}
-                            selected={!selectedAdditionalTemplateKey && key === selectedTemplateKey}
-                            onClick={() => selectBuiltInTemplate(key)}
-                        >
-                            <PureMenuLink>{key}</PureMenuLink>
-                        </PureMenuItem>
-                    )}
-                    {additionalTemplateGroups.map((group) => (
-                        <React.Fragment key={group.id}>
-                            <PureMenuItem className="template-selector-group-heading">
-                                {group.heading}
-                            </PureMenuItem>
-                            {group.templates.length
-                                ? group.templates.map((template) => {
-                                    const key = `${group.id}:${template.id}`;
-                                    const selected = selectedAdditionalTemplateKey === key;
-                                    return (
-                                        <React.Fragment key={key}>
-                                            <PureMenuItem
-                                                selected={selected}
-                                                onClick={() => selectAdditionalTemplate(group.id, template.id)}
-                                            >
-                                                <PureMenuLink>{template.title}</PureMenuLink>
-                                            </PureMenuItem>
-                                            {selected
-                                                ? (
-                                                    <PureMenuItem className="template-selector-selected-action">
-                                                        {template.useDescription
-                                                            ? (
-                                                                <p className="template-selector-action-description">
-                                                                    {template.useDescription}
-                                                                </p>
-                                                            )
-                                                            : <></>}
-                                                        <Button
-                                                            className="template-selector-primary-action"
-                                                            disabled={templateActionStatus === 'using'
-                                                                || additionalPreview.status !== 'ready'}
-                                                            onClick={useSelectedTemplate}
-                                                            variant="primary"
-                                                        >
-                                                            {templateActionStatus === 'using'
-                                                                ? 'Creating…'
-                                                                : template.useLabel ?? 'Use this Template'}
-                                                        </Button>
-                                                    </PureMenuItem>
-                                                )
-                                                : <></>}
-                                        </React.Fragment>
-                                    );
-                                })
-                                : (
-                                    <PureMenuItem className="template-selector-empty-state">
-                                        {group.emptyState}
-                                    </PureMenuItem>
-                                )}
-                        </React.Fragment>
-                    ))}
-                </PureMenu>
-                {templateActionError
-                    ? <p className="template-selector-error" role="alert">{templateActionError}</p>
-                    : <></>}
-                {!additionalTemplate
-                    ? (
-                        <Button
-                            className="template-selector-primary-action"
-                            disabled={templateActionStatus === 'using'}
-                            onClick={useSelectedTemplate}
-                            variant="primary"
-                        >
-                            {templateActionStatus === 'using' ? 'Creating…' : 'Use this Template'}
-                        </Button>
-                    )
-                    : <></>}
-            </div>
-        );
-    };
-
-    const renderTemplatePreview = () => {
-        if (!additionalTemplate) {
-            return <TemplatePreview templateKey={selectedTemplateKey} />;
-        }
-
-        if (additionalPreview.status === 'error') {
-            return (
-                <div className="template-preview-status" role="alert">
-                    {additionalPreview.message}
-                </div>
-            );
-        }
-
-        if (additionalPreview.status !== 'ready' || !additionalPreview.data) {
-            if (additionalPreview.status === 'ready' && additionalPreview.image) {
-                return (
-                    <div className="template-preview-image">
-                        <div className="template-preview-label">
-                            {additionalTemplate.previewLabel ?? 'Preview only'}
-                        </div>
-                        <img
-                            src={additionalPreview.image}
-                            alt={additionalTemplate.previewAlt ?? `${additionalTemplate.title} template preview`}
-                        />
-                    </div>
-                );
-            }
-            return (
-                <div className="template-preview-status" role="status">
-                    Loading template preview…
-                </div>
-            );
-        }
-
-        return (
-            <ResumePreviewFrame
-                data={additionalPreview.data}
-                pageSize={pageSize}
-                ariaLabel={`${additionalTemplate.title} template preview`}
-                target="isolated-preview"
-                iframeClassName="template-preview-frame"
-            />
-        );
-    };
 
     // Serialization
     const exportHtml = useCallback(() => {
@@ -551,10 +245,11 @@ export function Resume(props: ResumeProps) {
     // Render the final layout based on editor mode
     switch (mode) {
         case 'changingTemplate':
-            return <StaticSidebarLayout
+            return <ResumeTemplateSelector
                 topNav={editingTop}
-                main={renderTemplatePreview()}
-                sidebar={renderTemplateChanger()}
+                pageSize={pageSize}
+                additionalTemplateGroups={props.additionalTemplateGroups}
+                createDocumentFromTemplate={props.createDocumentFromTemplate}
             />
         case 'landing':
             return <DefaultLayout

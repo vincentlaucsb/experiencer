@@ -19,9 +19,14 @@ import type {
 } from "@/shared/repositories/ResumeRepository";
 import ResumeLibraryStore from "@/shared/stores/resumeLibraryStore";
 import { workspaceStore } from "@/shared/stores/workspaceStore";
+import { templateSelectorStore } from "@/shared/stores/templateSelectorStore";
 
 // Initialize the schema registry
 registerNodes();
+
+beforeEach(() => {
+    templateSelectorStore.reset();
+});
 
 /**
  * Helper to load template data into stores for unit testing.

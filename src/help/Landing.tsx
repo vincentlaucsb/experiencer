@@ -9,6 +9,7 @@ import type { ResumeDocumentAction, ResumeDocumentGroup } from "@/app/Resume";
 import AsyncActionForm from "@/controls/AsyncActionForm";
 import { RESUME_TITLE_MAX_LENGTH } from "@/shared/repositories/ResumeRepository";
 import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
+import { browserDateTimeFormatter } from "@/shared/utils/dateTimeFormat";
 import GitHubLight from "@/assets/icons/GitHub-Mark-Light-120px-plus.png";
 import SocialLinks from "./SocialLinks";
 
@@ -168,7 +169,7 @@ export default function Landing(props: LandingProps) {
                                                     )
                                                     : <></>}
                                             </h3>
-                                            <p>Version {document.version} · Updated {new Date(document.updatedAt).toLocaleString()}</p>
+                                            <p>Version {document.version} · Updated {browserDateTimeFormatter.formatDateTime(document.updatedAt)}</p>
                                         </div>
                                     )}
                                     <div className="resume-library-actions">

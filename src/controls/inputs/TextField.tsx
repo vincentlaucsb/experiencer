@@ -1,11 +1,15 @@
 import React, { MouseEvent } from "react";
-import { ContextMenu } from "@popright/react";
+import { ContextMenu, DropdownMenu } from "@popright/react";
 import type { MenuItem } from "popright";
 import InlineMarkdown from "@/resume/helpers/InlineMarkdown";
 import useAutoExpandInput from "@/resume/hooks/useAutoExpandInput";
 
 import { isNullOrUndefined } from "@/shared/utils/isNullOrUndefined";
 import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
+import { Button } from "@/controls/Buttons";
+import { HintKey, hintStore } from "@/shared/stores/hintStore";
+
+import "./TextField.scss";
 
 interface ContextMenuOption {
     text: string;
@@ -25,6 +29,9 @@ interface TextFieldProps {
     static?: boolean;
     /** Expand the inline editor to fit its value; opt out only for fixed-width utility fields. */
     autoExpand?: boolean;
+
+    /** Expose the field context menu without requiring a right-click. */
+    showContextMenuButton?: boolean;
 
     contextMenuOptions?: Array<ContextMenuOption>;
     
@@ -157,9 +164,11 @@ export default class TextField extends React.Component<TextFieldProps, TextField
             }))
         ];
 
-        return (
-            <ContextMenu items={contextMenuItems}>
+        const dismissFieldOptionsHint = () => hintStore.dismiss(HintKey.FieldOptions);
+        const field = (
+            <ContextMenu key="field" items={contextMenuItems} onOpen={dismissFieldOptionsHint}>
                 <span
+                    onContextMenu={dismissFieldOptionsHint}
                     onClick={(event: MouseEvent) => {
                         if (!this.props.static) {
                             this.setState({ isEditing: true });
@@ -171,5 +180,34 @@ export default class TextField extends React.Component<TextFieldProps, TextField
                 </span>
             </ContextMenu>
         );
+
+        if (!props.showContextMenuButton) return field;
+
+        const fieldLabel = props.value || props.defaultText || 'field';
+        return <span className="text-field-menu-anchor">
+            {field}
+            <DropdownMenu
+                key="field-options"
+                items={contextMenuItems}
+                side="bottom"
+                align="end"
+                onOpen={dismissFieldOptionsHint}
+            >
+                <Button
+                    type="button"
+                    className="field-options-trigger no-print"
+                    aria-label={`More options for ${fieldLabel}`}
+                    title="More field options"
+                    data-field-options-trigger=""
+                    onMouseDown={(event) => event.stopPropagation()}
+                    onClick={(event) => {
+                        dismissFieldOptionsHint();
+                        event.stopPropagation();
+                    }}
+                >
+                    <span aria-hidden="true">&#8942;</span>
+                </Button>
+            </DropdownMenu>
+        </span>;
     }
 }

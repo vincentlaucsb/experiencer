@@ -12,7 +12,7 @@ export function getJoeBlowSignature(): string {
     return signature;
 }
 
-export function assuredCoverLetterNodes(): Array<BasicResumeNode> {
+function getCurrentDate(): string {
     let now = new Date();
     const months = [
         "January",
@@ -31,7 +31,10 @@ export function assuredCoverLetterNodes(): Array<BasicResumeNode> {
     let month = months[now.getMonth()];
 
     let date = `${month} ${now.getDate()}, ${now.getFullYear()}`;
+    return date;
+}
 
+export function assuredCoverLetterNodes(date = getCurrentDate()): Array<BasicResumeNode> {
     return [
         assuredHeader(),
         {

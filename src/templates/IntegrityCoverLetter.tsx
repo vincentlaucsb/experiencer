@@ -16,7 +16,7 @@ function getCurrentDate(): string {
     return `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
 }
 
-export function integrityCoverLetterNodes(): Array<BasicResumeNode> {
+export function integrityCoverLetterNodes(date = getCurrentDate()): Array<BasicResumeNode> {
     const [sidebar] = randyMarsh();
 
     const header = {
@@ -41,7 +41,7 @@ export function integrityCoverLetterNodes(): Array<BasicResumeNode> {
                     childNodes: [
                         {
                             type: MarkdownText.type,
-                            value: getCurrentDate(),
+                            value: date,
                             htmlId: "date"
                         },
                         {

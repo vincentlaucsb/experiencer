@@ -1,7 +1,18 @@
-import ResumeTemplates from '../ResumeTemplates';
+import ResumeTemplates, { createResumeTemplates } from '../ResumeTemplates';
 import CssNode from '@/shared/CssTree';
 
 describe('built-in templates', () => {
+    test('allows development renderers to inject a deterministic cover-letter date', () => {
+        const templates = createResumeTemplates('January 2, 2030');
+        for (const name of [
+            'Assured: Cover Letter',
+            'Integrity: Cover Letter',
+            'Streamline: Cover Letter'
+        ] as const) {
+            expect(JSON.stringify(templates[name].childNodes)).toContain('January 2, 2030');
+        }
+    });
+
     test('declare only the curated local families needed by their CSS', () => {
         for (const template of Object.values(ResumeTemplates.templates)) {
             expect(template.fonts?.length).toBeGreaterThan(0);
@@ -18,13 +29,20 @@ describe('built-in templates', () => {
     });
 
     test('Streamline résumé and cover letter share the regular-weight header treatment', () => {
-        const resumeStylesheet = CssNode.load(ResumeTemplates.templates.Streamline.builtinCss).stylesheet();
-        const coverLetterStylesheet = CssNode.load(ResumeTemplates.templates['Streamline: Cover Letter'].builtinCss).stylesheet();
+        const resumeCss = CssNode.load(ResumeTemplates.templates.Streamline.builtinCss);
+        const coverLetterCss = CssNode.load(ResumeTemplates.templates['Streamline: Cover Letter'].builtinCss);
+        const resumeStylesheet = resumeCss.stylesheet();
+        const coverLetterStylesheet = coverLetterCss.stylesheet();
 
         for (const stylesheet of [resumeStylesheet, coverLetterStylesheet]) {
             expect(stylesheet).toContain('font-size: var(--header-title-size);');
             expect(stylesheet).toContain('font-weight: 400;');
             expect(stylesheet).not.toMatch(/header hgroup > h1 \{[^}]*font-weight: 700;/s);
+        }
+        for (const css of [resumeCss, coverLetterCss]) {
+            const separator = css.findNode(['Header', '#contact', 'Contact Row', 'Contact Row Separators']);
+            expect(separator?.properties.get('display')).toBe('inline-block');
+            expect(separator?.properties.get('text-decoration')).toBe('none');
         }
     });
 

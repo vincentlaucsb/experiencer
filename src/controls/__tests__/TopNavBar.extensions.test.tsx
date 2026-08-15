@@ -2,6 +2,13 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 
 import { TopNavBar } from "@/controls/TopNavBar";
 import { PureMenuItem } from "@/controls/menus/PureMenu";
+import { HintKey, hintStore } from "@/shared/stores/hintStore";
+import { clearToast, useToastStore } from "@/shared/stores/toastStore";
+
+afterEach(() => {
+    hintStore.reset();
+    clearToast();
+});
 
 const baseProps = {
     isEditing: true,
@@ -76,6 +83,17 @@ test("opens and closes the semantic keyboard-shortcuts modal", async () => {
 
     await waitFor(() => expect(screen.queryByRole("dialog", { name: "Keyboard shortcuts" })).toBeNull());
     await waitFor(() => expect(document.activeElement).toBe(help));
+});
+
+test("resets persisted contextual tips from Help", () => {
+    hintStore.dismiss(HintKey.FieldOptions);
+    render(<TopNavBar {...baseProps} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Help" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Reset tips" }));
+
+    expect(hintStore.isDismissed(HintKey.FieldOptions)).toBe(false);
+    expect(useToastStore.getState().message).toBe("Tips reset. Contextual help will appear again.");
 });
 
 test("renders optional account-area items next to authentication controls", () => {

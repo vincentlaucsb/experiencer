@@ -1,5 +1,9 @@
 ﻿import React, { useEffect } from "react";
 
+import { Button } from "@/controls/Buttons";
+import { positionSelectionCoachmark } from "@/shared/utils/selectionCoachmarkPosition";
+import { createPortal } from "react-dom";
+
 interface HighlightBoxProps {
     /** The selected HTML node in question */
     elem: Element;
@@ -12,6 +16,7 @@ interface HighlightBoxProps {
     className: string;
     calcStyle?: (bounds: DOMRect, style: CSSStyleDeclaration) => any;
     selectionHint?: string;
+    onDismissSelectionHint?: () => void;
 }
 
 function defaultCalcStyle(bounds: DOMRect, style: CSSStyleDeclaration) {
@@ -78,6 +83,29 @@ export function HighlightBox(props: HighlightBoxProps) {
     }, [props.leftPaneElement, updateBoxes, resizeObserver]);
 
     if (node && bounds && computedStyle) {
+        const resumeBounds = node.closest('#resume')?.getBoundingClientRect() ?? bounds;
+        const paneBounds = props.leftPaneElement?.getBoundingClientRect() ?? {
+            top: 0,
+            right: window.innerWidth,
+            bottom: window.innerHeight,
+            left: 0
+        };
+        const coachmarkBounds = {
+            top: paneBounds.top,
+            bottom: paneBounds.bottom,
+            left: paneBounds.left,
+            // A one-time tip may overlap the inspector when no gutter exists, but it
+            // must not cover the resume content it is explaining.
+            right: window.innerWidth
+        };
+        const coachmarkPosition = positionSelectionCoachmark(
+            bounds,
+            resumeBounds,
+            coachmarkBounds,
+            248,
+            48
+        );
+
         return (
             <>
                 <div className={props.className}
@@ -87,18 +115,31 @@ export function HighlightBox(props: HighlightBoxProps) {
                     }}
                     {...props.attributes}
                 />
-                {props.selectionHint ? (
+                {props.selectionHint ? createPortal(
                     <div
                         className="resume-selection-hint"
                         role="note"
                         style={{
                             position: "fixed",
-                            top: `${bounds.top + 4}px`,
-                            right: `${Math.max(4, window.innerWidth - bounds.right + 4)}px`
+                            top: `${coachmarkPosition.top}px`,
+                            left: `${coachmarkPosition.left}px`
                         }}
+                        data-placement={coachmarkPosition.placement}
                     >
-                        {props.selectionHint}
-                    </div>
+                        <span>{props.selectionHint}</span>
+                        {props.onDismissSelectionHint ? (
+                            <Button
+                                type="button"
+                                className="resume-selection-hint__close"
+                                aria-label="Dismiss field options tip"
+                                title="Dismiss tip"
+                                onClick={props.onDismissSelectionHint}
+                            >
+                                <i className="icofont-close" aria-hidden="true" />
+                            </Button>
+                        ) : <></>}
+                    </div>,
+                    document.body
                 ) : <></>}
             </>
         );

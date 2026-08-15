@@ -25,6 +25,8 @@ import AsyncActionForm from "./AsyncActionForm";
 import ThemeMenu from "./ThemeMenu";
 import KeyboardShortcutsModal from "@/help/KeyboardShortcutsModal";
 import useHorizontalOverflow from "@/shared/hooks/useHorizontalOverflow";
+import { hintStore } from "@/shared/stores/hintStore";
+import { showToast } from "@/shared/stores/toastStore";
 
 export interface TopNavBarProps {
     isEditing: boolean;
@@ -211,6 +213,15 @@ export function TopNavBar(props: TopNavBarProps) {
             label: "Keyboard shortcuts",
             icon: createPoprightIcon("keyboard"),
             onSelect: () => setShortcutsOpen(true)
+        },
+        {
+            id: "reset-tips",
+            label: "Reset tips",
+            icon: createPoprightIcon("refresh"),
+            onSelect: () => {
+                hintStore.reset();
+                showToast("Tips reset. Contextual help will appear again.");
+            }
         },
         ...(props.helpMenuItems?.length
             ? [{ type: "separator" } as MenuItem, ...props.helpMenuItems]

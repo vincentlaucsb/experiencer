@@ -9,9 +9,9 @@ import { integrityCoverLetterNodes, integrityCoverLetterCss } from "./IntegrityC
 import PageSize from "@/types/PageSize";
 import { withTemplateFonts } from "@/shared/fonts/templateFonts";
 
-/** Provides ID-assigned save data for the built-in OSS templates. */
-export default class ResumeTemplates {
-    static templates = {
+/** Creates ID-assigned save data while allowing development renderers to inject fixture dates. */
+export function createResumeTemplates(coverLetterDate?: string) {
+    return {
         "Assured": withTemplateFonts({
             builtinCss: assuredCss().dump(),
             childNodes: assignIds(assuredNodes()),
@@ -21,7 +21,7 @@ export default class ResumeTemplates {
 
         "Assured: Cover Letter": withTemplateFonts({
             builtinCss: assuredCoverLetterCss().dump(),
-            childNodes: assignIds(assuredCoverLetterNodes()),
+            childNodes: assignIds(assuredCoverLetterNodes(coverLetterDate)),
             rootCss: assuredRootCss().dump(),
             pageSize: PageSize.Letter
         } as ResumeSaveData),
@@ -35,7 +35,7 @@ export default class ResumeTemplates {
 
         "Integrity: Cover Letter": withTemplateFonts({
             builtinCss: integrityCoverLetterCss().dump(),
-            childNodes: assignIds(integrityCoverLetterNodes()),
+            childNodes: assignIds(integrityCoverLetterNodes(coverLetterDate)),
             rootCss: randyMarshRootCss().dump(),
             pageSize: PageSize.Letter
         } as ResumeSaveData),
@@ -49,9 +49,14 @@ export default class ResumeTemplates {
 
         "Streamline: Cover Letter": withTemplateFonts({
             builtinCss: streamlineCoverLetterCss().dump(),
-            childNodes: assignIds(streamlineCoverLetterNodes()),
+            childNodes: assignIds(streamlineCoverLetterNodes(coverLetterDate)),
             rootCss: streamlineRootCss().dump(),
             pageSize: PageSize.Letter
         } as ResumeSaveData)
-    }
+    };
+}
+
+/** Provides the interactive product's current-date built-in template catalog. */
+export default class ResumeTemplates {
+    static templates = createResumeTemplates();
 }

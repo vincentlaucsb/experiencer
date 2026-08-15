@@ -28,7 +28,7 @@ function getCurrentDate(): string {
     return `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
 }
 
-export function streamlineCoverLetterNodes(): Array<BasicResumeNode> {
+export function streamlineCoverLetterNodes(date = getCurrentDate()): Array<BasicResumeNode> {
     return [
         streamlineHeader(),
         {
@@ -37,7 +37,7 @@ export function streamlineCoverLetterNodes(): Array<BasicResumeNode> {
             childNodes: [
                 {
                     type: MarkdownText.type,
-                    value: getCurrentDate(),
+                    value: date,
                     htmlId: "date"
                 },
                 {

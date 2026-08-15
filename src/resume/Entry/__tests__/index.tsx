@@ -111,9 +111,11 @@ test("selected entries expose direct title and detail actions", () => {
     expect(container.querySelectorAll('.title .field')).toHaveLength(1);
     expect(container.querySelectorAll('.title input')).toHaveLength(1);
     expect(screen.getByRole("button", { name: "Add detail" })).toBeTruthy();
-    expect(screen.getByText("Right-click fields for more options")).toBeTruthy();
     expect(container.querySelector("[data-selection-hint]")?.getAttribute("data-selection-hint"))
-        .toBe("Right-click fields for more options");
+        .toBe("Tip: click a field's menu button or right-click the field for more options.");
+    expect(container.querySelector("[data-selection-hint-key]")?.getAttribute("data-selection-hint-key"))
+        .toBe("field-options");
+    expect(screen.getByRole("button", { name: "More options for Some Company" })).toBeTruthy();
 });
 
 test("editing entries expose compact title and detail controls", () => {
@@ -134,7 +136,8 @@ test("editing entries expose compact title and detail controls", () => {
         subtitle={["Some Job Title"]}
     />);
 
-    expect(screen.getByText("Finish editing to see field options")).toBeTruthy();
+    expect(document.querySelector("[data-selection-hint]")).toBeNull();
+    expect(screen.queryByRole("button", { name: /More options for/ })).toBeNull();
     const addTitleButton = screen.getByRole("button", { name: "Add title" });
     const addDetailButton = screen.getByRole("button", { name: "Add detail" });
     expect(addTitleButton.className).toContain("entry-field-adder__trigger");

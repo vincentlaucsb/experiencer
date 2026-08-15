@@ -6,6 +6,7 @@ import toUrl from "@/shared/utils/toUrl";
 import { deleteAt } from "@/shared/utils/arrayHelpers";
 import ResumeComponentProps, { BasicResumeNode } from "@/types";
 import { useIsNodeEditing, useIsNodeSelected } from "@/shared/stores/editorStore";
+import { HintKey } from "@/shared/stores/hintStore";
 import FieldAdder from "./FieldAdder";
 
 import "./Entry.scss";
@@ -109,6 +110,7 @@ export default function Entry(props: EntryProps) {
                         defaultText="Enter a value"
                         displayProcessors={[process, toUrl]}
                         contextMenuOptions={textFieldOptions}
+                        showContextMenuButton={isSelected && !isEditing}
                     />
                     {lineBreak}
                 </React.Fragment>
@@ -123,9 +125,12 @@ export default function Entry(props: EntryProps) {
         <Container
             {...props}
             attributes={{
-                "data-selection-hint": isEditing
-                    ? "Finish editing to see field options"
-                    : "Right-click fields for more options"
+                "data-selection-hint": !isEditing
+                    ? "Tip: click a field's menu button or right-click the field for more options."
+                    : undefined,
+                "data-selection-hint-key": !isEditing
+                    ? HintKey.FieldOptions
+                    : undefined
             }}
             className={`entry${isSelected ? " entry--selected" : ""}${isEditing ? " entry--editing" : ""}`}
             displayAs="article"
@@ -150,14 +155,6 @@ export default function Entry(props: EntryProps) {
                     </span>
                 )}
             </hgroup>
-            {isSelected && (
-                <div className="entry-field-help no-print" aria-hidden="true">
-                    {isEditing
-                        ? "Finish editing to see field options"
-                        : "Right-click fields for more options"}
-                </div>
-            )}
-
             {props.children}
         </Container>
     );

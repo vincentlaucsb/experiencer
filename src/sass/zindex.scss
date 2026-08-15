@@ -55,8 +55,8 @@ header#app-header {
     z-index: $selection-overlay;
 }
 
-#hl-box-container > .resume-selection-hint {
-    z-index: $selection-overlay + 1;
+.resume-selection-hint {
+    z-index: $popover;
 }
 
 /** Modal overlays cover all application chrome. */

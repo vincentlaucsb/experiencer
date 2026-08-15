@@ -17,13 +17,53 @@
 }
 
 .resume-selection-hint {
-    padding: 0.2rem 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    width: 248px;
+    padding: 0.45rem 0.5rem 0.45rem 0.65rem;
     background: colors.$surface-raised;
     border: 1px solid colors.$border-subtle;
-    border-radius: 3px;
-    color: colors.$text-secondary;
-    font-size: 0.7rem;
-    line-height: 1.2;
-    pointer-events: none;
-    white-space: nowrap;
+    border-radius: 4px;
+    box-shadow: colors.$shadow-soft;
+    color: colors.$text-primary;
+    font-size: 0.78rem;
+    line-height: 1.3;
+    pointer-events: auto;
+
+    > span {
+        flex: 1;
+    }
+
+    &::before {
+        position: absolute;
+        width: 0;
+        height: 0;
+        border: 6px solid transparent;
+        content: "";
+    }
+
+    &[data-placement="right"]::before {
+        top: 12px;
+        right: 100%;
+        border-right-color: colors.$border-subtle;
+    }
+
+    &[data-placement="left"]::before {
+        top: 12px;
+        left: 100%;
+        border-left-color: colors.$border-subtle;
+    }
+
+    &[data-placement="above"]::before {
+        top: 100%;
+        right: 12px;
+        border-top-color: colors.$border-subtle;
+    }
+
+    &__close {
+        flex: 0 0 auto;
+        min-width: 1.5rem;
+        padding: 0.2rem;
+    }
 }

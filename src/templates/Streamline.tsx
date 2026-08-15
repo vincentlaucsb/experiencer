@@ -57,9 +57,11 @@ export function addStreamlineHeaderCss(css: CssNode): CssNode {
     contactRow.addNode("Contact Row Separators", {
         "content": "\"•\"",
         "color": "var(--accent)",
+        "display": "inline-block",
         "font-size": "var(--separator-size)",
         "margin": "0 var(--separator-spacing)",
-        "opacity": "var(--separator-opacity)"
+        "opacity": "var(--separator-opacity)",
+        "text-decoration": "none"
     }, "> .text-content + .text-content::before, > .link + .link::before");
 
     return css;

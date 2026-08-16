@@ -96,6 +96,9 @@ export interface ResumeSaveData {
 export type ResumeComponentProps<TExtra extends Record<string, any> = Record<string, any>> = ResumeNode<TExtra> & {
     children?: ReactNode;
 
+    /** Read-only output omits editor-only affordances while preserving document semantics. */
+    readOnly?: boolean;
+
     /** Hierarchical ID based on the node's position in the resume.
      * This may change as the resume structure changes.
      */

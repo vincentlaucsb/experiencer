@@ -59,6 +59,7 @@ export default function ResumeRenderer(props: ResumeRendererProps) {
                 <ResumeComponentFactory
                     key={element.uuid}
                     {...element}
+                    readOnly={props.readOnly}
                     updateResumeData={props.updateResumeData}
                     updateResumeDataFields={props.updateResumeDataFields}
                     index={index}

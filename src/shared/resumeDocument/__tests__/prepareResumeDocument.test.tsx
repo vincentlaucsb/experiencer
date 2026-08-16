@@ -32,7 +32,7 @@ test('standalone markup contains body descendants without an editor host', async
     expect(markup).not.toContain('data-resume-host');
 });
 
-test.each(['print', 'export'] as const)(
+test.each(['print', 'export', 'render-service'] as const)(
     '%s markup preserves page breaks without editor-only labels',
     async (target) => {
         const sourceWithPageBreak = {

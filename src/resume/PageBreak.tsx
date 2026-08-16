@@ -2,6 +2,16 @@ import Container from "@/resume/infrastructure/Container";
 import ResumeComponentProps from "@/types";
 
 function PageBreak(props: ResumeComponentProps) {
+    if (props.readOnly) {
+        return (
+            <div
+                className="page-break"
+                id={props.htmlId}
+                data-uuid={props.uuid}
+            />
+        );
+    }
+
     return (
         <Container
             {...props}

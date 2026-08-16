@@ -8,6 +8,7 @@ interface FactoryProps extends ResumeNode {
     index: number;       // The n-th index of this node relative to its parent
     numSiblings: number; // Number of siblings this node has
     parentId?: IdType;   // The id of the parent node
+    readOnly?: boolean;
     updateResumeData: (id: IdType, key: string, data: NodeProperty) => void
     updateResumeDataFields: (id: IdType, patch: Partial<Record<string, NodeProperty>>) => void
 }
@@ -50,6 +51,7 @@ export default function ResumeComponentFactory(props: FactoryProps) {
                 updateResumeDataFields: props.updateResumeDataFields,
                 index: idx,
                 numSiblings: arr.length,
+                readOnly: props.readOnly,
 
                 // Crucial for generating IDs so hover/select works properly
                 parentId: newProps.id

@@ -1,5 +1,6 @@
 import { saveAs } from 'file-saver';
 import generateHtml from '@/editor/GenerateHtml';
+import registerNodes from '@/resume/schema';
 import { documentFontsStore } from '@/shared/stores/documentFontsStore';
 import { buildHtmlExportPackage } from '@/shared/utils/HtmlExportPackage';
 import { exportResumeAsHtml, printResume } from '@/shared/utils/PrintHelpers';
@@ -18,16 +19,16 @@ jest.mock('@/shared/utils/HtmlExportPackage', () => ({
     buildHtmlExportPackage: jest.fn(async () => new Blob(['zip'], { type: 'application/zip' }))
 }));
 
-jest.mock('@/shared/resumeDocument/renderResumeMarkup', () => ({
-    renderResumeMarkup: jest.fn(() => '<p>Resume</p>')
-}));
-
 describe('resume printing and HTML export', () => {
     const saveAsMock = saveAs as jest.MockedFunction<typeof saveAs>;
     const generateHtmlMock = generateHtml as jest.MockedFunction<typeof generateHtml>;
     const buildPackageMock = buildHtmlExportPackage as jest.MockedFunction<typeof buildHtmlExportPackage>;
     const stylesheet = 'body { font-size: 10pt; }';
     let requestAnimationFrameSpy: jest.SpyInstance;
+
+    beforeAll(() => {
+        registerNodes();
+    });
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -53,15 +54,18 @@ describe('resume printing and HTML export', () => {
 
         expect(generateHtmlMock).toHaveBeenCalledWith(
             expect.stringContaining(`@page { size: ${pageSizeLabel}; margin: 0; }`),
-            '<p>Resume</p>'
+            '<div class="page-break" data-uuid="print-page-break"></div>'
         );
         expect(generateHtmlMock).toHaveBeenCalledWith(
             expect.stringContaining('body { font-size: 10pt; }'),
-            '<p>Resume</p>'
+            '<div class="page-break" data-uuid="print-page-break"></div>'
         );
         expect(buildPackageMock).toHaveBeenCalledWith(expect.objectContaining({
             stylesheet: expect.stringContaining(`@page { size: ${pageSizeLabel}; margin: 0; }`),
-            resumeHtml: '<p>Resume</p>'
+            resumeHtml: '<div class="page-break" data-uuid="print-page-break"></div>'
+        }));
+        expect(buildPackageMock).toHaveBeenCalledWith(expect.objectContaining({
+            resumeHtml: expect.not.stringContaining('Page Break')
         }));
         expect(buildPackageMock).toHaveBeenCalledWith(expect.objectContaining({
             stylesheet: expect.stringContaining('body { min-height: 0 !important; }')
@@ -96,7 +100,7 @@ describe('resume printing and HTML export', () => {
 
 function createSource(pageSize: PageSize) {
     return {
-        nodes: [],
+        nodes: [{ type: 'PageBreak', uuid: 'print-page-break' }],
         stylesheet: 'body { font-size: 10pt; }',
         pageSize,
         ariaLabel: 'Resume'

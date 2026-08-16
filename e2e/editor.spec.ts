@@ -22,6 +22,10 @@ test('opens a resume-only print preview in a new tab', async ({ page, context })
   });
   await createResumeFromTemplate(page);
 
+  await page.getByRole('button', { name: 'Insert' }).click();
+  await page.getByRole('menuitem', { name: 'Page break' }).click();
+  await expect(page.locator('#resume .page-break-label')).toHaveText('Page Break');
+
   await page.getByRole('button', { name: 'File' }).click();
   const popupPromise = page.waitForEvent('popup');
   await page.getByRole('menuitem', { name: 'Print' }).click();
@@ -32,6 +36,9 @@ test('opens a resume-only print preview in a new tab', async ({ page, context })
   await expect(printPreview.locator('body > *').first()).toBeVisible();
   await expect(printPreview.locator('#app-header')).toHaveCount(0);
   await expect(printPreview.locator('#toolbar')).toHaveCount(0);
+  await expect(printPreview.getByText('Page Break', { exact: true })).toHaveCount(0);
+  await expect(printPreview.locator('.page-break')).toHaveCount(1);
+  await expect(printPreview.locator('.page-break-editing')).toHaveCount(0);
   await expect(page.locator('#app-header')).toBeVisible();
 });
 

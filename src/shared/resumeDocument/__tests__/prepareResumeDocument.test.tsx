@@ -32,6 +32,28 @@ test('standalone markup contains body descendants without an editor host', async
     expect(markup).not.toContain('data-resume-host');
 });
 
+test.each(['print', 'export'] as const)(
+    '%s markup preserves page breaks without editor-only labels',
+    async (target) => {
+        const sourceWithPageBreak = {
+            ...source,
+            nodes: [
+                ...source.nodes,
+                { type: 'PageBreak', uuid: 'output-page-break' }
+            ]
+        };
+
+        const markup = await renderResumeMarkup(
+            prepareResumeDocument(sourceWithPageBreak, target)
+        );
+
+        expect(markup).toContain('class="page-break"');
+        expect(markup).not.toContain('page-break-editing');
+        expect(markup).not.toContain('page-break-label');
+        expect(markup).not.toContain('Page Break');
+    }
+);
+
 test('the public review target alone emits the server-owned #resume shell', async () => {
     const markup = await renderResumeMarkup(prepareResumeDocument(source, 'public-review'));
 

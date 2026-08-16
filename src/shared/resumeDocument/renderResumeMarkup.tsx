@@ -30,6 +30,9 @@ export async function renderResumeMarkup(
                 />
             );
         });
+        if (prepared.readOnly) {
+            stripEditorOnlyPageBreakMarkup(host);
+        }
         return prepared.root === 'document-body'
             ? host.innerHTML
             : host.querySelector<HTMLElement>('#resume')?.outerHTML ?? '';
@@ -37,4 +40,12 @@ export async function renderResumeMarkup(
         flushSync(() => root.unmount());
         host.remove();
     }
+}
+
+/** Preserve pagination while removing the page-break affordance shown only in the editor. */
+function stripEditorOnlyPageBreakMarkup(host: HTMLElement): void {
+    host.querySelectorAll('.page-break-label').forEach((label) => label.remove());
+    host.querySelectorAll('.page-break-editing').forEach((pageBreak) => {
+        pageBreak.classList.remove('page-break-editing');
+    });
 }

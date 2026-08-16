@@ -55,13 +55,16 @@ export function addStreamlineHeaderCss(css: CssNode): CssNode {
         "align-items": "center"
     }, "> .text-content, > .link");
     contactRow.addNode("Contact Row Separators", {
-        "content": "\"•\"",
+        "content": "\"\"",
+        "background": "currentColor",
+        "border-radius": "50%",
         "color": "var(--accent)",
         "display": "inline-block",
-        "font-size": "var(--separator-size)",
+        "flex": "0 0 auto",
+        "height": "var(--separator-size)",
         "margin": "0 var(--separator-spacing)",
         "opacity": "var(--separator-opacity)",
-        "text-decoration": "none"
+        "width": "var(--separator-size)"
     }, "> .text-content + .text-content::before, > .link + .link::before");
 
     return css;
@@ -180,7 +183,7 @@ export function streamlineRootCss(): CssNode {
         next.set('--contact-line-height', '1.4');
 
         next.set('--accent', '#2c3e50');
-        next.set('--separator-size', '0.85em');
+        next.set('--separator-size', '0.24em');
         next.set('--separator-opacity', '0.7');
 
         next.set('--section-title-size', '12pt');

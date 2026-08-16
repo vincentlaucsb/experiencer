@@ -33,4 +33,33 @@ describe('addHtmlId', () => {
         expect(cssStore.data.findNode(['#page-two'])).toBeUndefined();
         expect(cssStore.data.findNode(['#'])).toBeUndefined();
     });
+
+    test('undoes and redoes the node ID and matching CSS subtree together', () => {
+        const [node] = assignIds([
+            { type: 'Section', htmlId: 'old-id' }
+        ] as BasicResumeNode[]);
+
+        resumeNodeStore.setNodes([node]);
+        useEditorStore.getState().selectNode(node.uuid);
+        cssStore.setCss(new CssNode('Resume CSS', {}, 'body'));
+        cssStore.updateCss((css) => {
+            css.addNode(new CssNode('#old-id', { color: 'red' }, '#old-id'));
+        });
+        useHistoryStore.getState().clear();
+
+        addHtmlId('new-id');
+
+        expect(useHistoryStore.getState().past).toHaveLength(1);
+        expect(resumeNodeStore.data.getNodeByUuid(node.uuid)?.htmlId).toBe('new-id');
+        expect(cssStore.data.findNode(['#new-id'])).toBeDefined();
+
+        useHistoryStore.getState().undo();
+        expect(resumeNodeStore.data.getNodeByUuid(node.uuid)?.htmlId).toBe('old-id');
+        expect(cssStore.data.findNode(['#old-id'])).toBeDefined();
+        expect(cssStore.data.findNode(['#new-id'])).toBeUndefined();
+
+        useHistoryStore.getState().redo();
+        expect(resumeNodeStore.data.getNodeByUuid(node.uuid)?.htmlId).toBe('new-id');
+        expect(cssStore.data.findNode(['#new-id'])).toBeDefined();
+    });
 });

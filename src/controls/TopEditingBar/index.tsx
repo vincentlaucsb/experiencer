@@ -29,7 +29,7 @@ import { useHasUnsavedChanges as useHasUnsavedCssChanges } from "@/shared/stores
 import addCssClasses from "@/shared/stores/resumeStore/addCssClasses";
 import useSelectedNodeActions from "@/shared/hooks/useSelectedNodeActions";
 import addHtmlId from "@/shared/stores/addHtmlId";
-import ensureCssNodeForType from "@/shared/stores/ensureCssNodeForType";
+import addNodeAndEnsureCss from "@/shared/stores/addNodeAndEnsureCss";
 import { ResumeHotKeyMap } from "../ResumeHotkeys";
 import { measureHorizontalOverflow, observeHorizontalOverflow } from "@/shared/utils/overflow";
 import SpecialCharacterPicker from "../SpecialCharacterPicker";
@@ -353,8 +353,11 @@ export function TopEditingBar(props: EditingBarProps) {
                         },
                         {
                             onClick: () => {
-                                props.addChild(undefined, assignIds(ComponentTypes.instance.defaultValue(PageBreak.type).node));
-                                ensureCssNodeForType(PageBreak.type);
+                                addNodeAndEnsureCss(
+                                    props.addChild,
+                                    undefined,
+                                    assignIds(ComponentTypes.instance.defaultValue(PageBreak.type).node)
+                                );
                             },
                             icon: "page-break",
                             text: "Page break"
@@ -412,7 +415,10 @@ export interface TopEditingBarWrapperProps {
 }
 
 export default function TopEditingBarWrapper(props: TopEditingBarWrapperProps) {
-    const { canUndo, canRedo, undo, redo } = useHistoryStore.getState();
+    const canUndo = useHistoryStore((state) => state.past.length > 0);
+    const canRedo = useHistoryStore((state) => state.future.length > 0);
+    const undo = useHistoryStore((state) => state.undo);
+    const redo = useHistoryStore((state) => state.redo);
     const { unselectNode, selectedNodeId } = useEditorStore.getState();
     const hasUnsavedNodeChanges = useHasUnsavedNodeChanges();
     const hasUnsavedCssChanges = useHasUnsavedCssChanges();
@@ -424,8 +430,8 @@ export default function TopEditingBarWrapper(props: TopEditingBarWrapperProps) {
     const selectedNodeActions = useSelectedNodeActions();
 
     const undoRedoProps =  {
-        undo: canUndo() ? undo : undefined,
-        redo: canRedo() ? redo : undefined
+        undo: canUndo ? undo : undefined,
+        redo: canRedo ? redo : undefined
     };
 
     const wrappedProps = {

@@ -42,7 +42,12 @@ describe('built-in templates', () => {
         for (const css of [resumeCss, coverLetterCss]) {
             const separator = css.findNode(['Header', '#contact', 'Contact Row', 'Contact Row Separators']);
             expect(separator?.properties.get('display')).toBe('inline-block');
-            expect(separator?.properties.get('text-decoration')).toBe('none');
+            expect(separator?.properties.get('content')).toBe('""');
+            expect(separator?.properties.get('background')).toBe('currentColor');
+            expect(separator?.properties.get('border-radius')).toBe('50%');
+            expect(separator?.properties.get('width')).toBe('var(--separator-size)');
+            expect(separator?.properties.get('height')).toBe('var(--separator-size)');
+            expect(separator?.properties.has('text-decoration')).toBe(false);
         }
     });
 

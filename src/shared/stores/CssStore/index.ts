@@ -1,14 +1,25 @@
 import ClassStore from '@/shared/ClassStore';
 import CssNode from '@/shared/CssTree';
 import { CssNodeDump } from '@/types';
+import { deepCopy } from '@/shared/utils/deepCopy';
 
-/** Gates CSS-tree mutations and publishes React-compatible change snapshots. */
+type HistoryRecorder = (snapshot: CssNodeDump) => void;
+
+/** Gates CSS-tree mutations, undo history, and React-compatible snapshots. */
 export default class CssStore extends ClassStore<CssNode> {
     protected _data: CssNode;
+    private historyRecorder: HistoryRecorder = () => undefined;
+    /** Last committed tree, retained independently of mutable live CSS references. */
+    private committedCss: CssNodeDump;
 
     constructor(initialCss: CssNode) {
         super();
         this._data = initialCss;
+        this.committedCss = deepCopy(initialCss.dump());
+    }
+
+    setHistoryRecorder(recorder?: HistoryRecorder): void {
+        this.historyRecorder = recorder ?? (() => undefined);
     }
 
     /**
@@ -17,6 +28,7 @@ export default class CssStore extends ClassStore<CssNode> {
     setCss(css: CssNode): void {
         this.withMutation(() => {
             this.data = css;
+            this.committedCss = deepCopy(css.dump());
         });
     }
 
@@ -27,8 +39,10 @@ export default class CssStore extends ClassStore<CssNode> {
      * @param updater - Function that mutates the CSS tree
      */
     updateCss(updater: (css: CssNode) => void): void {
+        this.historyRecorder(deepCopy(this.committedCss));
         this.withMutation(() => {
             updater(this.data);
+            this.committedCss = deepCopy(this.data.dump());
         });
     }
 
@@ -38,6 +52,7 @@ export default class CssStore extends ClassStore<CssNode> {
     loadCss(cssData: CssNodeDump): void {
         this.withMutation(() => {
             this.data = CssNode.load(cssData);
+            this.committedCss = deepCopy(cssData);
         });
     }
 

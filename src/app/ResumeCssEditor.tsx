@@ -23,6 +23,7 @@ import {
 import ComponentTypes from "@/resume/schema/ComponentTypes";
 import makeCssVarSuggestions from "@/shared/utils/makeCssVarSuggestions";
 import findApplicableCssAncestors from "@/shared/utils/findApplicableCssAncestors";
+import applyScopedLiveCssChanges from "@/shared/stores/applyScopedLiveCssChanges";
 
 interface ResumeCssEditorProps {
     css: CssNode;
@@ -80,26 +81,7 @@ function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss 
     }, [detectLiveChanges]);
 
     const importAllLiveChanges = () => {
-        const rootChanges = liveChanges.filter((change) => change.tree === "root");
-        const resumeChanges = liveChanges.filter((change) => change.tree === "resume");
-
-        if (rootChanges.length > 0) {
-            updateRootCss((root) => {
-                for (const change of rootChanges) {
-                    root.mustFindNode(Array.from(change.path))
-                        .setProperties(new Map(change.declarations));
-                }
-            });
-        }
-
-        if (resumeChanges.length > 0) {
-            updateCss((root) => {
-                for (const change of resumeChanges) {
-                    root.mustFindNode(Array.from(change.path))
-                        .setProperties(new Map(change.declarations));
-                }
-            });
-        }
+        applyScopedLiveCssChanges(liveChanges);
 
         setReviewChanges(false);
         setLiveChanges([]);

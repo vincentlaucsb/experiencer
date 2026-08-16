@@ -157,4 +157,19 @@ test('reviews and imports live DevTools changes across CSS sections', async ({ p
   const headerSection = headerHeading.locator('..');
   const paddingTopRow = headerSection.locator('tr.property').filter({ hasText: 'padding-top' });
   await expect(paddingTopRow.locator('.property-value')).toHaveText('13px');
+
+  const undo = page.getByRole('button', { name: 'Undo' });
+  const redo = page.getByRole('button', { name: 'Redo' });
+  await expect(undo).toBeEnabled();
+  await undo.click();
+
+  await expect(maxWidthRow.locator('.property-value')).toHaveText('100%');
+  await expect(headerSection.locator('tr.property').filter({ hasText: 'padding-top' }))
+    .toHaveCount(0);
+  await expect(redo).toBeEnabled();
+
+  await redo.click();
+  await expect(maxWidthRow.locator('.property-value')).toHaveText('67%');
+  await expect(headerSection.locator('tr.property').filter({ hasText: 'padding-top' })
+    .locator('.property-value')).toHaveText('13px');
 });

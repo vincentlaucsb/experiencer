@@ -1,12 +1,21 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { resumeNodeStore } from './resumeNodeStore';
+import { cssStore, rootCssStore } from './cssStoreHooks';
 import { deepCopy } from '@/shared/utils/deepCopy';
-import { ResumeNode } from '@/types';
+import { CssNodeDump, ResumeNode } from '@/types';
+
+interface HistoryEntry {
+    resumeNodes?: ResumeNode[];
+    resumeCss?: CssNodeDump;
+    rootCss?: CssNodeDump;
+}
+
+type CssHistoryTarget = 'resumeCss' | 'rootCss';
 
 interface HistoryState {
-    past: ResumeNode[][];
-    future: ResumeNode[][];
+    past: HistoryEntry[];
+    future: HistoryEntry[];
 }
 
 interface HistoryActions {
@@ -19,11 +28,49 @@ interface HistoryActions {
 
 type HistoryStore = HistoryState & HistoryActions;
 
+const HISTORY_LIMIT = 50;
+let transactionDepth = 0;
+let pendingTransaction: HistoryEntry | undefined;
+
+function hasHistoryData(entry: HistoryEntry | undefined): entry is HistoryEntry {
+    return Boolean(entry && (
+        entry.resumeNodes !== undefined
+        || entry.resumeCss !== undefined
+        || entry.rootCss !== undefined
+    ));
+}
+
+function captureCurrent(entry: HistoryEntry): HistoryEntry {
+    return {
+        ...(entry.resumeNodes !== undefined
+            ? { resumeNodes: deepCopy(resumeNodeStore.data.childNodes) }
+            : {}),
+        ...(entry.resumeCss !== undefined
+            ? { resumeCss: deepCopy(cssStore.data.dump()) }
+            : {}),
+        ...(entry.rootCss !== undefined
+            ? { rootCss: deepCopy(rootCssStore.data.dump()) }
+            : {}),
+    };
+}
+
+function restoreEntry(entry: HistoryEntry): void {
+    if (entry.resumeNodes !== undefined) {
+        resumeNodeStore.setNodes(entry.resumeNodes);
+    }
+    if (entry.resumeCss !== undefined) {
+        cssStore.loadCss(entry.resumeCss);
+    }
+    if (entry.rootCss !== undefined) {
+        rootCssStore.loadCss(entry.rootCss);
+    }
+}
+
 /**
  * History store for undo/redo functionality.
- * Tracks changes to the resume tree and allows time-travel.
+ * Tracks changes to the resume and authored CSS trees and allows time-travel.
  * 
- * Automatically captures state from resumeStore on mutations.
+ * Mutation-owning stores provide their committed pre-mutation snapshots.
  */
 export const useHistoryStore = create<HistoryStore>()(
     devtools(
@@ -43,8 +90,8 @@ export const useHistoryStore = create<HistoryStore>()(
                 const previous = past[past.length - 1];
                 const newPast = past.slice(0, -1);
                 
-                // Save current state to future before changing
-                const current = deepCopy(resumeNodeStore.data.childNodes);
+                // Save current state to future before changing only affected stores.
+                const current = captureCurrent(previous);
                 
                 set(
                     {
@@ -55,8 +102,7 @@ export const useHistoryStore = create<HistoryStore>()(
                     'undo'
                 );
 
-                // Update resume store with previous state
-                resumeNodeStore.setNodes(previous);
+                restoreEntry(previous);
             },
 
             // Redo - restore next state
@@ -70,8 +116,8 @@ export const useHistoryStore = create<HistoryStore>()(
                 const next = future[0];
                 const newFuture = future.slice(1);
                 
-                // Save current state to past before changing
-                const current = deepCopy(resumeNodeStore.data.childNodes);
+                // Save current state to past before changing only affected stores.
+                const current = captureCurrent(next);
                 
                 set(
                     {
@@ -82,12 +128,14 @@ export const useHistoryStore = create<HistoryStore>()(
                     'redo'
                 );
 
-                // Update resume store with next state
-                resumeNodeStore.setNodes(next);
+                restoreEntry(next);
             },
 
             // Clear history (useful after loading a new file)
-            clear: () => set({ past: [], future: [] }, false, 'clearHistory'),
+            clear: () => {
+                pendingTransaction = undefined;
+                set({ past: [], future: [] }, false, 'clearHistory');
+            },
 
             // Check if undo is available
             canUndo: () => get().past.length > 0,
@@ -100,19 +148,12 @@ export const useHistoryStore = create<HistoryStore>()(
 );
 
 /**
- * Record a snapshot of current state for undo/redo.
- * Call this BEFORE making changes to the resume tree.
- * This is a regular function (not a hook) so it can be called from anywhere.
+ * Add one immutable entry and reset the abandoned redo branch.
  */
-export const recordHistory = (committedSnapshot?: ResumeNode[]) => {
-    const current = committedSnapshot ?? resumeNodeStore.data.childNodes;
+function appendHistory(entry: HistoryEntry): void {
     const { past } = useHistoryStore.getState();
-
-    // Deep clone to prevent reference issues
-    const snapshot = deepCopy(current);
-    
-    // Limit history to 50 entries to prevent memory issues
-    const newPast = past.length >= 50 
+    const snapshot = deepCopy(entry);
+    const newPast = past.length >= HISTORY_LIMIT
         ? [...past.slice(1), snapshot]
         : [...past, snapshot];
     
@@ -120,17 +161,81 @@ export const recordHistory = (committedSnapshot?: ResumeNode[]) => {
         past: newPast,
         future: [], // Clear future when new action is performed
     });
+}
+
+function recordHistoryEntry(entry: HistoryEntry): void {
+    if (!hasHistoryData(entry)) {
+        return;
+    }
+
+    if (transactionDepth === 0) {
+        appendHistory(entry);
+        return;
+    }
+
+    pendingTransaction ??= {};
+    if (pendingTransaction.resumeNodes === undefined && entry.resumeNodes !== undefined) {
+        pendingTransaction.resumeNodes = deepCopy(entry.resumeNodes);
+    }
+    if (pendingTransaction.resumeCss === undefined && entry.resumeCss !== undefined) {
+        pendingTransaction.resumeCss = deepCopy(entry.resumeCss);
+    }
+    if (pendingTransaction.rootCss === undefined && entry.rootCss !== undefined) {
+        pendingTransaction.rootCss = deepCopy(entry.rootCss);
+    }
+}
+
+const recordNodeHistory = (committedSnapshot?: ResumeNode[]) => {
+    recordHistoryEntry({
+        resumeNodes: committedSnapshot ?? resumeNodeStore.data.childNodes,
+    });
 };
 
+const recordCssHistory = (
+    target: CssHistoryTarget,
+    committedSnapshot: CssNodeDump
+) => {
+    recordHistoryEntry({ [target]: committedSnapshot });
+};
+
+/** Groups synchronous mutations into one undoable user action. */
+export function runHistoryTransaction<T>(
+    operation: () => T & (T extends PromiseLike<unknown> ? never : unknown)
+): T {
+    const isOutermost = transactionDepth === 0;
+    if (isOutermost) {
+        pendingTransaction = undefined;
+    }
+
+    transactionDepth++;
+    try {
+        return operation();
+    } finally {
+        transactionDepth--;
+        if (isOutermost) {
+            const entry = pendingTransaction;
+            pendingTransaction = undefined;
+            if (hasHistoryData(entry)) {
+                appendHistory(entry);
+            }
+        }
+    }
+}
+
 // Inject history recording into the node store without creating a module-init cycle.
-resumeNodeStore.setHistoryRecorder(recordHistory);
+resumeNodeStore.setHistoryRecorder(recordNodeHistory);
+cssStore.setHistoryRecorder((snapshot) => recordCssHistory('resumeCss', snapshot));
+rootCssStore.setHistoryRecorder((snapshot) => recordCssHistory('rootCss', snapshot));
+
+// Preserve the existing node-history API for callers outside the store composition.
+export const recordHistory = recordNodeHistory;
 
 /**
  * Hook to record a snapshot of current state for undo/redo.
  * Call this BEFORE making changes to the resume tree.
  */
 export const useRecordHistory = () => {
-    return recordHistory;
+    return recordNodeHistory;
 };
 
 // Selector hooks

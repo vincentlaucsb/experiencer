@@ -13,11 +13,11 @@ import { exportResumeAsHtml, printResume } from '@/shared/utils/PrintHelpers';
 
 // Components
 import ConfirmationModal from '@/controls/ConfirmationModal';
-import { DefaultLayout } from '@/controls/Layouts';
 import TopEditingBar from '@/controls/TopEditingBar';
 import TopNavBar, { TopNavBarWrapperProps } from '@/controls/TopNavBar';
-import Landing, { LandingActions, LandingContext } from '@/help/Landing';
+import type { LandingActions, LandingContext } from '@/help/Landing';
 import ResumeEditor, { type AdditionalSidebarTab } from '@/app/ResumeEditor';
+import ResumeLanding from '@/app/ResumeLanding';
 import ResumeTemplateSelector, {
     type AdditionalTemplateGroup,
     type AdditionalTemplateOption
@@ -40,7 +40,6 @@ import type { ResumeDocumentSource } from '@/shared/resumeDocument/prepareResume
 import useHandlePrint from '@/shared/hooks/useHandlePrint';
 import useStylesheet from '@/shared/hooks/useStylesheet';
 import { useEffect } from 'react';
-import loadData, { loadLocal } from '@/shared/stores/loadData';
 import { ResumeDocumentSummary, ResumeRepository } from '@/shared/repositories/ResumeRepository';
 import ResumeLibraryStore, { ResumeLibraryController } from '@/shared/stores/resumeLibraryStore';
 import { pngExportStore } from '@/shared/stores/pngExportStore';
@@ -175,10 +174,6 @@ export function Resume(props: ResumeProps) {
         workspaceStore.showTemplateSelector();
     }, []);
 
-    const importLocalData = useCallback((data: object) => {
-        loadData(data);
-    }, []);
-
     // Serialization
     const exportHtml = useCallback(() => {
         void exportResumeAsHtml(outputDocument, 'resume.zip')
@@ -252,37 +247,24 @@ export function Resume(props: ResumeProps) {
                 createDocumentFromTemplate={props.createDocumentFromTemplate}
             />
         case 'landing':
-            return <DefaultLayout
+            return <ResumeLanding
                 topNav={editingTop}
-                main={<Landing
-                    className={props.landingClassName}
-                    loadLocal={() => {
-                        if (props.hasSuspendedSession) {
-                            workspaceStore.returnToEditing();
-                            return;
-                        }
-                        if (props.lastDocumentId) {
-                            props.selectDocument?.(props.lastDocumentId);
-                            return;
-                        }
-                        loadLocal();
-                    }}
-                    new={openTemplateSelector}
-                    loadData={props.importDocument ?? importLocalData}
-                    hasLocalResume={props.hasSuspendedSession
-                        || Boolean(props.lastDocumentId)}
-                    documents={props.documents}
-                    documentLabels={props.documentLabels}
-                    documentGroups={props.documentGroups}
-                    documentActions={props.documentActions}
-                    activeDocumentId={props.activeDocumentId}
-                    openDocument={props.selectDocument}
-                    deleteDocument={props.deleteDocument}
-                    renameDocument={props.renameDocument}
-                    renderLead={props.renderLandingLead}
-                    showSocialLinks={props.showLandingSocialLinks}
-                />
-                } />
+                className={props.landingClassName}
+                documents={props.documents}
+                documentLabels={props.documentLabels}
+                documentGroups={props.documentGroups}
+                documentActions={props.documentActions}
+                activeDocumentId={props.activeDocumentId}
+                lastDocumentId={props.lastDocumentId}
+                hasSuspendedSession={props.hasSuspendedSession}
+                selectDocument={props.selectDocument}
+                deleteDocument={props.deleteDocument}
+                renameDocument={props.renameDocument}
+                importDocument={props.importDocument}
+                createResume={openTemplateSelector}
+                renderLead={props.renderLandingLead}
+                showSocialLinks={props.showLandingSocialLinks}
+            />
         default:
             return <ResumeEditor
                 topNav={editingTop}

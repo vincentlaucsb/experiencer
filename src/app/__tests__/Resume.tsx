@@ -20,6 +20,7 @@ import type {
 import ResumeLibraryStore from "@/shared/stores/resumeLibraryStore";
 import { workspaceStore } from "@/shared/stores/workspaceStore";
 import { templateSelectorStore } from "@/shared/stores/templateSelectorStore";
+import { ResumeAppExtensionsStore } from "@/shared/stores/resumeAppExtensionsStore";
 
 // Initialize the schema registry
 registerNodes();
@@ -432,6 +433,36 @@ test('Deleting a resume requires confirmation in the app modal', async () => {
     fireEvent.click(within(dialog).getByRole("button", { name: "Delete" }));
 
     await waitFor(() => expect(repository.delete).toHaveBeenCalledWith("saved-resume"));
+});
+
+test('applies hosted extension groups from the extensions store', async () => {
+    const saved: ResumeDocument = {
+        id: "saved-resume",
+        title: "Saved Resume",
+        schemaVersion: 1,
+        version: 2,
+        updatedAt: "2026-07-25T12:00:00.000Z",
+        data: ResumeTemplates.templates.Integrity
+    };
+    const repository = createRepository(saved);
+    const libraryStore = new ResumeLibraryStore(repository);
+    const extensionsStore = new ResumeAppExtensionsStore();
+    extensionsStore.setLanding({
+        landingClassName: "hosted-landing",
+        showLandingSocialLinks: false
+    });
+
+    render(
+        <Resume
+            mode="landing"
+            resumeLibraryStore={libraryStore}
+            extensionsStore={extensionsStore}
+        />
+    );
+
+    await screen.findByText("Saved Resume");
+    expect(window.document.getElementById("landing")?.className).toContain("hosted-landing");
+    expect(screen.queryByRole("navigation", { name: "Social media" })).toBeNull();
 });
 
 test('Landing suspends document-scoped navigation until a resume is opened', async () => {

@@ -120,6 +120,22 @@ test('does not fall through to a local draft when the last document has no opene
     expect(loadLocalDraft).not.toHaveBeenCalled();
 });
 
+test('keeps the browser title aligned with the active document', () => {
+    const originalTitle = document.title;
+    document.title = 'Experiencer';
+    const coordinator = new ResumeAppCoordinator();
+
+    const restoreNamed = coordinator.bindDocumentTitle('My Resume');
+    expect(document.title).toBe('My Resume | Experiencer');
+    restoreNamed();
+    expect(document.title).toBe('Experiencer');
+
+    const restoreLanding = coordinator.bindDocumentTitle();
+    expect(document.title).toBe('Experiencer');
+    restoreLanding();
+    document.title = originalTitle;
+});
+
 test('loads the legacy local draft when no session or document is available', () => {
     const loadLocalDraft = jest.fn();
     const coordinator = new ResumeAppCoordinator({

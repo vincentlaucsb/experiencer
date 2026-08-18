@@ -52,7 +52,7 @@ export default function ResumeRenderer(props: ResumeRendererProps) {
     const contents = (
         <>
             {props.root === 'editor-host' && !props.readOnly && (
-                <PageBoundaries pageSize={props.pageSize} resumeRef={resumeRef} />
+                <PageBoundaries pageSize={props.pageSize} />
             )}
             {props.beforeNodes}
             {props.nodes.map((element, index, all) => (

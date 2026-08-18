@@ -139,6 +139,11 @@ button img {
             min-height: 297mm;
         }
 
+        &[data-resume-host="editor"]:has(.page-break-editing) {
+            align-items: start;
+            align-content: start;
+        }
+
         .resume-page-boundaries {
             position: absolute;
             top: 0;
@@ -177,18 +182,20 @@ button img {
         .page-break.page-break-editing {
             position: relative;
             display: block;
+            grid-column: 1 / -1;
             width: calc(100% + (2 * var(--edge-margin)));
             margin-left: calc(-1 * var(--edge-margin));
-            margin-top: var(--x-large-spacing);
             margin-bottom: var(--x-large-spacing);
-            height: 0;
-            border-top: 3px dashed colors.$document-muted;
+            align-self: start;
+            box-sizing: border-box;
+            height: var(--page-break-filler, 0px);
+            border-bottom: 3px dashed colors.$document-muted;
 
             .page-break-label {
                 position: absolute;
-                top: 0;
+                bottom: 0;
                 left: 50%;
-                transform: translate(-50%, -50%);
+                transform: translate(-50%, 50%);
                 display: inline-block;
                 padding: 0 0.5rem;
                 background: colors.$document-paper;

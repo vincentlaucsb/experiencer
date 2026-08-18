@@ -16,6 +16,36 @@ test('switches page size and adds a new section', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Enter a title' })).toBeVisible();
 });
 
+test('pads an explicit page break to the next physical page', async ({ page }) => {
+  await createResumeFromTemplate(page);
+
+  await page.getByRole('button', { name: 'Insert' }).click();
+  await page.getByRole('menuitem', { name: 'Page break' }).click();
+
+  const pageBreak = page.locator('#resume .page-break-editing');
+  await expect(pageBreak).toBeVisible();
+  await page.locator('#resume img').first().evaluate((image: HTMLImageElement) => {
+    if (image.complete && image.naturalHeight > 0) return;
+    return new Promise<void>((resolve, reject) => {
+      image.addEventListener('load', () => resolve(), { once: true });
+      image.addEventListener('error', () => reject(new Error('Resume image failed to load')), { once: true });
+    });
+  });
+  await page.evaluate(() => new Promise<void>((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+  }));
+
+  await expect.poll(async () => pageBreak.evaluate((element) => {
+    const resume = document.getElementById('resume');
+    if (!resume) return Number.POSITIVE_INFINITY;
+
+    const pageHeight = resume.getBoundingClientRect().width * (11 / 8.5);
+    const lineTop = element.getBoundingClientRect().bottom - resume.getBoundingClientRect().top;
+    const intoPage = ((lineTop % pageHeight) + pageHeight) % pageHeight;
+    return Math.min(intoPage, pageHeight - intoPage);
+  })).toBeLessThan(2);
+});
+
 test('opens a resume-only print preview in a new tab', async ({ page, context }) => {
   await context.addInitScript(() => {
     window.print = () => undefined;

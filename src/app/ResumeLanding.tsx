@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { DefaultLayout } from '@/controls/Layouts';
 import Landing, { type LandingActions, type LandingContext } from '@/help/Landing';
-import type { ResumeDocumentAction, ResumeDocumentGroup } from '@/app/Resume';
+import type { ResumeDocumentAction, ResumeDocumentGroup } from '@/app/ResumeAppContracts';
 import {
     resumeAppCoordinator,
     type ResumeAppCoordinator
@@ -24,7 +24,7 @@ export interface ResumeLandingProps {
     deleteDocument?: (id: string) => void;
     renameDocument?: (id: string, title: string) => Promise<string | null>;
     importDocument?: (data: object, title?: string) => void;
-    createResume: () => void;
+    createResume?: () => void;
     renderLead?: (actions: LandingActions, context: LandingContext) => React.ReactNode;
     showSocialLinks?: boolean;
     coordinator?: ResumeAppCoordinator;
@@ -37,6 +37,7 @@ function importLocalData(data: object) {
 /** Renders the no-active-document experience and landing-owned extension points. */
 export default function ResumeLanding(props: ResumeLandingProps) {
     const coordinator = props.coordinator ?? resumeAppCoordinator;
+    const createResume = props.createResume ?? (() => coordinator.showTemplateSelector());
     const resumeFromLanding = () => coordinator.resumeFromLanding({
         hasSuspendedSession: props.hasSuspendedSession,
         lastDocumentId: props.lastDocumentId,
@@ -49,7 +50,7 @@ export default function ResumeLanding(props: ResumeLandingProps) {
             main={<Landing
                 className={props.className}
                 loadLocal={() => { void resumeFromLanding(); }}
-                new={props.createResume}
+                new={createResume}
                 loadData={props.importDocument ?? importLocalData}
                 hasLocalResume={props.hasSuspendedSession || Boolean(props.lastDocumentId)}
                 documents={props.documents}

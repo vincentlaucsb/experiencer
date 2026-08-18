@@ -1,121 +1,62 @@
 import * as React from 'react';
 
+import { observePageBoundaries } from '@/shared/utils/pageBoundaries';
 import PageSize from '@/types/PageSize';
-import { getPageCount, getPageHeightPixels } from '@/shared/utils/pageDimensions';
 
 interface ResumePageBoundariesProps {
     pageSize: PageSize;
-    resumeRef: React.RefObject<HTMLDivElement | null>;
 }
 
-interface PageMeasurement {
-    pageCount: number;
-    pageHeightPixels: number;
-}
-
-/** Shows physical page boundaries in the editor without affecting exported content. */
+/** Shows overflow page guides. Explicit breaks receive leftover-space padding in the observer. */
 export default function PageBoundaries(props: ResumePageBoundariesProps) {
-    const [measurement, setMeasurement] = React.useState<PageMeasurement>({
-        pageCount: 1,
-        pageHeightPixels: 0
-    });
+    const hostRef = React.useRef<HTMLDivElement>(null);
+    const [naturalOffsets, setNaturalOffsets] = React.useState<number[]>([]);
+    const [pageHeightPixels, setPageHeightPixels] = React.useState(0);
 
     React.useLayoutEffect(() => {
-        const resume = props.resumeRef.current;
-        if (!resume) return;
+        const resume = hostRef.current?.closest('#resume');
+        if (!(resume instanceof HTMLElement)) return;
 
-        let cancelled = false;
-        let frame: number | undefined;
-
-        const measure = () => {
-            if (cancelled) return;
-
-            const pageHeightPixels = getPageHeightPixels(
-                resume.getBoundingClientRect().width,
-                props.pageSize
+        return observePageBoundaries(resume, props.pageSize, (measurement) => {
+            setPageHeightPixels(measurement.pageHeightPixels);
+            setNaturalOffsets(
+                measurement.boundaries
+                    .filter((boundary) => boundary.type === 'natural')
+                    .map((boundary) => boundary.offset)
             );
-            const pageCount = getPageCount(resume.scrollHeight, pageHeightPixels);
-
-            if (pageHeightPixels <= 0) return;
-
-            setMeasurement((current) => (
-                current.pageCount === pageCount
-                && current.pageHeightPixels === pageHeightPixels
-                    ? current
-                    : { pageCount, pageHeightPixels }
-            ));
-        };
-
-        const scheduleMeasure = () => {
-            if (frame !== undefined) return;
-
-            frame = window.requestAnimationFrame(() => {
-                frame = undefined;
-                measure();
-            });
-        };
-
-        measure();
-        window.addEventListener('resize', scheduleMeasure);
-
-        const resizeObserver = typeof ResizeObserver === 'undefined'
-            ? undefined
-            : new ResizeObserver(scheduleMeasure);
-        resizeObserver?.observe(resume);
-
-        const mutationObserver = typeof MutationObserver === 'undefined'
-            ? undefined
-            : new MutationObserver(scheduleMeasure);
-        mutationObserver?.observe(resume, {
-            attributes: true,
-            characterData: true,
-            childList: true,
-            subtree: true
         });
+    }, [props.pageSize]);
 
-        const fontsReady = document.fonts?.ready;
-        void fontsReady?.then(() => {
-            if (!cancelled) scheduleMeasure();
-        });
-
-        return () => {
-            cancelled = true;
-            window.removeEventListener('resize', scheduleMeasure);
-            resizeObserver?.disconnect();
-            mutationObserver?.disconnect();
-            if (frame !== undefined) {
-                window.cancelAnimationFrame(frame);
-            }
-        };
-    }, [props.pageSize, props.resumeRef]);
-
-    if (measurement.pageCount <= 1) return null;
-
-    const pageBoundaries = Array.from({ length: measurement.pageCount - 1 }, (_, index) => {
-        const pageNumber = index + 2;
-        return (
-            <div
-                className="resume-page-boundary"
-                key={pageNumber}
-                style={{ top: `${measurement.pageHeightPixels * (index + 1)}px` }}
-            >
-                <span className="resume-page-boundary-label">
-                    {pageNumber === 2
-                        ? 'Content continues onto page 2'
-                        : `Page ${pageNumber} begins`}
-                </span>
-            </div>
-        );
-    });
+    const pageCount = naturalOffsets.length === 0 || pageHeightPixels <= 0
+        ? 1
+        : Math.round(naturalOffsets[naturalOffsets.length - 1] / pageHeightPixels) + 1;
 
     return (
         <div
+            ref={hostRef}
             className="resume-page-boundaries no-print"
             role="status"
             aria-live="polite"
-            aria-label={`Content continues onto ${measurement.pageCount} pages`}
+            aria-label={pageCount > 1
+                ? `Content continues onto ${pageCount} pages`
+                : undefined}
         >
-            {pageBoundaries}
+            {naturalOffsets.map((offset) => {
+                const pageNumber = Math.round(offset / pageHeightPixels) + 1;
+                return (
+                    <div
+                        className="resume-page-boundary"
+                        key={pageNumber}
+                        style={{ top: `${offset}px` }}
+                    >
+                        <span className="resume-page-boundary-label">
+                            {pageNumber === 2
+                                ? 'Content continues onto page 2'
+                                : `Page ${pageNumber} begins`}
+                        </span>
+                    </div>
+                );
+            })}
         </div>
     );
 }

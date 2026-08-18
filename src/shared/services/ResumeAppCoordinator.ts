@@ -8,7 +8,7 @@ export interface ResumeLandingSession {
 }
 
 export interface ResumeAppCoordinatorOptions {
-    workspace?: Pick<WorkspaceStore, 'returnToEditing'>;
+    workspace?: Pick<WorkspaceStore, 'returnToEditing' | 'showTemplateSelector'>;
     loadLocalDraft?: () => void;
 }
 
@@ -19,12 +19,41 @@ export interface ResumeAppCoordinatorOptions {
  * document, then a legacy localStorage draft.
  */
 export class ResumeAppCoordinator {
-    private readonly workspace: Pick<WorkspaceStore, 'returnToEditing'>;
+    private readonly workspace: Pick<WorkspaceStore, 'returnToEditing' | 'showTemplateSelector'>;
     private readonly loadLocalDraft: () => void;
+    private baseDocumentTitle?: string;
 
     constructor(options: ResumeAppCoordinatorOptions = {}) {
         this.workspace = options.workspace ?? workspaceStore;
         this.loadLocalDraft = options.loadLocalDraft ?? loadLocal;
+    }
+
+    showTemplateSelector(): void {
+        this.workspace.showTemplateSelector();
+    }
+
+    /**
+     * Keep the browser title aligned with the active document.
+     * The first call remembers the host title so landing can restore it.
+     */
+    bindDocumentTitle(activeDocumentTitle?: string): () => void {
+        if (typeof document === 'undefined') {
+            return () => undefined;
+        }
+
+        if (this.baseDocumentTitle === undefined) {
+            this.baseDocumentTitle = document.title;
+        }
+
+        const baseTitle = this.baseDocumentTitle;
+        document.title = activeDocumentTitle
+            ? `${activeDocumentTitle} | ${baseTitle}`
+            : baseTitle;
+
+        return () => {
+            document.title = baseTitle;
+            this.baseDocumentTitle = undefined;
+        };
     }
 
     /**

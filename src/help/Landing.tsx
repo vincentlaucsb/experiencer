@@ -5,7 +5,7 @@ import Modal from "@/controls/Modal";
 import { Globals, Action } from "@/types";
 import { Button } from "@/controls/Buttons";
 import { ResumeDocumentSummary } from "@/shared/repositories/ResumeRepository";
-import type { ResumeDocumentAction, ResumeDocumentGroup } from "@/app/Resume";
+import type { ResumeDocumentAction, ResumeDocumentGroup } from "@/app/ResumeAppContracts";
 import AsyncActionForm from "@/controls/AsyncActionForm";
 import { RESUME_TITLE_MAX_LENGTH } from "@/shared/repositories/ResumeRepository";
 import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";

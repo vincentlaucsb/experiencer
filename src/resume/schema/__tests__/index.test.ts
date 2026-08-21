@@ -2,18 +2,21 @@
  * @jest-environment jsdom
  */
 import registerNodes from "@/resume/schema";
-import ComponentTypes from "@/resume/schema/ComponentTypes";
+import ComponentTypes, { AliasTypes } from "@/resume/schema/ComponentTypes";
 import Column from "@/resume/Column";
 import Entry from "@/resume/Entry";
 import Group from "@/resume/Group";
 import Header from "@/resume/Header";
 import { DescriptionListItemType, DescriptionListType } from "@/resume/List";
 import Link from "@/resume/Link";
+import Image from "@/resume/Image";
+import { IconType } from "@/resume/Icon";
 import MarkdownText from "@/resume/Markdown";
 import PageBreak from "@/resume/PageBreak";
 import Row from "@/resume/Row";
 import Section from "@/resume/Section";
 import { ResumeNode } from "@/types";
+import { resumeStructureManifest } from "@/resume/schema/structuralManifest";
 
 describe("schema childTypes", () => {
     beforeAll(() => {
@@ -40,6 +43,12 @@ describe("schema childTypes", () => {
 
     test("DescriptionListItem explicitly has no allowed children", () => {
         expect(ComponentTypes.instance.childTypes(DescriptionListItemType)).toEqual([]);
+    });
+
+    test("non-container renderers are explicit structural leaves", () => {
+        expect(ComponentTypes.instance.childTypes(IconType)).toEqual([]);
+        expect(ComponentTypes.instance.childTypes(Image.type)).toEqual([]);
+        expect(ComponentTypes.instance.childTypes(AliasTypes.BulletedList)).toEqual([]);
     });
 
     test("childTypes: [] does not fall back to default child types", () => {
@@ -101,6 +110,29 @@ describe("schema childTypes", () => {
         expect(rootChildren).toContain(Column.type);
         expect(rootChildren).toContain(PageBreak.type);
         expect(rootChildren).not.toContain(DescriptionListItemType);
+    });
+
+    test("React registrations resolve exactly the portable manifest grammar", () => {
+        const schema = ComponentTypes.instance;
+        const defaultKinds = resumeStructureManifest.nodeKinds
+            .filter((kind) => kind.defaultChild)
+            .map((kind) => kind.kind);
+
+        expect(schema.childTypes(resumeStructureManifest.rootKind)).toEqual(
+            resumeStructureManifest.rootChildren);
+        for (const definition of resumeStructureManifest.nodeKinds) {
+            const expectedChildren = definition.children.mode === "defaultPlus"
+                ? [...new Set([...definition.children.kinds, ...defaultKinds])]
+                : definition.children.kinds;
+            const registeredChildren = schema.childTypes(definition.kind) as string[];
+            const portableKinds = new Set(resumeStructureManifest.nodeKinds.map((kind) => kind.kind));
+            expect(registeredChildren.filter((kind) => portableKinds.has(kind))).toEqual(expectedChildren);
+            expect(schema.defaultValue(definition.kind).node).toEqual({
+                ...definition.defaults,
+                type: definition.kind
+            });
+            expect(schema.isEditable(definition.kind)).toBe(Boolean(definition.inlineEditable));
+        }
     });
 
     test("tree class names come from registration metadata", () => {

@@ -1,0 +1,148 @@
+{
+  "$schema": "./resume-structure.schema.json",
+  "version": "1",
+  "rootKind": "Resume",
+  "rootChildren": [
+    "Grid", "Row", "Column", "Section", "Entry", "Markdown", "Link",
+    "Bulleted List", "Description List", "Group", "Icon", "Image",
+    "PageBreak", "Header"
+  ],
+  "limits": {
+    "maximumOperations": 100,
+    "maximumNodes": 1000,
+    "maximumDepth": 20,
+    "maximumFieldCharacters": 20000,
+    "maximumTotalFieldCharacters": 100000
+  },
+  "commonFields": {
+    "classNames": { "type": "string", "maximumLength": 500 },
+    "htmlId": { "type": "string", "maximumLength": 200 }
+  },
+  "nodeKinds": [
+    {
+      "kind": "Grid",
+      "children": { "mode": "explicit", "kinds": ["Row", "Column", "Section", "Entry", "Markdown", "Link", "Bulleted List", "Description List", "Group", "Icon", "Image"] },
+      "fields": {},
+      "defaults": {}
+    },
+    {
+      "kind": "Row",
+      "children": { "mode": "defaultPlus", "kinds": ["Column", "Group"] },
+      "fields": {
+        "justifyContent": { "type": "string", "maximumLength": 100 },
+        "reverseDirection": { "type": "boolean" }
+      },
+      "defaults": { "childNodes": [{ "type": "Column" }, { "type": "Column" }] }
+    },
+    {
+      "kind": "Column",
+      "children": { "mode": "explicit", "kinds": ["Row", "Grid", "Section", "Entry", "Markdown", "Link", "Bulleted List", "Description List", "Group", "Image"] },
+      "fields": {},
+      "defaults": {}
+    },
+    {
+      "kind": "Section",
+      "children": { "mode": "explicit", "kinds": ["Section", "Entry", "Markdown", "Link", "Bulleted List", "Description List", "Grid", "Row", "Group", "Image"] },
+      "fields": { "value": { "type": "string", "maximumLength": 20000 } },
+      "defaults": {},
+      "defaultChild": true
+    },
+    {
+      "kind": "Entry",
+      "children": { "mode": "explicit", "kinds": ["Bulleted List", "Description List", "Markdown", "Link", "Group", "Image"] },
+      "fields": {
+        "title": { "type": "stringArray", "maximumLength": 20000, "maximumItems": 20 },
+        "subtitle": { "type": "stringArray", "maximumLength": 20000, "maximumItems": 20 },
+        "subtitleBreaks": { "type": "integerArray", "maximumItems": 20 }
+      },
+      "defaults": { "title": [""], "subtitle": [""] },
+      "defaultChild": true
+    },
+    {
+      "kind": "Markdown",
+      "children": { "mode": "explicit", "kinds": [] },
+      "fields": { "value": { "type": "string", "maximumLength": 20000 } },
+      "defaults": {},
+      "defaultChild": true,
+      "inlineEditable": true
+    },
+    {
+      "kind": "Link",
+      "children": { "mode": "explicit", "kinds": [] },
+      "fields": {
+        "value": { "type": "string", "maximumLength": 20000 },
+        "url": { "type": "string", "maximumLength": 4000, "protectedPii": true }
+      },
+      "defaults": { "value": "", "url": "" },
+      "defaultChild": true,
+      "inlineEditable": true
+    },
+    {
+      "kind": "Group",
+      "children": { "mode": "defaultPlus", "kinds": ["Grid", "Row", "Column", "Group", "Icon"] },
+      "fields": {},
+      "defaults": {}
+    },
+    {
+      "kind": "PageBreak",
+      "children": { "mode": "explicit", "kinds": [] },
+      "fields": {},
+      "defaults": {}
+    },
+    {
+      "kind": "Header",
+      "children": { "mode": "explicit", "kinds": ["Entry", "Markdown", "Link", "Bulleted List", "Description List", "Grid", "Group", "Image"] },
+      "fields": {
+        "value": { "type": "string", "maximumLength": 20000, "protectedPii": true },
+        "subtitle": { "type": "string", "maximumLength": 20000 },
+        "distribution": { "type": "string", "enum": ["top-to-bottom", "left-to-right", "bottom-to-top", "right-to-left"] },
+        "justifyContent": { "type": "string", "maximumLength": 100 }
+      },
+      "defaults": {},
+      "inlineEditable": true
+    },
+    {
+      "kind": "Description List",
+      "children": { "mode": "explicit", "kinds": ["Description List Item"] },
+      "fields": {},
+      "defaults": { "childNodes": [{ "type": "Description List Item", "definitions": [""] }] },
+      "defaultChild": true
+    },
+    {
+      "kind": "Description List Item",
+      "children": { "mode": "explicit", "kinds": [] },
+      "fields": {
+        "value": { "type": "string", "maximumLength": 20000 },
+        "definitions": { "type": "stringArray", "maximumLength": 20000, "maximumItems": 50 }
+      },
+      "defaults": {}
+    },
+    {
+      "kind": "Icon",
+      "children": { "mode": "explicit", "kinds": [] },
+      "fields": { "icon": { "type": "string", "enum": ["email", "github", "globe", "linkedin", "map-pin", "phone"] } },
+      "defaults": {}
+    },
+    {
+      "kind": "Image",
+      "children": { "mode": "explicit", "kinds": [] },
+      "fields": {
+        "value": { "type": "string", "maximumLength": 2000000, "protectedPii": true },
+        "altText": { "type": "string", "maximumLength": 20000 }
+      },
+      "defaults": { "value": "" },
+      "defaultChild": true
+    },
+    {
+      "kind": "Bulleted List",
+      "aliasOf": "Markdown",
+      "children": { "mode": "explicit", "kinds": [] },
+      "fields": {
+        "value": { "type": "string", "maximumLength": 20000 },
+        "hideBullets": { "type": "boolean" }
+      },
+      "defaults": { "value": "- ", "hideBullets": false },
+      "defaultChild": true
+    }
+  ]
+}

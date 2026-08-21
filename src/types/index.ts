@@ -21,6 +21,8 @@ export type NodeProperty = string | string[] | boolean | number | number[];
 interface ResumeNodeBase {
     classNames?: string;
     htmlId?: string;
+    /** Stable node identity. Legacy saves receive one when loaded and retain it on their next save. */
+    uuid?: string;
     value?: string;
     type: string;
 }
@@ -74,7 +76,7 @@ export type EditorMode = 'normal'
 export type ResumeNode<TExtra extends Record<string, any> = Record<string, any>> = ResumeNodeBase & {
     childNodes?: Array<ResumeNode>;
     
-    // UUIDs are assigned by the app and need not be saved
+    // UUIDs are stable persisted identities; legacy nodes receive one during load.
     uuid: string;
 } & TExtra;
 

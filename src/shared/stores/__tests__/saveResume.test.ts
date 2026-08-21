@@ -7,14 +7,6 @@ import { BasicResumeNode, ResumeNode } from '@/types';
 import PageSize from '@/types/PageSize';
 import { useEditorStore } from '../editorStore';
 
-function hasNoUuids(nodes: BasicResumeNode[]): boolean {
-    return nodes.every((node) => {
-        if ('uuid' in node) return false;
-        if (node.childNodes) return hasNoUuids(node.childNodes);
-        return true;
-    });
-}
-
 beforeEach(() => {
     resumeNodeStore.setNodes([]);
     cssStore.setCss(new CssNode('Resume CSS', {}, 'body'));
@@ -28,7 +20,7 @@ describe('dump()', () => {
         expect(result.childNodes).toEqual([]);
     });
 
-    test('strips uuid from top-level nodes', () => {
+    test('preserves uuid on top-level nodes', () => {
         const nodes: ResumeNode[] = assignIds([
             { type: 'Section', value: 'Experience' },
         ] as BasicResumeNode[]);
@@ -37,10 +29,10 @@ describe('dump()', () => {
         const result = dump();
 
         expect(result.childNodes).toHaveLength(1);
-        expect('uuid' in result.childNodes[0]).toBe(false);
+        expect(result.childNodes[0].uuid).toBe(nodes[0].uuid);
     });
 
-    test('strips uuid from nested nodes recursively', () => {
+    test('preserves uuid on nested nodes recursively', () => {
         const nodes: ResumeNode[] = assignIds([
             {
                 type: 'Section',
@@ -59,10 +51,13 @@ describe('dump()', () => {
 
         const result = dump();
 
-        expect(hasNoUuids(result.childNodes)).toBe(true);
+        expect(result.childNodes[0].uuid).toBe(nodes[0].uuid);
+        expect(result.childNodes[0].childNodes?.[0].uuid).toBe(nodes[0].childNodes?.[0].uuid);
+        expect(result.childNodes[0].childNodes?.[1].childNodes?.[0].uuid)
+            .toBe(nodes[0].childNodes?.[1].childNodes?.[0].uuid);
     });
 
-    test('preserves all non-uuid node properties', () => {
+    test('preserves all node properties', () => {
         const nodes: ResumeNode[] = assignIds([
             { type: 'Section', value: 'Skills', htmlId: 'skills', classNames: 'highlight' },
         ] as BasicResumeNode[]);
@@ -109,6 +104,19 @@ describe('dump()', () => {
 
         expect(result.rootCss).toBeDefined();
         expect(result.rootCss.name).toBe(':root');
+    });
+
+    test('loading IDs preserves persisted identities and fills only missing descendants', () => {
+        const persistedId = '10000000-0000-0000-0000-000000000001';
+        const nodes = assignIds([{
+            type: 'Section',
+            uuid: persistedId,
+            childNodes: [{ type: 'Markdown', value: 'New child' }]
+        }] as BasicResumeNode[]);
+
+        expect(nodes[0].uuid).toBe(persistedId);
+        expect(nodes[0].childNodes?.[0].uuid).toBeTruthy();
+        expect(nodes[0].childNodes?.[0].uuid).not.toBe(persistedId);
     });
 
     test('includes the active physical page size', () => {

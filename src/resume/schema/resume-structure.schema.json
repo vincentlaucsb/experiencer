@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://experiencer.app/schema/resume-structure.schema.json",
+  "title": "Experiencer portable resume structure grammar",
+  "type": "object",
+  "required": ["version", "rootKind", "rootChildren", "limits", "commonFields", "nodeKinds"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "string", "minLength": 1, "maxLength": 40 },
+    "rootKind": { "type": "string", "minLength": 1 },
+    "rootChildren": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maximumOperations", "maximumNodes", "maximumDepth", "maximumFieldCharacters", "maximumTotalFieldCharacters"],
+      "properties": {
+        "maximumOperations": { "type": "integer", "minimum": 1 },
+        "maximumNodes": { "type": "integer", "minimum": 1 },
+        "maximumDepth": { "type": "integer", "minimum": 1 },
+        "maximumFieldCharacters": { "type": "integer", "minimum": 1 },
+        "maximumTotalFieldCharacters": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "commonFields": { "$ref": "#/$defs/fields" },
+    "nodeKinds": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/nodeKind" }
+    }
+  },
+  "$defs": {
+    "fields": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/field" }
+    },
+    "field": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "enum": ["string", "boolean", "stringArray", "integerArray"] },
+        "maximumLength": { "type": "integer", "minimum": 1 },
+        "maximumItems": { "type": "integer", "minimum": 1 },
+        "enum": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "protectedPii": { "type": "boolean" }
+      }
+    },
+    "nodeKind": {
+      "type": "object",
+      "required": ["kind", "children", "fields", "defaults"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "type": "string", "minLength": 1 },
+        "aliasOf": { "type": "string", "minLength": 1 },
+        "children": {
+          "type": "object",
+          "required": ["mode", "kinds"],
+          "additionalProperties": false,
+          "properties": {
+            "mode": { "enum": ["explicit", "defaultPlus"] },
+            "kinds": { "type": "array", "uniqueItems": true, "items": { "type": "string" } }
+          }
+        },
+        "fields": { "$ref": "#/$defs/fields" },
+        "defaults": { "type": "object" },
+        "defaultChild": { "type": "boolean" },
+        "inlineEditable": { "type": "boolean" }
+      }
+    }
+  }
+}

@@ -5,6 +5,7 @@ import ResumeComponentProps, { BasicResumeNode, NodeProperty, ResumeNode } from 
 import { ContextMenuItemData } from "@/types/contextMenu";
 import { ToolbarItemData } from "@/types/toolbar";
 import DefaultChildren from "./DefaultChildren";
+import { resumeStructureManifest } from "./structuralManifest";
 
 export interface NodeInformation {
     text: string;
@@ -26,9 +27,7 @@ type ContextMenuOptionsFunction = (
 /** Registers resume node types and serves their rendering, editing, and child policies. */
 export default class ComponentTypes {
     private static readonly ROOT_TYPE = "Resume";
-    private static readonly ROOT_DISALLOWED_CHILD_TYPES = new Set<string>([
-        "Description List Item"
-    ]);
+    private static readonly ROOT_CHILD_TYPES = [...resumeStructureManifest.rootChildren];
 
     private _childTypes: Map<string, ChildTypeDefinition | undefined> = new Map();
     private _cssNames: Map<string, Array<string>> = new Map();
@@ -53,9 +52,7 @@ export default class ComponentTypes {
      */
     childTypes(type: string) : string | Array<string> {
         if (type === ComponentTypes.ROOT_TYPE) {
-            return [...this._registeredTypes].filter(
-                (childType) => !ComponentTypes.ROOT_DISALLOWED_CHILD_TYPES.has(childType)
-            );
+            return ComponentTypes.ROOT_CHILD_TYPES.filter((childType) => this._registeredTypes.has(childType));
         }
 
         const childTypes = this._childTypes.get(type);

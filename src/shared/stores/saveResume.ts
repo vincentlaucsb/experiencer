@@ -1,14 +1,14 @@
 import { saveAs } from "file-saver";
 import { resumeNodeStore } from "./resumeNodeStore";
 import { ResumeSaveData } from "@/types";
-import { stripNodeProperties } from "@/shared/utils/stripNodeProperties";
+import { deepCopy } from "@/shared/utils/deepCopy";
 import { cssStore, rootCssStore } from "./cssStoreHooks";
 import { useEditorStore } from "./editorStore";
 import { documentFontsStore } from './documentFontsStore';
 
 export function dump(): ResumeSaveData {
     return {
-        childNodes: stripNodeProperties(resumeNodeStore.data.childNodes, ['uuid']),
+        childNodes: deepCopy(resumeNodeStore.data.childNodes),
         builtinCss: cssStore.data.dump(),
         rootCss: rootCssStore.data.dump(),
         pageSize: useEditorStore.getState().pageSize,

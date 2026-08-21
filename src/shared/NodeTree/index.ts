@@ -1,5 +1,5 @@
 import { deleteAt, moveUp, moveDown } from "@/shared/utils/arrayHelpers";
-import { assignIds } from "@/shared/utils/assignIds";
+import { assignFreshIds } from "@/shared/utils/assignIds";
 import { deepCopy } from "@/shared/utils/deepCopy";
 import { IdType, ResumeNode } from "@/types";
 
@@ -240,7 +240,7 @@ export default class ResumeNodeTree implements ResumeNode {
             targetNode.childNodes = new Array<ResumeNode>();
         }
 
-        const newNode = assignIds(deepCopy(node));
+        const newNode = assignFreshIds(deepCopy(node));
         targetNode.childNodes.push(newNode);
         const path = [...hierarchicalId, targetNode.childNodes.length - 1];
         this.addToIndex(newNode, path);
@@ -260,7 +260,7 @@ export default class ResumeNodeTree implements ResumeNode {
 
         const sourceIndex = hierarchicalId[hierarchicalId.length - 1];
         const insertIndex = sourceIndex + (before ? 0 : 1);
-        const newNode = assignIds(deepCopy(node));
+        const newNode = assignFreshIds(deepCopy(node));
         parentNode.childNodes.splice(insertIndex, 0, newNode);
         this.rebuildIndex();
 

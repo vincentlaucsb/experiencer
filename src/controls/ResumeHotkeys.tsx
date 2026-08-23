@@ -7,6 +7,7 @@ import { useEditorStore } from "@/shared/stores/editorStore";
 import { workspaceStore } from "@/shared/stores/workspaceStore";
 import useSelectedNodeActions from "@/shared/hooks/useSelectedNodeActions";
 import { saveLocal } from "@/shared/stores/saveResume";
+import { saveAsDialogStore } from "@/shared/stores/saveAsDialogStore";
 
 export interface ResumeHotKeysProps extends SelectedNodeActions {
     reset: Action;
@@ -49,6 +50,12 @@ export const ResumeHotKeyMap: KeyMap = {
         name: 'Save',
         description: 'Save the current document',
         sequence: 'ctrl+s'
+    } as ExtendedKeyMapOptions,
+
+    SAVE_AS: {
+        name: 'Save As',
+        description: 'Download the current document with a chosen filename',
+        sequence: 'ctrl+shift+s'
     } as ExtendedKeyMapOptions,
 
     UNDO: {
@@ -104,9 +111,13 @@ export class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
             },
 
             SAVE: (e) => {
-                // For now, just trigger print mode as a placeholder for "exporting"
                 saveLocal();
                 e.preventDefault();
+            },
+
+            SAVE_AS: (event) => {
+                saveAsDialogStore.open();
+                event.preventDefault();
             },
 
             DELETE_SELECTED: (event) => {

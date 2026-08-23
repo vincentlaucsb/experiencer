@@ -1,5 +1,5 @@
-@use "../sass/colors/semantic" as colors;
-@use "../sass/variables";
+@use "../../sass/colors/semantic" as colors;
+@use "../../sass/variables";
 
 /** || Header */
 header#app-header {
@@ -63,6 +63,11 @@ header#app-header {
 
     [data-popright-icon] {
         color: colors.$text-on-inverse;
+    }
+
+    [data-popright-shortcut] {
+        color: colors.$text-on-inverse;
+        opacity: 0.72;
     }
 
     [data-popright-item][data-active] [data-popright-icon] {

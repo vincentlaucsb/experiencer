@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import type { ResumeShellExtensions } from '@/app/ResumeAppContracts';
 import { toResumeOutputDocument } from '@/app/ResumeAppContracts';
+import SaveAsDialog from '@/controls/SaveAsDialog';
 import TopEditingBar from '@/controls/TopEditingBar';
 import TopNavBar from '@/controls/TopNavBar';
 import type { ToolbarData } from '@/controls/toolbar/ToolbarMaker';
@@ -66,6 +67,7 @@ export default function ResumeShell(props: ResumeShellProps) {
     return (
         <header id="app-header" className="no-print app-mb-4">
             {extensions.overlays}
+            <SaveAsDialog isEditing={props.isEditing} />
             <TopNavBar
                 exportHtml={() => output.exportHtml(source)}
                 exportToPng={() => output.exportPng(source)}

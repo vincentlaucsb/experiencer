@@ -13,7 +13,7 @@ export default function FileSaver(props: FileSaverProps) {
 
     const onChange = (event: any) => { setFilename(event.target.value); }
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleClick = () => {
         props.saveFile(filename);
     }
 
@@ -29,8 +29,8 @@ export default function FileSaver(props: FileSaverProps) {
                 />
             </div>
 
-            <Button onClick={handleClick} variant="primary">Download</Button>
-            <Button onClick={() => props.close()}>Cancel</Button>
+            <Button onClick={handleClick} type="button" variant="primary">Download</Button>
+            <Button onClick={() => props.close()} type="button">Cancel</Button>
         </form>
     );
 }

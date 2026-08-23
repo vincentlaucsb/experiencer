@@ -66,7 +66,12 @@ export function DropdownMenu({
                                 } as never);
                                 setOpen(false);
                             }}
-                        >{item.label}</div>)}
+                        >
+                            <span>{item.label}</span>
+                            {"shortcut" in item && item.shortcut ? (
+                                <span data-popright-shortcut>{item.shortcut}</span>
+                            ) : null}
+                        </div>)}
                 </div>
             ) : null}
         </>

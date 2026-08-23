@@ -29,6 +29,7 @@ const shortcutGroups: readonly ShortcutGroup[] = [
         title: "Document editing",
         shortcuts: [
             ["Save the current document", "Ctrl", "S"],
+            ["Save the current document as a file", "Ctrl", "Shift", "S"],
             ["Undo", "Ctrl", "Z"],
             ["Redo", "Ctrl", "Y"]
         ]

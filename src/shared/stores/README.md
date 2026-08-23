@@ -26,11 +26,18 @@ the prior editing session. Use semantic transitions such as `openDocument`,
 `showLanding`, and `showTemplateSelector`; do not add
 another writable mode field to a component or store.
 
-Help is transient navigation UI owned by `TopNavBar`; it is not a workspace mode. The Help
-dropdown opens public documentation or the keyboard-shortcuts modal and may receive generic
+Help is transient navigation UI owned by `TopNavBar/HelpMenu`; it is not a workspace mode. The
+Help dropdown opens public documentation or the keyboard-shortcuts modal and may receive generic
 host-supplied menu commands.
 
-### 3. `resumeStore.ts` - Resume Data Structure
+### 3. `saveAsDialogStore.ts` - Save As Visibility
+
+Owns whether the shared Save As dialog is open and whether the editing surface currently makes
+that command available. The File menu and `Ctrl + Shift + S` shortcut invoke the same `open`
+command. Filename input remains transient component state, and file serialization remains in the
+existing save command.
+
+### 4. `resumeStore.ts` - Resume Data Structure
 Manages the resume content tree using `ResumeNodeTree` class.
 
 **State:**
@@ -46,7 +53,7 @@ Manages the resume content tree using `ResumeNodeTree` class.
 
 **Use for:** All resume content mutations
 
-### 4. `historyStore.ts` - Undo/Redo State
+### 5. `historyStore.ts` - Undo/Redo State
 Manages time-travel for resume edits.
 
 **State:**

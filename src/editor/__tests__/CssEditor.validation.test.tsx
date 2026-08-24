@@ -1,6 +1,8 @@
 import CssNode from '@/shared/CssTree';
 import { clearToast, useToastStore } from '@/shared/stores/toastStore';
-import { makeCssEditorProps } from '@/editor/CssEditor';
+import { createCssEditorCommands } from '@/shared/stores/cssEditorCommands';
+import { cssStore } from '@/shared/stores/cssStoreHooks';
+import { useHistoryStore } from '@/shared/stores/historyStore';
 
 describe('CSS selector authoring validation', () => {
     afterEach(() => clearToast());
@@ -10,7 +12,7 @@ describe('CSS selector authoring validation', () => {
         (selector) => {
             const tree = new CssNode('Resume CSS', {}, 'body');
             const updateTree = jest.fn((updater: (root: CssNode) => void) => updater(tree));
-            const editor = makeCssEditorProps(updateTree);
+            const editor = createCssEditorCommands(updateTree);
 
             editor.addSelector([], 'Invalid', selector);
 
@@ -26,7 +28,7 @@ describe('CSS selector authoring validation', () => {
     test('rejects selector edits without replacing the existing selector', () => {
         const tree = new CssNode('Resume CSS', {}, 'body');
         const updateTree = jest.fn((updater: (root: CssNode) => void) => updater(tree));
-        const editor = makeCssEditorProps(updateTree);
+        const editor = createCssEditorCommands(updateTree);
 
         editor.updateSelector([], '#resume .entry');
 
@@ -38,12 +40,25 @@ describe('CSS selector authoring validation', () => {
     test('accepts ordinary selectors', () => {
         const tree = new CssNode('Resume CSS', {}, 'body');
         const updateTree = jest.fn((updater: (root: CssNode) => void) => updater(tree));
-        const editor = makeCssEditorProps(updateTree);
+        const editor = createCssEditorCommands(updateTree);
 
         editor.addSelector([], 'Entry', '.entry');
 
         expect(updateTree).toHaveBeenCalledTimes(1);
         expect(tree.children[0].selector).toBe('.entry');
         expect(useToastStore.getState().visible).toBe(false);
+    });
+
+    test('does not create undo history for selector rejection', () => {
+        cssStore.setCss(new CssNode('Resume CSS', {}, 'body'));
+        useHistoryStore.getState().clear();
+        const editor = createCssEditorCommands(cssStore.updateCss.bind(cssStore));
+
+        editor.addSelector([], 'Invalid', '#resume');
+        editor.updateSelector([], '#resume .entry');
+
+        expect(useHistoryStore.getState().past).toHaveLength(0);
+        expect(cssStore.data.children).toHaveLength(0);
+        expect(cssStore.data.selector).toBe('body');
     });
 });

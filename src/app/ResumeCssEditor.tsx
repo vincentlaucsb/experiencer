@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
 import { useCssStore } from "@/shared/stores/cssStoreHooks";
 import {
@@ -7,23 +7,15 @@ import {
 } from "@/shared/stores/resumeNodeStore";
 import CssNode, { ReadonlyCssNode } from "@/shared/CssTree";
 import type { ResumeNode } from "@/types";
-import CssEditor, { makeCssEditorProps } from "@/editor/CssEditor";
+import CssEditor from "@/editor/CssEditor";
 import LiveCssChangesModal from "@/editor/LiveCssChangesModal";
 import { Button } from "@/controls/Buttons";
-import { showToast } from "@/shared/stores/toastStore";
-import {
-    countLiveCssDeclarationChanges
-} from "@/shared/utils/liveCssSync";
-import {
-    inspectScopedLiveCssChanges,
-    liveCssBaselineStore,
-    ScopedLiveCssTreeChange
-} from "@/shared/utils/liveCssBaseline";
+import { createCssEditorCommands } from "@/shared/stores/cssEditorCommands";
+import { liveCssSyncCoordinator } from "@/shared/stores/LiveCssSyncCoordinator";
 
 import ComponentTypes from "@/resume/schema/ComponentTypes";
 import makeCssVarSuggestions from "@/shared/utils/makeCssVarSuggestions";
 import findApplicableCssAncestors from "@/shared/utils/findApplicableCssAncestors";
-import applyScopedLiveCssChanges from "@/shared/stores/applyScopedLiveCssChanges";
 
 interface ResumeCssEditorProps {
     css: CssNode;
@@ -35,14 +27,6 @@ interface ResumeCssEditorProps {
 
 interface ResumeCssEditorWrapperProps {
     selectedNodeId?: string;
-}
-
-function changesSignature(changes: ReadonlyArray<ScopedLiveCssTreeChange>) {
-    return JSON.stringify(changes.map((change) => ({
-        tree: change.tree,
-        path: change.path,
-        declarations: Array.from(change.declarations.entries())
-    })));
 }
 
 function findCssRule(css: CssNode, htmlId: string) {
@@ -59,56 +43,38 @@ function findParentCssRules(selectedNode: ResumeNode, css: CssNode) {
 }
 
 function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss }: ResumeCssEditorProps) {
-    const [liveChanges, setLiveChanges] = useState<ReadonlyArray<ScopedLiveCssTreeChange>>([]);
-    const [reviewChanges, setReviewChanges] = useState(false);
-    const liveChangeCount = countLiveCssDeclarationChanges(liveChanges);
-
-    const detectLiveChanges = useCallback(() => {
-        const nextChanges = liveCssBaselineStore.filter(
-            inspectScopedLiveCssChanges(css, rootCss)
-        );
-        setLiveChanges((currentChanges) => (
-            changesSignature(currentChanges) === changesSignature(nextChanges)
-                ? currentChanges
-                : nextChanges
-        ));
-    }, [css, rootCss]);
+    const liveSync = useSyncExternalStore(
+        liveCssSyncCoordinator.subscribe,
+        liveCssSyncCoordinator.getSnapshot
+    );
+    const resumeCommands = createCssEditorCommands(updateCss);
+    const rootCommands = createCssEditorCommands(updateRootCss);
 
     useEffect(() => {
-        detectLiveChanges();
-        const interval = window.setInterval(detectLiveChanges, 1000);
-        return () => window.clearInterval(interval);
-    }, [detectLiveChanges]);
+        return liveCssSyncCoordinator.connect();
+    }, []);
 
-    const importAllLiveChanges = () => {
-        applyScopedLiveCssChanges(liveChanges);
-
-        setReviewChanges(false);
-        setLiveChanges([]);
-        showToast(`Imported ${liveChangeCount} live CSS change${liveChangeCount === 1 ? "" : "s"}.`);
-    };
-
-    const syncControls = liveChanges.length > 0 && (
+    const syncControls = liveSync.changes.length > 0 && (
         <>
             <aside className="live-css-sync-banner" aria-label="Live CSS changes detected">
                 <span>
                     <i className="icofont-warning-alt" aria-hidden="true" />
-                    {liveChangeCount} live CSS change{liveChangeCount === 1 ? "" : "s"} detected
+                    {liveSync.changeCount} live CSS change{liveSync.changeCount === 1 ? "" : "s"} detected
                 </span>
                 <Button
                     type="button"
                     variant="primary"
-                    onClick={() => setReviewChanges(true)}
+                    onClick={() => liveCssSyncCoordinator.openReview()}
                 >
                     <i className="icofont-refresh" aria-hidden="true" />
                     Review and import
                 </Button>
             </aside>
             <LiveCssChangesModal
-                changes={liveChanges}
-                isOpen={reviewChanges}
-                onCancel={() => setReviewChanges(false)}
-                onConfirm={importAllLiveChanges}
+                changes={liveSync.changes}
+                isOpen={liveSync.reviewOpen}
+                onCancel={() => liveCssSyncCoordinator.closeReview()}
+                onConfirm={() => liveCssSyncCoordinator.importAll()}
             />
         </>
     );
@@ -129,7 +95,7 @@ function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss 
                 showAncestors
                 additionalAncestors={parentCssRules}
                 liveTree="resume"
-                {...makeCssEditorProps(updateCss)}
+                commands={resumeCommands}
             />
         }
 
@@ -143,7 +109,7 @@ function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss 
                     showAncestors
                     additionalAncestors={parentCssRules}
                     liveTree="resume"
-                    {...makeCssEditorProps(updateCss)} />
+                    commands={resumeCommands} />
             }
         }
 
@@ -160,13 +126,13 @@ function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss 
             cssNode={new ReadonlyCssNode(rootCss)}
             isOpen={true}
             liveTree="root"
-            {...makeCssEditorProps(updateRootCss)} />
+            commands={rootCommands} />
         <CssEditor
             cssNode={new ReadonlyCssNode(css)}
             isOpen={true}
             liveTree="resume"
             varSuggestions={makeCssVarSuggestions(rootCss)}
-            {...makeCssEditorProps(updateCss)} />
+            commands={resumeCommands} />
     </>
 }
 

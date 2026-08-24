@@ -57,7 +57,7 @@ function createCoordinator(initialChanges: ScopedLiveCssTreeChange[] = []) {
 
 describe("LiveCssSyncCoordinator", () => {
     test("owns one polling lifecycle across connected views", () => {
-        const { coordinator, dependencies } = createCoordinator();
+        const { coordinator, dependencies, setChanges, refresh } = createCoordinator();
 
         const disconnectFirst = coordinator.connect();
         const disconnectSecond = coordinator.connect();
@@ -71,10 +71,18 @@ describe("LiveCssSyncCoordinator", () => {
 
         disconnectFirst();
         expect(dependencies.scheduler.clearInterval).not.toHaveBeenCalled();
+        setChanges([createChange()]);
+        refresh();
+        expect(coordinator.getSnapshot().changeCount).toBe(1);
         disconnectSecond();
         disconnectSecond();
         expect(dependencies.scheduler.clearInterval).toHaveBeenCalledWith("live-css-timer");
         expect(dependencies.scheduler.clearInterval).toHaveBeenCalledTimes(1);
+        expect(coordinator.getSnapshot()).toEqual({
+            changes: [],
+            changeCount: 0,
+            reviewOpen: false
+        });
     });
 
     test("reconciles equivalent scans without publishing duplicate state", () => {

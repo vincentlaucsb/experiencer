@@ -103,9 +103,12 @@ export class LiveCssSyncCoordinator {
             if (!connected) return;
             connected = false;
             this.connectionCount--;
-            if (this.connectionCount === 0 && this.intervalHandle !== undefined) {
-                this.dependencies.scheduler.clearInterval(this.intervalHandle);
-                this.intervalHandle = undefined;
+            if (this.connectionCount === 0) {
+                if (this.intervalHandle !== undefined) {
+                    this.dependencies.scheduler.clearInterval(this.intervalHandle);
+                    this.intervalHandle = undefined;
+                }
+                this.setSnapshot(EMPTY_SNAPSHOT);
             }
         };
     }

@@ -175,7 +175,9 @@ test('reviews and imports live DevTools changes across CSS sections', async ({ p
   await expect(modal).not.toContainText('#resume');
   await modal.getByRole('button', { name: 'Import 2 changes' }).click();
 
-  await expect(page.getByRole('status')).toHaveText('Imported 2 live CSS changes.');
+  await expect(page.getByRole('status').filter({
+    hasText: /^Imported 2 live CSS changes\.$/,
+  })).toHaveText('Imported 2 live CSS changes.');
   await expect(syncBanner).not.toBeVisible();
 
   const imageHeading = page.locator('h2.css-title-heading').filter({

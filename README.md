@@ -43,6 +43,13 @@ output.
 
 You can use this app live at [https://experiencer.app](https://experiencer.app).
 
+## Development
+
+- [`AGENTS.md`](AGENTS.md) is the canonical contributor and agent guide.
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) describes the editor architecture.
+- [`docs/RESUME-DOCUMENT-PIPELINE.md`](docs/RESUME-DOCUMENT-PIPELINE.md) defines the
+  canonical editor, preview, print, export, and capture rendering contract.
+
 ## Thanks
  * [Feather Icons](https://feathericons.com/)
  * [IcoFont](https://icofont.com/)

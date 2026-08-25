@@ -166,6 +166,9 @@ and render-service output use the document body and `ResumeRenderer` descendants
 directly. Those output paths install only the authored stylesheet and requested font
 stylesheets; Experiencer application styles are not document dependencies.
 
+See [`RESUME-DOCUMENT-PIPELINE.md`](RESUME-DOCUMENT-PIPELINE.md) for the target matrix,
+selector transformation rules, isolation boundary, output shape, and required coverage.
+
 ### Store Utilities (`src/shared/stores/`)
 
 Beyond the main Zustand/ClassStore stores, there are action modules for complex mutations:
@@ -806,75 +809,6 @@ describe("ComponentPresentation", () => {
 
 ### Real-World Example: Container Component
 
-See [src/resume/infrastructure/Container.tsx](../../src/resume/infrastructure/Container.tsx) for a complete working example:
+See [src/resume/infrastructure/Container.tsx](../src/resume/infrastructure/Container.tsx) for a complete working example:
 - `ContainerPresentation`: Handles click/context menu logic based on props
 - `Container` (default export): Connects to editor store and passes props
-
-## Architecture Rating: 9.0-9.2/10
-
-### Strengths
-
-✅ **Dual-Pattern State Management**
-- Correct pattern: useSyncExternalStore for large data structures, Zustand for high-frequency UI state
-- Prevents unnecessary full-tree re-renders on selection changes
-- Well-documented rationale and trade-offs
-
-✅ **Strong Type Safety**
-- TypeScript throughout with proper type annotations
-- Type overloads preserve input/output types in move operations
-- IdType and UUID dual-API clearly documented
-- No unsafe `any` types in core data structures
-
-✅ **Clean Separation of Concerns**
-- ClassStore base class handles subscription/mutation logic
-- Tree operations isolated in ResumeNodeTree and CssTree
-- Presentation components split from store-connected wrappers
-- Clear responsibility boundaries
-
-✅ **Comprehensive Documentation**
-- ARCHITECTURE.md explains patterns and design decisions
-- Event flow and store interaction clearly diagrammed
-- Component hierarchy and responsibilities documented
-- Patterns section provides copy-paste examples
-
-✅ **Excellent Test Coverage**
-- 200+ tests passing consistently
-- Core patterns (unsaved changes, tree operations) well-covered
-- Hook integration tested
-- No regressions on refactoring
-
-✅ **Version Counter + Cached Snapshots**
-- Elegantly prevents infinite loops
-- Proper change detection without equality checks
-- _initialLoad flag solves "save button on initial load" problem
-
-✅ **Optimized Store Subscriptions**
-- ResumeCssEditor subscribes directly to CSS stores, not via ResumeContainer
-- CSS Editor keystrokes don't trigger Resume component reconciliation
-- Clear separation: components only subscribe to stores they actually use
-
-### Areas for Improvement
-
-⚠️ **Index Rebuild Performance** (Low-Medium Impact)
-- O(n) per move/delete, but the editor performs single operations (no batch deletes/moves)
-- Current approach is acceptable for typical resume sizes
-- Optimization only matters if large trees or batch operations are introduced
-
-⚠️ **Error Handling & Recovery** (Medium Impact)
-- No error boundaries for component crashes
-- No logging mechanism for debugging production issues
-- Tree corruption could silently occur without visibility
-- Missing try/catch in mutation handlers
-
-⚠️ **Production Instrumentation** (Low Impact)
-- No performance metrics or timing data
-- No visibility into which mutations are expensive
-- No warnings for potential performance issues (large batches)
-
-### Recommended Next Steps
-
-1. **Add error boundaries** around main components
-2. **Implement operation timing** in ClassStore for performance monitoring
-3. **Profile large resume trees** to identify bottlenecks
-4. **Consider optimizing index rebuild** if batch operations are ever added
-5. **Consider debouncing** for high-frequency mutations

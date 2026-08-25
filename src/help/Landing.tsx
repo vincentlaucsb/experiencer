@@ -183,13 +183,6 @@ export default function Landing(props: LandingProps) {
                                             setEditingDocumentId(document.id);
                                             setEditingTitle(document.title);
                                         }}>Rename</Button>
-                                        <Button
-                                            appearance="outline"
-                                            variant="error"
-                                            onClick={() => props.deleteDocument?.(document.id)}
-                                        >
-                                            Delete
-                                        </Button>
                                         {props.documentActions?.[document.id]?.map((action) => (
                                             <Button
                                                 disabled={action.disabled}
@@ -199,6 +192,13 @@ export default function Landing(props: LandingProps) {
                                                 {action.label}
                                             </Button>
                                         ))}
+                                        <Button
+                                            appearance="outline"
+                                            variant="error"
+                                            onClick={() => props.deleteDocument?.(document.id)}
+                                        >
+                                            Delete
+                                        </Button>
                                     </div>
                                 </article>
                             ))}

@@ -9,6 +9,7 @@ import {
 } from '@/shared/services/ResumeAppCoordinator';
 import type { ResumeDocumentSummary } from '@/shared/repositories/ResumeRepository';
 import loadData from '@/shared/stores/loadData';
+import Toast from '@/controls/Toast';
 
 export interface ResumeLandingProps {
     topNav: React.ReactNode;
@@ -47,23 +48,26 @@ export default function ResumeLanding(props: ResumeLandingProps) {
     return (
         <DefaultLayout
             topNav={props.topNav}
-            main={<Landing
-                className={props.className}
-                loadLocal={() => { void resumeFromLanding(); }}
-                new={createResume}
-                loadData={props.importDocument ?? importLocalData}
-                hasLocalResume={props.hasSuspendedSession || Boolean(props.lastDocumentId)}
-                documents={props.documents}
-                documentLabels={props.documentLabels}
-                documentGroups={props.documentGroups}
-                documentActions={props.documentActions}
-                activeDocumentId={props.activeDocumentId}
-                openDocument={props.selectDocument}
-                deleteDocument={props.deleteDocument}
-                renameDocument={props.renameDocument}
-                renderLead={props.renderLead}
-                showSocialLinks={props.showSocialLinks}
-            />}
+            main={<>
+                <Landing
+                    className={props.className}
+                    loadLocal={() => { void resumeFromLanding(); }}
+                    new={createResume}
+                    loadData={props.importDocument ?? importLocalData}
+                    hasLocalResume={props.hasSuspendedSession || Boolean(props.lastDocumentId)}
+                    documents={props.documents}
+                    documentLabels={props.documentLabels}
+                    documentGroups={props.documentGroups}
+                    documentActions={props.documentActions}
+                    activeDocumentId={props.activeDocumentId}
+                    openDocument={props.selectDocument}
+                    deleteDocument={props.deleteDocument}
+                    renameDocument={props.renameDocument}
+                    renderLead={props.renderLead}
+                    showSocialLinks={props.showSocialLinks}
+                />
+                <Toast />
+            </>}
         />
     );
 }

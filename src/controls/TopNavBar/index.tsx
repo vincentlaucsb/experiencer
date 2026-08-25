@@ -50,6 +50,7 @@ export function TopNavBar(props: TopNavBarProps) {
     ]);
 
     const onBrandKeyDown = (event: React.KeyboardEvent<HTMLHeadingElement>) => {
+        if (props.landingNavigationDisabled) return;
         if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
             props.toggleLanding();
@@ -66,11 +67,12 @@ export function TopNavBar(props: TopNavBarProps) {
             <div className="brand-primary">
                 <h1
                     aria-label="Go to landing page"
+                    aria-disabled={props.landingNavigationDisabled || undefined}
                     className="app-m-3"
-                    onClick={props.toggleLanding}
+                    onClick={props.landingNavigationDisabled ? undefined : props.toggleLanding}
                     onKeyDown={onBrandKeyDown}
                     role="button"
-                    tabIndex={0}
+                    tabIndex={props.landingNavigationDisabled ? -1 : 0}
                 >
                     <img
                         className="brand-mark"

@@ -30,6 +30,8 @@ export type {
     ResumeAppExtensions,
     ResumeDocumentAction,
     ResumeDocumentGroup,
+    ResumeDocumentOpeningExtensions,
+    ResumeDocumentOpeningRenderProps,
     ResumeEditorExtensions,
     ResumeLandingExtensions,
     ResumeProps,
@@ -43,7 +45,11 @@ export function Resume(props: ResumeProps) {
     const extensions = resolveResumeAppExtensions(props);
     const pageSize = props.pageSize || PageSize.Letter;
     const nodes = props.tree.childNodes || [];
-    const isEditing = (props.mode || 'landing') === 'normal';
+    const documentOpen = props.documentOpen?.status === 'loading'
+        || props.documentOpen?.status === 'error'
+        ? props.documentOpen
+        : undefined;
+    const isEditing = !documentOpen && (props.mode || 'landing') === 'normal';
     const shell = (
         <ResumeShell
             isEditing={isEditing}
@@ -59,10 +65,21 @@ export function Resume(props: ResumeProps) {
             renameDocument={props.renameDocument}
             importDocument={props.importDocument}
             saveStatus={props.saveStatus}
+            landingNavigationDisabled={Boolean(documentOpen)}
             additionalToolbarSections={extensions.editor?.additionalToolbarSections}
             extensions={extensions.shell}
         />
     );
+
+    if (documentOpen) {
+        const opening = extensions.documentOpening?.render?.({
+            topNav: shell,
+            state: documentOpen,
+            retry: props.retryDocumentOpen,
+            dismiss: props.dismissDocumentOpen
+        });
+        return <>{opening ?? shell}</>;
+    }
 
     switch (props.mode) {
         case 'changingTemplate':

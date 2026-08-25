@@ -36,6 +36,7 @@ export interface TopNavBarProps {
     /** Workspace navigation. */
     new: Action;
     toggleLanding: Action;
+    landingNavigationDisabled?: boolean;
 }
 
 export type TopNavBarWrapperProps = Omit<

@@ -117,6 +117,10 @@ header#app-header {
         flex: 0 0 auto;
         cursor: pointer;
 
+        &[aria-disabled="true"] {
+            cursor: default;
+        }
+
         &:focus-visible {
             border-radius: 4px;
             outline: 3px solid colors.$focus-ring;

@@ -19,7 +19,17 @@ export interface ResumeLibrarySnapshot {
     documents: ResumeDocumentSummary[];
     activeDocumentId?: string;
     saveStatus: string;
+    documentOpen?: ResumeDocumentOpenSnapshot;
 }
+
+export type ResumeDocumentOpenSnapshot =
+    | { status: "idle" }
+    | {
+        status: "loading" | "error";
+        documentId: string;
+        title: string;
+        message?: string;
+    };
 
 export interface ResumeLibraryController {
     subscribe(listener: () => void): () => void;
@@ -34,6 +44,8 @@ export interface ResumeLibraryController {
     renameDocument(id: string, title: string): Promise<string | null>;
     applyExternalDocument(document: ResumeDocument, saveStatus?: string): Promise<void>;
     refreshCurrentDocument(): Promise<ResumeDocumentSummary | undefined>;
+    retryDocumentOpen?(): Promise<void>;
+    dismissDocumentOpen?(): void;
 }
 
 const initialSnapshot: ResumeLibrarySnapshot = {

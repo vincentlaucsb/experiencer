@@ -52,6 +52,81 @@ function renderTemplateSwitcher(createDocumentFromTemplate = jest.fn()) {
     );
 }
 
+test('renders an inert editor-shaped surface while a document opens', () => {
+    const dismiss = jest.fn();
+    render(
+        <ResumeView
+            mode="landing"
+            stylesheet=""
+            tree={{ type: "Resume", uuid: "test-root", childNodes: [] }}
+            documentOpen={{
+                status: 'loading',
+                documentId: 'cloud:resume-1',
+                title: 'Platform Resume'
+            }}
+            dismissDocumentOpen={dismiss}
+            extensions={{
+                documentOpening: {
+                    render: ({ topNav, state }) => (
+                        <div className="host-document-opening">
+                            {topNav}
+                            <div role="status" aria-live="polite">
+                                <h2>Opening {state.title}…</h2>
+                            </div>
+                        </div>
+                    )
+                }
+            }}
+        />
+    );
+
+    expect(screen.getByRole('status').getAttribute('aria-live')).toBe('polite');
+    expect(screen.getByRole('heading', { name: 'Opening Platform Resume…' })).toBeTruthy();
+    expect(document.querySelector('.host-document-opening')).not.toBeNull();
+    expect(document.querySelector('#resume')).toBeNull();
+    const home = screen.getByRole('button', { name: 'Go to landing page' });
+    expect(home.getAttribute('aria-disabled')).toBe('true');
+    fireEvent.click(home);
+    expect(dismiss).not.toHaveBeenCalled();
+});
+
+test('offers retry and back actions after a document open fails', () => {
+    const retry = jest.fn();
+    const dismiss = jest.fn();
+    render(
+        <ResumeView
+            mode="landing"
+            stylesheet=""
+            tree={{ type: "Resume", uuid: "test-root", childNodes: [] }}
+            documentOpen={{
+                status: 'error',
+                documentId: 'cloud:resume-1',
+                title: 'Platform Resume',
+                message: 'The cloud request failed.'
+            }}
+            retryDocumentOpen={retry}
+            dismissDocumentOpen={dismiss}
+            extensions={{
+                documentOpening: {
+                    render: ({ state, retry: retryOpen, dismiss: dismissOpen }) => (
+                        <div role="alert">
+                            <p>{state.message}</p>
+                            <button onClick={retryOpen}>Try again</button>
+                            <button onClick={dismissOpen}>Back</button>
+                        </div>
+                    )
+                }
+            }}
+        />
+    );
+
+    expect(screen.getByRole('alert').textContent).toContain('The cloud request failed.');
+    fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+    expect(retry).toHaveBeenCalledTimes(1);
+    expect(dismiss).toHaveBeenCalledTimes(1);
+});
+
 function createRepository(document: ResumeDocument): jest.Mocked<ResumeRepository> {
     let documents: ResumeDocumentSummary[] = [{
         id: document.id,

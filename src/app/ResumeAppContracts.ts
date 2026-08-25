@@ -7,7 +7,10 @@ import type { ToolbarData } from '@/controls/toolbar/ToolbarMaker';
 import type { LandingActions, LandingContext } from '@/help/Landing';
 import type { ResumeDocumentSummary, ResumeRepository } from '@/shared/repositories/ResumeRepository';
 import type { ResumeAppExtensionsStore } from '@/shared/stores/resumeAppExtensionsStore';
-import type { ResumeLibraryController } from '@/shared/stores/resumeLibraryStore';
+import type {
+    ResumeDocumentOpenSnapshot,
+    ResumeLibraryController
+} from '@/shared/stores/resumeLibraryStore';
 import type { ResumeDocumentSource } from '@/shared/resumeDocument/prepareResumeDocument';
 import type { EditorMode, ResumeFont, ResumeNode } from '@/types';
 import PageSize from '@/types/PageSize';
@@ -57,6 +60,17 @@ export interface ResumeEditorExtensions {
     additionalSidebarTabs?: AdditionalSidebarTab[];
 }
 
+export interface ResumeDocumentOpeningRenderProps {
+    topNav: React.ReactNode;
+    state: Exclude<ResumeDocumentOpenSnapshot, { status: 'idle' }>;
+    retry?: () => void;
+    dismiss?: () => void;
+}
+
+export interface ResumeDocumentOpeningExtensions {
+    render?: (props: ResumeDocumentOpeningRenderProps) => React.ReactNode;
+}
+
 export interface ResumeLandingExtensions {
     renderLandingLead?: (actions: LandingActions, context: LandingContext) => React.ReactNode;
     landingClassName?: string;
@@ -73,6 +87,7 @@ export interface ResumeTemplateExtensions {
 export interface ResumeAppExtensions {
     shell?: ResumeShellExtensions;
     editor?: ResumeEditorExtensions;
+    documentOpening?: ResumeDocumentOpeningExtensions;
     landing?: ResumeLandingExtensions;
     templates?: ResumeTemplateExtensions;
 }
@@ -105,6 +120,7 @@ export interface ResumeProps {
     hasSuspendedSession?: boolean;
     lastDocumentId?: string;
     saveStatus?: string;
+    documentOpen?: ResumeDocumentOpenSnapshot;
     proBadge?: string;
     accountLabel?: string;
     editingStorage?: 'local' | 'cloud';
@@ -118,6 +134,8 @@ export interface ResumeProps {
     renameDocument?: (id: string, title: string) => Promise<string | null>;
     createDocumentFromTemplate?: (key?: string) => Promise<void> | void;
     importDocument?: (data: object, title?: string) => void;
+    retryDocumentOpen?: () => void;
+    dismissDocumentOpen?: () => void;
     fileMenuItems?: MenuItem[];
     helpMenuItems?: MenuItem[];
     topSecondaryItems?: React.ReactNode;
@@ -139,6 +157,7 @@ export function mergeResumeAppExtensions(
     return {
         shell: { ...base.shell, ...override.shell },
         editor: { ...base.editor, ...override.editor },
+        documentOpening: { ...base.documentOpening, ...override.documentOpening },
         landing: { ...base.landing, ...override.landing },
         templates: { ...base.templates, ...override.templates }
     };
@@ -167,6 +186,7 @@ export function resolveResumeAppExtensions(props: ResumeWrapperProps | ResumePro
             additionalSidebarTabs: props.extensions?.editor?.additionalSidebarTabs
                 ?? props.additionalSidebarTabs
         },
+        documentOpening: props.extensions?.documentOpening,
         landing: {
             renderLandingLead: props.extensions?.landing?.renderLandingLead ?? props.renderLandingLead,
             landingClassName: props.extensions?.landing?.landingClassName ?? props.landingClassName,

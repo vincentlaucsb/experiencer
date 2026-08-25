@@ -13,13 +13,15 @@ import { useTreeStylesheet } from '@/shared/stores/cssStoreHooks';
 import { useDocumentFonts } from '@/shared/stores/documentFontsStore';
 import useStylesheet from '@/shared/hooks/useStylesheet';
 import type { ResumeDocumentSummary } from '@/shared/repositories/ResumeRepository';
-import ResumeLibraryStore from '@/shared/stores/resumeLibraryStore';
+import ResumeLibraryStore, {
+    type ResumeLibraryController
+} from '@/shared/stores/resumeLibraryStore';
 
 /**
  * Subscribes to application stores and projects snapshots into the composition view.
  */
 export default function ResumeAppContainer(props: ResumeWrapperProps) {
-    const libraryStore = React.useMemo(
+    const libraryStore = React.useMemo<ResumeLibraryController>(
         () => props.resumeLibraryStore ?? new ResumeLibraryStore(props.resumeRepository),
         [props.resumeLibraryStore, props.resumeRepository]
     );
@@ -126,6 +128,9 @@ export default function ResumeAppContainer(props: ResumeWrapperProps) {
                 createDocumentFromTemplate={libraryStore.createDocumentFromTemplate}
                 importDocument={libraryStore.importDocument}
                 saveStatus={library.saveStatus}
+                documentOpen={library.documentOpen}
+                retryDocumentOpen={libraryStore.retryDocumentOpen}
+                dismissDocumentOpen={libraryStore.dismissDocumentOpen}
                 extensions={extensions}
             />
         </>

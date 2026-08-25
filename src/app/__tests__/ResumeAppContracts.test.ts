@@ -28,6 +28,7 @@ test('merges hosted extension groups under caller overrides', () => {
     )).toEqual({
         shell: { accountLabel: 'Override', proBadge: 'Pro' },
         editor: {},
+        documentOpening: {},
         landing: {},
         templates: {}
     });

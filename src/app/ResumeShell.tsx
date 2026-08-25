@@ -32,6 +32,7 @@ export interface ResumeShellProps {
     renameDocument?: (id: string, title: string) => Promise<string | null>;
     importDocument?: (data: object, title?: string) => void;
     saveStatus?: string;
+    landingNavigationDisabled?: boolean;
     additionalToolbarSections?: ToolbarData;
     extensions?: ResumeShellExtensions;
     coordinator?: ResumeAppCoordinator;
@@ -73,6 +74,7 @@ export default function ResumeShell(props: ResumeShellProps) {
                 exportToPng={() => output.exportPng(source)}
                 print={() => output.print(source)}
                 new={() => coordinator.showTemplateSelector()}
+                landingNavigationDisabled={props.landingNavigationDisabled}
                 documents={props.documents}
                 documentLabels={props.documentLabels}
                 activeDocumentId={props.activeDocumentId}

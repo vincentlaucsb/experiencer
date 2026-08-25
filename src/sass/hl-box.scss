@@ -13,6 +13,26 @@
         border-width: 2px;
         border-style: solid;
         box-sizing: border-box;
+
+        .selected-node-options-trigger {
+            position: absolute;
+            top: var(--selection-controls-top, 0);
+            left: var(--selection-controls-left, 0);
+            width: 1.75rem;
+            min-width: 1.75rem;
+            padding: 0.2rem 0.45rem;
+            font-size: 1rem;
+            line-height: 1.2;
+            pointer-events: auto;
+        }
+
+        &[data-controls-placement="above"] .selected-node-options-trigger {
+            transform: translateY(calc(-100% - 2px));
+        }
+
+        &[data-controls-placement="hidden"] .selected-node-options-trigger {
+            display: none;
+        }
     }
 }
 

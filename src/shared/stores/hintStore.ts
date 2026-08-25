@@ -1,5 +1,5 @@
 export enum HintKey {
-    FieldOptions = 'field-options'
+    NodeOptions = 'node-options'
 }
 
 export interface HintSnapshot {

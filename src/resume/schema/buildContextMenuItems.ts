@@ -67,7 +67,7 @@ function getParentLabel(node: { type: string; value?: unknown }): string {
     return getNodeLabel(node.type);
 }
 
-function getNodeLabel(type: string): string {
+export function getNodeLabel(type: string): string {
     try {
         return ComponentTypes.instance.defaultValue(type).text;
     } catch {

@@ -1,7 +1,10 @@
 ﻿import React, { useEffect } from "react";
 
 import { Button } from "@/controls/Buttons";
-import { positionSelectionCoachmark } from "@/shared/utils/selectionCoachmarkPosition";
+import {
+    positionSelectionCoachmark,
+    positionSelectionControl
+} from "@/shared/utils/selectionCoachmarkPosition";
 import { createPortal } from "react-dom";
 
 interface HighlightBoxProps {
@@ -17,7 +20,11 @@ interface HighlightBoxProps {
     calcStyle?: (bounds: DOMRect, style: CSSStyleDeclaration) => any;
     selectionHint?: string;
     onDismissSelectionHint?: () => void;
+    /** Interactive controls positioned against the measured highlight bounds. */
+    children?: React.ReactNode;
 }
+
+const selectionControlSize = 28;
 
 function defaultCalcStyle(bounds: DOMRect, style: CSSStyleDeclaration) {
     return {
@@ -105,16 +112,28 @@ export function HighlightBox(props: HighlightBoxProps) {
             248,
             48
         );
+        const controlPosition = positionSelectionControl(
+            bounds,
+            paneBounds,
+            selectionControlSize,
+            selectionControlSize
+        );
+        const highlightStyle = {
+            position: "fixed",
+            ...calcStyle(bounds, computedStyle),
+            "--selection-controls-left": `${controlPosition.leftOffset}px`,
+            "--selection-controls-top": `${controlPosition.topOffset}px`
+        } as React.CSSProperties;
 
         return (
             <>
                 <div className={props.className}
-                    style={{
-                        position: "fixed",
-                        ...calcStyle(bounds, computedStyle),
-                    }}
+                    style={highlightStyle}
+                    data-controls-placement={props.children ? controlPosition.placement : undefined}
                     {...props.attributes}
-                />
+                >
+                    {props.children}
+                </div>
                 {props.selectionHint ? createPortal(
                     <div
                         className="resume-selection-hint"
@@ -131,7 +150,7 @@ export function HighlightBox(props: HighlightBoxProps) {
                             <Button
                                 type="button"
                                 className="resume-selection-hint__close"
-                                aria-label="Dismiss field options tip"
+                                aria-label="Dismiss node options tip"
                                 title="Dismiss tip"
                                 onClick={props.onDismissSelectionHint}
                             >

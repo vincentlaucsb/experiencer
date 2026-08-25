@@ -123,6 +123,57 @@ test('context menu has its base layout and surface styling', async ({ page }) =>
   expect(itemHeights.every((height) => height >= 24)).toBe(true);
 });
 
+test('keeps the selected-node menu visible across hover, editing, selection, and pane edges', async ({ page }) => {
+  await createResumeFromTemplate(page);
+
+  const entryTitle = page.locator('#resume').getByText('Tegridy Farms', { exact: true });
+  await entryTitle.click();
+  const entryMenu = page.getByRole('button', { name: 'More options for Entry' });
+  await expect(entryMenu).toBeVisible();
+  await expect(entryMenu).toHaveAttribute('aria-haspopup', 'menu');
+  await expect(entryMenu).toHaveAttribute('aria-expanded', 'false');
+
+  await page.getByRole('button', { name: 'Insert' }).hover();
+  await expect(entryMenu).toBeVisible();
+  await entryMenu.click();
+  await expect(entryMenu).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.getByText('Entry', { exact: true })).toBeVisible();
+  await entryMenu.click();
+  await expect(entryMenu).toHaveAttribute('aria-expanded', 'false');
+
+  await entryTitle.click();
+  await expect(page.getByRole('button', { name: 'More options for Entry' })).toBeVisible();
+
+  const sectionHeading = page.getByRole('heading', { name: 'Experience' });
+  await sectionHeading.click();
+  const sectionMenu = page.getByRole('button', { name: 'More options for Section' });
+  await expect(sectionMenu).toBeVisible();
+  await expect(page.getByRole('button', { name: 'More options for Entry' })).toHaveCount(0);
+
+  await page.setViewportSize({ width: 600, height: 720 });
+  const workspace = page.locator('.split-pane__workspace');
+  await sectionHeading.evaluate((heading) => {
+    const pane = heading.closest('.split-pane__workspace');
+    if (!(pane instanceof HTMLElement)) throw new Error('Expected the editor workspace pane.');
+    pane.scrollTop += heading.getBoundingClientRect().top - pane.getBoundingClientRect().top;
+  });
+  await expect(page.locator('.resume-hl-box-selected-node'))
+    .toHaveAttribute('data-controls-placement', 'inside');
+
+  const [menuBounds, workspaceBounds] = await Promise.all([
+    sectionMenu.boundingBox(),
+    workspace.boundingBox(),
+  ]);
+  expect(menuBounds).not.toBeNull();
+  expect(workspaceBounds).not.toBeNull();
+  expect(menuBounds!.x).toBeGreaterThanOrEqual(workspaceBounds!.x);
+  expect(menuBounds!.x + menuBounds!.width)
+    .toBeLessThanOrEqual(workspaceBounds!.x + workspaceBounds!.width);
+  expect(menuBounds!.y).toBeGreaterThanOrEqual(workspaceBounds!.y);
+  expect(menuBounds!.y + menuBounds!.height)
+    .toBeLessThanOrEqual(workspaceBounds!.y + workspaceBounds!.height);
+});
+
 test('template preview does not inherit the active resume stylesheet', async ({ page }) => {
   await createResumeFromTemplate(page, 'Assured');
 

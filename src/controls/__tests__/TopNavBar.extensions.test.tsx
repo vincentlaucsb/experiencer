@@ -89,13 +89,13 @@ test("opens and closes the semantic keyboard-shortcuts modal", async () => {
 });
 
 test("resets persisted contextual tips from Help", () => {
-    hintStore.dismiss(HintKey.FieldOptions);
+    hintStore.dismiss(HintKey.NodeOptions);
     render(<TopNavBar {...baseProps} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Help" }));
     fireEvent.click(screen.getByRole("menuitem", { name: "Reset tips" }));
 
-    expect(hintStore.isDismissed(HintKey.FieldOptions)).toBe(false);
+    expect(hintStore.isDismissed(HintKey.NodeOptions)).toBe(false);
     expect(useToastStore.getState().message).toBe("Tips reset. Contextual help will appear again.");
 });
 

@@ -16,6 +16,47 @@ test('switches page size and adds a new section', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Enter a title' })).toBeVisible();
 });
 
+test('loads the rich Markdown editor on demand and saves its content', async ({ page }) => {
+  await createResumeFromTemplate(page);
+
+  const markdown = page.locator('#resume .text-content').first();
+  await markdown.click();
+  await markdown.click();
+
+  await expect(page.locator('.w-md-editor')).toBeVisible();
+  const editor = page.getByLabel('Text content');
+  await editor.fill('Rich editor loaded on demand.');
+  await page.getByRole('button', { name: 'Save (Ctrl + Enter)' }).click();
+
+  await expect(markdown).toContainText('Rich editor loaded on demand.');
+});
+
+test('loads the icon subset first and keeps the full extension fallback lazy', async ({ page }) => {
+  const fontRequests: string[] = [];
+  page.on('request', (request) => {
+    if (request.url().includes('icofont') && request.url().includes('woff2')) {
+      fontRequests.push(request.url());
+    }
+  });
+
+  await createResumeFromTemplate(page);
+  await page.evaluate(() => document.fonts.ready);
+
+  expect(fontRequests.some((url) => url.includes('icofont.subset'))).toBe(true);
+  expect(fontRequests.some((url) => /icofont\.woff2(?:\?|$)/.test(url))).toBe(false);
+
+  await page.evaluate(async () => {
+    const extensionIcon = document.createElement('i');
+    extensionIcon.className = 'icofont-home';
+    document.body.appendChild(extensionIcon);
+    await document.fonts.ready;
+  });
+
+  await expect.poll(() => (
+    fontRequests.some((url) => /icofont\.woff2(?:\?|$)/.test(url))
+  )).toBe(true);
+});
+
 test('pads an explicit page break to the next physical page', async ({ page }) => {
   await createResumeFromTemplate(page);
 

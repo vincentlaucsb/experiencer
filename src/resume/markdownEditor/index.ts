@@ -1,9 +1,9 @@
-import UiwMarkdownEditor from "./UiwMarkdownEditor";
+import UiwMarkdownEditor from "./LazyUiwMarkdownEditor";
 import type { MarkdownEditorComponent } from "./types";
 
 export type { MarkdownEditorComponent, MarkdownEditorProps } from "./types";
 export { default as TextareaMarkdownEditor } from "./TextareaMarkdownEditor";
-export { default as UiwMarkdownEditor } from "./UiwMarkdownEditor";
+export { default as UiwMarkdownEditor } from "./LazyUiwMarkdownEditor";
 
 let activeMarkdownEditor: MarkdownEditorComponent = UiwMarkdownEditor;
 

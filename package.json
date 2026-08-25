@@ -22,12 +22,14 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "npm run schema:check && tsc && vite build",
+    "build": "npm run schema:check && npm run icons:check && tsc && vite build",
     "preview": "vite preview",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test": "jest",
     "schema:check": "node scripts/validate-resume-structure.mjs",
+    "icons:generate": "node scripts/generate-icofont-subset.mjs",
+    "icons:check": "node scripts/generate-icofont-subset.mjs --check",
     "test:coverage": "jest --coverage"
   },
   "eslintConfig": {
@@ -63,6 +65,7 @@
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^30.3.0",
     "sass": "^1.83.0",
+    "subset-font": "^2.5.0",
     "typescript": "^5.7.2",
     "vite": "^8.1.5",
     "vite-plugin-checker": "^0.12.0"

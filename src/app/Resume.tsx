@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import '@/assets/fonts/icofont.min.css';
+import '@/assets/fonts/icofont.subset.css';
 import 'popright/styles.css';
 import 'popright/dropdown.css';
 import 'purecss/build/pure-min.css';

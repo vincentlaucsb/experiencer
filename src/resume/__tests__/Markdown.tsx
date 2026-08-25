@@ -4,7 +4,11 @@
 import { act, render, screen } from "@testing-library/react";
 
 import MarkdownText from "@/resume/Markdown";
-import { configureMarkdownEditor, resetMarkdownEditor } from "@/resume/markdownEditor";
+import {
+    configureMarkdownEditor,
+    resetMarkdownEditor,
+    TextareaMarkdownEditor
+} from "@/resume/markdownEditor";
 import { useEditorStore } from "@/shared/stores/editorStore";
 import type ResumeComponentProps from "@/types";
 
@@ -13,6 +17,10 @@ afterEach(() => {
         useEditorStore.getState().unselectNode();
     });
     resetMarkdownEditor();
+});
+
+beforeEach(() => {
+    configureMarkdownEditor(TextareaMarkdownEditor);
 });
 
 test("explains Markdown support in the text editor", () => {

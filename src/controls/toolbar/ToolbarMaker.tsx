@@ -10,6 +10,8 @@ export interface ToolbarSection {
     icon?: string;
     iconTone?: "brand";
     items: Array<ToolbarItemData>;
+    /** Optional compact-menu representation for controls that are not menu items when expanded. */
+    collapsedItems?: Array<ToolbarItemData>;
     /** Lower values collapse earlier when the toolbar runs out of room. */
     collapsePriority?: number;
 }
@@ -66,7 +68,7 @@ export default function Toolbar(props: ToolbarProps) {
                                 text={key}
                                 icon={section.icon}
                                 iconTone={section.iconTone}
-                                items={section.items}
+                                items={section.collapsedItems ?? section.items}
                             />
                         </PureMenu>
                     ) : (

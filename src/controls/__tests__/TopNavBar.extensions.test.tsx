@@ -140,7 +140,7 @@ test("shows the storage mode beside the account label", () => {
     expect(container.querySelector(".account-mode-icon--local")).toBeNull();
 });
 
-test("settles a responsive density change without an expansion feedback loop", async () => {
+test("settles responsive density changes and restores the expanded navigation", async () => {
     const { container } = render(<TopNavBar {...baseProps} />);
     const brand = container.querySelector<HTMLElement>("#brand");
     if (!brand) throw new Error("Expected the top navigation brand");
@@ -151,12 +151,20 @@ test("settles a responsive density change without an expansion feedback loop", a
     });
     Object.defineProperty(brand, "scrollWidth", {
         configurable: true,
-        get: () => brand.dataset.navDensity === "0" ? 1000 : 300
+        get: () => brand.dataset.navDensity === "0"
+            ? Math.max(brand.clientWidth, 1000)
+            : brand.clientWidth
     });
 
     window.dispatchEvent(new Event("resize"));
     await waitFor(() => expect(brand.dataset.navDensity).toBe("1"));
-    expect(brand.dataset.navDensity).toBe("1");
+
+    Object.defineProperty(brand, "clientWidth", {
+        configurable: true,
+        value: 1200
+    });
+    window.dispatchEvent(new Event("resize"));
+    await waitFor(() => expect(brand.dataset.navDensity).toBe("0"));
 });
 
 test("does not render the repository link in the editor header", () => {

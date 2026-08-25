@@ -3,7 +3,7 @@
  */
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import TopEditingBarWrapper, { TopEditingBar, EditingBarProps } from "@/controls/TopEditingBar";
+import TopEditingBarWrapper, { TopEditingBar, TopEditingBarViewProps } from "@/controls/TopEditingBar";
 import MarkdownText from "@/resume/Markdown";
 import Section from "@/resume/Section";
 import { DescriptionListItemType, DescriptionListType } from "@/resume/List";
@@ -13,10 +13,13 @@ import { useEditorStore } from "@/shared/stores/editorStore";
 import { assignIds } from "@/shared/utils/assignIds";
 import { BasicResumeNode, NodeProperty, ResumeNode } from "@/types";
 import type { ToolbarData } from "@/controls/toolbar/ToolbarMaker";
+import PageSize from "@/types/PageSize";
+import { cssStore, rootCssStore } from "@/shared/stores/cssStoreHooks";
+import { documentFontsStore } from "@/shared/stores/documentFontsStore";
 
 registerNodes();
 
-function createProps(): EditingBarProps {
+function createProps(): TopEditingBarViewProps {
     return {
         addHtmlId: jest.fn(),
         addCssClasses: jest.fn(),
@@ -34,6 +37,8 @@ function createProps(): EditingBarProps {
         saveLocal: jest.fn(),
         undo: jest.fn(),
         redo: jest.fn(),
+        pageSize: PageSize.Letter,
+        setPageSize: jest.fn(),
     };
 }
 
@@ -41,6 +46,11 @@ afterEach(() => {
     act(() => {
         useEditorStore.getState().unselectNode();
         resumeNodeStore.setNodes([]);
+        resumeNodeStore.clearUnsavedChanges();
+        cssStore.clearUnsavedChanges();
+        rootCssStore.clearUnsavedChanges();
+        documentFontsStore.load(undefined);
+        useEditorStore.getState().clearPageSizeUnsavedChanges();
     });
 });
 
@@ -94,6 +104,23 @@ describe("TopEditingBar Insert visibility", () => {
         expect(save).toHaveBeenCalledTimes(1);
     });
 
+    test("enables the default Save command when document fonts change", () => {
+        resumeNodeStore.clearUnsavedChanges();
+        cssStore.clearUnsavedChanges();
+        rootCssStore.clearUnsavedChanges();
+        documentFontsStore.load(undefined);
+        useEditorStore.getState().clearPageSizeUnsavedChanges();
+        render(<TopEditingBarWrapper />);
+        const save = screen.getByLabelText("Save") as HTMLButtonElement;
+        expect(save.disabled).toBe(true);
+
+        act(() => {
+            documentFontsStore.add({ provider: "google", family: "Roboto" });
+        });
+
+        expect(save.disabled).toBe(false);
+    });
+
     test("hides Insert for selected Markdown node (no children)", async () => {
         const nodes = assignIds([
             {
@@ -117,7 +144,12 @@ describe("TopEditingBar Insert visibility", () => {
             useEditorStore.getState().selectNode(markdownUuid);
         });
 
-        render(<TopEditingBar {...createProps()} />);
+        render(
+            <TopEditingBar
+                {...createProps()}
+                selectedNode={resumeNodeStore.data.getNodeByUuid(markdownUuid)}
+            />
+        );
 
         await act(async () => {
             await Promise.resolve();
@@ -144,7 +176,12 @@ describe("TopEditingBar Insert visibility", () => {
             useEditorStore.getState().selectNode(nodes[0].uuid);
         });
 
-        render(<TopEditingBar {...createProps()} />);
+        render(
+            <TopEditingBar
+                {...createProps()}
+                selectedNode={resumeNodeStore.data.getNodeByUuid(nodes[0].uuid)}
+            />
+        );
 
         await act(async () => {
             await Promise.resolve();
@@ -178,7 +215,12 @@ describe("TopEditingBar Insert visibility", () => {
             useEditorStore.getState().selectNode(sectionUuid);
         });
 
-        render(<TopEditingBar {...createProps()} />);
+        render(
+            <TopEditingBar
+                {...createProps()}
+                selectedNode={resumeNodeStore.data.getNodeByUuid(sectionUuid)}
+            />
+        );
 
         await act(async () => {
             await Promise.resolve();
@@ -268,7 +310,9 @@ describe("TopEditingBar Insert visibility", () => {
             configurable: true,
             get: () => toolbar.querySelector(
                 '[data-toolbar-section="AI Review"]'
-            )?.classList.contains("toolbar-section-collapsed") ? 400 : 1000
+            )?.classList.contains("toolbar-section-collapsed")
+                ? toolbar.clientWidth
+                : Math.max(toolbar.clientWidth, 1000)
         });
 
         act(() => {
@@ -328,8 +372,8 @@ describe("TopEditingBar Insert visibility", () => {
         Object.defineProperty(toolbar, "scrollWidth", {
             configurable: true,
             get: () => toolbar.querySelectorAll(".toolbar-section-collapsed").length >= 3
-                ? 400
-                : 1000
+                ? toolbar.clientWidth
+                : Math.max(toolbar.clientWidth, 1000)
         });
 
         Array.from(toolbar.querySelectorAll("[data-toolbar-section]")).forEach((section) => {
@@ -342,10 +386,9 @@ describe("TopEditingBar Insert visibility", () => {
         act(() => {
             window.dispatchEvent(new Event("resize"));
         });
-        await act(async () => {
-            await new Promise((resolve) => window.setTimeout(resolve, 150));
+        await waitFor(() => {
+            expect(toolbar.querySelectorAll(".toolbar-section-collapsed").length).toBe(3);
         });
-        expect(toolbar.querySelectorAll(".toolbar-section-collapsed").length).toBe(3);
 
         Object.defineProperty(toolbar, "clientWidth", {
             configurable: true,
@@ -354,11 +397,9 @@ describe("TopEditingBar Insert visibility", () => {
         act(() => {
             window.dispatchEvent(new Event("resize"));
         });
-        await act(async () => {
-            await new Promise((resolve) => window.setTimeout(resolve, 150));
+        await waitFor(() => {
+            expect(toolbar.querySelectorAll(".toolbar-section-collapsed").length).toBe(0);
         });
-
-        expect(toolbar.querySelectorAll(".toolbar-section-collapsed").length).toBe(0);
     });
 
     test("offers sibling duplication in the Clipboard menu", async () => {
@@ -378,7 +419,12 @@ describe("TopEditingBar Insert visibility", () => {
             useEditorStore.getState().selectNode(entryUuid);
         });
 
-        render(<TopEditingBar {...createProps()} />);
+        render(
+            <TopEditingBar
+                {...createProps()}
+                selectedNode={resumeNodeStore.data.getNodeByUuid(entryUuid)}
+            />
+        );
         await act(async () => {
             await Promise.resolve();
         });

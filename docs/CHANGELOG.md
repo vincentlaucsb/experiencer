@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-08-24
+
+### Responsive application chrome
+- Unified top-navigation and editing-toolbar compaction behind the same
+  progressive overflow policy, including reliable wide-layout restoration.
+- Consolidated active-document dirty state so node, CSS, font, and page-size
+  changes enable the same save behavior across toolbar and library workflows.
+
 ## 2026-03-10
 
 ### CSS tree reliability

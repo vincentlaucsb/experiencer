@@ -150,7 +150,16 @@ These foundational data structures are placed at the root of `/shared` rather th
 | `processText.ts` | `process(text)` | Replace `--`/`---` with en/em dash |
 | `stripNodeProperties.ts` | `stripNodeProperties(nodes, keys)` | Recursively remove keys from a node tree (non-mutating); returns `BasicResumeNode[]` |
 | `getResumeMinHeight.ts` | `getResumeMinHeight(nodes, pageSize)` | Compute the document canvas min-height from page-break count |
+| `overflow.ts` | `measureHorizontalOverflow`, `observeHorizontalOverflow` | DOM measurement and observer primitives for responsive application chrome |
+| `ProgressiveOverflowCoordinator.ts` | `ProgressiveOverflowCoordinator` | Own prioritized collapse/expansion, required-width memory, stale-item cleanup, and observer lifecycle for responsive controls |
 | `PrintHelpers.ts` | `exportResumeAsHtml`, `printResume` | HTML export and print utilities |
+
+Responsive chrome follows the same boundary: DOM measurement primitives belong
+in `src/shared/utils/overflow.ts`, while the framework-neutral
+`ProgressiveOverflowCoordinator` owns progressive compaction policy and
+observer lifecycle. `useProgressiveOverflow` only connects a component-owned
+coordinator and subscribes to its collapsed identities. The top navigation and
+editing toolbar use separate instances of this shared policy.
 
 ### Resume Document Rendering
 

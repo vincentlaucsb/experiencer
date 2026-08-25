@@ -57,6 +57,26 @@ test('loads the icon subset first and keeps the full extension fallback lazy', a
   )).toBe(true);
 });
 
+test('restores the editing toolbar and top navigation after widening the viewport', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await createResumeFromTemplate(page);
+  const toolbar = page.locator('#toolbar');
+  const navigation = page.locator('#brand');
+
+  await expect(toolbar.locator('.toolbar-section-collapsed')).toHaveCount(0);
+  await expect(navigation).toHaveAttribute('data-nav-density', '0');
+
+  await page.setViewportSize({ width: 480, height: 900 });
+  await expect.poll(() => toolbar.locator('.toolbar-section-collapsed').count())
+    .toBeGreaterThan(0);
+  await expect.poll(async () => Number(await navigation.getAttribute('data-nav-density')))
+    .toBeGreaterThan(0);
+
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await expect(toolbar.locator('.toolbar-section-collapsed')).toHaveCount(0);
+  await expect(navigation).toHaveAttribute('data-nav-density', '0');
+});
+
 test('pads an explicit page break to the next physical page', async ({ page }) => {
   await createResumeFromTemplate(page);
 

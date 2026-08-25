@@ -36,30 +36,23 @@ function PageSizeControls(props: PageSizeControlsProps) {
 /** Builds the page-size toolbar section in expanded or collapsed layouts. */
 export function getPageSetupSection(
     pageSize: PageSize,
-    setPageSize: (pageSize: PageSize) => void,
-    isOverflowing: boolean
+    setPageSize: (pageSize: PageSize) => void
 ): ToolbarSection {
-    if (isOverflowing) {
-        return {
-            icon: "ui-file",
-            items: [
-                {
-                    onClick: pageSize === PageSize.Letter ? undefined : () => setPageSize(PageSize.Letter),
-                    text: `Letter${pageSize === PageSize.Letter ? ' ✓' : ''}`
-                },
-                {
-                    onClick: pageSize === PageSize.A4 ? undefined : () => setPageSize(PageSize.A4),
-                    text: `A4${pageSize === PageSize.A4 ? ' ✓' : ''}`
-                }
-            ]
-        };
-    }
-
     return {
         icon: "ui-file",
         items: [
             {
                 content: <PageSizeControls pageSize={pageSize} setPageSize={setPageSize} />
+            }
+        ],
+        collapsedItems: [
+            {
+                onClick: pageSize === PageSize.Letter ? undefined : () => setPageSize(PageSize.Letter),
+                text: `Letter${pageSize === PageSize.Letter ? ' ✓' : ''}`
+            },
+            {
+                onClick: pageSize === PageSize.A4 ? undefined : () => setPageSize(PageSize.A4),
+                text: `A4${pageSize === PageSize.A4 ? ' ✓' : ''}`
             }
         ]
     };

@@ -8,7 +8,14 @@ export interface HorizontalOverflowMeasurement {
 export interface HorizontalOverflowObserverOptions {
     tolerance?: number;
     observeMutations?: boolean;
+    /** Notify after every observed layout mutation, even when overflow dimensions are unchanged. */
+    notifyOnEveryObservation?: boolean;
 }
+
+export type HorizontalOverflowMeasure = (
+    element: HTMLElement,
+    tolerance?: number
+) => HorizontalOverflowMeasurement;
 
 const sameMeasurement = (
     left: HorizontalOverflowMeasurement,
@@ -26,6 +33,70 @@ export function measureHorizontalOverflow(
 ): HorizontalOverflowMeasurement {
     const clientWidth = element.clientWidth;
     const scrollWidth = element.scrollWidth;
+
+    return {
+        clientWidth,
+        scrollWidth,
+        isOverflowing: clientWidth > 0 && scrollWidth > clientWidth + tolerance
+    };
+}
+
+/** Measures flex content whose shrinkable children can overlap before the parent scrolls. */
+export function measureHorizontalChildOverflow(
+    element: HTMLElement,
+    tolerance = 1
+): HorizontalOverflowMeasurement {
+    const view = element.ownerDocument.defaultView;
+    const style = view?.getComputedStyle(element);
+    const gap = Number.parseFloat(style?.columnGap ?? style?.gap ?? "0") || 0;
+    const horizontalPadding = (Number.parseFloat(style?.paddingLeft ?? "0") || 0)
+        + (Number.parseFloat(style?.paddingRight ?? "0") || 0);
+    const children = Array.from(element.children).filter(
+        (child): child is HTMLElement => child instanceof HTMLElement
+    );
+    const measuredChildren = children.map((child) => {
+        const childStyle = view?.getComputedStyle(child);
+        const margins = (Number.parseFloat(childStyle?.marginLeft ?? "0") || 0)
+            + (Number.parseFloat(childStyle?.marginRight ?? "0") || 0);
+        const bounds = child.getBoundingClientRect();
+        return {
+            bounds,
+            width: Math.max(child.scrollWidth, bounds.width) + margins
+        };
+    }).filter((child) => child.width > 0);
+    const rows: Array<{ top: number; bottom: number; width: number }> = [];
+    measuredChildren.forEach((child) => {
+        const hasVerticalBounds = child.bounds.height > 0;
+        const row = hasVerticalBounds
+            ? rows.find((candidate) => (
+                child.bounds.top < candidate.bottom
+                && child.bounds.bottom > candidate.top
+            ))
+            : rows[0];
+        if (row) {
+            row.top = Math.min(row.top, child.bounds.top);
+            row.bottom = Math.max(row.bottom, child.bounds.bottom);
+            row.width += gap + child.width;
+        }
+        else {
+            rows.push({
+                top: child.bounds.top,
+                bottom: child.bounds.bottom,
+                width: child.width
+            });
+        }
+    });
+    const childrenWidth = rows.reduce(
+        (maximum, row) => Math.max(maximum, row.width),
+        0
+    );
+    // clientWidth/scrollWidth include padding, while flex children lay out in
+    // the content box. Keep both sides of the comparison in content-box units.
+    const clientWidth = Math.max(0, element.clientWidth - horizontalPadding);
+    const scrollWidth = Math.max(
+        Math.max(0, element.scrollWidth - horizontalPadding),
+        childrenWidth
+    );
 
     return {
         clientWidth,
@@ -53,7 +124,7 @@ export function observeHorizontalOverflow(
         if (disposed) return;
 
         const next = measureHorizontalOverflow(element, tolerance);
-        if (!sameMeasurement(previous, next)) {
+        if (options.notifyOnEveryObservation || !sameMeasurement(previous, next)) {
             previous = next;
             onChange(next);
         }

@@ -183,10 +183,16 @@ async function assertCurrent(expected, outputPath) {
     } catch {
         throw new Error(`${path.relative(repositoryRoot, outputPath)} is missing; run npm run icons:generate.`);
     }
-    const expectedBuffer = Buffer.isBuffer(expected) ? expected : Buffer.from(expected);
-    if (!actual.equals(expectedBuffer)) {
+    const isCurrent = Buffer.isBuffer(expected)
+        ? actual.equals(expected)
+        : normalizeNewlines(actual.toString("utf8")) === normalizeNewlines(expected);
+    if (!isCurrent) {
         throw new Error(`${path.relative(repositoryRoot, outputPath)} is stale; run npm run icons:generate.`);
     }
+}
+
+function normalizeNewlines(value) {
+    return value.replace(/\r\n?/g, "\n");
 }
 
 const generated = await generateSubset();

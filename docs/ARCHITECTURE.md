@@ -88,7 +88,9 @@ Resume (Main App)
 - **Header**: Resume header with name/title
 - **Entry**: Job/education entry (title, date, location, description)
 - **List**: Unordered or ordered lists
-- **Markdown**: Markdown text editor (replaced RichText/Quill)
+- **Markdown**: Source-preserving Markdown text editor. The node stores Markdown
+  and delegates editing to the replaceable `MarkdownEditorProps` adapter
+  contract documented in [`MARKDOWN_EDITOR.md`](MARKDOWN_EDITOR.md).
 - **Icon**: Social media and contact icons
 - **Divider**: Visual separator
 - **PageBreak**: Explicit page break marker — shows a labelled divider in editor mode, invisible in print; forces a CSS `page-break-before` at that point; registered with `cssName: 'Page Break'`
@@ -110,12 +112,16 @@ Located in `src/components/controls/`:
 - **SelectedNodeActions**: Actions for selected component (move, delete, etc.)
 
 #### Input Components (`controls/inputs/`)
-- **QuillEditor**: Rich text editor
 - **TextField**: Single text input with validation
 - **MappedTextFields**: Multiple text fields
 - **DateRange**: Start/end date input
 - **IconPicker**: Icon selection dropdown
 - **LayoutPicker**: Layout selection UI
+
+Markdown editing is owned by `src/resume/markdownEditor/`. The bundled
+`@uiw/react-md-editor` adapter is an implementation detail; resume nodes depend
+only on the framework-neutral value/change contract so the editor can be
+replaced without changing the document schema or persistence format.
 
 #### Utility Controls
 - **FileLoader**: Load resume from JSON
@@ -459,20 +465,11 @@ Most components use:
 - SCSS files co-located with the component for complex styles
 
 ### Editing Mode Styles
-Components often render differently when editing:
-
-**Function components** use hooks:
-```typescript
-import { useIsNodeEditing } from "../stores/editorStore";
-
-const isEditing = useIsNodeEditing(props.uuid);
-
-if (isEditing) {
-    return <textarea {...props} />;
-} else {
-    return <ReactMarkdown>{props.value}</ReactMarkdown>;
-}
-```
+Components often render differently when editing. The Markdown node uses the
+replaceable editor adapter while the read-only path renders the stored Markdown
+through the normal résumé renderer. Presentation hooks may subscribe to stores
+or bridge lifecycle events, but editing workflows and measurement policy belong
+in stores, services, coordinators, or framework-neutral utilities.
 
 ### No-Print Classes
 Use `no-print` class for elements that shouldn't appear in exports:

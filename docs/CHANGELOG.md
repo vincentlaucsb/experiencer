@@ -2,7 +2,13 @@
 
 ## 2026-08-24
 
-### Responsive application chrome
+### Documentation alignment
+- Updated the architecture map for the replaceable, source-preserving Markdown
+  editor and the framework-neutral responsive overflow coordinator.
+- Removed obsolete Quill/RichText implementation guidance and stale Markdown
+  TODO estimates.
+- Kept the Markdown editor replacement contract in `MARKDOWN_EDITOR.md` as the
+  current implementation reference.
 - Unified top-navigation and editing-toolbar compaction behind the same
   progressive overflow policy, including reliable wide-layout restoration.
 - Consolidated active-document dirty state so node, CSS, font, and page-size

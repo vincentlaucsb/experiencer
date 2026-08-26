@@ -15,46 +15,18 @@
  - [ ] Fix Image component editing mode (partially improved on mar-5-2026)
  - [ ] Root toolbar expansion strategy: support broader root insert options without overwhelming users (e.g., grouping/search/progressive disclosure)
 
-### Markdown Component (Replace RichText) - COMPLETE
-**Goal**: Move away from react-quill (React 18 compatibility issues) to Markdown-based text editing
+### Markdown Component
+Markdown is the canonical text node and is complete. Its current editor choice,
+source-preserving contract, edit-mode default, and replacement procedure are
+documented in [`MARKDOWN_EDITOR.md`](MARKDOWN_EDITOR.md). Do not change the
+Markdown node schema or persistence format when changing the editor adapter.
 
-**Phase 1 - COMPLETE** (see `CHANGELOG.md`):
-1. ✅ Created `src/resume/Markdown.tsx` — function component with textarea edit mode, `react-markdown` view mode
-2. ✅ Updated `ComponentTypes.tsx` — Markdown registered in schema with childTypes, defaultValue, cssName
-3. ✅ Added Markdown to `ResumeComponent.tsx` factory
-4. ✅ Updated `CssTemplates.tsx` and added `src/resume/Markdown.scss` (97 lines)
-5. ✅ Templates updated to use Markdown
-6. ✅ Rendering, editing, export, print verified
-7. ✅ RichText deprecated and removed from active use
-
-**Phase 2 - Bulleted List Refactor** (Backlog):
+**Remaining backlog — bulleted-list specialization:**
 - Create dedicated `src/resume/BulletedList.tsx` component
 - Data structure: `{ items: string[], showBullets: boolean }`
 - Features: drag-to-reorder, bulk operations, consistent presentation
 - Migrate existing Markdown lists with `- ` prefix automatically
 - Add list-specific UI (add/remove item buttons)
-
-**Phase 3 - Visual Markdown Editor** - COMPLETE:
-- ✅ Integrated `@uiw/react-md-editor` behind a replaceable editor adapter
-- ✅ Preserves Markdown as the canonical stored value
-- ✅ Retained a dependency-free textarea adapter as a fallback/reference
-- ✅ Documented the selected library and replacement contract in
-  `docs/MARKDOWN_EDITOR.md`
-
-**Supported Markdown Features**:
-- Headings (# h1, ## h2, etc.)
-- Bold (**text**), italic (*text*), strikethrough (~~text~~)
-- Ordered lists (1. item)
-- Unordered lists (- item)
-- Links ([text](url))
-- Code blocks (` `` `code` `` `)
-- Blockquotes (> quote)
-- Horizontal rules (---)
-
-**Estimated effort**:
-- Phase 1: 2-3 hours
-- Phase 2: 1.5-2 hours (when ready)
-- Phase 3: 1-2 hours (optional improvement)
 
 ---
 

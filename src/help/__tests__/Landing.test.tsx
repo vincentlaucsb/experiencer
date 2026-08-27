@@ -110,7 +110,10 @@ test("renders grouped documents and invokes origin-specific secondary actions", 
             .classList.contains("pure-button-outline")
     ).toBe(true);
 
-    fireEvent.click(within(localGroup).getByRole("button", { name: "Copy to cloud" }));
+    fireEvent.click(within(localGroup).getByRole("button", {
+        name: "More Actions for Local Resume"
+    }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Copy to cloud" }));
     expect(copy).toHaveBeenCalledTimes(1);
 });
 
@@ -132,7 +135,8 @@ test("keeps rename open and shows the action message when saving fails", async (
         />
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Rename" }));
+    fireEvent.click(screen.getByRole("button", { name: "More Actions for Original" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Rename" }));
     const name = screen.getByRole("textbox", { name: "Name" });
     expect(name.getAttribute("maxlength")).toBe("200");
     fireEvent.change(name, { target: { value: "Rejected name" } });
@@ -142,6 +146,28 @@ test("keeps rename open and shows the action message when saving fails", async (
         .toBe("Name must be 200 characters or fewer.");
     expect(screen.getByRole("textbox", { name: "Name" })).toBeTruthy();
     expect(rename).toHaveBeenCalledWith("resume-1", "Rejected name");
+});
+
+test("renders a library lead and document-specific metadata", () => {
+    render(
+        <Landing
+            documentLibraryLead={<aside>Create reusable starting points.</aside>}
+            documentMetadata={{ "resume-1": "Last used Never" }}
+            documents={[{
+                id: "resume-1",
+                title: "Template",
+                schemaVersion: 1,
+                version: 1,
+                updatedAt: "2026-07-28T00:00:00Z"
+            }]}
+            loadData={jest.fn()}
+            loadLocal={jest.fn()}
+            new={jest.fn()}
+        />
+    );
+
+    expect(screen.getByText("Create reusable starting points.")).toBeTruthy();
+    expect(screen.getByText("Last used Never")).toBeTruthy();
 });
 
 test("shows understated metadata for an empty document group", () => {

@@ -1,5 +1,6 @@
 import React from "react";
 import PureMenu, { PureMenuItem } from "@/controls/menus/PureMenu";
+import { DropdownMenu, type MenuItem as DropdownMenuItem } from "@/controls/menus/poprightMenu";
 import FileLoader from "@/controls/FileLoader";
 import Modal from "@/controls/Modal";
 import { Globals, Action } from "@/types";
@@ -20,7 +21,9 @@ interface LandingProps {
     new: () => void;
     hasLocalResume?: boolean;
     documents?: ResumeDocumentSummary[];
+    documentLibraryLead?: React.ReactNode;
     documentLabels?: Record<string, string>;
+    documentMetadata?: Record<string, string>;
     documentGroups?: ResumeDocumentGroup[];
     documentActions?: Record<string, ResumeDocumentAction[]>;
     activeDocumentId?: string;
@@ -40,6 +43,53 @@ export interface LandingActions {
 export interface LandingContext {
     documentCount: number;
     hasResumableSession: boolean;
+}
+
+function DocumentActionsMenu(props: {
+    document: ResumeDocumentSummary;
+    actions?: ResumeDocumentAction[];
+    onRename?: () => void;
+}) {
+    const [open, setOpen] = React.useState(false);
+    const menuId = `document-actions-${React.useId().replace(/:/g, "")}`;
+    const items: DropdownMenuItem[] = [
+        ...(props.onRename ? [{
+            id: `rename-${props.document.id}`,
+            label: "Rename",
+            onSelect: props.onRename
+        }] : []),
+        ...(props.actions ?? []).map((action) => ({
+            id: `${action.id}-${props.document.id}`,
+            label: action.label,
+            disabled: action.disabled,
+            onSelect: () => void action.run()
+        }))
+    ];
+
+    if (!items.length) return null;
+
+    return (
+        <DropdownMenu
+            className="resume-library-actions-menu"
+            id={menuId}
+            items={items}
+            side="bottom"
+            align="end"
+            minWidth={190}
+            onOpen={() => setOpen(true)}
+            onClose={() => setOpen(false)}
+        >
+            <Button
+                aria-label={`More Actions for ${props.document.title}`}
+                aria-controls={menuId}
+                aria-expanded={open}
+                aria-haspopup="menu"
+            >
+                <span aria-hidden="true">⋯</span>
+                <span>More Actions</span>
+            </Button>
+        </DropdownMenu>
+    );
 }
 
 function MenuItem (props: {
@@ -104,6 +154,7 @@ export default function Landing(props: LandingProps) {
                 </>}
                 {props.documents?.length || groups.some((group) => group.showWhenEmpty) ? (
                     <section className="resume-library" aria-label="Resume library">
+                        {props.documentLibraryLead}
                         {groups.map((group) => {
                             const documents = group.documentIds
                                 .map((id) => documentsById.get(id))
@@ -170,6 +221,9 @@ export default function Landing(props: LandingProps) {
                                                     : <></>}
                                             </h3>
                                             <p>Version {document.version} · Updated {browserDateTimeFormatter.formatDateTime(document.updatedAt)}</p>
+                                            {props.documentMetadata?.[document.id]
+                                                ? <p className="resume-library-metadata">{props.documentMetadata[document.id]}</p>
+                                                : <></>}
                                         </div>
                                     )}
                                     <div className="resume-library-actions">
@@ -179,19 +233,14 @@ export default function Landing(props: LandingProps) {
                                         >
                                             Open
                                         </Button>
-                                        <Button onClick={() => {
-                                            setEditingDocumentId(document.id);
-                                            setEditingTitle(document.title);
-                                        }}>Rename</Button>
-                                        {props.documentActions?.[document.id]?.map((action) => (
-                                            <Button
-                                                disabled={action.disabled}
-                                                key={action.id}
-                                                onClick={() => void action.run()}
-                                            >
-                                                {action.label}
-                                            </Button>
-                                        ))}
+                                        <DocumentActionsMenu
+                                            document={document}
+                                            actions={props.documentActions?.[document.id]}
+                                            onRename={props.renameDocument ? () => {
+                                                setEditingDocumentId(document.id);
+                                                setEditingTitle(document.title);
+                                            } : undefined}
+                                        />
                                         <Button
                                             appearance="outline"
                                             variant="error"

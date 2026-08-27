@@ -135,6 +135,8 @@ test('keeps document groups and actions generic for embedding products', () => {
         <ResumeLanding
             topNav={<header />}
             createResume={jest.fn()}
+            documentLibraryLead={<p>Reusable documents appear first.</p>}
+            documentMetadata={{ 'cloud:1': 'Last used Never' }}
             documentActions={{
                 'local:1': [{
                     id: 'copy',
@@ -167,6 +169,9 @@ test('keeps document groups and actions generic for embedding products', () => {
 
     expect(screen.getByRole('heading', { name: 'Cloud resumes' })).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'On this device' })).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Copy to cloud' }));
+    expect(screen.getByText('Reusable documents appear first.')).toBeTruthy();
+    expect(screen.getByText('Last used Never')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'More Actions for Local Resume' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Copy to cloud' }));
     expect(copy).toHaveBeenCalledTimes(1);
 });

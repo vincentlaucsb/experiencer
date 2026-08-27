@@ -97,7 +97,9 @@ export function Resume(props: ResumeProps) {
                     topNav={shell}
                     className={extensions.landing?.landingClassName}
                     documents={props.documents}
+                    documentLibraryLead={extensions.landing?.documentLibraryLead}
                     documentLabels={extensions.landing?.documentLabels}
+                    documentMetadata={extensions.landing?.documentMetadata}
                     documentGroups={extensions.landing?.documentGroups}
                     documentActions={extensions.landing?.documentActions}
                     activeDocumentId={props.activeDocumentId}

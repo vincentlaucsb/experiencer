@@ -15,7 +15,9 @@ export interface ResumeLandingProps {
     topNav: React.ReactNode;
     className?: string;
     documents?: ResumeDocumentSummary[];
+    documentLibraryLead?: React.ReactNode;
     documentLabels?: Record<string, string>;
+    documentMetadata?: Record<string, string>;
     documentGroups?: ResumeDocumentGroup[];
     documentActions?: Record<string, ResumeDocumentAction[]>;
     activeDocumentId?: string;
@@ -56,7 +58,9 @@ export default function ResumeLanding(props: ResumeLandingProps) {
                     loadData={props.importDocument ?? importLocalData}
                     hasLocalResume={props.hasSuspendedSession || Boolean(props.lastDocumentId)}
                     documents={props.documents}
+                    documentLibraryLead={props.documentLibraryLead}
                     documentLabels={props.documentLabels}
+                    documentMetadata={props.documentMetadata}
                     documentGroups={props.documentGroups}
                     documentActions={props.documentActions}
                     activeDocumentId={props.activeDocumentId}

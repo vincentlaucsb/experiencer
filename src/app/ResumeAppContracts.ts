@@ -75,7 +75,9 @@ export interface ResumeLandingExtensions {
     renderLandingLead?: (actions: LandingActions, context: LandingContext) => React.ReactNode;
     landingClassName?: string;
     showLandingSocialLinks?: boolean;
+    documentLibraryLead?: React.ReactNode;
     documentLabels?: Record<string, string>;
+    documentMetadata?: Record<string, string>;
     documentGroups?: ResumeDocumentGroup[];
     documentActions?: Record<string, ResumeDocumentAction[]>;
 }
@@ -192,7 +194,9 @@ export function resolveResumeAppExtensions(props: ResumeWrapperProps | ResumePro
             landingClassName: props.extensions?.landing?.landingClassName ?? props.landingClassName,
             showLandingSocialLinks: props.extensions?.landing?.showLandingSocialLinks
                 ?? props.showLandingSocialLinks,
+            documentLibraryLead: props.extensions?.landing?.documentLibraryLead,
             documentLabels: props.extensions?.landing?.documentLabels ?? props.documentLabels,
+            documentMetadata: props.extensions?.landing?.documentMetadata,
             documentGroups: props.extensions?.landing?.documentGroups ?? props.documentGroups,
             documentActions: props.extensions?.landing?.documentActions ?? props.documentActions
         },

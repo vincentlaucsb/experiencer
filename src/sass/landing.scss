@@ -159,8 +159,21 @@
 }
 
 .resume-library-actions {
+    align-items: center;
     display: flex;
+    flex-wrap: wrap;
     gap: 0.5rem;
+
+    .pure-button {
+        align-items: center;
+        display: inline-flex;
+        gap: 0.35rem;
+        white-space: nowrap;
+    }
+}
+
+.resume-library-item .resume-library-metadata {
+    color: colors.$text-secondary;
 }
 
 .resume-library-edit {

@@ -14,6 +14,7 @@ import {
 } from '@/shared/resumeDocument/prepareResumeDocument';
 import type { ResumeSaveData } from '@/types';
 import PageSize from '@/types/PageSize';
+import { fitPreviewFrameToDocument } from '@/shared/utils/fitPreviewFrameToDocument';
 
 const noopUpdate = () => undefined;
 
@@ -28,6 +29,7 @@ export interface ResumePreviewFrameProps extends BaseResumePreviewProps {
     iframeTitle?: string;
     iframeClassName?: string;
     iframeRef?: React.Ref<HTMLIFrameElement>;
+    fitDocument?: boolean;
 }
 
 export interface StandaloneResumePreviewProps extends BaseResumePreviewProps {
@@ -75,6 +77,9 @@ export function ResumePreviewFrame(props: ResumePreviewFrameProps) {
             removeHead();
         };
     }, [frameDocument, prepared]);
+
+    React.useLayoutEffect(() => fitPreviewFrameToDocument(frameDocument, props.fitDocument),
+        [frameDocument, props.fitDocument, prepared]);
 
     const contents = frameDocument && createPortal(
         <ReadOnlyResumeDocument prepared={prepared} />,

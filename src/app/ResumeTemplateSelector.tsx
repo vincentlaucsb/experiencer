@@ -202,13 +202,16 @@ export default function ResumeTemplateSelector(props: ResumeTemplateSelectorProp
         );
     } else if (snapshot.preview.status === 'ready' && snapshot.preview.data) {
         preview = (
-            <ResumePreviewFrame
-                data={snapshot.preview.data}
-                pageSize={props.pageSize}
-                ariaLabel={`${additionalTemplate.title} template preview`}
-                target="isolated-preview"
-                iframeClassName="template-preview-frame"
-            />
+            <div className="template-preview-paper">
+                <ResumePreviewFrame
+                    data={snapshot.preview.data}
+                    pageSize={snapshot.preview.data.pageSize ?? props.pageSize}
+                    ariaLabel={`${additionalTemplate.title} template preview`}
+                    target="isolated-preview"
+                    iframeClassName="template-preview-frame"
+                    fitDocument
+                />
+            </div>
         );
     } else {
         preview = (

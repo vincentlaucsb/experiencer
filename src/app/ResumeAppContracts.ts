@@ -13,7 +13,7 @@ import type {
     ResumeLibraryController
 } from '@/shared/stores/resumeLibraryStore';
 import type { ResumeDocumentSource } from '@/shared/resumeDocument/prepareResumeDocument';
-import type { EditorMode, ResumeFont, ResumeNode } from '@/types';
+import type { EditorMode, ResumeFont, ResumeNode, ResumeSaveData } from '@/types';
 import PageSize from '@/types/PageSize';
 
 export type { AdditionalSidebarTab } from '@/app/ResumeEditor';
@@ -136,7 +136,7 @@ export interface ResumeProps {
     deleteDocument?: (id: string) => void;
     requestDeleteConfirmation?: DeleteDocumentConfirmationRequest;
     renameDocument?: (id: string, title: string) => Promise<string | null>;
-    createDocumentFromTemplate?: (key?: string) => Promise<void> | void;
+    createDocumentFromTemplate?: (key?: string, data?: ResumeSaveData) => Promise<void> | void;
     importDocument?: (data: object, title?: string) => void;
     retryDocumentOpen?: () => void;
     dismissDocumentOpen?: () => void;

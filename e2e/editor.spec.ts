@@ -242,9 +242,11 @@ test('template preview does not inherit the active resume stylesheet', async ({ 
   await page.getByRole('menuitem', { name: 'New', exact: true }).click();
   await page.getByText('Integrity', { exact: true }).click();
 
-  const preview = page.getByRole('img', { name: 'Integrity template preview' });
+  const preview = page.getByTitle('Integrity template preview');
   await expect(preview).toBeVisible();
-  await expect(preview).toHaveAttribute('src', /integrity/i);
+  await expect(page.frameLocator('.template-preview-frame').locator('body'))
+    .toHaveCSS('--secondary-color', '#fbdcb6');
+  await expect(page.frameLocator('.template-preview-frame').locator('#resume')).toHaveCount(0);
   await expect(page.locator('style[data-resume-editor-stylesheet]')).toHaveText('');
 });
 

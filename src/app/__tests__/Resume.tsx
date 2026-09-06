@@ -301,7 +301,7 @@ test('Template switcher previews the selected template', async () => {
     const view = renderTemplateSwitcher();
     const integrityOption = screen.getByText('Integrity').closest('.pure-menu-item');
 
-    await waitFor(() => expect(screen.getByAltText('Integrity template preview')).toBeTruthy());
+    await waitFor(() => expect(screen.getByTitle('Integrity template preview')).toBeTruthy());
     expect(document.getElementById('resume-document-builtin-fonts')).toBeNull();
     expect(integrityOption?.classList.contains('pure-menu-selected')).toBe(true);
 
@@ -309,7 +309,7 @@ test('Template switcher previews the selected template', async () => {
         fireEvent.click(screen.getByText('Assured'));
     });
 
-    expect(screen.getByAltText('Assured template preview')).toBeTruthy();
+    expect(screen.getByTitle('Assured template preview')).toBeTruthy();
     expect(screen.queryByText('Randy Marsh')).toBeNull();
     expect(screen.getByText('Assured').closest('.pure-menu-item')
         ?.classList.contains('pure-menu-selected')).toBe(true);
@@ -469,12 +469,12 @@ test('Template switcher suspends and restores the active resume stylesheet', asy
     await waitFor(() => expect(editorStyle?.textContent).toContain("background: #e8e8e8"));
 });
 
-test('Template switcher uses a generated screenshot for built-in template previews', () => {
+test('Template switcher uses an isolated live document for themed template previews', () => {
     const view = renderTemplateSwitcher();
-    const preview = screen.getByAltText('Integrity template preview');
+    const preview = screen.getByTitle('Integrity template preview');
 
-    expect(preview.getAttribute('src')).toBe('/template-previews/integrity.png');
-    expect(view.container.querySelector('.template-preview-frame')).toBeNull();
+    expect(preview.tagName).toBe('IFRAME');
+    expect(screen.getByRole('radio', { name: 'Original' }).getAttribute('checked')).not.toBeNull();
     expect(view.container.querySelector('#resume')).toBeNull();
 });
 

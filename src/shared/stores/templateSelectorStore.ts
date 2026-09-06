@@ -1,3 +1,5 @@
+import { builtinTemplateThemes } from '@/templates/builtinTemplateThemes';
+import { applyTemplateTheme, type TemplateTheme } from '@/shared/templates/templateTheme';
 import loadData from '@/shared/stores/loadData';
 import ResumeTemplates from '@/templates/ResumeTemplates';
 import type { ResumeSaveData } from '@/types';
@@ -13,6 +15,8 @@ export interface TemplatePreviewSnapshot {
 }
 
 export interface TemplateSelectorSnapshot {
+    selectedThemeId?: string;
+    themes?: readonly TemplateTheme[];
     selectedBuiltInKey: string;
     selectedAdditionalKey?: string;
     preview: TemplatePreviewSnapshot;
@@ -24,7 +28,8 @@ export interface TemplateSelectorOption {
     id: string;
     loadPreview?: () => Promise<ResumeSaveData>;
     previewImage?: string;
-    use: () => Promise<void> | void;
+    themes?: readonly TemplateTheme[];
+    use: (data?: ResumeSaveData) => Promise<void> | void;
 }
 
 export interface TemplateSelectorGroupConfiguration {
@@ -34,7 +39,7 @@ export interface TemplateSelectorGroupConfiguration {
 
 export interface TemplateSelectorConfiguration {
     groups: readonly TemplateSelectorGroupConfiguration[];
-    useBuiltInTemplate?: (key: string) => Promise<void> | void;
+    useBuiltInTemplate?: (key: string, data?: ResumeSaveData) => Promise<void> | void;
 }
 
 export interface TemplateSelectorController {
@@ -43,6 +48,7 @@ export interface TemplateSelectorController {
     configure(configuration: TemplateSelectorConfiguration): void;
     selectBuiltIn(key: string): void;
     selectAdditional(groupId: string, templateId: string): void;
+    selectTheme(id: string): void;
     useSelected(): Promise<void>;
 }
 
@@ -66,21 +72,33 @@ function actionErrorMessage(error: unknown): string {
         : 'Could not create a document from this template.';
 }
 
+function builtInPreview(key: string): Pick<TemplateSelectorSnapshot, 'preview' | 'themes' | 'selectedThemeId'> {
+    const themes = builtinTemplateThemes[key];
+    return {
+        themes,
+        selectedThemeId: themes?.[0]?.id,
+        preview: themes?.length
+            ? { status: 'ready', data: applyTemplateTheme(ResumeTemplates.templates[key], themes[0]) }
+            : idlePreview
+    };
+}
+
 /** Owns template selection and asynchronous template workflows independently of React. */
 export class TemplateSelectorStore implements TemplateSelectorController {
     private snapshot: TemplateSelectorSnapshot = {
         selectedBuiltInKey: 'Integrity',
-        preview: idlePreview,
+        ...builtInPreview('Integrity'),
         actionStatus: 'idle'
     };
     private readonly listeners = new Set<() => void>();
     private options = new Map<string, TemplateSelectorOption>();
-    private useBuiltInTemplate: (key: string) => Promise<void> | void;
+    private useBuiltInTemplate: (key: string, data?: ResumeSaveData) => Promise<void> | void;
+    private defaultPreview?: ResumeSaveData;
     private previewRequestId = 0;
     private actionRequestId = 0;
 
     constructor(
-        private readonly fallbackUseBuiltInTemplate: (key: string) => Promise<void> | void
+        private readonly fallbackUseBuiltInTemplate: (key: string, data?: ResumeSaveData) => Promise<void> | void
     ) {
         this.useBuiltInTemplate = fallbackUseBuiltInTemplate;
     }
@@ -115,7 +133,7 @@ export class TemplateSelectorStore implements TemplateSelectorController {
             this.setSnapshot({
                 ...this.snapshot,
                 selectedAdditionalKey: undefined,
-                preview: idlePreview,
+                ...builtInPreview(this.snapshot.selectedBuiltInKey),
                 actionStatus: 'idle',
                 actionError: unavailableMessage
             });
@@ -123,7 +141,7 @@ export class TemplateSelectorStore implements TemplateSelectorController {
         }
 
         if (selectedOption !== previousOption) {
-            this.loadPreview(selectedKey, selectedOption);
+            this.loadPreview(selectedKey, selectedOption, true);
         }
     };
 
@@ -131,7 +149,7 @@ export class TemplateSelectorStore implements TemplateSelectorController {
         this.invalidateRequests();
         this.setSnapshot({
             selectedBuiltInKey: key,
-            preview: idlePreview,
+            ...builtInPreview(key),
             actionStatus: 'idle'
         });
     };
@@ -145,7 +163,7 @@ export class TemplateSelectorStore implements TemplateSelectorController {
             this.setSnapshot({
                 ...this.snapshot,
                 selectedAdditionalKey: undefined,
-                preview: idlePreview,
+                ...builtInPreview(this.snapshot.selectedBuiltInKey),
                 actionStatus: 'idle',
                 actionError: unavailableMessage
             });
@@ -166,11 +184,15 @@ export class TemplateSelectorStore implements TemplateSelectorController {
         }
 
         const requestId = ++this.actionRequestId;
-        const command = option?.use
-            ?? (() => this.useBuiltInTemplate(this.snapshot.selectedBuiltInKey));
+        // Only theme-capable options receive local preview data. Remote templates retain their server-owned creation path.
+        const data = this.snapshot.themes?.length ? this.snapshot.preview.data : undefined;
+        const command = option
+            ? () => data ? option.use(data) : option.use()
+            : () => data ? this.useBuiltInTemplate(this.snapshot.selectedBuiltInKey, data)
+                : this.useBuiltInTemplate(this.snapshot.selectedBuiltInKey);
         this.setSnapshot({
             ...this.snapshot,
-            actionStatus: option ? 'using' : 'idle',
+            actionStatus: 'using',
             actionError: undefined
         });
 
@@ -192,22 +214,44 @@ export class TemplateSelectorStore implements TemplateSelectorController {
         }
     };
 
+    selectTheme = (id: string): void => {
+        if (this.snapshot.actionStatus === 'using' || this.snapshot.preview.status !== 'ready') return;
+        const theme = this.snapshot.themes?.find(candidate => candidate.id === id);
+        const data = this.snapshot.selectedAdditionalKey
+            ? this.defaultPreview : ResumeTemplates.templates[this.snapshot.selectedBuiltInKey];
+        if (!theme || !data) return;
+        try {
+            const themed = applyTemplateTheme(data, theme);
+            this.setSnapshot({ ...this.snapshot, selectedThemeId: id,
+                preview: { status: 'ready', data: themed }, actionError: undefined });
+        } catch (error: unknown) {
+            this.setSnapshot({ ...this.snapshot, actionError: actionErrorMessage(error) });
+        }
+    };
+
     reset = (): void => {
         this.invalidateRequests();
         this.options = new Map();
         this.useBuiltInTemplate = this.fallbackUseBuiltInTemplate;
         this.setSnapshot({
             selectedBuiltInKey: 'Integrity',
-            preview: idlePreview,
+            ...builtInPreview('Integrity'),
             actionStatus: 'idle'
         });
     };
 
-    private loadPreview(key: string, option: TemplateSelectorOption): void {
+    private loadPreview(key: string, option: TemplateSelectorOption, preserveTheme = false): void {
         const requestId = ++this.previewRequestId;
         ++this.actionRequestId;
 
-        if (option.previewImage) {
+        this.defaultPreview = undefined;
+        // Projection updates may replace option objects while the same template stays selected.
+        // Keep the palette when still available; explicit template selection starts at Original.
+        const theme = (preserveTheme
+            ? option.themes?.find(candidate => candidate.id === this.snapshot.selectedThemeId)
+            : undefined) ?? option.themes?.[0];
+        this.snapshot = { ...this.snapshot, themes: option.themes, selectedThemeId: theme?.id };
+        if (option.previewImage && !option.themes?.length) {
             this.setSnapshot({
                 ...this.snapshot,
                 selectedAdditionalKey: key,
@@ -251,9 +295,10 @@ export class TemplateSelectorStore implements TemplateSelectorController {
         void preview
             .then((data) => {
                 if (!this.isCurrentPreview(requestId, key)) return;
+                this.defaultPreview = data;
                 this.setSnapshot({
                     ...this.snapshot,
-                    preview: { status: 'ready', data }
+                    preview: { status: 'ready', data: theme ? applyTemplateTheme(data, theme) : data }
                 });
             })
             .catch((error: unknown) => this.finishPreviewError(requestId, key, error));
@@ -286,8 +331,8 @@ export class TemplateSelectorStore implements TemplateSelectorController {
     }
 }
 
-const useDefaultBuiltInTemplate = (key: string): void => {
-    loadData(ResumeTemplates.templates[key], 'changingTemplate');
+const useDefaultBuiltInTemplate = (key: string, data?: ResumeSaveData): void => {
+    loadData(data ?? ResumeTemplates.templates[key], 'changingTemplate');
 };
 
 export const templateSelectorStore = new TemplateSelectorStore(useDefaultBuiltInTemplate);

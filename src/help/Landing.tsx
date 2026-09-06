@@ -1,16 +1,13 @@
+import ResumeLibraryRow from './ResumeLibraryRow';
+import type { ResumeDocumentStatusSource } from '@/shared/stores/ResumeDocumentStatusSource';
 import React from "react";
 import PureMenu, { PureMenuItem } from "@/controls/menus/PureMenu";
-import { DropdownMenu, type MenuItem as DropdownMenuItem } from "@/controls/menus/poprightMenu";
 import FileLoader from "@/controls/FileLoader";
 import Modal from "@/controls/Modal";
 import { Globals, Action } from "@/types";
 import { Button } from "@/controls/Buttons";
 import { ResumeDocumentSummary } from "@/shared/repositories/ResumeRepository";
 import type { ResumeDocumentAction, ResumeDocumentGroup } from "@/app/ResumeAppContracts";
-import AsyncActionForm from "@/controls/AsyncActionForm";
-import { RESUME_TITLE_MAX_LENGTH } from "@/shared/repositories/ResumeRepository";
-import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
-import { browserDateTimeFormatter } from "@/shared/utils/dateTimeFormat";
 import GitHubLight from "@/assets/icons/GitHub-Mark-Light-120px-plus.png";
 import SocialLinks from "./SocialLinks";
 
@@ -26,6 +23,7 @@ interface LandingProps {
     documentMetadata?: Record<string, string>;
     documentGroups?: ResumeDocumentGroup[];
     documentActions?: Record<string, ResumeDocumentAction[]>;
+    documentStatusSource?: ResumeDocumentStatusSource;
     activeDocumentId?: string;
     openDocument?: (id: string) => void;
     deleteDocument?: (id: string) => void;
@@ -45,53 +43,6 @@ export interface LandingContext {
     hasResumableSession: boolean;
 }
 
-function DocumentActionsMenu(props: {
-    document: ResumeDocumentSummary;
-    actions?: ResumeDocumentAction[];
-    onRename?: () => void;
-}) {
-    const [open, setOpen] = React.useState(false);
-    const menuId = `document-actions-${React.useId().replace(/:/g, "")}`;
-    const items: DropdownMenuItem[] = [
-        ...(props.onRename ? [{
-            id: `rename-${props.document.id}`,
-            label: "Rename",
-            onSelect: props.onRename
-        }] : []),
-        ...(props.actions ?? []).map((action) => ({
-            id: `${action.id}-${props.document.id}`,
-            label: action.label,
-            disabled: action.disabled,
-            onSelect: () => void action.run()
-        }))
-    ];
-
-    if (!items.length) return null;
-
-    return (
-        <DropdownMenu
-            className="resume-library-actions-menu"
-            id={menuId}
-            items={items}
-            side="bottom"
-            align="end"
-            minWidth={190}
-            onOpen={() => setOpen(true)}
-            onClose={() => setOpen(false)}
-        >
-            <Button
-                aria-label={`More Actions for ${props.document.title}`}
-                aria-controls={menuId}
-                aria-expanded={open}
-                aria-haspopup="menu"
-            >
-                <span aria-hidden="true">⋯</span>
-                <span>More Actions</span>
-            </Button>
-        </DropdownMenu>
-    );
-}
-
 function MenuItem (props: {
     children: React.ReactNode;
     icon: string;
@@ -107,8 +58,6 @@ function MenuItem (props: {
 
 export default function Landing(props: LandingProps) {
     let [isOpen, setOpen] = React.useState(false);
-    const [editingDocumentId, setEditingDocumentId] = React.useState<string | undefined>();
-    const [editingTitle, setEditingTitle] = React.useState("");
     let modalContent = <FileLoader close={() => setOpen(false)} loadData={props.loadData} />
 
     const hasResumableSession = props.hasLocalResume ?? Boolean(localStorage.getItem(Globals.localStorageKey));
@@ -173,83 +122,18 @@ export default function Landing(props: LandingProps) {
                                 </div>
                                 {documents.length ? <div className="resume-library-list">
                             {documents.map((document) => (
-                                <article
-                                    className={document.id === props.activeDocumentId ? "resume-library-item active" : "resume-library-item"}
+                                <ResumeLibraryRow
                                     key={document.id}
-                                >
-                                    {editingDocumentId === document.id ? (
-                                        <AsyncActionForm
-                                            className="resume-library-edit"
-                                            save={async () => {
-                                                const error = await props.renameDocument?.(
-                                                    document.id,
-                                                    editingTitle
-                                                ) ?? null;
-                                                if (!error) {
-                                                    setEditingDocumentId(undefined);
-                                                }
-                                                return error;
-                                            }}
-                                            cancel={() => setEditingDocumentId(undefined)}
-                                        >
-                                            <label>
-                                                <span>Name</span>
-                                                <input
-                                                    {...nonCredentialInputAttributes}
-                                                    autoFocus
-                                                    maxLength={RESUME_TITLE_MAX_LENGTH}
-                                                    value={editingTitle}
-                                                    onChange={(event) => setEditingTitle(event.target.value)}
-                                                />
-                                            </label>
-                                        </AsyncActionForm>
-                                    ) : (
-                                        <div className="resume-library-details">
-                                            <h3 className="resume-library-title">
-                                                <span
-                                                    className="resume-library-title-text"
-                                                    title={document.title}
-                                                >
-                                                    {document.title}
-                                                </span>
-                                                {props.documentLabels?.[document.id]
-                                                    ? (
-                                                        <span className="document-label">
-                                                            {props.documentLabels[document.id]}
-                                                        </span>
-                                                    )
-                                                    : <></>}
-                                            </h3>
-                                            <p>Version {document.version} · Updated {browserDateTimeFormatter.formatDateTime(document.updatedAt)}</p>
-                                            {props.documentMetadata?.[document.id]
-                                                ? <p className="resume-library-metadata">{props.documentMetadata[document.id]}</p>
-                                                : <></>}
-                                        </div>
-                                    )}
-                                    <div className="resume-library-actions">
-                                        <Button
-                                            variant="primary"
-                                            onClick={() => props.openDocument?.(document.id)}
-                                        >
-                                            Open
-                                        </Button>
-                                        <DocumentActionsMenu
-                                            document={document}
-                                            actions={props.documentActions?.[document.id]}
-                                            onRename={props.renameDocument ? () => {
-                                                setEditingDocumentId(document.id);
-                                                setEditingTitle(document.title);
-                                            } : undefined}
-                                        />
-                                        <Button
-                                            appearance="outline"
-                                            variant="error"
-                                            onClick={() => props.deleteDocument?.(document.id)}
-                                        >
-                                            Delete
-                                        </Button>
-                                    </div>
-                                </article>
+                                    document={document}
+                                    activeDocumentId={props.activeDocumentId}
+                                    label={props.documentLabels?.[document.id]}
+                                    metadata={props.documentMetadata?.[document.id]}
+                                    actions={props.documentActions?.[document.id]}
+                                    statusSource={props.documentStatusSource}
+                                    openDocument={props.openDocument}
+                                    deleteDocument={props.deleteDocument}
+                                    renameDocument={props.renameDocument}
+                                />
                             ))}
                                 </div> : <></>}
                             </div>

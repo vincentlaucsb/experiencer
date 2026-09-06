@@ -33,3 +33,12 @@ test('merges hosted extension groups under caller overrides', () => {
         templates: {}
     });
 });
+
+test('preserves the injected document status source through extension resolution', () => {
+    const source = {
+        subscribe: (_id: string, _listener: () => void) => () => undefined,
+        getSnapshot: (_id: string) => ({ busy: false })
+    };
+    expect(resolveResumeAppExtensions({ extensions: { landing: { documentStatusSource: source } } })
+        .landing?.documentStatusSource).toBe(source);
+});

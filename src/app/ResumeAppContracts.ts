@@ -1,3 +1,4 @@
+import type { ResumeDocumentStatusSource } from '@/shared/stores/ResumeDocumentStatusSource';
 import type { MenuItem } from 'popright';
 import type * as React from 'react';
 
@@ -72,6 +73,7 @@ export interface ResumeDocumentOpeningExtensions {
 }
 
 export interface ResumeLandingExtensions {
+    documentStatusSource?: ResumeDocumentStatusSource;
     renderLandingLead?: (actions: LandingActions, context: LandingContext) => React.ReactNode;
     landingClassName?: string;
     showLandingSocialLinks?: boolean;
@@ -195,6 +197,7 @@ export function resolveResumeAppExtensions(props: ResumeWrapperProps | ResumePro
             showLandingSocialLinks: props.extensions?.landing?.showLandingSocialLinks
                 ?? props.showLandingSocialLinks,
             documentLibraryLead: props.extensions?.landing?.documentLibraryLead,
+            documentStatusSource: props.extensions?.landing?.documentStatusSource,
             documentLabels: props.extensions?.landing?.documentLabels ?? props.documentLabels,
             documentMetadata: props.extensions?.landing?.documentMetadata,
             documentGroups: props.extensions?.landing?.documentGroups ?? props.documentGroups,

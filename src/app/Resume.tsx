@@ -101,6 +101,7 @@ export function Resume(props: ResumeProps) {
                     documentLabels={extensions.landing?.documentLabels}
                     documentMetadata={extensions.landing?.documentMetadata}
                     documentGroups={extensions.landing?.documentGroups}
+                    documentStatusSource={extensions.landing?.documentStatusSource}
                     documentActions={extensions.landing?.documentActions}
                     activeDocumentId={props.activeDocumentId}
                     lastDocumentId={props.lastDocumentId}

@@ -196,3 +196,19 @@
         grid-template-columns: 1fr;
     }
 }
+
+.resume-library-item.busy {
+    .resume-library-details { opacity: 0.6; }
+}
+.resume-library-edit-fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.resume-library-status { display: inline-flex; align-items: center; gap: 0.5rem; }
+.resume-library-spinner {
+    width: 1em;
+    height: 1em;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: resume-library-spin 0.8s linear infinite;
+}
+@keyframes resume-library-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .resume-library-spinner { animation: none; } }

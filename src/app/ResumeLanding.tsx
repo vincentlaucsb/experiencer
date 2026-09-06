@@ -1,3 +1,4 @@
+import type { ResumeDocumentStatusSource } from '@/shared/stores/ResumeDocumentStatusSource';
 import * as React from 'react';
 
 import { DefaultLayout } from '@/controls/Layouts';
@@ -20,6 +21,7 @@ export interface ResumeLandingProps {
     documentMetadata?: Record<string, string>;
     documentGroups?: ResumeDocumentGroup[];
     documentActions?: Record<string, ResumeDocumentAction[]>;
+    documentStatusSource?: ResumeDocumentStatusSource;
     activeDocumentId?: string;
     lastDocumentId?: string;
     hasSuspendedSession?: boolean;
@@ -62,6 +64,7 @@ export default function ResumeLanding(props: ResumeLandingProps) {
                     documentLabels={props.documentLabels}
                     documentMetadata={props.documentMetadata}
                     documentGroups={props.documentGroups}
+                    documentStatusSource={props.documentStatusSource}
                     documentActions={props.documentActions}
                     activeDocumentId={props.activeDocumentId}
                     openDocument={props.selectDocument}

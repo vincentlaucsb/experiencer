@@ -29,6 +29,13 @@ body {
     flex-flow: column;
     width: 100%;
     height: 100vh;
+
+    // A long library must extend the sticky header's containing block.
+    // Editor and template-picker panels still need a definite viewport height.
+    &:has(#landing) {
+        height: auto;
+        min-height: 100vh;
+    }
 }
 
 /* || Resizer */

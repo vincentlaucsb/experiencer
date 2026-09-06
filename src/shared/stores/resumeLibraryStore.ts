@@ -39,7 +39,7 @@ export interface ResumeLibraryController {
     selectDocument(id: string): Promise<void>;
     hasUnsavedChanges(): boolean;
     saveCurrentDocument(): Promise<ResumeDocument | undefined>;
-    createDocumentFromTemplate(key?: string): Promise<void>;
+    createDocumentFromTemplate(key?: string, data?: ResumeSaveData): Promise<void>;
     importDocument(data: object, title?: string): Promise<void>;
     deleteDocument(id: string): Promise<void>;
     renameDocument(id: string, title: string): Promise<string | null>;
@@ -144,11 +144,11 @@ export default class ResumeLibraryStore implements ResumeLibraryController {
         }
     };
 
-    createDocumentFromTemplate = async (key = "Integrity") => {
+    createDocumentFromTemplate = async (key = "Integrity", data?: ResumeSaveData) => {
         this.setSnapshot({ saveStatus: "Creating" });
 
         try {
-            const template: ResumeSaveData = ResumeTemplates.templates[key];
+            const template: ResumeSaveData = data ?? ResumeTemplates.templates[key];
             const document = await this.repository.create({
                 title: key,
                 schemaVersion: 1,

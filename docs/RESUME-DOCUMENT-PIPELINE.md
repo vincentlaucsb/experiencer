@@ -100,3 +100,21 @@ Changes to this pipeline require focused unit/contract tests and browser coverag
 - target teardown removes temporary roots, frames, and installed head resources.
 
 When a defect is visible only in an iframe, popup, export, screenshot, or dedicated route, a state-only unit test is not sufficient. Add a test at the failing browser boundary.
+
+## Template themes
+
+Built-in theme catalogs own names, swatch fills, and pure stylesheet transforms. The shared
+`applyTemplateTheme` service gives each transform fresh root and built-in CSS trees from the
+selected template's default document. Transforms may change either tree; palette helpers
+are conveniences, not a restriction to color substitution.
+
+The template selector owns the current theme only while choosing a template. It previews the
+transformed document through `ResumePreviewFrame` and passes that same document into the
+creation port. Persisted documents contain the resulting CSS, never a theme identifier.
+Subsequent catalog changes cannot restyle existing documents. Changing themes always starts
+from the default document; it never layers transforms or infers a theme from arbitrary CSS.
+
+Additional catalogs may supply their own transforms through the generic selector option.
+Creation remains owned by that option's command. Options without themes retain their existing
+preview and creation behavior. Swatches support any CSS background fill, including split colors,
+and use named native radio controls so selection does not depend on perceiving color.

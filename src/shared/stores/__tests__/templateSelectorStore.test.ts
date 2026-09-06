@@ -161,7 +161,7 @@ test('returns to the built-in selection when an additional template disappears',
 
     expect(store.getSnapshot()).toMatchObject({
         selectedBuiltInKey: 'Integrity',
-        preview: { status: 'idle' },
+        preview: { status: 'ready' },
         actionError: 'This template is no longer available.'
     });
     expect(store.getSnapshot().selectedAdditionalKey).toBeUndefined();

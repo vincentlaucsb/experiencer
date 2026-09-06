@@ -1,3 +1,5 @@
+import { TemplateThemeSelector } from './TemplateThemeSelector';
+import type { TemplateTheme } from '@/shared/templates/templateTheme';
 import * as React from 'react';
 
 import { Button } from '@/controls/Buttons';
@@ -22,7 +24,8 @@ export interface AdditionalTemplateOption {
     previewImage?: string;
     previewAlt?: string;
     previewLabel?: string;
-    use: () => Promise<void> | void;
+    themes?: readonly TemplateTheme[];
+    use: (data?: ResumeSaveData) => Promise<void> | void;
     useLabel?: string;
     useDescription?: React.ReactNode;
 }
@@ -38,7 +41,7 @@ export interface ResumeTemplateSelectorProps {
     topNav: React.ReactNode;
     pageSize: PageSize;
     additionalTemplateGroups?: AdditionalTemplateGroup[];
-    createDocumentFromTemplate?: (key?: string) => Promise<void> | void;
+    createDocumentFromTemplate?: (key?: string, data?: ResumeSaveData) => Promise<void> | void;
     store?: TemplateSelectorController;
 }
 
@@ -179,7 +182,7 @@ export default function ResumeTemplateSelector(props: ResumeTemplateSelectorProp
     );
 
     let preview: React.ReactNode;
-    if (!additionalTemplate) {
+    if (!additionalTemplate && !snapshot.preview.data) {
         preview = <BuiltInTemplatePreview templateKey={snapshot.selectedBuiltInKey} />;
     } else if (snapshot.preview.status === 'error') {
         preview = (
@@ -191,12 +194,12 @@ export default function ResumeTemplateSelector(props: ResumeTemplateSelectorProp
         preview = (
             <div className="template-preview-image">
                 <div className="template-preview-label">
-                    {additionalTemplate.previewLabel ?? 'Preview only'}
+                    {additionalTemplate?.previewLabel ?? 'Preview only'}
                 </div>
                 <img
                     src={snapshot.preview.image}
-                    alt={additionalTemplate.previewAlt
-                        ?? `${additionalTemplate.title} template preview`}
+                    alt={additionalTemplate?.previewAlt
+                        ?? `${additionalTemplate?.title ?? snapshot.selectedBuiltInKey} template preview`}
                 />
             </div>
         );
@@ -206,7 +209,7 @@ export default function ResumeTemplateSelector(props: ResumeTemplateSelectorProp
                 <ResumePreviewFrame
                     data={snapshot.preview.data}
                     pageSize={snapshot.preview.data.pageSize ?? props.pageSize}
-                    ariaLabel={`${additionalTemplate.title} template preview`}
+                    ariaLabel={`${additionalTemplate?.title ?? snapshot.selectedBuiltInKey} template preview`}
                     target="isolated-preview"
                     iframeClassName="template-preview-frame"
                     fitDocument
@@ -224,7 +227,12 @@ export default function ResumeTemplateSelector(props: ResumeTemplateSelectorProp
     return (
         <StaticSidebarLayout
             topNav={props.topNav}
-            main={preview}
+            main={snapshot.themes?.length ? <div className="template-themed-preview">
+                {preview}
+                <TemplateThemeSelector themes={snapshot.themes ?? []} selectedId={snapshot.selectedThemeId}
+                    disabled={snapshot.actionStatus === 'using' || snapshot.preview.status !== 'ready'}
+                    select={store.selectTheme} />
+            </div> : preview}
             sidebar={sidebar}
         />
     );

@@ -1,4 +1,5 @@
 @use "colors/semantic" as colors;
+@use "variables";
 
 #template-selector {
     .pure-menu-link,
@@ -130,4 +131,83 @@
     /* Keep generated Letter-page previews centered in the available picker canvas. */
     align-self: center;
     box-shadow: 0 0.25rem 1rem rgb(0 0 0 / 18%);
+}
+
+.template-themed-preview {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+
+    > .template-preview-paper,
+    > .template-preview-image {
+        flex: 1;
+        min-height: 0;
+        overflow: auto;
+        width: auto;
+        justify-content: flex-start;
+    }
+
+    > .template-preview-paper {
+        align-items: flex-start;
+        justify-content: safe center;
+    }
+}
+
+.template-theme-selector {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0.65rem 1rem 0.85rem;
+    border: 0;
+    background: colors.$surface-muted;
+    color: colors.$text-primary;
+
+    legend { float: left; margin-right: 1rem; line-height: 2.75rem; }
+}
+
+.template-theme-swatches { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+
+.template-theme-option {
+    position: relative;
+    display: grid;
+    width: 2.75rem;
+    height: 2.75rem;
+    place-items: center;
+    cursor: pointer;
+
+    input {
+        position: absolute;
+        inset: 0;
+        margin: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .template-theme-fill {
+        width: 1.35rem;
+        height: 1.35rem;
+        border-radius: 50%;
+        border: 1px solid colors.$border-strong;
+        pointer-events: none;
+    }
+
+    input:checked + .template-theme-fill {
+        outline: 2px solid colors.$text-primary;
+        outline-offset: 3px;
+    }
+
+    input:focus-visible + .template-theme-fill {
+        outline: 3px solid colors.$focus-ring;
+        outline-offset: 4px;
+    }
+
+    input:disabled { cursor: wait; }
+}
+
+// Give the stacked preview its own space so the template list cannot cover the swatches.
+@media (max-width: variables.$screen-small) {
+    #main-grid:has(.template-themed-preview) > :first-child {
+        flex: 0 0 60vh;
+        min-height: 20rem;
+    }
 }

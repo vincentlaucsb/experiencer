@@ -1,3 +1,4 @@
+import { documentNotesStore } from './documentNotesStore';
 import { EditorMode, Globals, ResumeSaveData } from "@/types";
 import { cssStore, rootCssStore } from "./cssStoreHooks";
 import { resumeNodeStore } from "./resumeNodeStore";
@@ -41,6 +42,7 @@ export function hydrateResumeData(data: object) {
     
     cssStore.loadCss(savedData.builtinCss);
     rootCssStore.loadCss(savedData.rootCss);
+    documentNotesStore.load(savedData.notes);
     documentFontsStore.load(savedData.fonts ?? extractFontFamiliesFromCss(
         `${rootCssStore.getStylesheet()}\n\n${cssStore.getStylesheet()}`
     ).map((family) => ({

@@ -1,3 +1,4 @@
+import { documentNotesStore } from './documentNotesStore';
 import { saveAs } from "file-saver";
 import { resumeNodeStore } from "./resumeNodeStore";
 import { ResumeSaveData } from "@/types";
@@ -8,6 +9,7 @@ import { documentFontsStore } from './documentFontsStore';
 
 export function dump(): ResumeSaveData {
     return {
+        ...(documentNotesStore.data ? { notes: deepCopy(documentNotesStore.data) } : {}),
         childNodes: deepCopy(resumeNodeStore.data.childNodes),
         builtinCss: cssStore.data.dump(),
         rootCss: rootCssStore.data.dump(),
@@ -22,6 +24,7 @@ export function saveLocal() {
     cssStore.clearUnsavedChanges();
     rootCssStore.clearUnsavedChanges();
     documentFontsStore.clearUnsavedChanges();
+    documentNotesStore.clearUnsavedChanges();
     useEditorStore.getState().clearPageSizeUnsavedChanges();
     localStorage.setItem('experiencer', JSON.stringify(dump()));
 }

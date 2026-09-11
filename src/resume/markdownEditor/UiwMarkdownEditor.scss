@@ -1,0 +1,7 @@
+.resume-markdown-editor .w-md-editor-text {
+    // Without highlighting there is no in-flow content mirror to size this wrapper.
+    height: 100%;
+    // UIW repeats the whole editor's minimum height inline here. The text pane
+    // must also fit when the toolbar leaves less than that minimum available.
+    min-height: 0 !important;
+}

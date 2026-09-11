@@ -5,6 +5,7 @@ import type { MarkdownEditorProps } from "./types";
 import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
 
 import "@uiw/react-md-editor/markdown-editor.css";
+import "./UiwMarkdownEditor.scss";
 
 /** Adapts the selected third-party Markdown editor to the resume editor contract. */
 export default function UiwMarkdownEditor(props: MarkdownEditorProps) {

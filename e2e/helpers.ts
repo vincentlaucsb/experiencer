@@ -2,7 +2,8 @@ import { expect, type Page } from '@playwright/test';
 
 export async function openFreshApp(page: Page) {
   await page.addInitScript(() => {
-    localStorage.clear();
+    // Same-origin preview frames share storage with the editor.
+    if (window === window.top) localStorage.clear();
   });
 
   await page.goto('/');

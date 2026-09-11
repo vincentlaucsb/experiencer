@@ -1,3 +1,4 @@
+import { documentNotesStore } from './documentNotesStore';
 import ResumeTemplates from "@/templates/ResumeTemplates";
 import { ResumeSaveData } from "@/types";
 import LocalStorageResumeRepository from "@/shared/repositories/LocalStorageResumeRepository";
@@ -135,6 +136,7 @@ export default class ResumeLibraryStore implements ResumeLibraryController {
             cssStore.clearUnsavedChanges();
             rootCssStore.clearUnsavedChanges();
             documentFontsStore.clearUnsavedChanges();
+            documentNotesStore.clearUnsavedChanges();
             useEditorStore.getState().clearPageSizeUnsavedChanges();
             await this.refreshDocuments();
             return saved;
@@ -243,6 +245,7 @@ export default class ResumeLibraryStore implements ResumeLibraryController {
         cssStore.clearUnsavedChanges();
         rootCssStore.clearUnsavedChanges();
         documentFontsStore.clearUnsavedChanges();
+        documentNotesStore.clearUnsavedChanges();
         await this.repository.setActiveId(document.id);
         this.setSnapshot({
             activeDocumentId: document.id,

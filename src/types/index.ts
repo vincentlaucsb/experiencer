@@ -80,7 +80,15 @@ export type ResumeNode<TExtra extends Record<string, any> = Record<string, any>>
     uuid: string;
 } & TExtra;
 
+/** Private document addendum, carried by JSON persistence but never rendered. */
+export interface ResumeNotes {
+    markdown: string;
+    /** Snapshot of source-template guidance; later template edits do not propagate. */
+    templateGuidance?: string;
+}
+
 export interface ResumeSaveData {
+    notes?: ResumeNotes;
     builtinCss: CssNodeDump;
     rootCss: CssNodeDump;
     childNodes: Array<BasicResumeNode>;

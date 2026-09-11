@@ -1,3 +1,4 @@
+import { documentNotesStore } from './documentNotesStore';
 import { cssStore, rootCssStore } from "./cssStoreHooks";
 import { documentFontsStore } from "./documentFontsStore";
 import { useEditorStore } from "./editorStore";
@@ -11,6 +12,7 @@ export const resumeDocumentDirtyState = {
             cssStore.subscribe(listener),
             rootCssStore.subscribe(listener),
             documentFontsStore.subscribe(listener),
+            documentNotesStore.subscribe(listener),
             useEditorStore.subscribe(listener)
         ];
         return () => unsubscribe.forEach((stop) => stop());
@@ -21,6 +23,7 @@ export const resumeDocumentDirtyState = {
             || cssStore.hasUnsavedChanges()
             || rootCssStore.hasUnsavedChanges()
             || documentFontsStore.hasUnsavedChanges()
+            || documentNotesStore.hasUnsavedChanges()
             || useEditorStore.getState().hasUnsavedPageSizeChanges;
     }
 };

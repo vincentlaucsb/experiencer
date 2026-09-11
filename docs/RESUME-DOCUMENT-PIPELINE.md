@@ -118,3 +118,8 @@ Additional catalogs may supply their own transforms through the generic selector
 Creation remains owned by that option's command. Options without themes retain their existing
 preview and creation behavior. Swatches support any CSS background fill, including split colors,
 and use named native radio controls so selection does not depend on perceiving color.
+
+
+## Private document addendum
+
+The optional `ResumeSaveData.notes` object retains Markdown and inherited template guidance through JSON import/export and repository persistence. It is document metadata, not a resume node. `createResumeDocumentSource` deliberately omits it: adapters must never render notes or copy them into output markup, stylesheets, public review data, or PDF metadata.

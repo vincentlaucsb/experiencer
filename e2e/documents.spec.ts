@@ -17,7 +17,8 @@ test('renames and deletes a saved resume from the landing page', async ({ page }
   await page.getByRole('button', { name: 'Go to landing page' }).click();
 
   const documentCard = page.locator('.resume-library-item').filter({ hasText: 'Assured' }).first();
-  await documentCard.getByRole('button', { name: 'Rename' }).click();
+  await documentCard.getByRole('button', { name: 'More Actions for Assured' }).click();
+  await page.getByRole('menuitem', { name: 'Rename', exact: true }).click();
   await page.getByLabel('Name').fill('Product Resume');
   await page.getByRole('button', { name: 'Save' }).click();
 

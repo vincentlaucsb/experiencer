@@ -117,6 +117,7 @@ export function Resume(props: ResumeProps) {
         default:
             return (
                 <ResumeEditor
+                    saveCurrentDocument={props.saveCurrentDocument}
                     topNav={shell}
                     nodes={nodes}
                     pageSize={pageSize}

@@ -10,6 +10,7 @@ import { saveLocal } from "@/shared/stores/saveResume";
 import { saveAsDialogStore } from "@/shared/stores/saveAsDialogStore";
 
 export interface ResumeHotKeysProps extends SelectedNodeActions {
+    save?: Action;
     reset: Action;
     undo?: Action;
     redo?: Action;
@@ -111,7 +112,7 @@ export class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
             },
 
             SAVE: (e) => {
-                saveLocal();
+                (this.props.save ?? saveLocal)();
                 e.preventDefault();
             },
 
@@ -137,11 +138,12 @@ export class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
     }
 }
 
-export default function ResumeHotKeysWrapper() {
+export default function ResumeHotKeysWrapper(props: { save?: Action }) {
     const undoRedoProps = useUndoRedoProps();
     const { unselectNode } = useEditorStore.getState();
     const selectedNodeActions = useSelectedNodeActions();
     return <ResumeHotKeys
+        save={props.save}
         {...selectedNodeActions}
         {...undoRedoProps}
         reset={() => {

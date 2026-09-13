@@ -33,6 +33,7 @@ export interface ResumeEditorProps {
     pageSize: PageSize;
     selectedNodeId?: string;
     stylesheet: string;
+    saveCurrentDocument?: () => void;
     additionalSidebarTabs?: AdditionalSidebarTab[];
 }
 
@@ -75,7 +76,7 @@ export default function ResumeEditor(props: ResumeEditorProps) {
                 pageSize={props.pageSize}
                 root="editor-host"
                 containerRef={resumeRef}
-                beforeNodes={<ResumeHotKeys />}
+                beforeNodes={<ResumeHotKeys save={props.saveCurrentDocument} />}
                 updateResumeData={updateResumeData}
                 updateResumeDataFields={updateResumeDataFields}
             />

@@ -22,7 +22,7 @@ export default function DocumentNotesPreview({ notice }: { notice?: ReactNode })
 /** Keeps the shared modal mounted so its focus and accessibility cleanup follows open/close transitions. */
 export function ReadOnlyNotesModal({ notice }: { notice?: ReactNode }) {
     const { selected } = useSyncExternalStore(readOnlyNotesStore.subscribe, readOnlyNotesStore.getSnapshot);
-    return <Modal isOpen={Boolean(selected)} close={readOnlyNotesStore.close} title="View Notes">
+    return <Modal isOpen={Boolean(selected)} close={readOnlyNotesStore.close} title="View Notes" className="document-notes-modal">
         <div>{selected && <><h4>{selected.title}</h4><Markdown>{selected.markdown || 'No notes yet.'}</Markdown>{notice}</>}</div>
     </Modal>;
 }

@@ -21,6 +21,9 @@ test('standalone editor offers Notes and preserves imported notes read-only', as
   await page.getByRole('tab', { name: 'Tree', exact: true }).click();
   await page.getByRole('tree').getByRole('button', { name: 'View Notes' }).click();
   await expect(page.getByRole('dialog')).toContainText('Entry private guidance');
+  await page.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });
+  await expect(page.getByRole('dialog')).not.toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  await expect(page.getByRole('dialog')).toHaveCSS('position', 'static');
   await expect(page.getByRole('dialog').getByRole('textbox')).toHaveCount(0);
 });
 

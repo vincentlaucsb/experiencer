@@ -1,4 +1,6 @@
 import * as React from "react";
+import { Button } from "@/controls/Buttons";
+import { useNodeExtensions } from "@/shared/hooks/useNodeExtensions";
 import TextField from "@/controls/inputs/TextField";
 import Container from "@/resume/infrastructure/Container";
 import { process } from "@/shared/utils/processText";
@@ -11,6 +13,8 @@ import FieldAdder from "./FieldAdder";
 import "./Entry.scss";
 
 interface EntryBase {
+    /** Private tailoring guidance; persisted with the entry, never rendered. */
+    notes?: string;
     title?: string[];
     subtitle?: string[];
 
@@ -38,6 +42,7 @@ function getFieldClassName(index: number, arr: string[]) {
 }
 
 export default function Entry(props: EntryProps) {
+    const actions = useNodeExtensions(props);
     const isEditing = useIsNodeEditing(props.uuid);
     const isSelected = useIsNodeSelected(props.uuid);
     const [newField, setNewField] = React.useState<{
@@ -108,7 +113,7 @@ export default function Entry(props: EntryProps) {
                         value={text || ""}
                         defaultText="Enter a value"
                         displayProcessors={[process, toUrl]}
-                        contextMenuOptions={textFieldOptions}
+                        contextMenuOptions={props.readOnly ? [] : [...textFieldOptions, ...actions.map(action => ({ text: action.label, onClick: action.run }))]}
                     />
                     {lineBreak}
                 </React.Fragment>
@@ -145,6 +150,11 @@ export default function Entry(props: EntryProps) {
                     </span>
                 )}
             </hgroup>
+            {isSelected && !props.readOnly && actions.length > 0 && <div className="no-print">
+                {actions.map(action => <Button key={action.id} onClick={event => {
+                    event.stopPropagation(); action.run();
+                }}>{action.label}</Button>)}
+            </div>}
             {props.children}
         </Container>
     );

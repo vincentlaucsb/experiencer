@@ -56,7 +56,16 @@ export interface ResumeShellExtensions {
     overlays?: React.ReactNode;
 }
 
+/** Host-owned node actions shared by selection, tree indicators, and context menus. */
+export interface ResumeNodeAction {
+    id: string;
+    label: string;
+    run: () => void;
+    treeIndicator?: string;
+}
+
 export interface ResumeEditorExtensions {
+    nodeActions?: (node: ResumeNode) => ResumeNodeAction[];
     additionalToolbarSections?: ToolbarData;
     additionalSidebarTabs?: AdditionalSidebarTab[];
 }
@@ -185,6 +194,7 @@ export function resolveResumeAppExtensions(props: ResumeWrapperProps | ResumePro
             overlays: props.extensions?.shell?.overlays ?? props.overlays
         },
         editor: {
+            nodeActions: props.extensions?.editor?.nodeActions,
             additionalToolbarSections: props.extensions?.editor?.additionalToolbarSections
                 ?? props.additionalToolbarSections,
             additionalSidebarTabs: props.extensions?.editor?.additionalSidebarTabs

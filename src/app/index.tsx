@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import registerNodes from '@/resume/schema';
 import Resume from './Resume';
+import { resumeAppExtensionsStore } from '@/shared/stores/resumeAppExtensionsStore';
 import { localAppExtensions } from './localAppExtensions';
 import { themeStore } from '@/shared/stores/themeStore';
 // import * as serviceWorker from './serviceWorker';
@@ -10,7 +11,8 @@ themeStore.initialize();
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
-root.render(<Resume extensions={localAppExtensions} />);
+resumeAppExtensionsStore.replace(localAppExtensions);
+root.render(<Resume />);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

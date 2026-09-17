@@ -1,3 +1,4 @@
+import { resumeAppExtensionsStore } from "@/shared/stores/resumeAppExtensionsStore";
 import type { MenuItem } from "popright";
 import ComponentTypes from "@/resume/schema/ComponentTypes";
 import { resumeNodeStore } from "@/shared/stores/resumeNodeStore";
@@ -28,7 +29,8 @@ export default function buildContextMenuItems(uuid: string, actions: ContextMenu
         }];
     });
 
-    const additionalItems: MenuItem[] = [];
+    const additionalItems: MenuItem[] = (resumeAppExtensionsStore.getSnapshot().editor?.nodeActions?.(node) ?? [])
+        .map(action => ({ id: action.id, label: action.label, onSelect: action.run }));
     if (ComponentTypes.instance.isEditable(node.type)) {
         additionalItems.push({
             id: `edit-${uuid}`,

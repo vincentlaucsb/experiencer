@@ -1,7 +1,7 @@
 import ClassStore from '@/shared/ClassStore';
 import type { ResumeNotes } from '@/types';
 
-export const MAXIMUM_NOTES_LENGTH = 32_000;
+export const MAXIMUM_NOTES_LENGTH = 8_000;
 
 /** Owns the serializable, non-rendered addendum of the active document. */
 export class DocumentNotesStore extends ClassStore<ResumeNotes | undefined> {

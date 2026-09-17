@@ -49,3 +49,23 @@ test('canonical output preparation excludes the private addendum', () => {
     const source = createResumeDocumentSource({ ...emptyDocument(), notes: { markdown: 'PRIVATE_NOTES', templateGuidance: 'PRIVATE_GUIDANCE' } }, 'Resume');
     expect(JSON.stringify(prepareResumeDocument(source, 'print'))).not.toContain('PRIVATE_');
 });
+
+
+test('entry notes survive edits, copies and JSON round trips but are removed from rendering inputs', () => {
+    hydrateResumeData({ ...emptyDocument(), childNodes: [
+        { type: 'Entry', title: ['Example'], notes: 'PRIVATE_ENTRY', childNodes: [] },
+        { type: 'Entry', title: ['Second'], childNodes: [] }
+    ] });
+    const first = resumeNodeStore.data.childNodes[0];
+    resumeNodeStore.updateNode(first.uuid, 'title', ['Tailored title']);
+    resumeNodeStore.moveNodeDown(first.uuid);
+    const exported = JSON.parse(JSON.stringify(dump()));
+    expect(exported.childNodes[1].notes).toBe('PRIVATE_ENTRY');
+    hydrateResumeData(exported);
+    expect(dump().childNodes[1].notes).toBe('PRIVATE_ENTRY');
+    const duplicate = resumeNodeStore.duplicateNode(resumeNodeStore.data.childNodes[1].uuid, false);
+    expect(resumeNodeStore.getNodeByUuid(duplicate!)?.notes).toBe('PRIVATE_ENTRY');
+    const source = createResumeDocumentSource(dump(), 'Resume');
+    for (const target of ['print', 'export', 'png', 'public-review', 'render-service'] as const)
+        expect(JSON.stringify(prepareResumeDocument(source, target))).not.toContain('PRIVATE_ENTRY');
+});

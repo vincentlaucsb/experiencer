@@ -316,3 +316,10 @@ div[class*='ReactModal__Content'] {
         }
     }
 }
+
+/** Private guidance remains readable within a bounded viewer on every screen. */
+.document-notes-modal {
+    width: min(850px, 94vw) !important;
+    max-height: 90vh;
+    overflow-wrap: anywhere;
+}

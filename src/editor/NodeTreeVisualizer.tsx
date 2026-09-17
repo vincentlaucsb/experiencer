@@ -1,4 +1,6 @@
 import React from "react";
+import { Button } from "@/controls/Buttons";
+import { useNodeExtensions } from "@/shared/hooks/useNodeExtensions";
 import ComponentTypes from "@/resume/schema/ComponentTypes";
 import { ResumeNode } from "@/types";
 
@@ -12,6 +14,7 @@ export interface NodeTreeVisualizerProps {
 
 /** Represents a resume node in the keyboard-navigable structure tree. */
 function NodeRepresentation({ node }: { node: ResumeNode }) {
+    const actions = useNodeExtensions(node);
     const classNames = ["tree-item", ...ComponentTypes.instance.treeClassNames(node.type)];
     const htmlId = node.htmlId ? `#${node.htmlId}` : "";
     const cssClasses = node.classNames ? node.classNames.split(' ').map(
@@ -21,6 +24,9 @@ function NodeRepresentation({ node }: { node: ResumeNode }) {
     return (
         <span className={classNames.join(' ')}>{text}
             <span className="tree-item-selector app-pl-2">{htmlId}{cssClasses}</span>
+            {actions.filter(action => action.treeIndicator).map(action => <Button key={action.id}
+                aria-label={action.label} onKeyDown={event => event.stopPropagation()}
+                onClick={event => { event.stopPropagation(); action.run(); }}>{action.treeIndicator}</Button>)}
         </span>
     );
 }

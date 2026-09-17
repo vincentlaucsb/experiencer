@@ -1,3 +1,4 @@
+import { stripNodeProperties } from '@/shared/utils/stripNodeProperties';
 import CssNode from '@/shared/CssTree';
 import { assignIds } from '@/shared/utils/assignIds';
 import { deepCopy } from '@/shared/utils/deepCopy';
@@ -84,6 +85,8 @@ export function prepareResumeDocument(
 
     return {
         ...source,
+        // Removing private metadata must preserve the source's existing rendering identities.
+        nodes: target === 'editor' ? source.nodes : stripNodeProperties(source.nodes, ['notes']) as ResumeNode[],
         target,
         root: rootForTarget(target),
         readOnly: target !== 'editor',

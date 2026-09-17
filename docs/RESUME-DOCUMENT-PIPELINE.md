@@ -123,3 +123,5 @@ and use named native radio controls so selection does not depend on perceiving c
 ## Private document addendum
 
 The optional `ResumeSaveData.notes` object retains Markdown and inherited template guidance through JSON import/export and repository persistence. It is document metadata, not a resume node. `createResumeDocumentSource` deliberately omits it: adapters must never render notes or copy them into output markup, stylesheets, public review data, or PDF metadata.
+
+Entry nodes may carry private `notes` Markdown alongside their fields. Tree persistence retains it; `prepareResumeDocument` strips it recursively for every non-editor target. Host-owned node actions expose note indicators and access points only in the editing UI. General note edits are capped at 8,000 characters; importing legacy guidance does not truncate it.

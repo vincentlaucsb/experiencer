@@ -14,10 +14,11 @@ export default class Section extends React.PureComponent<ResumeComponentProps> {
             value={this.props.value || ''}
             defaultText="Enter a title"
             displayProcessors={[process]}
+            readOnly={this.props.readOnly}
         />
 
         let helperText = <></>
-        if (React.Children.count(this.props.children) === 0) {
+        if (!this.props.readOnly && React.Children.count(this.props.children) === 0) {
             helperText = <p>This section is empty. Click here to select it and add content.</p>
         }
 

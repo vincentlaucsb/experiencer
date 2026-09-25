@@ -64,7 +64,7 @@ export default function Header({ updateDataFields, ...props }: HeaderProps) {
             break;
     }
 
-    let value = <h1><InlineMarkdown>{props.value || "Enter a title"}</InlineMarkdown></h1>
+    let value = <h1><InlineMarkdown>{props.readOnly ? (props.value || "") : (props.value || "Enter a title")}</InlineMarkdown></h1>
     let subtitle = <h2 className="subtitle"><InlineMarkdown>{props.subtitle || ""}</InlineMarkdown></h2>
 
     if (isEditing) {

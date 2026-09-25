@@ -12,7 +12,7 @@ export default function Grid({ children, ...props }: ResumeComponentProps) {
             display: "grid",
         };
 
-        if (isEmpty) {
+        if (isEmpty && !props.readOnly) {
             ret.minWidth = '100px';
             ret.minHeight = '100px';
         }
@@ -20,7 +20,7 @@ export default function Grid({ children, ...props }: ResumeComponentProps) {
         return ret;
     }, [children]);
 
-    const helperText = isEmpty ? <span>
+    const helperText = isEmpty && !props.readOnly ? <span>
         This grid is empty. Click here to select it and add items.
         </span>  : <></>
 

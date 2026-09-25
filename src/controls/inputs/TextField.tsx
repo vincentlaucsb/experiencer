@@ -25,6 +25,8 @@ interface TextFieldProps {
     static?: boolean;
     /** Expand the inline editor to fit its value; opt out only for fixed-width utility fields. */
     autoExpand?: boolean;
+    /** Render the stored value only. Empty read-only fields stay empty instead of showing an editing hint. */
+    readOnly?: boolean;
 
     contextMenuOptions?: Array<ContextMenuOption>;
     
@@ -99,6 +101,16 @@ export default class TextField extends React.Component<TextFieldProps, TextField
 
     render() {
         const props = this.props;
+
+        if (props.readOnly) {
+            let displayValue = props.displayValue || props.value || "";
+            if (displayValue.length > 0 && props.displayProcessors) {
+                props.displayProcessors.forEach((fn) => {
+                    displayValue = fn(displayValue);
+                });
+            }
+            return <span className={props.displayClassName}><InlineMarkdown>{displayValue}</InlineMarkdown></span>;
+        }
 
         let label = <></>
         if (props.label) {

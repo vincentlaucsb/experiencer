@@ -151,31 +151,35 @@ export function inspectLiveCssTree(
     const changes: LiveCssTreeChange[] = [];
 
     function inspectNode(node: ReadonlyCssNode) {
-        const previousDeclarations = node.properties;
-        let result = inspectLiveCssRule(
-            scopeCssSelectorForEditor(node.fullSelector),
-            previousDeclarations,
-            ownerDocument
-        );
+        const selector = node.fullSelector;
+        // A selectorless root only groups rules; its children still have authored selectors.
+        if (selector) {
+            const previousDeclarations = node.properties;
+            let result = inspectLiveCssRule(
+                scopeCssSelectorForEditor(selector),
+                previousDeclarations,
+                ownerDocument
+            );
 
-        if (result.status === "not-found" && previousDeclarations.size > 0) {
-            result = {
-                status: "changed",
-                declarations: new Map(),
-                added: [],
-                changed: [],
-                removed: Array.from(previousDeclarations.keys())
-            };
-        }
+            if (result.status === "not-found" && previousDeclarations.size > 0) {
+                result = {
+                    status: "changed",
+                    declarations: new Map(),
+                    added: [],
+                    changed: [],
+                    removed: Array.from(previousDeclarations.keys())
+                };
+            }
 
-        if (result.status === "changed") {
-            changes.push({
-                ...result,
-                name: node.name,
-                path: node.fullPath,
-                selector: node.fullSelector,
-                previousDeclarations
-            });
+            if (result.status === "changed") {
+                changes.push({
+                    ...result,
+                    name: node.name,
+                    path: node.fullPath,
+                    selector,
+                    previousDeclarations
+                });
+            }
         }
 
         for (const child of node.children) {

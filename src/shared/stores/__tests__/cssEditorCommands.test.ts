@@ -71,6 +71,23 @@ describe("CSS editor commands", () => {
         expect(updateTree).toHaveBeenCalledTimes(1);
     });
 
+    test("keeps a selectorless root as a propertyless rule group", () => {
+        const root = new CssNode("Blank rules", {}, "");
+        root.addNode("Page", { color: "black" }, "body");
+        const updateTree = jest.fn((updater: (tree: CssNode) => void) => updater(root));
+        const reportError = jest.fn();
+        const commands = createCssEditorCommands(updateTree, reportError);
+
+        commands.updateProperty([], "color", "red");
+        commands.updateSelector([], "section");
+        commands.updateProperty(["Page"], "color", "blue");
+
+        expect(root.selector).toBe("");
+        expect(root.properties.size).toBe(0);
+        expect(root.mustFindNode(["Page"]).properties.get("color")).toBe("blue");
+        expect(reportError).toHaveBeenCalledTimes(2);
+    });
+
     test.each(["addSelector", "updateSelector"] as const)(
         "rejects invalid selectors before %s can create an update",
         (commandName) => {

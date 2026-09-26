@@ -59,6 +59,33 @@ span strong {
 }`);
     });
 
+    test('selectorless root keeps body declarations and sibling rules independent', () => {
+        const root = new CssNode('Document CSS', {}, '');
+        root.addNode('Page', { margin: '0' }, 'body');
+        const heading = root.addNode('Heading', { color: 'black' }, 'header h2');
+
+        expect(root.selector).toBe('');
+        expect(heading.fullSelector).toBe('header h2');
+        expect(root.stylesheet()).toBe(`body {
+  margin: 0;
+}
+
+header h2 {
+  color: black;
+}`);
+
+        const restored = CssNode.load(root.dump());
+        expect(restored.selector).toBe('');
+        expect(restored.findNode('Heading')?.fullSelector).toBe('header h2');
+        expect(restored.stylesheet()).toBe(root.stylesheet());
+        expect(root.copySkeleton().selector).toBe('');
+    });
+
+    test('selectorless node cannot hold declarations', () => {
+        const root = new CssNode('Document CSS', { color: 'black' }, '');
+        expect(() => root.stylesheet()).toThrow('A CSS tree node with declarations needs a selector.');
+    });
+
     test('stylesheet with multiple children', () => {
         const node = new CssNode('Container', {}, 'div');
         node.addNode('Header', { "background": "blue" }, 'header');

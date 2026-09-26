@@ -107,6 +107,23 @@ test("finds changes throughout a CSS tree", () => {
     expect(countLiveCssDeclarationChanges(changes)).toBe(3);
 });
 
+test("inspects child rules beneath a selectorless root", () => {
+    const root = new CssNode("Blank rules", {}, "");
+    root.addNode("Page", { color: "black" }, "body");
+    const entry = root.addNode("Entry", { display: "block" }, ".entry");
+    addEditorStylesheet(`
+        #resume { color: black; }
+        #resume .entry { display: flex; }
+    `);
+
+    const changes = inspectLiveCssTree(new ReadonlyCssNode(root));
+
+    expect(entry.fullSelector).toBe(".entry");
+    expect(changes).toHaveLength(1);
+    expect(changes[0].name).toBe("Entry");
+    expect(changes[0].changed).toEqual(["display"]);
+});
+
 test("finds changes in editor-scoped rules while retaining authored selectors", () => {
     const root = new CssNode("Resume", { color: "black" }, ":root");
     root.addNode("Image", { "max-width": "100%" }, "img");

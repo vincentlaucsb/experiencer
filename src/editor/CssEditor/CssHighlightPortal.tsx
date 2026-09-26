@@ -24,10 +24,11 @@ function calculateHighlightStyle(bounds: DOMRect, computedStyle: CSSStyleDeclara
 
 /** Projects highlight boxes for every document element matched by an authored rule. */
 export default function CssHighlightPortal({ active, selector }: CssHighlightPortalProps) {
+    if (!active || !selector) return <></>;
     try {
         const hits = document.querySelectorAll(selector);
         const container = createContainer("hl-box-container");
-        if (!container || !active) return <></>;
+        if (!container) return <></>;
 
         const leftPaneElement = useEditorStore.getState().leftPaneElement;
         const boxes = Array.from(hits).map((node, key) => (

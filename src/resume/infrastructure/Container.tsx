@@ -26,6 +26,8 @@ export interface ContainerProps {
 
     children?: React.ReactNode;
     className?: string;
+    /** Classes stored on the resume node, combined with component-owned classes. */
+    classNames?: string;
     displayAs?: string;
     emptyText?: string; // TODO: Do something
     htmlId?: string;
@@ -64,7 +66,7 @@ export interface ContainerPresentationProps extends ContainerProps {
  */
 export function ContainerPresentation(props: ContainerPresentationProps) {
     const displayAs = props.displayAs || "div";
-    let classes = [props.className];
+    const classes = [props.className, props.classNames].filter(Boolean);
     let elementRef = React.useRef<HTMLElement>(null);
     const selectedOnRightMouseDown = React.useRef(false);
     const hasOverlayEdit = !isNullOrUndefined(props.editContent);

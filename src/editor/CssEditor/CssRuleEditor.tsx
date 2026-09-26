@@ -64,7 +64,7 @@ export default function CssRuleEditor({
         </span>
     );
 
-    const highlighter = cssNode.fullSelector === ":root" ? <></> : (
+    const highlighter = !cssNode.fullSelector || cssNode.fullSelector === ":root" ? <></> : (
         <Button
             className={highlighterClassName}
             onClick={(event) => {
@@ -105,12 +105,12 @@ export default function CssRuleEditor({
                 displayClassName="css-description"
                 onChange={(text) => commands.updateDescription(path, text)}
             />
-            <CssPropertyEditor
+            {cssNode.fullSelector && <CssPropertyEditor
                 commands={commands}
                 cssNode={cssNode}
                 path={path}
                 varSuggestions={varSuggestions}
-            />
+            />}
             {children}
         </div>
     ) : <></>;

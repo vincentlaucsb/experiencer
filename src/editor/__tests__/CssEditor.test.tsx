@@ -27,6 +27,31 @@ function createLiveSync() {
 describe("CssEditor views", () => {
     afterEach(() => document.getElementById("hl-box-container")?.remove());
 
+    test("shows a selectorless root as a category while child rules stay editable", async () => {
+        const root = new CssNode("Blank rules", {}, "");
+        root.addNode("Page", { color: "black" }, "body");
+
+        const { container } = render(
+            <CssEditor
+                commands={createCommands()}
+                cssNode={new ReadonlyCssNode(root)}
+                isOpen
+                liveSync={createLiveSync()}
+                liveTree="resume"
+            />
+        );
+        await screen.findAllByRole("button", { name: "Import live changes" });
+
+        const rootHeading = container.querySelector("section.css-category-0 > h2")!;
+        expect(container.querySelector(".css-ruleset")).toBeNull();
+        expect(rootHeading.querySelector(".hl")).toBeNull();
+        expect(within(rootHeading as HTMLElement).queryByText("::")).toBeNull();
+
+        fireEvent.click(screen.getByText("Page"));
+        expect(container.querySelector(".css-ruleset")).not.toBeNull();
+        expect(container.querySelector(".hl")).not.toBeNull();
+    });
+
     test("keeps recursive rules collapsed until their own heading expands", async () => {
         const root = new CssNode("Resume CSS", { color: "black" }, "body");
         root.addNode("Entry", { display: "grid" }, ".entry");

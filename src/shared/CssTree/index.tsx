@@ -52,8 +52,8 @@ export default class CssNode {
             this._properties.set(k, properties[k]);
         }
 
-        // Use name as selector if not provided
-        this._selector = selector || name;
+        // An explicit empty selector makes a propertyless root a tree container.
+        this._selector = selector ?? name;
     }
 
     // #region Getters/Setters
@@ -109,7 +109,11 @@ export default class CssNode {
         for (let node of nodes) {
             // Split selectors by comma and remove extra whitespace
             let partialSelectors = node.selector.split(',').map(
-                (sel: string) => sel.trim());
+                (sel: string) => sel.trim()).filter(Boolean);
+
+            if (partialSelectors.length === 0) {
+                continue;
+            }
 
             if (selectors.length > 0) {
                 let buffer = [...selectors];
@@ -191,7 +195,7 @@ export default class CssNode {
     addNode(name: string, properties: Record<string, string>, selector?: string): CssNode;
     addNode(nodeOrName: CssNode | string, properties?: Record<string, string>, selector?: string): CssNode {
         const node = (typeof nodeOrName === 'string')
-            ? new CssNode(nodeOrName, properties || {}, selector || nodeOrName)
+            ? new CssNode(nodeOrName, properties || {}, selector ?? nodeOrName)
             : nodeOrName;
 
         if (this.hasName(node.name)) {
@@ -211,7 +215,7 @@ export default class CssNode {
      */
     copySkeleton(name?: string, selector?: string): CssNode {
         const newName = name || this.name;
-        let newSelector = selector || this.selector;
+        let newSelector = selector ?? this.selector;
 
         let newTree = new CssNode(newName, {}, newSelector);
         for (let node of this._children.values()) {
@@ -363,6 +367,9 @@ export default class CssNode {
 
     /** Return a CSS stylesheet */
     stylesheet() {
+        if (!this.selector && this.properties.size > 0) {
+            throw new Error('A CSS tree node with declarations needs a selector.');
+        }
         const cssProperties = this.formatProperties();
         const selector = this.fullSelector;
         const thisCss = this.properties.size > 0 ? `${selector} {\n${cssProperties}\n}` : ``;
@@ -376,7 +383,7 @@ export default class CssNode {
             }
         }
 
-        let finalStylesheet = [ thisCss ];
+        let finalStylesheet = thisCss ? [thisCss] : [];
         if (childStylesheets.length > 0) {
             finalStylesheet = finalStylesheet.concat(childStylesheets);
         }

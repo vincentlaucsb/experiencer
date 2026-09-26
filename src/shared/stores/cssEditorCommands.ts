@@ -51,7 +51,12 @@ export function createCssEditorCommands(
 
         updateProperty: (path, key, value) => {
             updateTree((cssTreeRoot) => {
-                cssTreeRoot.setProperty(Array.from(path), key, value);
+                const node = cssTreeRoot.mustFindNode(Array.from(path));
+                if (!node.selector && node.isRoot) {
+                    reportError("This CSS group has no selector. Edit a child rule instead.");
+                    return;
+                }
+                node.properties.set(key, value);
             });
         },
 
@@ -64,16 +69,21 @@ export function createCssEditorCommands(
         updateSelector: (path, value) => {
             if (!acceptSelector(value)) return;
             updateTree((cssTreeRoot) => {
-                cssTreeRoot.mustFindNode(Array.from(path)).selector = value;
+                const node = cssTreeRoot.mustFindNode(Array.from(path));
+                if (!node.selector && node.isRoot) {
+                    reportError("The selectorless CSS root groups child rules and cannot be changed.");
+                    return;
+                }
+                node.selector = value;
             });
         },
 
         replaceProperties: (changes) => {
             updateTree((cssTreeRoot) => {
                 for (const change of changes) {
-                    cssTreeRoot
-                        .mustFindNode(Array.from(change.path))
-                        .setProperties(new Map(change.declarations));
+                    const node = cssTreeRoot.mustFindNode(Array.from(change.path));
+                    if (!node.selector && node.isRoot) continue;
+                    node.setProperties(new Map(change.declarations));
                 }
             });
         },

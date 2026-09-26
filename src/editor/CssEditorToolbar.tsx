@@ -64,12 +64,12 @@ export default function CssEditorToolbar(props: CssEditorToolbarProps) {
                 // Stop parent from collapsing
                 event.stopPropagation();
             }}>
-            <Popover containerClassName="pseudo-options-container"
+            {props.cssNode.fullSelector && <Popover containerClassName="pseudo-options-container"
                 content={pseudoMenu} isOpen={pseudoMenuActive}>
                 <Button onClick={() =>
                     setPseudoMenuActive(!pseudoMenuActive)
                 }>::</Button>
-            </Popover>
+            </Popover>}
             <Button
                 aria-label="Import live changes"
                 title="Import live rule changes from browser DevTools"

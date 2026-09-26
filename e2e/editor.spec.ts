@@ -1,6 +1,24 @@
 import { expect, test } from '@playwright/test';
 import { createResumeFromTemplate } from './helpers';
 
+test('renders saved node classes alongside built-in classes', async ({ page }) => {
+  await createResumeFromTemplate(page);
+  const entry = page.locator('#resume article.entry').first();
+  await entry.evaluate(element => (element as HTMLElement).click());
+  await page.getByRole('button', { name: 'Add ID/Classes' }).click();
+  await page.getByLabel('Classes').fill('job featured');
+  await page.getByTestId('html-id-save').click();
+
+  await expect(entry).toHaveClass(/\bentry\b/);
+  await expect(entry).toHaveClass(/\bjob\b/);
+  await expect(entry).toHaveClass(/\bfeatured\b/);
+  await page.keyboard.press('Control+s');
+  await expect(page.locator('.save-status')).toContainText('Saved v2');
+  await page.getByRole('button', { name: 'Go to landing page' }).click();
+  await page.getByRole('button', { name: 'Return to editing resume' }).click();
+  await expect(page.locator('#resume article.entry.job.featured')).toBeVisible();
+});
+
 test('switches page size and adds a new section', async ({ page }) => {
   await createResumeFromTemplate(page);
 

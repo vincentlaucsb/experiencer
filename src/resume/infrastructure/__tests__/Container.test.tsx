@@ -12,6 +12,25 @@ jest.mock("@/resume/infrastructure/OverlayEditor", () => ({
 }));
 
 describe("ContainerPresentation", () => {
+    test("combines saved classes with component classes", () => {
+        const { container } = render(
+            <ContainerPresentation
+                id={[0]}
+                uuid="node-1"
+                className="entry"
+                classNames="job featured"
+                isSelected={false}
+                isEditing={false}
+                onSelect={jest.fn()}
+                onEdit={jest.fn()}
+                onContextMenuOpen={jest.fn()}
+            />
+        );
+
+        const element = container.querySelector('[data-uuid="node-1"]') as HTMLElement;
+        expect([...element.classList]).toEqual(["entry", "job", "featured"]);
+    });
+
     test("calls onSelect when clicking unselected node", () => {
         const onSelect = jest.fn();
         const onEdit = jest.fn();

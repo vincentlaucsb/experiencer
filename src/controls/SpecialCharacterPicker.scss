@@ -16,22 +16,10 @@
 
     &__character {
         align-items: center;
-        background: colors.$surface-raised;
-        border: 1px solid colors.$border-chrome;
-        border-radius: 4px;
-        color: colors.$text-primary;
-        cursor: pointer;
         display: flex;
         font-size: 1.5rem;
         justify-content: center;
         min-height: 2.75rem;
-
-        &:hover,
-        &:focus-visible {
-            background: colors.$surface-interactive;
-            outline: 2px solid colors.$focus-ring;
-            outline-offset: 1px;
-        }
     }
 
     &__status {

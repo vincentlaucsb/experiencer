@@ -29,14 +29,11 @@ div[class*='ReactModal__Content'] {
     overflow: auto;
     border-radius: 4px;
     outline: none;
+    /* (0, 1, 1). A single class cannot override this; width overrides use !important. */
     width: 50%;
     margin-left: auto;
     margin-right: auto;
     margin-top: var(--xp-modal-top-offset);
-}
-
-/** Modals created by top nav menu */
-.top-nav-modal {
 }
 
 /** A small focused form; it should not inherit the default half-screen modal width. */
@@ -84,6 +81,11 @@ div[class*='ReactModal__Content'] {
         justify-content: flex-end;
         margin-top: 0.25rem;
     }
+}
+
+/** A compact symbol palette, not a half-screen settings dialog. */
+.special-character-modal {
+    width: min(32rem, calc(100% - 2rem)) !important;
 }
 
 /** File import is one focused choice, not a half-screen settings dialog. */

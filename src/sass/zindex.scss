@@ -13,9 +13,13 @@ $header: 100;
 $header-control: 110;
 $menu: 120;
 $popover: 200;
+/** Persistent chrome, such as the billing trigger. Modals cover it. */
+$floating-action: 250;
 $modal: 300;
 $context-menu: 400;
 $toast: 500;
+/** A required gate stays above toasts and context menus. */
+$modal-blocking: 600;
 
 /** Base editor and print-faithful document plane. */
 .split-pane {
@@ -57,6 +61,13 @@ header#app-header {
 
 .resume-selection-hint {
     z-index: $popover;
+}
+
+/** Pro overlays read these variables instead of inventing another number. */
+:root {
+    --xp-z-floating-action: #{$floating-action};
+    --xp-z-modal: #{$modal};
+    --xp-z-modal-blocking: #{$modal-blocking};
 }
 
 /** Modal overlays cover all application chrome. */

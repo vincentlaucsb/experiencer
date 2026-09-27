@@ -77,7 +77,7 @@ export default function FileMenu(props: FileMenuProps) {
                 isOpen={isLoadOpen}
                 title="Load File"
                 close={closeLoad}
-                className="top-nav-modal file-loader-modal"
+                className="file-loader-modal"
             >
                 <FileLoader close={closeLoad} loadData={props.loadData} />
             </Modal>

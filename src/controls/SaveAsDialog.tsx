@@ -33,7 +33,6 @@ export default function SaveAsDialog(props: SaveAsDialogProps) {
             isOpen={props.isEditing && snapshot.isOpen}
             title="Save File"
             close={store.close}
-            className="top-nav-modal"
         >
             <FileSaver
                 close={store.close}

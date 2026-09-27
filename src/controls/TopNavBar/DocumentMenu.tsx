@@ -71,7 +71,7 @@ export default function DocumentMenu(props: DocumentMenuProps) {
                 isOpen={Boolean(renameState && renameDocument && props.renameDocument)}
                 title="Rename resume"
                 close={closeRename}
-                className="top-nav-modal rename-resume-modal"
+                className="rename-resume-modal"
             >
                 {renameState && renameDocument && props.renameDocument ? (
                     <AsyncActionForm

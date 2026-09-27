@@ -17,10 +17,13 @@ export default function Modal(props: ModalProps) {
         : document.getElementById("root") ?? undefined;
     const titleId = React.useId().replace(/:/g, "");
 
+    // A className opts out of React Modal's default inline content styles.
+    const className = props.className ? `app-modal ${props.className}` : "app-modal";
+
     return (
         <ReactModal
             isOpen={props.isOpen}
-            className={props.className}
+            className={className}
             contentLabel={props.title}
             role="dialog"
             aria={{ labelledby: titleId, modal: "true" }}

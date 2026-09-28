@@ -1,6 +1,6 @@
 ﻿import ReactModal from "react-modal";
 import React from "react";
-import { CloseIcon } from "./InterfaceIcons";
+import ModalHeader from "./ModalHeader";
 
 export interface ModalProps {
     children: React.ReactElement;
@@ -32,16 +32,7 @@ export default function Modal(props: ModalProps) {
             appElement={appElement}
             ariaHideApp={Boolean(appElement)}
         >
-            <h3 id={titleId} className="modal-heading app-py-2 app-px-4">
-                {props.title}
-                <button
-                    type="button"
-                    className="modal-close app-p-0"
-                    aria-label={`Close ${props.title}`}
-                    onClick={() => props.close()}>
-                    <CloseIcon />
-                </button>
-            </h3>
+            <ModalHeader title={props.title} titleId={titleId} close={props.close} />
             <div className="modal-content app-p-4">
                 {props.children}
             </div>

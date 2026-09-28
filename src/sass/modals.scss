@@ -6,24 +6,6 @@
 
 /** All modals */
 div[class*='ReactModal__Content'] {
-    .modal-heading {
-        display: flex;
-        align-items: center;
-        margin: 0;
-        background: colors.$surface-inverse;
-        color: colors.$text-on-inverse;
-
-        .modal-close {
-            border: none;
-            background: inherit;
-            margin-left: auto;
-
-            &:hover {
-                color: colors.$text-on-inverse;
-            }
-        }
-    }
-
     border: 1px solid colors.$border-strong;
     background: colors.$surface-raised;
     overflow: auto;
@@ -324,4 +306,45 @@ div[class*='ReactModal__Content'] {
     width: min(850px, 94vw) !important;
     max-height: 90vh;
     overflow-wrap: anywhere;
+}
+
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid colors.$border-subtle;
+    background: colors.$surface-raised;
+    color: colors.$text-primary;
+
+    .modal-header__titles { min-width: 0; }
+
+    .modal-header__title {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 700;
+        line-height: 1.4;
+        letter-spacing: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .modal-header__subtitle {
+        margin: 0.25rem 0 0;
+        color: colors.$text-secondary;
+        font-size: 0.875rem;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+    }
+
+    .modal-header__close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 2.75rem;
+        width: 2.75rem;
+        height: 2.75rem;
+        padding: 0;
+    }
 }

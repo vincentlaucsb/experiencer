@@ -125,6 +125,13 @@ button img {
 }
 
 @media screen {
+    // The application owns centering outside the authored document CSS scope.
+    #resume-container {
+        width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
     #resume {
         // Page-boundary guides are editor-only absolute overlays; keep their
         // coordinate system anchored to the resume without affecting exports.
@@ -138,8 +145,6 @@ button img {
         border: 1px solid colors.$document-border;
         box-shadow: colors.$shadow-medium;
         margin-bottom: 1rem;
-        margin-left: auto;
-        margin-right: auto;
 
         &[data-page-size="a4"] {
             width: 210mm;

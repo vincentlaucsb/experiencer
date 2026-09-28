@@ -71,15 +71,17 @@ export default function ResumeEditor(props: ResumeEditorProps) {
     const canvas = (
         <>
             <PngExportFeature />
-            <ResumeRenderer
-                nodes={props.nodes}
-                pageSize={props.pageSize}
-                root="editor-host"
-                containerRef={resumeRef}
-                beforeNodes={<ResumeHotKeys save={props.saveCurrentDocument} />}
-                updateResumeData={updateResumeData}
-                updateResumeDataFields={updateResumeDataFields}
-            />
+            <div id="resume-container">
+                <ResumeRenderer
+                    nodes={props.nodes}
+                    pageSize={props.pageSize}
+                    root="editor-host"
+                    containerRef={resumeRef}
+                    beforeNodes={<ResumeHotKeys save={props.saveCurrentDocument} />}
+                    updateResumeData={updateResumeData}
+                    updateResumeDataFields={updateResumeDataFields}
+                />
+            </div>
             {createPortal(
                 <React.Suspense fallback={null}>
                     <SelectedNodeHighlightBox />

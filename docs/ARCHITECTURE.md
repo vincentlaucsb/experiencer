@@ -446,11 +446,19 @@ src/sass/
 │   ├── semantic.scss       # Named semantic tokens (--color-text-primary, etc.)
 │   └── utilities.scss      # app-text-* utility classes
 └── spacing/
-    ├── index.scss          # Utility classes (app-mb-*, app-gap-*, app-p-*)
-    └── scale.scss          # Spacing scale values
+    └── index.scss          # Closed rem scale, CSS tokens and spacing utilities
 ```
 
 **Usage**: `Resume.tsx` imports `@/sass/index.scss`. Component-specific styles remain in `.scss` files co-located with the component (e.g., `TopEditingBar.scss`, `Markdown.scss`).
+
+Application spacing uses the closed root-relative scale in `sass/spacing/index.scss`.
+Prefer `app-p-*`, `app-m-*` and `app-gap-*` utilities for routine layout; semantic
+component relationships use matching `--app-space-*` variables. These styles never
+belong in authored résumé documents. `npm run spacing:check` rejects new raw CSS
+and JSX inline spacing, including duplicate legacy declarations, and requires
+removing migrated entries from `scripts/app-spacing-debt.json`. The debt file is
+a migration inventory, not an automatically refreshed allowlist. Browser tests
+verify that local font size does not change utility spacing.
 
 **Spacing utilities** follow an `app-` prefix to avoid collisions with PureCSS and resume content styles:
 - `app-mb-1` through `app-mb-4` — margin-bottom

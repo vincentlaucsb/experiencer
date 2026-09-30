@@ -42,6 +42,9 @@
 
 ## Styling
 
+- Prefer shared `app-*` utilities for routine application padding, margins, and gaps. Semantic component relationships may use `--app-space-*` tokens with a short explanation; do not add raw spacing in styles or JSX.
+- Run `npm run spacing:check`. Remove migrated declarations from `scripts/app-spacing-debt.json`; do not refresh the debt file to silence new violations. Authored résumé CSS is a separate document system.
+
 - Use the shared button and palette systems instead of feature-local action colors.
 - Follow `src/sass/colors/AGENTS.md` and `src/sass/spacing/AGENTS.md` for app styling. Do not apply app utility classes inside exported résumé content.
 - Use modern Sass modules and functions; do not reintroduce deprecated `@import`, slash division, or legacy color helpers.

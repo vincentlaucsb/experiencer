@@ -21,8 +21,10 @@
     "zustand": "^5.0.11"
   },
   "scripts": {
+    "spacing:check": "node scripts/check-app-spacing.mjs",
+    "spacing:test": "node --test scripts/check-app-spacing.test.mjs",
     "dev": "vite",
-    "build": "npm run schema:check && npm run icons:check && tsc && vite build",
+    "build": "npm run spacing:check && npm run schema:check && npm run icons:check && tsc && vite build",
     "preview": "vite preview",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",

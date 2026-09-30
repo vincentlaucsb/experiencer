@@ -29,6 +29,9 @@ jobs:
     - name: Run type check
       run: npx tsc --noEmit
 
+    - name: Enforce shared application spacing
+      run: npm run spacing:check && npm run spacing:test
+
     - name: Run tests with coverage
       run: npm run test:coverage
 

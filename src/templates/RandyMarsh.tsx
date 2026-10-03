@@ -17,7 +17,7 @@ export function randyMarshCss() {
         "font-family": "var(--sans-serif)",
         "font-size": "11pt",
         "display": "grid",
-        "grid-template-columns": "250px 1fr",
+        "grid-template-columns": "250px minmax(0, 1fr)",
         "height": "100%"
     });
 
@@ -51,7 +51,7 @@ export function randyMarshCss() {
             "color": "var(--randy-teal)"
             }, 'Title'
             ).addNode('Grid', {
-                'grid-template-columns': 'var(--year-column-width) 1fr'
+                'grid-template-columns': 'var(--year-column-width) minmax(0, 1fr)'
             }, '.grid-container'
             ).addNode('Entry', {
                 'border-left': '1px solid var(--text-color)',

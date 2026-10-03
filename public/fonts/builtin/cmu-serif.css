@@ -1,0 +1,28 @@
+@font-face {
+  font-family: 'CMU Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/builtin/cmu-serif-cmunrm.otf) format('opentype');
+}
+@font-face {
+  font-family: 'CMU Serif';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/fonts/builtin/cmu-serif-cmunbx.otf) format('opentype');
+}
+@font-face {
+  font-family: 'CMU Serif';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/builtin/cmu-serif-cmunti.otf) format('opentype');
+}
+@font-face {
+  font-family: 'CMU Serif';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/fonts/builtin/cmu-serif-cmunbi.otf) format('opentype');
+}

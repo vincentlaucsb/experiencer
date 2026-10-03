@@ -35,6 +35,19 @@ afterEach(() => {
     });
 });
 
+test.each([undefined, [], [''], ['   ']])('read-only entries omit empty subtitle headings %p', subtitle => {
+    const { container } = render(<Entry id={[0]} type={Entry.type} uuid="empty-subtitle" isLast={false}
+        readOnly title={['Some Company']} subtitle={subtitle} updateData={() => {}} updateDataFields={() => {}} />);
+    expect(container.querySelector('h3.title')).not.toBeNull();
+    expect(container.querySelector('h4.subtitle')).toBeNull();
+});
+
+test('read-only entries retain populated subtitle headings', () => {
+    const { container } = render(<Entry id={[0]} type={Entry.type} uuid="populated-subtitle" isLast={false}
+        readOnly title={['Some Company']} subtitle={['Some Job']} updateData={() => {}} updateDataFields={() => {}} />);
+    expect(container.querySelector('h4.subtitle')?.textContent).toBe('Some Job');
+});
+
 /** Assert that the correct class names are generated */
 test('Entry Class Names Test', async () => {
     const title = ["Some Company"];

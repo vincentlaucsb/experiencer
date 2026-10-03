@@ -9,6 +9,20 @@ import { deepCopy } from '@/shared/utils/deepCopy';
 
 registerNodes();
 
+test.each(['print', 'export', 'render-service'] as const)('%s omits empty entry subtitle headings', async target => {
+    const document = {
+        ...ResumeTemplates.templates.Integrity,
+        childNodes: [
+            { type: 'Entry', title: ['No subtitle'], subtitle: [], childNodes: [] },
+            { type: 'Entry', title: ['Empty fields'], subtitle: ['', ' '], childNodes: [] },
+            { type: 'Entry', title: ['Populated'], subtitle: ['Visible role'], childNodes: [] }
+        ]
+    };
+    const markup = await renderResumeMarkup(prepareResumeDocument(createResumeDocumentSource(document, 'Optional subtitles'), target));
+    expect(markup.match(/<h4 class="subtitle"/g)).toHaveLength(1);
+    expect(markup).toContain('Visible role');
+});
+
 const source = createResumeDocumentSource(
     ResumeTemplates.templates.Integrity,
     'Integrity resume'

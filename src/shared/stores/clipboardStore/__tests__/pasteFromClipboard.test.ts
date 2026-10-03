@@ -6,6 +6,7 @@ import ComponentTypes from "@/resume/schema/ComponentTypes";
 import MarkdownText from "@/resume/Markdown";
 import Section from "@/resume/Section";
 import pasteFromClipboard from "@/shared/stores/clipboardStore/pasteFromClipboard";
+import copyToClipboard from "@/shared/stores/clipboardStore/copyToClipboard";
 import { useClipboardStore } from "@/shared/stores/clipboardStore/store";
 import { useHistoryStore } from "@/shared/stores/historyStore";
 import { resumeNodeStore } from "@/shared/stores/resumeNodeStore";
@@ -26,6 +27,47 @@ afterEach(() => {
 });
 
 describe("clipboard paste child validation", () => {
+    test("repeated pastes strip root and descendant IDs without mutating the source or clipboard", () => {
+        resumeNodeStore.setNodes(assignIds([{
+            type: 'Section', htmlId: 'section', classNames: 'custom-section',
+            childNodes: [{
+                type: 'Entry', htmlId: 'entry', title: ['Original'],
+                childNodes: [{ type: 'Markdown', htmlId: 'description', value: 'Nested content' }]
+            }]
+        }]));
+        const original = resumeNodeStore.data.childNodes[0];
+        const snapshot = JSON.parse(JSON.stringify(original));
+        copyToClipboard(original);
+
+        pasteFromClipboard(undefined);
+        pasteFromClipboard(undefined);
+
+        expect(resumeNodeStore.data.childNodes).toHaveLength(3);
+        const ids = new Set<string>();
+        for (const copy of resumeNodeStore.data.childNodes.slice(1)) {
+            expect(copy).not.toHaveProperty('htmlId');
+            expect(copy.childNodes?.[0]).not.toHaveProperty('htmlId');
+            expect(copy.childNodes?.[0].childNodes?.[0]).not.toHaveProperty('htmlId');
+            expect(copy.classNames).toBe('custom-section');
+            expect(copy.childNodes?.[0].title).toEqual(['Original']);
+            expect(copy.childNodes?.[0].childNodes?.[0].value).toBe('Nested content');
+            const copiedNodes = [copy, copy.childNodes![0], copy.childNodes![0].childNodes![0]];
+            const originalNodes = [original, original.childNodes![0], original.childNodes![0].childNodes![0]];
+            copiedNodes.forEach((node, index) => {
+                expect(node.uuid).not.toBe(originalNodes[index].uuid);
+                expect(ids.has(node.uuid)).toBe(false);
+                ids.add(node.uuid);
+            });
+        }
+        expect(original).toEqual(snapshot);
+        expect(useClipboardStore.getState().clipboard).toEqual(snapshot);
+        expect(useHistoryStore.getState().past).toHaveLength(2);
+        useHistoryStore.getState().undo();
+        expect(resumeNodeStore.data.childNodes).toHaveLength(2);
+        useHistoryStore.getState().undo();
+        expect(resumeNodeStore.data.childNodes).toEqual([snapshot]);
+    });
+
     test("paste cannot bypass schema limits", () => {
         const nodes = assignIds([
             {

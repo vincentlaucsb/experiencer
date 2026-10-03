@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test';
 import { createResumeFromTemplate } from './helpers';
 
-test('duplicating a section preserves original IDs and strips copied descendant IDs', async ({ page }) => {
+for (const action of ['duplicate', 'paste'] as const) {
+test(`${action} preserves original IDs and strips copied root and descendant IDs`, async ({ page }) => {
   await createResumeFromTemplate(page);
   const entry = page.locator('#resume article.entry').first();
   await entry.evaluate(element => (element as HTMLElement).click());
@@ -16,17 +17,30 @@ test('duplicating a section preserves original IDs and strips copied descendant 
   const sectionCount = await page.locator('#resume section').count();
   const entryCount = await section.locator('article.entry').count();
   await page.getByRole('button', { name: 'Clipboard', exact: true }).click();
-  await page.getByRole('menuitem', { name: 'Insert Copy After', exact: true }).click();
+  if (action === 'duplicate') {
+    await page.getByRole('menuitem', { name: 'Insert Copy After', exact: true }).click();
+  } else {
+    await page.getByRole('menuitem', { name: /^Copy\b/ }).click();
+    await page.getByRole('button', { name: 'Unselect', exact: true }).click();
+    await page.getByRole('button', { name: 'Paste', exact: true }).click();
+    await page.getByRole('button', { name: 'Paste', exact: true }).click();
+  }
 
-  await expect(page.locator('#resume section')).toHaveCount(sectionCount + 1);
+  const copyCount = action === 'duplicate' ? 1 : 2;
+  await expect(page.locator('#resume section')).toHaveCount(sectionCount + copyCount);
   await expect(page.locator('#resume [id="original-section"]')).toHaveCount(1);
   await expect(page.locator('#resume [id="original-entry"]')).toHaveCount(1);
-  const copy = page.locator('#original-section + section');
-  await expect(copy).toHaveCount(1);
-  await expect(copy.locator('article.entry')).toHaveCount(entryCount);
-  await expect(copy).not.toHaveAttribute('id');
-  await expect(copy.locator('[id]')).toHaveCount(0);
+  for (let index = 0; index < copyCount; index += 1) {
+    const copy = action === 'duplicate'
+      ? page.locator('#original-section + section')
+      : page.locator('#resume section').nth(sectionCount + index);
+    await expect(copy).toHaveCount(1);
+    await expect(copy.locator('article.entry')).toHaveCount(entryCount);
+    await expect(copy).not.toHaveAttribute('id');
+    await expect(copy.locator('[id]')).toHaveCount(0);
+  }
 });
+}
 
 test('renders saved node classes alongside built-in classes', async ({ page }) => {
   await createResumeFromTemplate(page);

@@ -197,6 +197,34 @@ describe('NodeStore history recording', () => {
         expect(section.childNodes?.[2]?.title).toEqual(['Following']);
     });
 
+    test.each([true, false])('duplicateNode strips root and descendant HTML IDs (before=%s)', (before) => {
+        const store = makeStore([{
+            type: 'Section', htmlId: 'section', classNames: 'custom-section',
+            childNodes: [{
+                type: 'Entry', htmlId: 'entry', title: ['Original'],
+                childNodes: [{ type: 'Markdown', htmlId: 'description', value: 'Nested content' }]
+            }]
+        }]);
+        const original = store.data.childNodes[0];
+        const originalSnapshot = JSON.parse(JSON.stringify(original));
+
+        const duplicateUuid = store.duplicateNode(original.uuid, before);
+        const copy = store.getNodeByUuid(duplicateUuid!)!;
+
+        expect(copy).not.toHaveProperty('htmlId');
+        expect(copy.childNodes?.[0]).not.toHaveProperty('htmlId');
+        expect(copy.childNodes?.[0].childNodes?.[0]).not.toHaveProperty('htmlId');
+        expect(copy.classNames).toBe('custom-section');
+        expect(copy.childNodes?.[0].title).toEqual(['Original']);
+        expect(copy.childNodes?.[0].childNodes?.[0].value).toBe('Nested content');
+        expect(copy.uuid).not.toBe(original.uuid);
+        expect(copy.childNodes?.[0].uuid).not.toBe(original.childNodes?.[0].uuid);
+        expect(copy.childNodes?.[0].childNodes?.[0].uuid).not.toBe(original.childNodes?.[0].childNodes?.[0].uuid);
+        expect(original).toEqual(originalSnapshot);
+        expect(mockRecordHistory).toHaveBeenCalledTimes(1);
+        expect(mockRecordHistory.mock.calls[0][0]).toEqual([originalSnapshot]);
+    });
+
     test('addNode records history for valid insert', () => {
         const store = makeStore([
             { type: 'Section', childNodes: [] },

@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { buildHtmlExportPackage } from '@/shared/utils/HtmlExportPackage';
 
 describe('buildHtmlExportPackage', () => {
@@ -26,6 +28,33 @@ describe('buildHtmlExportPackage', () => {
         expect(html).not.toContain('url(/fonts/builtin/');
         expect(html).not.toContain('fonts.googleapis.com');
     });
+
+    test('packages original CMU OpenType faces and the complete license for offline HTML', async () => {
+        const archive = await buildHtmlExportPackage({
+            stylesheet: 'body { font-family: "CMU Serif", serif; }',
+            resumeHtml: '<p>Synthetic CMU export</p>',
+            documentFonts: [{ provider: 'builtin', family: 'CMU Serif' }],
+            baseUrl: 'https://app.example/editor',
+            fetchAsset: (async input => {
+                const filename = path.join(process.cwd(), 'public', new URL(String(input)).pathname);
+                const bytes = new Uint8Array(await readFile(filename));
+                return response(bytes, filename.endsWith('.otf') ? 'font/otf' : 'text/plain');
+            }) as typeof fetch
+        });
+        const entries = await readStoredEntries(archive);
+        const html = new TextDecoder().decode(entries.get('resume.html'));
+        const faces = [...entries.keys()].filter(name => name.endsWith('.otf'));
+        expect(faces).toHaveLength(4);
+        for (const name of ['cmunrm', 'cmunbx', 'cmunti', 'cmunbi']) {
+            const bundled = entries.get(faces.find(face => face.endsWith(`${name}.otf`))!)!;
+            expect(Buffer.from(bundled)).toEqual(await readFile(`public/fonts/builtin/cmu-serif-${name}.otf`));
+        }
+        expect(new TextDecoder().decode(entries.get('fonts/licenses/cmu-serif.txt')))
+            .toEqual(await readFile('public/fonts/builtin/licenses/cmu-serif.txt', 'utf8'));
+        expect(html).toContain("format('opentype')");
+        expect(html).not.toContain('url(/fonts/builtin/');
+        expect(html).not.toContain('fonts.googleapis.com');
+    }, 30_000);
 
     test('packages selected Google Font files instead of retaining a remote stylesheet', async () => {
         const fetchAsset = jest.fn(async (input: string | URL | Request) => {

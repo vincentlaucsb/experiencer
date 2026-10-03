@@ -1,6 +1,8 @@
 import * as React from "react";
 
-import ExperiencerMark from "@/assets/brand/experiencer-mark-on-dark.svg?url";
+// A fixed raster keeps the small navigation mark consistent across Chromium paints.
+// The generated 128px source remains sharp at common display pixel densities.
+import ExperiencerMark from "@/assets/brand/experiencer-mark-on-dark.png?url";
 import { Button } from "@/controls/Buttons";
 import PureMenu from "@/controls/menus/PureMenu";
 import ThemeMenu from "@/controls/ThemeMenu";

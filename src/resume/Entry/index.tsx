@@ -139,10 +139,10 @@ export default function Entry(props: EntryProps) {
                     {getFields('title')}
                     {isEditing && <FieldAdder compact label="Add title" onAdd={() => addField('title')} />}
                 </h3>
-                <h4 className="subtitle">
+                {(!props.readOnly || props.subtitle?.some(text => text.trim().length > 0)) && <h4 className="subtitle">
                     {getFields('subtitle')}
                     {isEditing && <FieldAdder compact label="Add detail" onAdd={() => addField('subtitle')} />}
-                </h4>
+                </h4>}
                 {isSelected && !isEditing && (
                     <span className="entry-field-actions no-print">
                         <FieldAdder label="Add title" onAdd={() => addField('title')} />

@@ -3,6 +3,7 @@ import ResumeNodeTree from '@/shared/NodeTree';
 import ComponentTypes from '@/resume/schema/ComponentTypes';
 import { showToast } from '@/shared/stores/toastStore';
 import { deepCopy } from '@/shared/utils/deepCopy';
+import { stripNodeProperties } from '@/shared/utils/stripNodeProperties';
 import { IdType, ResumeNode } from '@/types';
 
 type HistoryRecorder = (snapshot: ResumeNode[]) => void;
@@ -235,8 +236,11 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
         }
 
         const node = this.data.getNodeById(hierarchicalId);
+        // HTML IDs must remain unique across the entire copied subtree.
+        // Stripping htmlId preserves the runtime UUIDs; insertSibling replaces them.
+        const copy = stripNodeProperties([node], ['htmlId'])[0] as ResumeNode;
         this.recordNodeHistory();
-        return this.withTrackedMutation(() => this.data.insertSibling(hierarchicalId, node, before));
+        return this.withTrackedMutation(() => this.data.insertSibling(hierarchicalId, copy, before));
     }
 
     // #endregion

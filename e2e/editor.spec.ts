@@ -1,6 +1,33 @@
 import { expect, test } from '@playwright/test';
 import { createResumeFromTemplate } from './helpers';
 
+test('duplicating a section preserves original IDs and strips copied descendant IDs', async ({ page }) => {
+  await createResumeFromTemplate(page);
+  const entry = page.locator('#resume article.entry').first();
+  await entry.evaluate(element => (element as HTMLElement).click());
+  await page.getByRole('button', { name: 'Add ID/Classes' }).click();
+  await page.getByTestId('html-id-input').fill('original-entry');
+  await page.getByTestId('html-id-save').click();
+  const section = page.locator('#resume section').filter({ has: page.locator('#original-entry') });
+  await section.evaluate(element => (element as HTMLElement).click());
+  await page.getByRole('button', { name: 'Add ID/Classes' }).click();
+  await page.getByTestId('html-id-input').fill('original-section');
+  await page.getByTestId('html-id-save').click();
+  const sectionCount = await page.locator('#resume section').count();
+  const entryCount = await section.locator('article.entry').count();
+  await page.getByRole('button', { name: 'Clipboard', exact: true }).click();
+  await page.getByRole('menuitem', { name: 'Insert Copy After', exact: true }).click();
+
+  await expect(page.locator('#resume section')).toHaveCount(sectionCount + 1);
+  await expect(page.locator('#resume [id="original-section"]')).toHaveCount(1);
+  await expect(page.locator('#resume [id="original-entry"]')).toHaveCount(1);
+  const copy = page.locator('#original-section + section');
+  await expect(copy).toHaveCount(1);
+  await expect(copy.locator('article.entry')).toHaveCount(entryCount);
+  await expect(copy).not.toHaveAttribute('id');
+  await expect(copy.locator('[id]')).toHaveCount(0);
+});
+
 test('renders saved node classes alongside built-in classes', async ({ page }) => {
   await createResumeFromTemplate(page);
   const entry = page.locator('#resume article.entry').first();

@@ -192,6 +192,31 @@ test('opens a resume-only print preview in a new tab', async ({ page, context })
   await expect(page.locator('#app-header')).toBeVisible();
 });
 
+test('print preview keeps template backgrounds without the Background graphics option', async ({ page, context }) => {
+  await context.addInitScript(() => {
+    window.print = () => undefined;
+  });
+  await createResumeFromTemplate(page);
+
+  await page.getByRole('button', { name: 'File' }).click();
+  const popupPromise = page.waitForEvent('popup');
+  await page.getByRole('menuitem', { name: 'Print' }).click();
+  const printPreview = await popupPromise;
+  await expect(printPreview.locator('body')).toContainText('Randy Marsh');
+  await printPreview.emulateMedia({ media: 'print' });
+
+  // Chromium drops backgrounds whose computed print-color-adjust is "economy"
+  // unless the user enables Background graphics in the print dialog.
+  const backgrounds = await printPreview.locator('body, body *').evaluateAll((elements) =>
+    elements
+      .map((element) => getComputedStyle(element))
+      .filter((style) => style.backgroundColor !== 'rgba(0, 0, 0, 0)' || style.backgroundImage !== 'none')
+      .map((style) => style.printColorAdjust || style.getPropertyValue('-webkit-print-color-adjust'))
+  );
+  expect(backgrounds.length).toBeGreaterThan(0);
+  expect(new Set(backgrounds)).toEqual(new Set(['exact']));
+});
+
 test('routes the print keyboard shortcut to the resume-only tab', async ({ page, context }) => {
   await context.addInitScript(() => {
     window.print = () => undefined;

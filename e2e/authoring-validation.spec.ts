@@ -17,6 +17,12 @@ test('ID and classes stay unchanged until both fields are corrected, then persis
     await expect(page.getByLabel('ID', { exact: true })).toHaveValue('bad id#test');
     await expect(page.locator('#html-id-adder [role="alert"]')).toHaveCount(2);
     await expect(page.getByTestId('html-id-save')).toBeDisabled();
+    await page.keyboard.press('Shift+Tab');
+    await expect(page.getByLabel('ID', { exact: true })).toBeFocused();
+    await expect(page.getByLabel('ID', { exact: true })).toHaveCSS('outline-style', 'solid');
+    await page.keyboard.press('Tab');
+    await expect(page.getByLabel('Classes', { exact: true })).toBeFocused();
+    await expect(page.getByLabel('Classes', { exact: true })).toHaveCSS('outline-style', 'solid');
     await expect(entry).not.toHaveAttribute('id');
     await expect(entry).not.toHaveClass(/b#c/);
     await page.getByLabel('ID', { exact: true }).fill('experience-entry');

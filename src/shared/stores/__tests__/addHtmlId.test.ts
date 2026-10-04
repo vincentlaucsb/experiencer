@@ -6,13 +6,32 @@ import { useHistoryStore } from '@/shared/stores/historyStore';
 import { cssStore } from '@/shared/stores/cssStoreHooks';
 import { resumeNodeStore } from '@/shared/stores/resumeNodeStore';
 import { BasicResumeNode } from '@/types';
+import addCssClasses from '../resumeStore/addCssClasses';
+import { clearToast } from '../toastStore';
 
 describe('addHtmlId', () => {
+    afterEach(clearToast);
     beforeEach(() => {
         resumeNodeStore.setNodes([]);
         cssStore.setCss(new CssNode('Resume CSS', {}, 'body'));
         useEditorStore.setState({ selectedNodeId: undefined, isEditingSelected: false });
         useHistoryStore.getState().clear();
+    });
+
+    test('rejects invalid IDs and classes without touching the document, CSS, or history', () => {
+        const [node] = assignIds([{ type: 'Section', htmlId: 'old-id', classNames: 'old-class' }] as BasicResumeNode[]);
+        resumeNodeStore.setNodes([node]);
+        useEditorStore.getState().selectNode(node.uuid);
+        useHistoryStore.getState().clear();
+        const cssBefore = cssStore.data.dump();
+        addHtmlId('bad id#test');
+        addHtmlId('resume');
+        addCssClasses(node, 'a b#c');
+        expect(resumeNodeStore.data.getNodeByUuid(node.uuid)).toMatchObject({ htmlId: 'old-id', classNames: 'old-class' });
+        expect(cssStore.data.dump()).toEqual(cssBefore);
+        expect(useHistoryStore.getState().past).toHaveLength(0);
+        addCssClasses(node, 'featured muted');
+        expect(resumeNodeStore.data.getNodeByUuid(node.uuid)?.classNames).toBe('featured muted');
     });
 
     test('clearing an existing ID removes the node htmlId and matching CSS subtree', () => {

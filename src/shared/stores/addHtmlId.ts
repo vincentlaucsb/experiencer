@@ -4,12 +4,12 @@ import { resumeNodeStore } from "./resumeNodeStore";
 import { cssStore } from "./cssStoreHooks";
 import ComponentTypes from "@/resume/schema/ComponentTypes";
 import { runHistoryTransaction } from "./historyStore";
-
-function sanitizeHtmlId(value: string) {
-    return value.replace(/#/g, '').replace(/\s+/g, '');
-}
+import { getHtmlIdError } from '@/shared/utils/validateNodeCssNames';
+import { showToast } from './toastStore';
 
 export default function addHtmlId(htmlId: string) {
+    const error = getHtmlIdError(htmlId);
+    if (error) { showToast(error); return; }
     const selectedNodeId = useEditorStore.getState().selectedNodeId;
     const tree = resumeNodeStore.data;
     const css = cssStore.data;
@@ -19,7 +19,7 @@ export default function addHtmlId(htmlId: string) {
     const currentNode = tree.getNodeByUuid(selectedNodeId);
     if (!currentNode) return;
 
-    const nextHtmlId = sanitizeHtmlId(htmlId);
+    const nextHtmlId = htmlId;
     const previousHtmlId = currentNode.htmlId;
 
     runHistoryTransaction(() => {

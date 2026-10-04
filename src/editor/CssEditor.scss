@@ -99,7 +99,7 @@ section.css-category {
             }
 
             td.property-value {
-                span::after {
+                span:not(.input-validation-error)::after {
                     content: ";";
                 }
             }

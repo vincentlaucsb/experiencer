@@ -1,5 +1,7 @@
 import { ResumeNode } from "@/types";
 import { resumeNodeStore } from "../resumeNodeStore";
+import { getCssClassesError } from '@/shared/utils/validateNodeCssNames';
+import { showToast } from '../toastStore';
 
 /**
  * Add CSS classes to a given node.
@@ -10,6 +12,8 @@ export default function addCssClasses(
     node: ResumeNode | undefined,
     classes: string
 ) {
+    const error = getCssClassesError(classes);
+    if (error) { showToast(error); return; }
     const uuid = node?.uuid;
     if (!uuid) return; // If there's no UUID, we can't proceed
     

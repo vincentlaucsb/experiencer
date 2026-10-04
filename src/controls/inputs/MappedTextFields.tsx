@@ -10,6 +10,7 @@ interface ValueFieldProps {
     updateText: (value: string) => void;
     suggestions?: Array<string>;
     delete?: () => void;
+    validate?: (value: string) => string | undefined;
 }
 
 interface ValueState {
@@ -18,12 +19,16 @@ interface ValueState {
 
 /** Buffers one mapped value while it is being edited. */
 class ValueField extends React.Component<ValueFieldProps, ValueState> {
+    private readonly errorId = createUuid();
+    private submittedValue: string;
+
     constructor(props) {
         super(props);
 
         this.state = {
             value: props.value || ''
         };
+        this.submittedValue = props.value || '';
 
         this.keyDownHandler = this.keyDownHandler.bind(this);
     }
@@ -40,20 +45,33 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
     }
 
     componentDidUpdate(prevProps, prevState) {
+        if (prevProps.value !== this.props.value) {
+            this.submittedValue = this.props.value || '';
+            this.setState({ value: this.props.value || '' });
+            return;
+        }
         if (prevProps.isEditing && prevProps.isEditing !== this.props.isEditing) {
-            if (this.props.value !== this.state.value) {
-                this.props.updateText(this.state.value);
-            }
+            this.submitDraft();
         }
     }
 
     componentWillUnmount() {
-        if (this.props.value !== this.state.value) {
-            this.props.updateText(this.state.value);
-        }
+        this.submitDraft();
+    }
+
+    private submitDraft() {
+        if (this.state.value === this.submittedValue) return;
+        if (this.props.validate?.(this.state.value)) return;
+        // A parent update can unmount the field before new props arrive. Record
+        // the submitted draft first so that unmount cannot submit it twice.
+        this.submittedValue = this.state.value;
+        this.props.updateText(this.state.value);
     }
 
     keyDownHandler(event: React.KeyboardEvent) {
+        if (event.key === 'Enter' && this.props.validate?.(this.state.value)) {
+            event.stopPropagation();
+        }
         if (event.key === 'Escape') {
             // Restore original value
             this.setState({ value: this.props.value || "" });
@@ -61,6 +79,9 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
     }
 
     render() {
+        const error = this.props.validate?.(this.state.value);
+        const errorId = this.errorId;
+        const feedback = error ? <span id={errorId} role="alert" className="input-validation-error">{error}</span> : null;
         let suggestions = <></>
         let suggestionId = "";
         if (this.props.suggestions) {
@@ -78,6 +99,8 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
                     {...nonCredentialInputAttributes}
                     autoFocus
                     aria-label={`${this.props.label} value`}
+                    aria-invalid={Boolean(error)}
+                    aria-describedby={error ? errorId : undefined}
                     onChange={(event) => this.setState({ value: event.target.value })}
                     onKeyDown={this.keyDownHandler}
                     value={this.state.value}
@@ -85,11 +108,12 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
                 />
                 {suggestions}
                 {this.deleter}
+                {feedback}
             </>
         }
 
         return (
-            <span>{this.state.value.length > 0 ? this.state.value : "Enter a value"}</span>
+            <><span>{this.state.value.length > 0 ? this.state.value : "Enter a value"}</span>{feedback}</>
         );
     }
 }
@@ -107,6 +131,7 @@ export interface ContainerProps {
 export interface MappedTextFieldsProps {
     value: Map<string, string>;
     updateValue: (key: string, value: string) => void;
+    validateValue?: (key: string, value: string) => string | undefined;
     deleteKey: (key: string) => void;
 
     /** An array of text input suggestions for new keys */
@@ -237,6 +262,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                         isEditing={this.state.isAddingKey}
                         updateText={this.addNewKey}
                         suggestions={this.props.keySuggestions}
+                        validate={key => this.props.validateValue?.(key, '')}
                     />
                 </th>
                 <td>
@@ -269,6 +295,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                                     updateText={this.updateText.bind(this, key)}
                                     value={value}
                                     suggestions={suggestions}
+                                    validate={draft => this.props.validateValue?.(key, draft)}
                                     delete={() => { this.props.deleteKey(key); }} />
                             </td>
                         </tr>

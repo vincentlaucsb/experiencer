@@ -7,6 +7,38 @@ import { useHistoryStore } from '@/shared/stores/historyStore';
 describe('CSS selector authoring validation', () => {
     afterEach(() => clearToast());
 
+    test('rejects invalid declarations without changing saved CSS or undo history', () => {
+        cssStore.setCss(new CssNode('Resume CSS', { 'font-size': '16px', 'font-family': 'serif' }, 'body'));
+        useHistoryStore.getState().clear();
+        const editor = createCssEditorCommands(cssStore.updateCss.bind(cssStore));
+        editor.updateProperty([], 'font-size', 'notacolor');
+        editor.updateProperty([], 'font-size', '-5px');
+        editor.updateProperty([], 'font-family', 'red; } body { display:none');
+        expect(cssStore.data.properties.get('font-size')).toBe('16px');
+        expect(cssStore.data.properties.get('font-family')).toBe('serif');
+        expect(useHistoryStore.getState().past).toHaveLength(0);
+        editor.updateProperty([], 'font-size', '18px');
+        expect(cssStore.data.properties.get('font-size')).toBe('18px');
+        useHistoryStore.getState().undo();
+        expect(cssStore.data.properties.get('font-size')).toBe('16px');
+    });
+
+    test('rejects an entire live CSS replacement before any rule or history changes', () => {
+        const root = new CssNode('Resume CSS', { color: 'black' }, 'body');
+        root.addNode('Entry', { color: 'black' }, '.entry');
+        cssStore.setCss(root);
+        useHistoryStore.getState().clear();
+        const editor = createCssEditorCommands(cssStore.updateCss.bind(cssStore));
+        const before = cssStore.data.dump();
+        editor.replaceProperties(['red', 'red; display:none'].map((value, index) => ({
+            status: 'changed', name: index ? 'Entry' : 'Resume CSS', path: index ? ['Entry'] : [],
+            selector: index ? 'body .entry' : 'body', previousDeclarations: new Map([['color', 'black']]),
+            declarations: new Map([['color', value]]), added: [], changed: ['color'], removed: []
+        })));
+        expect(cssStore.data.dump()).toEqual(before);
+        expect(useHistoryStore.getState().past).toHaveLength(0);
+    });
+
     test.each(['#resume', '#resume .entry', '.entry:is(#resume .nested)'])(
         'rejects reserved selector %s with a toast before mutation',
         (selector) => {

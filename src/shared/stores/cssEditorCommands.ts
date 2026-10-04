@@ -1,7 +1,7 @@
 import CssNode from "@/shared/CssTree";
 import { showToast } from "@/shared/stores/toastStore";
 import type { LiveCssTreeChange } from "@/shared/utils/liveCssSync";
-import { validateAuthoredCssSelector } from "@/shared/utils/transformResumeStylesheet";
+import { getCssDeclarationError, validateAuthoredCssSelector } from "@/shared/utils/transformResumeStylesheet";
 
 export interface CssEditorCommands {
     addSelector(path: ReadonlyArray<string>, name: string, selector: string): void;
@@ -50,6 +50,8 @@ export function createCssEditorCommands(
         },
 
         updateProperty: (path, key, value) => {
+            const error = getCssDeclarationError(key, value);
+            if (error) { reportError(error); return; }
             updateTree((cssTreeRoot) => {
                 const node = cssTreeRoot.mustFindNode(Array.from(path));
                 if (!node.selector && node.isRoot) {
@@ -79,6 +81,13 @@ export function createCssEditorCommands(
         },
 
         replaceProperties: (changes) => {
+            // Validate the whole replacement before committing any rule or undo entry.
+            for (const change of changes) {
+                for (const [key, value] of change.declarations) {
+                    const error = getCssDeclarationError(key, value);
+                    if (error) { reportError(error); return; }
+                }
+            }
             updateTree((cssTreeRoot) => {
                 for (const change of changes) {
                     const node = cssTreeRoot.mustFindNode(Array.from(change.path));

@@ -1,11 +1,15 @@
 import ResumeTemplates, { createResumeTemplates } from '../ResumeTemplates';
 import CssNode from '@/shared/CssTree';
+import type { BasicResumeNode } from '@/types';
+import { applyTemplateTheme } from '@/shared/templates/templateTheme';
+import { builtinTemplateThemes } from '../builtinTemplateThemes';
 
 describe('built-in templates', () => {
     test('allows development renderers to inject a deterministic cover-letter date', () => {
         const templates = createResumeTemplates('January 2, 2030');
         for (const name of [
             'Assured: Cover Letter',
+            'Candor: Cover Letter',
             'Integrity: Cover Letter',
             'Streamline: Cover Letter'
         ] as const) {
@@ -71,6 +75,7 @@ describe('built-in templates', () => {
 
     test.each([
         ['Assured: Cover Letter', 'Joe Blow'],
+        ['Candor: Cover Letter', 'Bea Spoke'],
         ['Integrity: Cover Letter', 'Randy Marsh'],
         ['Streamline: Cover Letter', 'Dinesh Chugtai']
     ])('%s includes a handwritten signature and typed-name fallback', (templateName, name) => {
@@ -81,5 +86,79 @@ describe('built-in templates', () => {
         expect(serialized).toContain(`Handwritten signature of ${name}`);
         expect(serialized).toContain(name);
         expect(stylesheet).toContain('object-fit: contain;');
+    });
+
+    describe('Candor', () => {
+        const nodeTypes = (nodes: BasicResumeNode[] = []): string[] =>
+            nodes.flatMap(node => [node.type, ...nodeTypes(node.childNodes)]);
+
+        test.each(['Candor', 'Candor: Cover Letter'])('%s reads the main column before the right rail', (name) => {
+            const [main, rail] = ResumeTemplates.templates[name].childNodes;
+            expect(main.htmlId).toBe('candor-main');
+            expect(rail.htmlId).toBe('candor-rail');
+            expect(main.childNodes?.[0].type).toBe('Header');
+            expect(rail.childNodes?.[0].htmlId).toBe('candor-contact');
+
+            const stylesheet = CssNode.load(ResumeTemplates.templates[name].builtinCss).stylesheet();
+            expect(stylesheet).toMatch(/body \{[^}]*grid-template-columns: minmax\(0, 1fr\) var\(--rail-width\);/s);
+        });
+
+        test('the résumé is headshot-free and uses reserved example contact domains', () => {
+            const template = ResumeTemplates.templates.Candor;
+            expect(nodeTypes(template.childNodes)).not.toContain('Image');
+            const serialized = JSON.stringify(template.childNodes);
+            expect(serialized).toContain('bea.spoke@mail.example');
+            expect(serialized).toMatch(/linkedin\.com\/in\/[a-z-]+-example/);
+        });
+
+        test('draws timeline markers and section rules as empty pseudo-elements', () => {
+            const css = CssNode.load(ResumeTemplates.templates.Candor.builtinCss);
+            const marker = css.findNode(['Section', 'Content', 'Timeline Markers']);
+            const rule = css.findNode(['Section', 'Title', 'Title Rule']);
+            for (const node of [marker, rule]) {
+                expect(node?.properties.get('content')).toBe('""');
+                expect(node?.properties.get('print-color-adjust')).toBe('exact');
+            }
+            expect(marker?.fullSelector).toBe('body section > div.content .entry > hgroup > h3::before');
+            expect(css.findNode(['Rail', 'Rail Sections', 'Rail Section Content'])?.properties.get('border')).toBe('0');
+            const railMarker = css.findNode(['Rail', 'Rail Sections', 'Rail Section Content', 'Rail Entry Markers']);
+            expect(railMarker?.properties.get('display')).toBe('none');
+            expect(railMarker?.fullSelector).toBe('body #candor-rail section > .content .entry > hgroup > h3::before');
+        });
+
+        test('keeps the date at the right of the primary entry title row', () => {
+            const css = CssNode.load(ResumeTemplates.templates.Candor.builtinCss);
+            const title = css.findNode(['Entry', 'Title Block', 'Title']);
+            expect(title?.properties.get('display')).toBe('flex');
+            expect(title?.findNode('Last Field')?.properties.get('margin-left')).toBe('auto');
+        });
+
+        test('the cover letter shares the palette and carries the application reference in its rail', () => {
+            const resume = ResumeTemplates.templates.Candor;
+            const letter = createResumeTemplates('January 2, 2030')['Candor: Cover Letter'];
+            expect(letter.rootCss).toEqual(resume.rootCss);
+
+            const rail = letter.childNodes[1];
+            const application = rail.childNodes?.find(node => node.value === 'Application');
+            const terms = application?.childNodes?.[0].childNodes?.map(item => [item.value, (item as { definitions?: string[] }).definitions]);
+            expect(terms).toEqual([
+                ['Date', ['January 2, 2030']],
+                ['Position', ['Senior Product Designer']],
+                ['Company', ['Brightpath Health']]
+            ]);
+
+            const signature = CssNode.load(letter.builtinCss).findNode(['Main Column', 'Letter', 'Letter Signature']);
+            expect(signature?.properties.get('break-inside')).toBe('avoid');
+        });
+
+        test('uses one root font size and palettes that change only existing variables', () => {
+            const root = CssNode.load(ResumeTemplates.templates.Candor.rootCss);
+            expect(root.properties.get('--font-size')).toBe('10pt');
+            expect(root.properties.has('--small-spacing')).toBe(true);
+            for (const theme of builtinTemplateThemes.Candor) {
+                const themed = CssNode.load(applyTemplateTheme(ResumeTemplates.templates.Candor, theme).rootCss);
+                expect([...themed.properties.keys()]).toEqual([...root.properties.keys()]);
+            }
+        });
     });
 });

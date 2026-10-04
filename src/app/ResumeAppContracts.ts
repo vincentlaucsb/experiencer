@@ -95,6 +95,8 @@ export interface ResumeLandingExtensions {
 
 export interface ResumeTemplateExtensions {
     additionalTemplateGroups?: AdditionalTemplateGroup[];
+    /** Lets an embedding application own its template browsing surface. */
+    render?: (props: import('@/app/ResumeTemplateSelector').ResumeTemplateSelectorProps) => React.ReactNode;
 }
 
 export interface ResumeAppExtensions {
@@ -214,6 +216,7 @@ export function resolveResumeAppExtensions(props: ResumeWrapperProps | ResumePro
             documentActions: props.extensions?.landing?.documentActions ?? props.documentActions
         },
         templates: {
+            render: props.extensions?.templates?.render,
             additionalTemplateGroups: props.extensions?.templates?.additionalTemplateGroups
                 ?? props.additionalTemplateGroups
         }

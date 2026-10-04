@@ -58,6 +58,10 @@ function getDefinitions(props: DescriptionItemProps, isSelected: boolean) {
                 }
             ];
 
+            if (props.readOnly && (text || "").trim().length === 0) {
+                return null;
+            }
+
             return <dd key={`${index}/${arr.length}`}>
                 <TextField
                     static={!isSelected}
@@ -79,15 +83,17 @@ function getDefinitions(props: DescriptionItemProps, isSelected: boolean) {
 export function DescriptionListItem(props: DescriptionItemProps) {
     const isSelected = useEditorStore(state => state.selectedNodeId === props.uuid);
 
-    const term = <TextField
-        id={`${props.uuid}-term`}
-        label="Term"
-        onChange={(text: string) => { props.updateData("value", text) }}
-        value={props.value}
-        defaultText="Enter a term"
-        readOnly={props.readOnly}
-        displayProcessors={[process]}
-    />
+    const term = !props.readOnly || (props.value || "").trim().length > 0
+        ? <TextField
+            id={`${props.uuid}-term`}
+            label="Term"
+            onChange={(text: string) => { props.updateData("value", text) }}
+            value={props.value}
+            defaultText="Enter a term"
+            readOnly={props.readOnly}
+            displayProcessors={[process]}
+        />
+        : null;
 
     return (
         <Container {...props} className="resume-definition">

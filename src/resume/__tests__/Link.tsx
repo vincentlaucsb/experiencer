@@ -49,6 +49,67 @@ test('Link shows default text when value is empty', () => {
     expect(container.querySelector('a.link')?.textContent).toBe('Link text');
 });
 
+test('read-only links omit the empty-value hint and editing controls', () => {
+    useEditorStore.getState().editNode('test-uuid');
+
+    const { container } = render(
+        <Link
+            id={[0]}
+            type={Link.type}
+            uuid="test-uuid"
+            isLast={false}
+            readOnly
+            updateData={() => { }}
+            updateDataFields={() => { }}
+            url="https://example.com"
+        />
+    );
+
+    const anchor = container.querySelector('a.link');
+    expect(anchor?.textContent).toBe('https://example.com');
+    expect(anchor?.getAttribute('href')).toBe('https://example.com');
+    expect(container.querySelector('input')).toBeNull();
+});
+
+test('read-only links with no label or destination keep an empty anchor', () => {
+    const { container } = render(
+        <Link
+            id={[0]}
+            type={Link.type}
+            uuid="test-uuid"
+            isLast={false}
+            readOnly
+            updateData={() => { }}
+            updateDataFields={() => { }}
+        />
+    );
+
+    const anchor = container.querySelector('a.link');
+    expect(anchor).not.toBeNull();
+    expect(anchor?.textContent).toBe('');
+    expect(anchor?.getAttribute('href')).toBe('#');
+});
+
+test('read-only links show a real destination when the label is only whitespace', () => {
+    const { container } = render(
+        <Link
+            id={[0]}
+            type={Link.type}
+            uuid="test-uuid"
+            isLast={false}
+            readOnly
+            updateData={() => { }}
+            updateDataFields={() => { }}
+            value={" \t "}
+            url="https://example.com"
+        />
+    );
+
+    const anchor = container.querySelector('a.link');
+    expect(anchor?.textContent).toBe('https://example.com');
+    expect(anchor?.getAttribute('href')).toBe('https://example.com');
+});
+
 /** Verify Link uses # as default href when url is empty. */
 test('Link uses # as default href when url is empty', () => {
     const { container } = render(

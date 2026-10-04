@@ -54,6 +54,8 @@ export function addStreamlineHeaderCss(css: CssNode): CssNode {
         "display": "inline-flex !important",
         "align-items": "center"
     }, "> .text-content, > .link");
+    // Blank shells stay in the tree so other templates' grid cells keep their columns.
+    // Skip those shells, including ones between two filled contacts, so the dot follows the visible text.
     contactRow.addNode("Contact Row Separators", {
         "content": "\"\"",
         "background": "currentColor",
@@ -65,7 +67,7 @@ export function addStreamlineHeaderCss(css: CssNode): CssNode {
         "margin": "0 var(--separator-spacing)",
         "opacity": "var(--separator-opacity)",
         "width": "var(--separator-size)"
-    }, "> .text-content + .text-content::before, > .link + .link::before");
+    }, "> .text-content:not(:empty) ~ .text-content:not(:empty)::before, > .link:not(:empty) ~ .link:not(:empty)::before");
 
     return css;
 }

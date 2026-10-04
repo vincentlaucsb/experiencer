@@ -5,5 +5,5 @@
 - Render editable inline text through the shared inline Markdown path unless a component explicitly requires plain text. Keep editing controls as ordinary inputs or textareas.
 - Interactive controls inside a selectable `Container` must stop propagation when their action must not select or toggle the containing node. Preserve keyboard and accessible-menu equivalents.
 - A node can be edited only while selected. Derive that state through the shared editor-store selectors rather than maintaining a second component-local editing model.
-- Preserve `readOnly` behavior in every rendering root. Editor-only controls, hints, labels, and selection behavior must not appear in previews, print, export, PNG, or render-service output.
+- Preserve `readOnly` behavior in every rendering root. Editor-only controls, hints, labels, and selection behavior must not appear in previews, print, export, PNG, or render-service output. Standalone documents do not load application CSS, so a `no-print` class cannot hide controls there; omit them from the markup. Keep a blank node's element when a later sibling's position depends on it, such as a grid cell; drop the hint text instead of the element.
 - Register node capabilities and labels through the canonical schema. Do not attach parallel static type knowledge to components.

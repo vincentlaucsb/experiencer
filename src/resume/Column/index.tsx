@@ -26,7 +26,7 @@ export default class Column extends React.PureComponent<ResumeComponentProps> {
             flexDirection: 'column',
         };
 
-        if (!(this.props.childNodes && this.props.childNodes.length > 0)) {
+        if (!this.props.readOnly && !(this.props.childNodes && this.props.childNodes.length > 0)) {
             properties = {
                 ...properties,
                 minWidth: "100px",
@@ -38,10 +38,9 @@ export default class Column extends React.PureComponent<ResumeComponentProps> {
     }
     
     render() {
-        let helperText = <></>;
-        if (React.Children.count(this.props.children) === 0) {
-            helperText = <span>Column {this.position}: Click to select and add content</span>
-        }
+        const helperText = !this.props.readOnly && React.Children.count(this.props.children) === 0
+            ? <span>Column {this.position}: Click to select and add content</span>
+            : null;
 
         return <Container {...this.props}
             displayAs="div"

@@ -28,8 +28,8 @@ export interface EntryProps extends ResumeComponentProps<EntryBase> { };
 /**
  * Generate the class name for the n-th field
  */
-function getFieldClassName(index: number, arr: string[]) {
-    const isLast = index === arr.length - 1;
+function getFieldClassName(index: number, count: number) {
+    const isLast = index === count - 1;
     let classNames = ['field', `field-${index}`];
     if (isLast && index !== 0) {
         classNames.push('field-last');
@@ -43,8 +43,9 @@ function getFieldClassName(index: number, arr: string[]) {
 
 export default function Entry(props: EntryProps) {
     const actions = useNodeExtensions(props);
-    const isEditing = useIsNodeEditing(props.uuid);
-    const isSelected = useIsNodeSelected(props.uuid);
+    const interactive = !props.readOnly;
+    const isEditing = useIsNodeEditing(props.uuid) && interactive;
+    const isSelected = useIsNodeSelected(props.uuid) && interactive;
     const [newField, setNewField] = React.useState<{
         key: 'title' | 'subtitle';
         index: number;
@@ -85,42 +86,63 @@ export default function Entry(props: EntryProps) {
         }
 
         const fields = props[key];
-        if (fields) {
-            return fields.map((text, index, arr) => {
-                /** Conditionally add line break */
-                let lineBreak = <></>
-                if (key === 'subtitle' && props.subtitleBreaks?.includes(index)) {
-                    lineBreak = <hr style={{
-                        flexBasis: "100%",
-                        border: 0
-                    }}/>
-                }
-
-                const canDelete = key === "subtitle" || arr.length > 1;
-                const textFieldOptions = canDelete ? [
-                    {
-                        text: `Delete "${text}"`,
-                        onClick: () => deleter(key, index)
-                    }
-                ] : [];
-
-                return <React.Fragment key={`${index}/${arr.length}`}>
-                    <TextField
-                        displayClassName={getFieldClassName(index, arr)}
-                        static={!isSelected}
-                        startEditing={newField?.key === key && newField.index === index}
-                        onChange={(data: string) => updater(key, index, data)}
-                        value={text || ""}
-                        defaultText="Enter a value"
-                        displayProcessors={[process, toUrl]}
-                        contextMenuOptions={props.readOnly ? [] : [...textFieldOptions, ...actions.map(action => ({ text: action.label, onClick: action.run }))]}
-                    />
-                    {lineBreak}
-                </React.Fragment>
-            });
+        if (!fields) {
+            return <></>;
         }
 
-        return <></>
+        // Blank slots are editor hints. Number only the fields that remain so
+        // separator classes such as field-0 still describe the visible text.
+        const kept: { value: string; sourceIndex: number; breakBefore: boolean }[] = [];
+        let breakBeforeNext = false;
+        fields.forEach((text, index) => {
+            const value = text || "";
+            const slotBreak = key === "subtitle" && Boolean(props.subtitleBreaks?.includes(index));
+            if (props.readOnly && value.trim().length === 0) {
+                breakBeforeNext = breakBeforeNext || slotBreak;
+                return;
+            }
+
+            kept.push({
+                value,
+                sourceIndex: index,
+                breakBefore: Boolean(props.readOnly) && breakBeforeNext
+            });
+            breakBeforeNext = false;
+        });
+
+        return kept.map((field, visibleIndex) => {
+            const classIndex = props.readOnly ? visibleIndex : field.sourceIndex;
+            const classCount = props.readOnly ? kept.length : fields.length;
+            const lineBreak = key === "subtitle" && props.subtitleBreaks?.includes(field.sourceIndex)
+                ? <hr style={{ flexBasis: "100%", border: 0 }} />
+                : null;
+            const carriedBreak = field.breakBefore
+                ? <hr style={{ flexBasis: "100%", border: 0 }} />
+                : null;
+            const canDelete = key === "subtitle" || fields.length > 1;
+            const textFieldOptions = canDelete ? [
+                {
+                    text: `Delete "${field.value}"`,
+                    onClick: () => deleter(key, field.sourceIndex)
+                }
+            ] : [];
+
+            return <React.Fragment key={`${field.sourceIndex}/${fields.length}`}>
+                {carriedBreak}
+                <TextField
+                    displayClassName={getFieldClassName(classIndex, classCount)}
+                    static={!isSelected}
+                    startEditing={newField?.key === key && newField.index === field.sourceIndex}
+                    onChange={(data: string) => updater(key, field.sourceIndex, data)}
+                    value={field.value}
+                    defaultText="Enter a value"
+                    readOnly={props.readOnly}
+                    displayProcessors={[process, toUrl]}
+                    contextMenuOptions={props.readOnly ? [] : [...textFieldOptions, ...actions.map(action => ({ text: action.label, onClick: action.run }))]}
+                />
+                {lineBreak}
+            </React.Fragment>;
+        });
     }
 
     /** hgroup onclick stops event from bubbling up to resume */
@@ -137,13 +159,13 @@ export default function Entry(props: EntryProps) {
             }}>
                 <h3 className="title">
                     {getFields('title')}
-                    {isEditing && <FieldAdder compact label="Add title" onAdd={() => addField('title')} />}
+                    {!props.readOnly && isEditing && <FieldAdder compact label="Add title" onAdd={() => addField('title')} />}
                 </h3>
                 {(!props.readOnly || props.subtitle?.some(text => text.trim().length > 0)) && <h4 className="subtitle">
                     {getFields('subtitle')}
-                    {isEditing && <FieldAdder compact label="Add detail" onAdd={() => addField('subtitle')} />}
+                    {!props.readOnly && isEditing && <FieldAdder compact label="Add detail" onAdd={() => addField('subtitle')} />}
                 </h4>}
-                {isSelected && !isEditing && (
+                {!props.readOnly && isSelected && !isEditing && (
                     <span className="entry-field-actions no-print">
                         <FieldAdder label="Add title" onAdd={() => addField('title')} />
                         <FieldAdder label="Add detail" onAdd={() => addField('subtitle')} />

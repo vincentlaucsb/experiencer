@@ -34,6 +34,8 @@ export interface ContainerProps {
     /** Optional element behavior that runs before the shared selection handler. */
     onClick?: (event: React.MouseEvent<Element>) => void;
     style?: React.CSSProperties;
+    /** Standalone documents stay non-interactive even when the editor still has this node open. */
+    readOnly?: boolean;
 }
 
 export interface ContainerPresentationProps extends ContainerProps {
@@ -173,8 +175,9 @@ export function ContainerPresentation(props: ContainerPresentationProps) {
  * menus without selection, etc. This isn't SRP violation; it's proper domain grouping.
  */
 export default function Container(props: ContainerProps) {
-    const isSelected = useIsNodeSelected(props.uuid);
-    const isEditingNode = useIsNodeEditing(props.uuid);
+    const interactive = props.readOnly !== true;
+    const isSelected = useIsNodeSelected(props.uuid) && interactive;
+    const isEditingNode = useIsNodeEditing(props.uuid) && interactive;
     const selectNode = useEditorStore((state) => state.selectNode);
     const editNode = useEditorStore((state) => state.editNode);
     const contextMenuItems = React.useMemo(

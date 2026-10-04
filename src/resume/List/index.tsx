@@ -64,8 +64,9 @@ function getDefinitions(props: DescriptionItemProps, isSelected: boolean) {
                     onChange={(data: string) => updater(index, data)}
                     value={text}
                     defaultText="Enter a value"
+                    readOnly={props.readOnly}
                     autoExpand
-                    contextMenuOptions={definitionOptions}
+                    contextMenuOptions={props.readOnly ? [] : definitionOptions}
                     displayProcessors={[process]}
                 />
             </dd>
@@ -84,6 +85,7 @@ export function DescriptionListItem(props: DescriptionItemProps) {
         onChange={(text: string) => { props.updateData("value", text) }}
         value={props.value}
         defaultText="Enter a term"
+        readOnly={props.readOnly}
         displayProcessors={[process]}
     />
 

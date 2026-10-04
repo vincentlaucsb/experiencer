@@ -49,7 +49,7 @@ export default class Row extends React.PureComponent<RowProps> {
             properties.flexDirection = "row-reverse";
         }
 
-        if (this.hasEmptyColumns) {
+        if (!this.props.readOnly && this.hasEmptyColumns) {
             properties = {
                 ...properties,
                 minWidth: "100px",

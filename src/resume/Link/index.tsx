@@ -25,10 +25,16 @@ function getSafeHref(url?: string) {
  * Represents an external link in the resume
  */
 function Link(props: LinkProps) {
-    const isEditing = useIsNodeEditing(props.uuid);
+    const isEditing = useIsNodeEditing(props.uuid) && !props.readOnly;
     const toggleEdit = useEditorStore((state) => state.toggleEdit);
-    const displayText = process(props.value) as string || "Link text";
+    const storedLabel = process(props.value) as string;
     const url = getSafeHref(props.url);
+    const visibleLabel = storedLabel.trim();
+    // Keep the anchor when the label is blank so a following grid icon stays in its column.
+    // A whitespace-only label is blank; a real destination then becomes the visible text.
+    const displayText = visibleLabel
+        ? storedLabel
+        : (props.readOnly ? (url === "#" ? "" : url) : "Link text");
 
     const [editValue, setEditValue] = useEditing(
         props.value || '',

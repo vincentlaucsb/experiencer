@@ -38,7 +38,7 @@ export interface ImageProps extends ResumeComponentProps<ImageBase> { }
  * - Relative: "/assets/photo.jpg"
  */
 export default function Image({ updateDataFields, ...props }: ImageProps) {
-    const isEditing = useIsNodeEditing(props.uuid);
+    const isEditing = useIsNodeEditing(props.uuid) && !props.readOnly;
     const toggleEdit = useEditorStore((state) => state.toggleEdit);
     const [tempSrc, setTempSrc] = useState(props.value || "");
     const [tempAlt, setTempAlt] = useState(props.altText || "");

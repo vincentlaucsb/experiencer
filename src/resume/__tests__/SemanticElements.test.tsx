@@ -2,6 +2,8 @@
  * @jest-environment jsdom
  */
 import { render } from "@testing-library/react";
+import { useEditorStore } from "@/shared/stores/editorStore";
+import MarkdownText from "../Markdown";
 import Column from "../Column";
 import Entry from "../Entry";
 import Grid from "../Grid";
@@ -9,6 +11,7 @@ import Group from "../Group";
 import Header from "../Header";
 import PageBreak from "../PageBreak";
 import Row from "../Row";
+import { DescriptionListItem, DescriptionListItemType } from "../List";
 import Section from "../Section";
 
 const nodeProps = (type: string, uuid: string) => ({
@@ -53,6 +56,47 @@ test("read-only empty header and section omit editor placeholders", () => {
 
     expect(container.textContent).not.toContain("Enter a title");
     expect(container.textContent).not.toContain("Click here");
+});
+
+test("read-only empty markdown and rows leave no editor chrome", () => {
+    useEditorStore.getState().editNode("empty-markdown");
+    const markdown = render(
+        <MarkdownText {...nodeProps(MarkdownText.type, "empty-markdown")} value="" readOnly />
+    );
+    expect(markdown.container.querySelector(".text-content")?.textContent).toBe("");
+    expect(markdown.container.textContent).not.toContain("Click to add content");
+    expect(document.body.textContent).not.toContain("Save (Ctrl + Enter)");
+    markdown.unmount();
+    useEditorStore.getState().unselectNode();
+
+    const row = render(<Row {...nodeProps(Row.type, "empty-row")} readOnly />);
+    expect((row.container.querySelector(".row") as HTMLElement).style.minHeight).toBe("");
+    expect((row.container.querySelector(".row") as HTMLElement).style.minWidth).toBe("");
+});
+
+test("read-only columns omit the empty-column hint", () => {
+    const { container } = render(
+        <Column {...nodeProps(Column.type, "empty-column")} readOnly />
+    );
+
+    expect(container.textContent).not.toContain("Click to select");
+    expect((container.querySelector(".column") as HTMLElement).style.minWidth).toBe("");
+    expect((container.querySelector(".column") as HTMLElement).style.minHeight).toBe("");
+});
+
+test("read-only description items omit empty-field hints", () => {
+    const { container } = render(
+        <DescriptionListItem
+            {...nodeProps(DescriptionListItemType, "definition")}
+            value=""
+            definitions={["", "Real definition"]}
+            readOnly
+        />
+    );
+
+    expect(container.textContent).toContain("Real definition");
+    expect(container.textContent).not.toContain("Enter a term");
+    expect(container.textContent).not.toContain("Enter a value");
 });
 
 test("editable empty section keeps its selection hint", () => {

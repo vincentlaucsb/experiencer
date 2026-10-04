@@ -1,4 +1,17 @@
+@use "../sass/colors/semantic" as colors;
+
 #html-id-group {
     display: flex;
     align-items: center;
+}
+
+// Keep invalid drafts readable in either theme; the border and error explain the state.
+form#html-id-adder input.invalid {
+    background: colors.$surface-raised;
+    color: colors.$text-primary;
+    border-color: colors.$danger;
+
+    &:focus-visible {
+        outline: 2px solid colors.$focus-ring;
+    }
 }

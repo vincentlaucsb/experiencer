@@ -4,8 +4,6 @@ import { builtinTemplateThemes } from '../builtinTemplateThemes';
 import { applyTemplateTheme } from '@/shared/templates/templateTheme';
 import CssNode from '@/shared/CssTree';
 import type { BasicResumeNode } from '@/types';
-import { applyTemplateTheme } from '@/shared/templates/templateTheme';
-import { builtinTemplateThemes } from '../builtinTemplateThemes';
 
 // Enumerates the catalog rather than naming templates, so a newly registered template or theme is covered automatically.
 const catalogDocuments = Object.entries(createResumeTemplates()).flatMap(([name, template]) => [

@@ -9,7 +9,7 @@ import {
 import MarkdownText from "@/resume/Markdown";
 import CssNode from "@/shared/CssTree";
 import type { BasicResumeNode } from "@/types";
-import getDefaultCss, { getRootCss } from "./CssTemplates";
+import getDefaultCss, { getRootCss, resumeBodyBaseProperties } from "./CssTemplates";
 import { makeList } from "./TemplateHelper";
 
 /*
@@ -452,6 +452,7 @@ function styleRail(css: CssNode): void {
 /** Applies the Candor page, header, section, entry, and rail treatment shared by both documents. */
 export function candorCss(): CssNode {
     const css = getDefaultCss().setProperties({
+        ...resumeBodyBaseProperties,
         "display": "grid",
         "grid-template-columns": "minmax(0, 1fr) var(--rail-width)",
         "min-height": "100%",

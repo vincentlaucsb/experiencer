@@ -50,14 +50,38 @@ export function randyMarshCss() {
             "font-weight": "bold",
             "font-size": "20pt",
             "color": "var(--randy-teal)"
-            }, 'Title'
-            ).addNode('Grid', {
-                'grid-template-columns': 'var(--year-column-width) minmax(0, 1fr)'
-            }, '.grid-container'
-            ).addNode('Entry', {
-                'border-left': '1px solid var(--text-color)',
-                'padding-left': 'var(--large-spacing)',
-            }, '.entry');
+            }, 'Title');
+
+    /** Timeline: each date shares its row with the entry title and a dot on the rule. */
+    const timeline = randyCss.mustFindNode('Section').addNode('Grid', {
+        'grid-template-columns': 'var(--year-column-width) minmax(0, 1fr)'
+    }, '.grid-container');
+
+    // The gutter keeps wrapped dates clear of the marker overhanging the rule.
+    timeline.addNode('Dates', {
+        'padding-right': 'var(--spacing)'
+    }, '> .text-content').addNode('First Line', {
+        'margin-top': '0'
+    }, '> :first-child');
+
+    timeline.addNode('Entry', {
+        'border-left': 'var(--timeline-width) solid var(--text-color)',
+        'padding-left': 'var(--large-spacing)'
+    }, '.entry').addNode('Title', {}, '> hgroup > h3').addNode('Timeline Marker', {
+        // Centers an empty in-flow dot on the rule; the margins net to zero advance.
+        // Untitled entries render an empty h3, which must not gain a marker-only line.
+        'content': '""',
+        'display': 'inline-block',
+        'width': 'var(--timeline-marker-size)',
+        'height': 'var(--timeline-marker-size)',
+        'margin-left': 'calc(-1 * (var(--large-spacing) + (var(--timeline-width) + var(--timeline-marker-size)) / 2))',
+        'margin-right': 'calc(var(--large-spacing) + (var(--timeline-width) - var(--timeline-marker-size)) / 2)',
+        'vertical-align': 'middle',
+        'border-radius': '50%',
+        'background': 'var(--randy-teal)',
+        '-webkit-print-color-adjust': 'exact',
+        'print-color-adjust': 'exact'
+    }, ':not(:empty)::before');
 
     /** Entry CSS */
     randyCss.mustFindNode("Entry").setProperties(
@@ -103,6 +127,8 @@ export function randyMarshRootCss(): CssNode {
         next.set('--header-padding-bottom', 'var(--large-spacing)');
         next.set('--header-height', 'calc(var(--header-base-height) - var(--header-padding-bottom))');
         next.set('--year-column-width', '100px');
+        next.set('--timeline-width', '1px');
+        next.set('--timeline-marker-size', '9px');
         next.set('--text-color', '#43353f');
         next.set('--randy-teal', '#4eb3b9');
         next.set('--secondary-color', '#fbdcb6');
@@ -116,7 +142,7 @@ export function randyMarsh(): BasicResumeNode[] {
         childNodes: [
             {
                 type: MarkdownText.type,
-                value: "2019 -- Present"
+                value: "2019 — Present"
             },
             {
                 type: Entry.type,
@@ -131,7 +157,7 @@ export function randyMarsh(): BasicResumeNode[] {
             },
             {
                 type: MarkdownText.type,
-                value: "2010 -- 2019"
+                value: "2010 — 2019"
             },
             {
                 type: Entry.type,

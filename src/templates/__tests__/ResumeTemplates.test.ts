@@ -107,6 +107,26 @@ describe('built-in templates', () => {
         expect(coverLetterStylesheet).not.toContain('background: #eeeeee;');
     });
 
+    test('Integrity draws timeline dots as empty boxes and writes date ranges with em dashes', () => {
+        const template = ResumeTemplates.templates.Integrity;
+        const css = CssNode.load(template.builtinCss);
+        const marker = css.findNode(['Section', 'Grid', 'Entry', 'Title', 'Timeline Marker']);
+        const firstDateLine = css.findNode(['Section', 'Grid', 'Dates', 'First Line']);
+
+        for (const component of ['Entry', 'Section', 'Grid', 'Markdown']) {
+            expect(css.findNode(component)).toBeDefined();
+        }
+        expect(firstDateLine?.fullSelector).toBe('body section .grid-container > .text-content > :first-child');
+        expect(firstDateLine?.properties.get('margin-top')).toBe('0');
+        expect(marker?.fullSelector).toBe('body section .grid-container .entry > hgroup > h3:not(:empty)::before');
+        expect(marker?.properties.get('content')).toBe('""');
+        expect(marker?.properties.get('display')).toBe('inline-block');
+        expect(marker?.properties.get('border-radius')).toBe('50%');
+        expect(marker?.properties.get('print-color-adjust')).toBe('exact');
+        expect(JSON.stringify(template.childNodes)).toContain('2019 — Present');
+        expect(JSON.stringify(template.childNodes)).not.toContain(' -- ');
+    });
+
     test.each([
         ['Assured: Cover Letter', 'Joe Blow'],
         ['Integrity: Cover Letter', 'Randy Marsh'],

@@ -67,11 +67,25 @@ async function capturePrintableResume(
     return { html, resumeHtml, stylesheet: stylesheetWithPageSize };
 }
 
+/**
+ * Print infrastructure shared by the print window and HTML export. Template
+ * backgrounds are part of the authored design, so request exact colors instead
+ * of relying on the browser's "Background graphics" option. The property is
+ * inherited and applied at the root without !important, so authored CSS may
+ * still opt an element back into economy printing.
+ */
+const PRINT_DOCUMENT_RULES = [
+    '@media print {',
+    '    html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }',
+    '    body { min-height: 0 !important; }',
+    '}'
+].join('\n');
+
 function pageSizeRule(pageSize: PageSize): string {
     const pageRule = pageSize === PageSize.A4
         ? '@page { size: A4; margin: 0; }'
         : '@page { size: Letter; margin: 0; }';
-    return `${pageRule}\n@media print { body { min-height: 0 !important; } }`;
+    return `${pageRule}\n${PRINT_DOCUMENT_RULES}`;
 }
 
 function showPrintLoadingState(printWindow: Window): void {

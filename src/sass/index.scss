@@ -116,6 +116,10 @@ button img {
         background: colors.$document-paper;
         color: colors.$document-ink;
         color-scheme: light;
+        // Inherited by the authored document so template backgrounds print
+        // without the browser's "Background graphics" option.
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
         height: 100%;
         border: none;
         box-shadow: none;

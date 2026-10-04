@@ -5,6 +5,8 @@ import { streamlineNodes, streamlineCss, streamlineRootCss } from "./Streamline"
 import { streamlineCoverLetterNodes, streamlineCoverLetterCss } from "./StreamlineCoverLetter";
 import { ResumeSaveData } from "@/types";
 import { assuredCoverLetterNodes, assuredCoverLetterCss } from "./AssuredCoveredLetter";
+import { candorNodes, candorCss, candorRootCss } from "./Candor";
+import { candorCoverLetterNodes, candorCoverLetterCss } from "./CandorCoverLetter";
 import { integrityCoverLetterNodes, integrityCoverLetterCss } from "./IntegrityCoverLetter";
 import PageSize from "@/types/PageSize";
 import { withTemplateFonts } from "@/shared/fonts/templateFonts";
@@ -23,6 +25,20 @@ export function createResumeTemplates(coverLetterDate?: string) {
             builtinCss: assuredCoverLetterCss().dump(),
             childNodes: assignIds(assuredCoverLetterNodes(coverLetterDate)),
             rootCss: assuredRootCss().dump(),
+            pageSize: PageSize.Letter
+        } as ResumeSaveData),
+
+        "Candor": withTemplateFonts({
+            builtinCss: candorCss().dump(),
+            childNodes: assignIds(candorNodes()),
+            rootCss: candorRootCss().dump(),
+            pageSize: PageSize.Letter
+        } as ResumeSaveData),
+
+        "Candor: Cover Letter": withTemplateFonts({
+            builtinCss: candorCoverLetterCss().dump(),
+            childNodes: assignIds(candorCoverLetterNodes(coverLetterDate)),
+            rootCss: candorRootCss().dump(),
             pageSize: PageSize.Letter
         } as ResumeSaveData),
 

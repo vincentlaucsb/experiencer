@@ -5,6 +5,8 @@
 const builtinTemplatePreviewImages: Record<string, string> = {
     "Assured": "/template-previews/assured.png",
     "Assured: Cover Letter": "/template-previews/assured-cover-letter.png",
+    "Candor": "/template-previews/candor.png",
+    "Candor: Cover Letter": "/template-previews/candor-cover-letter.png",
     "Integrity": "/template-previews/integrity.png",
     "Integrity: Cover Letter": "/template-previews/integrity-cover-letter.png",
     "Streamline": "/template-previews/streamline.png",

@@ -3,6 +3,7 @@ import TextField from "@/controls/inputs/TextField";
 import CssSuggestions from "@/editor/CssSuggestions";
 import type { ReadonlyCssNode } from "@/shared/CssTree";
 import type { CssEditorCommands } from "@/shared/stores/cssEditorCommands";
+import { getCssDeclarationError } from '@/shared/utils/transformResumeStylesheet';
 
 interface CssPropertyEditorProps {
     commands: CssEditorCommands;
@@ -54,6 +55,7 @@ export default function CssPropertyEditor({
             value={cssNode.properties as Map<string, string>}
             container={mapContainer}
             updateValue={commands.updateProperty.bind(null, path)}
+            validateValue={getCssDeclarationError}
             deleteKey={commands.deleteKey.bind(null, path)}
             keySuggestions={Array.from(cssSuggestions.keys())}
             genericValueSuggestions={genericValueSuggestions}

@@ -1,52 +1,70 @@
 import {
     generate,
+    lexer,
     List,
     parse,
+    tokenize,
+    tokenTypes,
     walk,
     type CssNode,
     type Rule,
     type Selector,
     type SelectorList
 } from 'css-tree';
+import { isCssIdentifier } from './validateNodeCssNames';
 
 export const EDITOR_RESUME_SELECTOR = '#resume';
 
+function hasUnescapedEnd(token: string, ending: string): boolean {
+    if (token.length < 2 || !token.endsWith(ending)) return false;
+    let escapes = 0;
+    for (let index = token.length - 2; token[index] === '\\'; index -= 1) escapes += 1;
+    return escapes % 2 === 0;
+}
+
 function assertClosedCssBlocks(stylesheet: string): void {
-    let depth = 0;
-    let quote = '';
-    let inComment = false;
-    for (let index = 0; index < stylesheet.length; index += 1) {
-        const character = stylesheet[index];
-        const next = stylesheet[index + 1];
-        if (inComment) {
-            if (character === '*' && next === '/') {
-                inComment = false;
-                index += 1;
-            }
-            continue;
+    const delimiters: number[] = [];
+    const unterminated = () => { throw new Error('Résumé CSS contains an unterminated block, string, or comment.'); };
+    // Strings and unquoted URLs are atomic CSS tokens: their literal brackets
+    // must never be interpreted as declaration or stylesheet structure.
+    tokenize(stylesheet, (type, start, end) => {
+        switch (type) {
+            case tokenTypes.Function:
+            case tokenTypes.LeftParenthesis:
+                delimiters.push(tokenTypes.RightParenthesis);
+                break;
+            case tokenTypes.LeftSquareBracket:
+                delimiters.push(tokenTypes.RightSquareBracket);
+                break;
+            case tokenTypes.LeftCurlyBracket:
+                delimiters.push(tokenTypes.RightCurlyBracket);
+                break;
+            case tokenTypes.RightParenthesis:
+            case tokenTypes.RightSquareBracket:
+            case tokenTypes.RightCurlyBracket:
+                if (delimiters.pop() !== type) {
+                    throw new Error(type === tokenTypes.RightCurlyBracket
+                        ? 'Résumé CSS contains an unmatched closing brace.'
+                        : 'Résumé CSS contains an unmatched closing delimiter.');
+                }
+                break;
+            case tokenTypes.String:
+                if (!hasUnescapedEnd(stylesheet.slice(start, end), stylesheet[start])) unterminated();
+                break;
+            case tokenTypes.Url:
+                if (!hasUnescapedEnd(stylesheet.slice(start, end), ')')) unterminated();
+                break;
+            case tokenTypes.Comment:
+                // The closing marker must not overlap the opening marker (/*/).
+                if (end - start < 4 || !stylesheet.slice(start, end).endsWith('*/')) unterminated();
+                break;
+            case tokenTypes.BadString:
+            case tokenTypes.BadUrl:
+                unterminated();
+                break;
         }
-        if (quote) {
-            if (character === '\\') index += 1;
-            else if (character === quote) quote = '';
-            continue;
-        }
-        if (character === '/' && next === '*') {
-            inComment = true;
-            index += 1;
-        } else if (character === '"' || character === "'") {
-            quote = character;
-        } else if (character === '\\') {
-            index += 1;
-        } else if (character === '{') {
-            depth += 1;
-        } else if (character === '}') {
-            depth -= 1;
-            if (depth < 0) throw new Error('Résumé CSS contains an unmatched closing brace.');
-        }
-    }
-    if (depth !== 0 || quote || inComment) {
-        throw new Error('Résumé CSS contains an unterminated block, string, or comment.');
-    }
+    });
+    if (delimiters.length > 0) unterminated();
 }
 
 function parseStrict(stylesheet: string, context?: string): CssNode {
@@ -59,6 +77,42 @@ function parseStrict(stylesheet: string, context?: string): CssNode {
             throw error;
         }
     });
+}
+
+/** Validate one authored declaration before it can change the CSS tree. */
+export function getCssDeclarationError(property: string, value: string): string | undefined {
+    if (!isCssIdentifier(property)) {
+        return 'Use a CSS property name, such as font-size or --accent-color.';
+    }
+    // Empty values are intentional drafts created by the property-name field.
+    if (!value.trim()) return;
+    try {
+        assertClosedCssBlocks(value);
+        const declaration = parseStrict(`${property}: ${value}`, 'declaration');
+        if (declaration.type !== 'Declaration' || declaration.property !== property) {
+            return 'Enter one CSS value without adding declarations or rules.';
+        }
+        // Validate the serializer's actual delimiter boundary too: an EOF escape
+        // can otherwise consume the appended semicolon and the next declaration.
+        const wrapped = parseStrict(`.validation { ${property}: ${value};\n--validation-end: initial; }`);
+        if (wrapped.type !== 'StyleSheet' || wrapped.children.size !== 1) throw new Error('Invalid declaration boundary.');
+        const rule = wrapped.children.first;
+        if (rule?.type !== 'Rule' || rule.block.children.size !== 2) throw new Error('Invalid declaration boundary.');
+        const last = rule.block.children.last;
+        if (last?.type !== 'Declaration' || last.property !== '--validation-end') throw new Error('Invalid declaration boundary.');
+        const parsedValue = generate(declaration.value);
+        if (typeof CSS !== 'undefined' && typeof CSS.supports === 'function') {
+            if (!CSS.supports(property, parsedValue)) return `Enter a supported value for ${property}.`;
+        } else if (!property.startsWith('--')) {
+            const match = lexer.matchProperty(property.toLowerCase(), declaration.value);
+            // Substitution is deferred until variables resolve in the document.
+            if (match.error && !match.error.message.startsWith('Matching for a tree with var()')) {
+                return `Enter a supported value for ${property}.`;
+            }
+        }
+    } catch {
+        return 'Enter one CSS value without adding declarations or rules.';
+    }
 }
 
 function isKeyframeRule(rule: Rule, enclosingAtRuleName: string | undefined): boolean {

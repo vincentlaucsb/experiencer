@@ -5,6 +5,13 @@ input {
     border: 0;
 }
 
+.input-validation-error {
+    display: block;
+    color: colors.$danger;
+    font-family: sans-serif;
+    white-space: normal;
+}
+
 #resume {
     // Native controls otherwise follow the root dark color-scheme and render
     // light text on the print-faithful white document canvas.

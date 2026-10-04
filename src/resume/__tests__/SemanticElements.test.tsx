@@ -97,6 +97,22 @@ test("read-only description items omit empty-field hints", () => {
     expect(container.textContent).toContain("Real definition");
     expect(container.textContent).not.toContain("Enter a term");
     expect(container.textContent).not.toContain("Enter a value");
+    expect(container.querySelector("dt")?.textContent).toBe("");
+    expect(container.querySelectorAll("dd")).toHaveLength(1);
+});
+
+test("editable description items keep empty-field hints", () => {
+    const { container } = render(
+        <DescriptionListItem
+            {...nodeProps(DescriptionListItemType, "editable-definition")}
+            value=""
+            definitions={["", "Real definition"]}
+        />
+    );
+
+    expect(container.textContent).toContain("Enter a term");
+    expect(container.textContent).toContain("Enter a value");
+    expect(container.querySelectorAll("dd")).toHaveLength(2);
 });
 
 test("editable empty section keeps its selection hint", () => {

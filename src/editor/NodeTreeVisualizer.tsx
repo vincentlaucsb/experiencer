@@ -26,7 +26,9 @@ function NodeRepresentation({ node }: { node: ResumeNode }) {
             <span className="tree-item-selector app-pl-2">{htmlId}{cssClasses}</span>
             {actions.filter(action => action.treeIndicator).map(action => <Button key={action.id}
                 aria-label={action.label} onKeyDown={event => event.stopPropagation()}
-                onClick={event => { event.stopPropagation(); action.run(); }}>{action.treeIndicator}</Button>)}
+                onClick={event => { event.stopPropagation(); action.run(); }}>
+                {action.treeIndicatorIcon && <i aria-hidden="true" className={`${action.treeIndicatorIcon} app-mr-1`} />}
+                {action.treeIndicator}</Button>)}
         </span>
     );
 }

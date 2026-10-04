@@ -8,6 +8,8 @@ export interface MarkdownEditorProps {
     ariaLabel: string;
     autoFocus?: boolean;
     placeholder?: string;
+    /** Fill a bounded host, or grow with content within the editing viewport. */
+    sizing?: 'content' | 'fill';
 }
 
 export type MarkdownEditorComponent = ComponentType<MarkdownEditorProps>;

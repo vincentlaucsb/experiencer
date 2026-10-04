@@ -180,7 +180,7 @@ test("selected entries expose direct title and detail actions", () => {
     expect(container.querySelector("[data-field-options-trigger]")).toBeNull();
 });
 
-test("editing entries expose compact title and detail controls", () => {
+test("editing entries keep title and detail controls in one action row", () => {
     const uuid = "editing-entry";
 
     act(() => {
@@ -201,8 +201,8 @@ test("editing entries expose compact title and detail controls", () => {
     expect(document.querySelector("[data-field-options-trigger]")).toBeNull();
     const addTitleButton = screen.getByRole("button", { name: "Add title" });
     const addDetailButton = screen.getByRole("button", { name: "Add detail" });
-    expect(addTitleButton.className).toContain("entry-field-adder__trigger");
     expect(addTitleButton.className).toContain("pure-button-primary");
-    expect(addTitleButton.className).toContain("pure-button-outline");
-    expect(addDetailButton.className).toContain("pure-button-outline");
+    expect(addTitleButton.closest('.entry-field-actions')).toBe(addDetailButton.closest('.entry-field-actions'));
+    expect(addTitleButton.closest('hgroup')).toBeNull();
+    expect(addTitleButton.textContent).toContain('Add title');
 });

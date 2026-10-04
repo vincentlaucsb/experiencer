@@ -73,6 +73,15 @@ describe('resume printing and HTML export', () => {
         expect(saveAsMock).toHaveBeenCalledWith(expect.any(Blob), 'resume.zip');
     });
 
+    test('requests exact print colors so template backgrounds survive default print settings', async () => {
+        await exportResumeAsHtml(createSource(PageSize.Letter), 'resume.html');
+
+        const [printStylesheet] = generateHtmlMock.mock.calls[0];
+        expect(printStylesheet).toMatch(
+            /@media print \{[^}]*html \{ -webkit-print-color-adjust: exact; print-color-adjust: exact; \}/
+        );
+    });
+
     test('prints from a new resume-only window after fonts and layout settle', async () => {
         const printWindow = createPrintWindow();
         const openSpy = jest.spyOn(window, 'open').mockReturnValue(printWindow);

@@ -5,7 +5,7 @@ import Section from "@/resume/Section";
 import Entry, { BasicEntryProps } from "@/resume/Entry";
 import Image from "@/resume/Image";
 import MarkdownText from "@/resume/Markdown";
-import getDefaultCss, { getRootCss } from "./CssTemplates";
+import getDefaultCss, { getRootCss, resumeBodyBaseProperties } from "./CssTemplates";
 import Grid from "@/resume/Grid";
 import { makeList } from "./TemplateHelper";
 import { BasicResumeNode } from "@/types";
@@ -14,6 +14,7 @@ const headshot = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAP8AAADaCAYAAABp
 
 export function randyMarshCss() {
     let randyCss = getDefaultCss().setProperties({
+        ...resumeBodyBaseProperties,
         "font-family": "var(--sans-serif)",
         "font-size": "11pt",
         "display": "grid",
@@ -80,7 +81,8 @@ export function randyMarshCss() {
         (randyCss.findNode("Column") as CssNode).copySkeleton('#sidebar', '#sidebar')
     ).setProperties({
         "color": "var(--text-color)",
-        "padding": "0.5in",
+        // Narrower inline padding leaves room for typical emails and skills, which now wrap inside the box instead of spilling past it.
+        "padding": "0.5in 0.3in",
         "background": "var(--secondary-color)"
     }).addNode('Heading', { 'color': 'var(--text-color)' }, 'h2');
 

@@ -3,7 +3,7 @@ import Image, { BasicImageProps } from "@/resume/Image";
 import MarkdownText from "@/resume/Markdown";
 
 import dineshChugtaiSignature from "./assets/signatures/dinesh-chugtai.png?inline";
-import getDefaultCss from "./CssTemplates";
+import getDefaultCss, { resumeBodyBaseProperties } from "./CssTemplates";
 import { addStreamlineHeaderCss, streamlineHeader } from "./Streamline";
 
 import type { BasicResumeNode } from "@/types";
@@ -84,6 +84,7 @@ Thank you for your time and consideration.`
 
 export function streamlineCoverLetterCss() {
     let css = getDefaultCss().setProperties({
+        ...resumeBodyBaseProperties,
         "font-family": "var(--sans-serif)",
         "font-size": "var(--body-font-size)",
         "line-height": "var(--body-line-height)"

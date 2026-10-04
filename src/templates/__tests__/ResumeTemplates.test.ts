@@ -88,6 +88,9 @@ describe('built-in templates', () => {
             expect(separator?.properties.get('width')).toBe('var(--separator-size)');
             expect(separator?.properties.get('height')).toBe('var(--separator-size)');
             expect(separator?.properties.has('text-decoration')).toBe(false);
+            expect(separator?.selector).toBe(
+                '> .text-content:not(:empty) ~ .text-content:not(:empty)::before, > .link:not(:empty) ~ .link:not(:empty)::before'
+            );
         }
     });
 

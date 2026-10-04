@@ -42,6 +42,59 @@ test.each([undefined, [], [''], ['   ']])('read-only entries omit empty subtitle
     expect(container.querySelector('h4.subtitle')).toBeNull();
 });
 
+test('read-only entries omit add controls and empty-field hints while editing', () => {
+    const uuid = 'printing-entry';
+    act(() => {
+        useEditorStore.getState().editNode(uuid);
+    });
+
+    const { container } = render(<Entry
+        id={[0]}
+        type={Entry.type}
+        uuid={uuid}
+        isLast={false}
+        readOnly
+        updateData={() => { }}
+        updateDataFields={() => { }}
+        title={['', 'QA Overflow Entry']}
+        subtitle={['', 'Visible role']}
+    />);
+
+    expect(container.textContent).toContain('QA Overflow Entry');
+    expect(container.textContent).toContain('Visible role');
+    expect(container.textContent).not.toContain('Enter a value');
+    expect(screen.queryByRole('button', { name: 'Add title' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Add detail' })).toBeNull();
+    expect(container.querySelectorAll('.title .field')).toHaveLength(1);
+    expect(container.querySelector('.title .field-0')?.textContent).toBe('QA Overflow Entry');
+    expect(container.querySelector('.title .field-middle')).toBeNull();
+    expect(container.querySelector('.title .field-last')).toBeNull();
+    expect(container.querySelector('h3.title')?.textContent).toBe('QA Overflow Entry');
+    expect(container.querySelector('article.entry')?.className).toBe('entry');
+});
+
+test('read-only entries renumber visible subtitle fields and keep a break from a blank slot', () => {
+    const { container } = render(<Entry
+        id={[0]}
+        type={Entry.type}
+        uuid="printing-breaks"
+        isLast={false}
+        readOnly
+        updateData={() => { }}
+        updateDataFields={() => { }}
+        title={['Company']}
+        subtitle={['Role', '', 'City']}
+        subtitleBreaks={[1]}
+    />);
+
+    const subtitle = container.querySelector('h4.subtitle');
+    expect(subtitle?.querySelector('.field-0')?.textContent).toBe('Role');
+    expect(subtitle?.querySelector('.field-last')?.textContent).toBe('City');
+    expect(subtitle?.querySelector('.field-middle')).toBeNull();
+    const children = subtitle ? Array.from(subtitle.children).map((element) => element.tagName) : [];
+    expect(children).toEqual(['SPAN', 'HR', 'SPAN']);
+});
+
 test('read-only entries retain populated subtitle headings', () => {
     const { container } = render(<Entry id={[0]} type={Entry.type} uuid="populated-subtitle" isLast={false}
         readOnly title={['Some Company']} subtitle={['Some Job']} updateData={() => {}} updateDataFields={() => {}} />);

@@ -21,7 +21,7 @@ export interface BasicHeaderProps extends BasicResumeNode<HeaderBase> {};
 export interface HeaderProps extends ResumeComponentProps<HeaderBase> {};
 
 export default function Header({ updateDataFields, ...props }: HeaderProps) {
-    const isEditing = useIsNodeEditing(props.uuid);
+    const isEditing = useIsNodeEditing(props.uuid) && !props.readOnly;
     const toggleEdit = useEditorStore((state) => state.toggleEdit);
     const titleRef = useRef<HTMLInputElement>(null);
     const subtitleRef = useRef<HTMLInputElement>(null);

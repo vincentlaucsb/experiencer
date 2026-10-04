@@ -36,7 +36,7 @@ import ResumeComponentProps from "@/types";
  * - Section intro: "# " (heading prefix)
  */
 export default function MarkdownText(props: ResumeComponentProps) {
-    const isEditing = useIsNodeEditing(props.uuid);
+    const isEditing = useIsNodeEditing(props.uuid) && !props.readOnly;
     const toggleEdit = useEditorStore((state) => state.toggleEdit);
     const textValue = props.value || "";
     
@@ -54,6 +54,8 @@ export default function MarkdownText(props: ResumeComponentProps) {
         toggleEditing: toggleEdit,
     });
     const MarkdownEditor = getMarkdownEditor();
+    // A blank cell still occupies its grid slot. Drop the hint, not the element.
+    const blankReadOnly = props.readOnly && textValue.trim().length === 0;
 
     const handleCancel = (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
@@ -106,9 +108,9 @@ export default function MarkdownText(props: ResumeComponentProps) {
 
     const displayContent = (
         <>
-            {textValue ? (
+            {textValue && !blankReadOnly ? (
                 <Markdown>{textValue}</Markdown>
-            ) : (
+            ) : props.readOnly ? null : (
                 <span className="empty-placeholder app-text-light-accent">Click to add content</span>
             )}
         </>

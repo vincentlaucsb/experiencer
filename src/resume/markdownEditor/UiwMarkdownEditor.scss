@@ -5,3 +5,8 @@
     // must also fit when the toolbar leaves less than that minimum available.
     min-height: 0 !important;
 }
+
+.resume-markdown-editor--fill {
+    flex: 1;
+    min-height: 220px;
+}

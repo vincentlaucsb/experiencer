@@ -62,6 +62,8 @@ export interface ResumeNodeAction {
     label: string;
     run: () => void;
     treeIndicator?: string;
+    /** Optional icon font class for a host-owned tree indicator. */
+    treeIndicatorIcon?: string;
 }
 
 export interface ResumeEditorExtensions {

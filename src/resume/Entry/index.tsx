@@ -159,20 +159,14 @@ export default function Entry(props: EntryProps) {
             }}>
                 <h3 className="title">
                     {getFields('title')}
-                    {!props.readOnly && isEditing && <FieldAdder compact label="Add title" onAdd={() => addField('title')} />}
                 </h3>
                 {(!props.readOnly || props.subtitle?.some(text => text.trim().length > 0)) && <h4 className="subtitle">
                     {getFields('subtitle')}
-                    {!props.readOnly && isEditing && <FieldAdder compact label="Add detail" onAdd={() => addField('subtitle')} />}
                 </h4>}
-                {!props.readOnly && isSelected && !isEditing && (
-                    <span className="entry-field-actions no-print">
-                        <FieldAdder label="Add title" onAdd={() => addField('title')} />
-                        <FieldAdder label="Add detail" onAdd={() => addField('subtitle')} />
-                    </span>
-                )}
             </hgroup>
-            {isSelected && !props.readOnly && actions.length > 0 && <div className="no-print">
+            {isSelected && !props.readOnly && <div className="entry-field-actions no-print app-gap-2 app-mt-2">
+                <FieldAdder label="Add title" onAdd={() => addField('title')} />
+                <FieldAdder label="Add detail" onAdd={() => addField('subtitle')} />
                 {actions.map(action => <Button key={action.id} onClick={event => {
                     event.stopPropagation(); action.run();
                 }}>{action.label}</Button>)}

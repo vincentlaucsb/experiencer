@@ -48,42 +48,40 @@ for (const [name, content] of [
   });
 }
 
-test('Markdown textarea follows resizing and preview mode changes', async ({ page }) => {
+test('Markdown editor grows with content, shrinks, and stays above the viewport edge on resize', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
   await createResumeFromTemplate(page);
   const markdown = page.locator('#resume .text-content').first();
   await markdown.click();
   await markdown.click();
   await expect(page.locator('.w-md-editor')).toBeVisible();
-  await page.getByLabel('Text content').fill('Scrollable paragraph.\n\n'.repeat(30));
   const editor = page.locator('.w-md-editor');
-  const initialHeight = await editor.evaluate(element => element.getBoundingClientRect().height);
-
-  // UIW ignores out-of-range pointer moves instead of clamping them.
-  for (const delta of [120, -240]) {
-    const handle = await page.locator('.w-md-editor-bar').boundingBox();
-    if (!handle) throw new Error('Missing Markdown resize handle');
-    await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2);
-    await page.mouse.down();
-    await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2 + delta);
-    await page.mouse.up();
-    if (delta > 0) {
-      await expect.poll(async () => editor.evaluate(element => element.getBoundingClientRect().height))
-        .toBeGreaterThan(initialHeight);
-    } else {
-      await expect(editor).toHaveCSS('height', '100px');
-      await expect.poll(async () => page.locator('.w-md-editor-area').evaluate(element => (
-        element.getBoundingClientRect().height
-      ))).toBeLessThan(100);
-    }
+  const input = page.getByLabel('Text content');
+  await input.fill('Short paragraph.');
+  await expect(editor).toHaveCSS('height', '220px');
+  await input.fill('Paragraph with enough source lines to grow.\n'.repeat(12));
+  await expect.poll(async () => editor.evaluate(element => element.getBoundingClientRect().height)).toBeGreaterThan(220);
+  expect(await input.evaluate(element => element.scrollHeight - element.clientHeight)).toBeLessThanOrEqual(1);
+  await input.fill('Scrollable paragraph.\n\n'.repeat(80));
+  for (const viewport of [{ width: 1440, height: 1000 }, { width: 1100, height: 720 }]) {
+    await page.setViewportSize(viewport);
+    await expect.poll(async () => page.locator('.resume-overlay-editor--markdown').evaluate(element =>
+      element.getBoundingClientRect().bottom)).toBeLessThanOrEqual(viewport.height - 14);
+    await expect(page.getByRole('button', { name: 'Save (Ctrl + Enter)' })).toBeInViewport();
     await expectTextareaToFit(page);
   }
-
-  const input = page.getByLabel('Text content');
   await input.evaluate(element => { element.scrollTop = element.scrollHeight; });
   expect(await input.evaluate(element => element.scrollTop)).toBeGreaterThan(0);
   await expect.poll(async () => page.locator('.w-md-editor-area').evaluate(element => (
     element.scrollHeight - element.clientHeight
   ))).toBeLessThanOrEqual(1);
+
+  await page.getByRole('button', { name: 'Preview code (ctrl + 9)', exact: true }).click();
+  await expect(editor).toHaveClass(/w-md-editor-show-preview/);
+  await page.setViewportSize({ width: 1100, height: 650 });
+  await expect.poll(async () => page.locator('.resume-overlay-editor--markdown').evaluate(element =>
+    element.getBoundingClientRect().bottom)).toBeLessThanOrEqual(636);
+  await expect(page.getByRole('button', { name: 'Save (Ctrl + Enter)' })).toBeInViewport();
 
   await page.getByRole('button', { name: 'Live code (ctrl + 8)', exact: true }).click();
   await expect(editor).toHaveClass(/w-md-editor-show-live/);
@@ -94,4 +92,9 @@ test('Markdown textarea follows resizing and preview mode changes', async ({ pag
   await page.getByRole('button', { name: 'Toggle fullscreen (ctrl + 0)', exact: true }).click();
   await expect(editor).not.toHaveClass(/w-md-editor-fullscreen/);
   await expectTextareaToFit(page);
+  await page.getByRole('button', { name: 'Edit code (ctrl + 7)', exact: true }).click();
+  await input.fill('Short again.');
+  await expect(editor).toHaveCSS('height', '220px');
+  await page.getByRole('button', { name: 'Save (Ctrl + Enter)' }).click();
+  await expect(markdown).toHaveText('Short again.');
 });

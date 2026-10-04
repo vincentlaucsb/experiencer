@@ -31,7 +31,8 @@ export class ReadOnlyNotesStore {
     nodeActions = (node: ResumeNode) => {
         const entry = containingEntry(node);
         return entry ? [{ id: 'entry-notes', label: entry.notes ? 'View Notes' : 'Add Notes',
-            treeIndicator: node.uuid === entry.uuid && entry.notes ? 'Notes' : undefined, run: () => this.open(entry.uuid) }] : [];
+            treeIndicator: node.uuid === entry.uuid && entry.notes ? 'Notes' : undefined,
+            treeIndicatorIcon: 'icofont-clip-board', run: () => this.open(entry.uuid) }] : [];
     };
 }
 export const readOnlyNotesStore = new ReadOnlyNotesStore();

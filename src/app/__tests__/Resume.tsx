@@ -52,6 +52,26 @@ function renderTemplateSwitcher(createDocumentFromTemplate = jest.fn()) {
     );
 }
 
+test('routes the template state through a host-owned renderer with its state contract', () => {
+    const create = jest.fn();
+    const groups = [{ id: 'host', heading: 'Host templates', templates: [] }];
+    render(<ResumeView mode="changingTemplate" stylesheet=""
+        tree={{ type: 'Resume', uuid: 'root', childNodes: [] }}
+        createDocumentFromTemplate={create}
+        extensions={{ templates: { additionalTemplateGroups: groups, render: (props) => (
+            <section aria-label="Host template browser">
+                {props.topNav}
+                <button onClick={() => props.createDocumentFromTemplate?.('Assured')}>Host use</button>
+                <span>{props.additionalTemplateGroups === groups ? 'Same groups' : 'Wrong groups'}</span>
+            </section>
+        ) } }} />);
+    expect(screen.getByRole('region', { name: 'Host template browser' })).toBeTruthy();
+    expect(screen.getByText('Same groups')).toBeTruthy();
+    expect(screen.queryByText('Use this Template')).toBeNull();
+    fireEvent.click(screen.getByText('Host use'));
+    expect(create).toHaveBeenCalledWith('Assured');
+});
+
 test('renders an inert editor-shaped surface while a document opens', () => {
     const dismiss = jest.fn();
     render(

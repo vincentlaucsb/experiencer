@@ -83,6 +83,14 @@ export function Resume(props: ResumeProps) {
 
     switch (props.mode) {
         case 'changingTemplate':
+            if (extensions.templates?.render) {
+                return <>{extensions.templates.render({
+                    topNav: shell,
+                    pageSize,
+                    additionalTemplateGroups: extensions.templates.additionalTemplateGroups,
+                    createDocumentFromTemplate: props.createDocumentFromTemplate
+                })}</>;
+            }
             return (
                 <ResumeTemplateSelector
                     topNav={shell}

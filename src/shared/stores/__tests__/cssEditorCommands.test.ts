@@ -88,6 +88,49 @@ describe("CSS editor commands", () => {
         expect(reportError).toHaveBeenCalledTimes(2);
     });
 
+    test("removes a declaration when the value is blank", () => {
+        const { commands, root } = createFixture();
+
+        commands.updateProperty([], "color", "");
+        commands.updateProperty(["Entry"], "display", "   ");
+
+        expect(root.properties.has("color")).toBe(false);
+        expect(root.mustFindNode(["Entry"]).properties.has("display")).toBe(false);
+        expect(root.stylesheet()).not.toContain(": ;");
+    });
+
+    test("omits blank declarations from a replacement and rejects the rest unchanged", () => {
+        const { root, updateTree } = createFixture();
+        const reportError = jest.fn();
+        const commands = createCssEditorCommands(updateTree, reportError);
+        const replacement = {
+            status: "changed" as const,
+            name: "Entry",
+            path: ["Entry"],
+            selector: "body .entry",
+            previousDeclarations: new Map([["display", "block"]]),
+            declarations: new Map([["display", ""], ["color", "navy"]]),
+            added: ["color"],
+            changed: [],
+            removed: ["display"]
+        };
+
+        commands.replaceProperties([replacement]);
+
+        expect(root.mustFindNode(["Entry"]).properties.get("color")).toBe("navy");
+        expect(root.mustFindNode(["Entry"]).properties.has("display")).toBe(false);
+        expect(root.stylesheet()).not.toContain(": ;");
+
+        commands.replaceProperties([{
+            ...replacement,
+            declarations: new Map([["display", ""], ["color", "red; display:none"]])
+        }]);
+
+        expect(updateTree).toHaveBeenCalledTimes(1);
+        expect(root.mustFindNode(["Entry"]).properties.get("color")).toBe("navy");
+        expect(reportError).toHaveBeenCalledTimes(1);
+    });
+
     test.each(["addSelector", "updateSelector"] as const)(
         "rejects invalid selectors before %s can create an update",
         (commandName) => {

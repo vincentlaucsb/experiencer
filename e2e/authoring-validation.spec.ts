@@ -116,3 +116,53 @@ test('Unicode custom properties keep balanced opaque values through save and rel
     await restored.getByRole('tab', { name: 'Raw CSS', exact: true }).click();
     await expect(restored.getByRole('tabpanel')).toContainText('--色: { color: red; };');
 });
+
+test('clearing a CSS value removes the declaration and undo restores it', async ({ page }) => {
+    await createResumeFromTemplate(page);
+    await page.getByRole('tab', { name: 'CSS', exact: true }).click();
+    const rules = bodyRule(page);
+    const fontSizeRow = rules.locator('tr.property').filter({
+        has: page.locator('.property-key', { hasText: /^font-size$/ })
+    });
+    await fontSizeRow.locator('.property-value').click();
+    const input = page.getByLabel('font-size value');
+    const original = await input.inputValue();
+
+    for (const cleared of ['', '   ']) {
+        await input.fill(cleared);
+        await input.press('Enter');
+        await expect(fontSizeRow).toHaveCount(0);
+        await page.getByRole('tab', { name: 'Raw CSS', exact: true }).click();
+        await expect(page.getByRole('tabpanel')).not.toContainText('font-size: ;');
+        await page.getByRole('button', { name: 'Undo', exact: true }).click();
+        await page.getByRole('tab', { name: 'CSS', exact: true }).click();
+        await expect(fontSizeRow).toContainText(original);
+        await fontSizeRow.locator('.property-value').click();
+    }
+});
+
+test('a new property is stored only after it receives a value', async ({ page }) => {
+    await createResumeFromTemplate(page);
+    await page.getByRole('tab', { name: 'CSS', exact: true }).click();
+    const rules = bodyRule(page);
+    await rules.evaluate(element => (element as HTMLElement).click());
+    await page.getByLabel('New property name value').fill('outline-offset');
+    await page.getByLabel('New property name value').press('Enter');
+    const pending = page.getByLabel('outline-offset value');
+    await expect(pending).toBeFocused();
+    await pending.press('Escape');
+    await expect(rules.locator('.property-key', { hasText: /^outline-offset$/ })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Undo', exact: true })).toBeDisabled();
+    await page.getByRole('tab', { name: 'Raw CSS', exact: true }).click();
+    await expect(page.getByRole('tabpanel')).not.toContainText('outline-offset');
+
+    await page.getByRole('tab', { name: 'CSS', exact: true }).click();
+    await rules.evaluate(element => (element as HTMLElement).click());
+    await page.getByLabel('New property name value').fill('outline-offset');
+    await page.getByLabel('New property name value').press('Enter');
+    await page.getByLabel('outline-offset value').fill('2px');
+    await page.getByRole('tab', { name: 'Raw CSS', exact: true }).click();
+    await expect(page.getByRole('tabpanel')).toContainText('outline-offset: 2px;');
+    await page.getByRole('button', { name: 'Undo', exact: true }).click();
+    await expect(page.getByRole('tabpanel')).not.toContainText('outline-offset');
+});

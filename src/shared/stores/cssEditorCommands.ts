@@ -20,6 +20,11 @@ export type CssTreeUpdater = (
 
 export type CssCommandErrorReporter = (message: string) => void;
 
+/** Blank values are removals. Chromium's inspector and CSSOM setProperty drop them. */
+function withoutBlankDeclarations(declarations: ReadonlyMap<string, string>): Map<string, string> {
+    return new Map(Array.from(declarations).filter(([, value]) => value.trim()));
+}
+
 /** Builds the complete mutation boundary used by every CSS editor view. */
 export function createCssEditorCommands(
     updateTree: CssTreeUpdater,
@@ -33,6 +38,12 @@ export function createCssEditorCommands(
             reportError(error instanceof Error ? error.message : "Invalid CSS selector.");
             return false;
         }
+    };
+
+    const removeProperty = (path: ReadonlyArray<string>, key: string) => {
+        updateTree((cssTreeRoot) => {
+            cssTreeRoot.deleteProperty(Array.from(path), key);
+        });
     };
 
     return {
@@ -50,6 +61,10 @@ export function createCssEditorCommands(
         },
 
         updateProperty: (path, key, value) => {
+            if (!value.trim()) {
+                removeProperty(path, key);
+                return;
+            }
             const error = getCssDeclarationError(key, value);
             if (error) { reportError(error); return; }
             updateTree((cssTreeRoot) => {
@@ -83,7 +98,7 @@ export function createCssEditorCommands(
         replaceProperties: (changes) => {
             // Validate the whole replacement before committing any rule or undo entry.
             for (const change of changes) {
-                for (const [key, value] of change.declarations) {
+                for (const [key, value] of withoutBlankDeclarations(change.declarations)) {
                     const error = getCssDeclarationError(key, value);
                     if (error) { reportError(error); return; }
                 }
@@ -92,15 +107,13 @@ export function createCssEditorCommands(
                 for (const change of changes) {
                     const node = cssTreeRoot.mustFindNode(Array.from(change.path));
                     if (!node.selector && node.isRoot) continue;
-                    node.setProperties(new Map(change.declarations));
+                    node.setProperties(withoutBlankDeclarations(change.declarations));
                 }
             });
         },
 
         deleteKey: (path, key) => {
-            updateTree((cssTreeRoot) => {
-                cssTreeRoot.deleteProperty(Array.from(path), key);
-            });
+            removeProperty(path, key);
         },
 
         deleteNode: (path) => {

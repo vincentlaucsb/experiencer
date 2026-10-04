@@ -84,7 +84,8 @@ export function getCssDeclarationError(property: string, value: string): string 
     if (!isCssIdentifier(property)) {
         return 'Use a CSS property name, such as font-size or --accent-color.';
     }
-    // Empty values are intentional drafts created by the property-name field.
+    // A blank value is not an error. The property-name field validates a name
+    // before a value exists, and committing a blank value removes the declaration.
     if (!value.trim()) return;
     try {
         assertClosedCssBlocks(value);

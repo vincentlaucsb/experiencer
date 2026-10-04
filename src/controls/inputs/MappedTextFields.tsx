@@ -11,6 +11,8 @@ interface ValueFieldProps {
     suggestions?: Array<string>;
     delete?: () => void;
     validate?: (value: string) => string | undefined;
+    /** Commit a blank value even when the field was never changed, then remove it. */
+    discardUnchangedBlank?: boolean;
 }
 
 interface ValueState {
@@ -31,13 +33,14 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
         this.submittedValue = props.value || '';
 
         this.keyDownHandler = this.keyDownHandler.bind(this);
+        this.deleteField = this.deleteField.bind(this);
     }
 
     get deleter() {
         return (this.props.delete) ? <Button
             aria-label={`Delete property ${this.props.label}`}
             variant="error"
-            onClick={this.props.delete}
+            onClick={this.deleteField}
         >
             <i className="icofont-ui-delete" />
         </Button> :
@@ -59,13 +62,23 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
         this.submitDraft();
     }
 
+    /** Delete commits the removal itself. A later unmount must not save the draft. */
+    private deleteField() {
+        this.submittedValue = this.state.value;
+        this.props.delete?.();
+    }
+
     private submitDraft() {
-        if (this.state.value === this.submittedValue) return;
-        if (this.props.validate?.(this.state.value)) return;
+        const next = this.state.value;
+        const blank = next.trim().length === 0;
+        const unchanged = next === this.submittedValue;
+        const blankRemoves = Boolean(this.props.delete) || Boolean(this.props.discardUnchangedBlank);
+        if (unchanged && !(blank && this.props.discardUnchangedBlank)) return;
+        if (!(blank && blankRemoves) && this.props.validate?.(next)) return;
         // A parent update can unmount the field before new props arrive. Record
         // the submitted draft first so that unmount cannot submit it twice.
-        this.submittedValue = this.state.value;
-        this.props.updateText(this.state.value);
+        this.submittedValue = next;
+        this.props.updateText(next);
     }
 
     keyDownHandler(event: React.KeyboardEvent) {
@@ -121,6 +134,8 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
 interface MappedTextFieldsState {
     activeKey: string;
     isAddingKey: boolean;
+    /** Name staged locally until a non-blank value is committed. */
+    pendingKey: string;
 }
 
 export interface ContainerProps {
@@ -153,7 +168,8 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
         super(props);
         this.state = {
             activeKey: "",
-            isAddingKey: false
+            isAddingKey: false,
+            pendingKey: ""
         };
 
         this.addNewKey = this.addNewKey.bind(this);
@@ -178,20 +194,41 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
     }
 
     addNewKey(key: string) {
-        if (key.length > 0) {
-            this.updateText(key, '');
+        if (key.length === 0) {
+            this.setState({ isAddingKey: false });
+            return;
+        }
+
+        // Re-entering an existing name focuses that declaration. It must not
+        // clear the saved value, which would remove the declaration.
+        if (this.data.has(key)) {
+            this.setState({ isAddingKey: false, activeKey: key, pendingKey: "" });
+            return;
         }
 
         this.setState({
             isAddingKey: false,
-            activeKey: key
+            activeKey: key,
+            pendingKey: key
         });
     }
 
     updateText(key: string, value: string) {
-        // Update parent
+        if (value.trim().length === 0) {
+            if (this.data.has(key)) this.props.deleteKey(key);
+            this.dropPending(key);
+            return;
+        }
+
         this.props.updateValue(key, value);
-    };
+        this.dropPending(key);
+    }
+
+    /** Drop a property name that was never written into the CSS tree. */
+    private dropPending(key: string) {
+        if (this.state.pendingKey !== key) return;
+        this.setState({ pendingKey: "" });
+    }
 
     /**
      * Keydown from an input field
@@ -251,6 +288,36 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
 
         return props;
     }
+
+    private suggestionsFor(key: string) {
+        let suggestions = this.props.genericValueSuggestions || [];
+        if (this.props.valueSuggestions && this.props.valueSuggestions.has(key)) {
+            suggestions = suggestions.concat(this.props.valueSuggestions.get(key) || []);
+        }
+        return suggestions;
+    }
+
+    private renderPropertyRow(key: string, value: string, pending: boolean) {
+        return (
+            <tr className="property" key={key} {...this.inputContainerProps(key)}>
+                <th className="property-key app-pr-3">{key}</th>
+                <td className="property-value">
+                    <ValueField
+                        label={key}
+                        isEditing={this.state.activeKey === key}
+                        updateText={this.updateText.bind(this, key)}
+                        value={value}
+                        suggestions={this.suggestionsFor(key)}
+                        validate={draft => this.props.validateValue?.(key, draft)}
+                        discardUnchangedBlank={pending}
+                        delete={() => {
+                            if (pending) this.dropPending(key);
+                            else this.props.deleteKey(key);
+                        }} />
+                </td>
+            </tr>
+        );
+    }
     
     render() {
         let keyAdder = <></>
@@ -277,30 +344,10 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
             <Container onClick={(event) => {
                 this.setState({ isAddingKey: true });
             }}>
-                {Array.from(this.data.entries()).map(([key, value]) => {
-                    let suggestions = this.props.genericValueSuggestions || [];
-                    if (this.props.valueSuggestions && this.props.valueSuggestions.has(key)) {
-                        suggestions = suggestions.concat(
-                            this.props.valueSuggestions.get(key) || []);
-                    }
-
-                    return (
-                        <tr className="property"
-                            key={key} {...this.inputContainerProps(key)}>
-                            <th className="property-key app-pr-3">{key}</th>
-                            <td className="property-value">
-                                <ValueField
-                                    label={key}
-                                    isEditing={this.state.activeKey === key}
-                                    updateText={this.updateText.bind(this, key)}
-                                    value={value}
-                                    suggestions={suggestions}
-                                    validate={draft => this.props.validateValue?.(key, draft)}
-                                    delete={() => { this.props.deleteKey(key); }} />
-                            </td>
-                        </tr>
-                    );
-                })}
+                {Array.from(this.data.entries()).map(([key, value]) => this.renderPropertyRow(key, value, false))}
+                {this.state.pendingKey && !this.data.has(this.state.pendingKey)
+                    ? this.renderPropertyRow(this.state.pendingKey, "", true)
+                    : null}
 
                 {keyAdder}
             </Container>

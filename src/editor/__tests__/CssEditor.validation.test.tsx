@@ -93,4 +93,26 @@ describe('CSS selector authoring validation', () => {
         expect(cssStore.data.children).toHaveLength(0);
         expect(cssStore.data.selector).toBe('body');
     });
+
+    test('removes a cleared declaration without an error and undo restores it', () => {
+        cssStore.setCss(new CssNode('Resume CSS', {
+            color: 'var(--text-color)',
+            'font-size': '16px'
+        }, 'body'));
+        useHistoryStore.getState().clear();
+        const editor = createCssEditorCommands(cssStore.updateCss.bind(cssStore));
+
+        editor.updateProperty([], 'color', '');
+        editor.updateProperty([], 'font-size', '   ');
+
+        expect(cssStore.data.properties.has('color')).toBe(false);
+        expect(cssStore.data.properties.has('font-size')).toBe(false);
+        expect(cssStore.data.stylesheet()).not.toContain(': ;');
+        expect(useToastStore.getState().visible).toBe(false);
+        expect(useHistoryStore.getState().past).toHaveLength(2);
+        useHistoryStore.getState().undo();
+        expect(cssStore.data.properties.get('font-size')).toBe('16px');
+        useHistoryStore.getState().undo();
+        expect(cssStore.data.properties.get('color')).toBe('var(--text-color)');
+    });
 });

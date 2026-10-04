@@ -32,10 +32,16 @@ test.each([
     ['color', 'red'], ['font-size', 'calc(1rem + 2px)'], ['font-family', '"Source Sans 3", sans-serif'],
     ['color', 'var(--accent, red)'], ['--accent', 'red'], ['content', '"; }"'],
     ['color', 'red !important'], ['margin', '-5px'], ['background-image', 'url("https://assets.example/a.svg")'],
-    ['font-size', ''], ['--色', 'red'], ['--éducation', '12px'], ['COLOR', 'red'],
+    ['--色', 'red'], ['--éducation', '12px'], ['COLOR', 'red'],
     ['--theme', '{ color: red; }'],
     ['background-image', 'url(https://assets.example/a[.svg)'],
     ['background-image', 'url(https://assets.example/a].svg)'], ['--theme', 'red\\\\']
 ])('preserves legitimate declaration %s: %s', (property, value) => {
     expect(getCssDeclarationError(property, value)).toBeUndefined();
+});
+
+test('treats a blank value as removable rather than invalid', () => {
+    expect(getCssDeclarationError('font-size', '')).toBeUndefined();
+    expect(getCssDeclarationError('font-size', '   ')).toBeUndefined();
+    expect(getCssDeclarationError('color; display', '')).toBeTruthy();
 });

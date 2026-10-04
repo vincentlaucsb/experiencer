@@ -2,7 +2,7 @@ import { BasicHeaderProps } from "@/resume/Header";
 import { BasicEntryProps } from "@/resume/Entry";
 import { makeList } from "./TemplateHelper";
 import { BasicIconProps } from "@/resume/Icon";
-import getDefaultCss, { getRootCss } from "./CssTemplates";
+import getDefaultCss, { getRootCss, resumeBodyBaseProperties } from "./CssTemplates";
 import CssNode from "@/shared/CssTree";
 import { BasicResumeNode } from "@/types";
 import MarkdownText from "@/resume/Markdown";
@@ -66,6 +66,7 @@ export function addAssuredHeaderCss(css: CssNode): CssNode {
 
 export function assuredCss() {
     let css = getDefaultCss().setProperties({
+        ...resumeBodyBaseProperties,
         "font-family": "var(--sans-serif)",
         "font-size": "11pt"
     });

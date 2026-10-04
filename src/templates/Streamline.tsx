@@ -1,5 +1,5 @@
 import CssNode from "@/shared/CssTree";
-import getDefaultCss, { getRootCss } from "./CssTemplates";
+import getDefaultCss, { getRootCss, resumeBodyBaseProperties } from "./CssTemplates";
 import { makeList } from "./TemplateHelper";
 
 import Link from "@/resume/Link";
@@ -72,6 +72,7 @@ export function addStreamlineHeaderCss(css: CssNode): CssNode {
 
 export function streamlineCss() {
     let css = getDefaultCss().setProperties({
+        ...resumeBodyBaseProperties,
         "font-family": "var(--sans-serif)",
         "font-size": "var(--body-font-size)",
         "line-height": "var(--body-line-height)"

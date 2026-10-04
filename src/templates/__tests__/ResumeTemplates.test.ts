@@ -1,5 +1,43 @@
 import ResumeTemplates, { createResumeTemplates } from '../ResumeTemplates';
+import { resumeBodyBaseProperties } from '../CssTemplates';
+import { builtinTemplateThemes } from '../builtinTemplateThemes';
+import { applyTemplateTheme } from '@/shared/templates/templateTheme';
 import CssNode from '@/shared/CssTree';
+
+// Enumerates the catalog rather than naming templates, so a newly registered template or theme is covered automatically.
+const catalogDocuments = Object.entries(createResumeTemplates()).flatMap(([name, template]) => [
+    [name, template] as const,
+    ...(builtinTemplateThemes[name] ?? []).map((theme) => [`${name} (${theme.name})`, applyTemplateTheme(template, theme)] as const)
+]);
+
+describe('every built-in template document', () => {
+    test('is enumerated from the catalog', () => {
+        expect(catalogDocuments.length).toBeGreaterThan(Object.keys(createResumeTemplates()).length);
+    });
+
+    test.each(catalogDocuments)('%s keeps the shared résumé body base properties', (_name, template) => {
+        const body = CssNode.load(template.builtinCss);
+        expect(body.selector).toBe('body');
+        for (const [property, value] of Object.entries(resumeBodyBaseProperties)) {
+            expect(body.properties.get(property)).toBe(value);
+        }
+    });
+
+    test.each(catalogDocuments)('%s does not reset the base properties on every element', (_name, template) => {
+        // Any universal rule, scoped or not, would silently undo the body base; overrides must name an element or class.
+        const universalRules: CssNode[] = [];
+        const collect = (node: CssNode) => {
+            if (node.selector.split(',').some((part) => /\*(::?[\w-]+)?$/.test(part.trim()))) universalRules.push(node);
+            node.children.forEach(collect);
+        };
+        collect(CssNode.load(template.builtinCss));
+        for (const rule of universalRules) {
+            for (const property of Object.keys(resumeBodyBaseProperties)) {
+                expect(rule.properties.has(property)).toBe(false);
+            }
+        }
+    });
+});
 
 describe('built-in templates', () => {
     test('allows development renderers to inject a deterministic cover-letter date', () => {

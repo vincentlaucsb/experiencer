@@ -144,9 +144,20 @@ function getPageBreakCss(): CssNode {
     return pageBreakCss;
 }
 
+/**
+ * Body declarations every built-in template must keep. Templates replace the body rule's
+ * property map, so each one spreads this first; catalog tests enforce it for every template.
+ */
+export const resumeBodyBaseProperties: Readonly<Record<string, string>> = {
+    // `anywhere` (unlike `break-word`) lowers min-content width, so one unbroken word
+    // cannot stretch a grid or flex column past the page and clip the PDF.
+    'overflow-wrap': 'anywhere'
+};
+
 /** Return the default CSS template */
 export default function getDefaultCss(): CssNode {
     let defaultCss = new CssNode('Resume CSS', {
+        ...resumeBodyBaseProperties,
         'font-family': 'Merriweather, serif',
         'font-size': '10pt',
         'height': '100%',

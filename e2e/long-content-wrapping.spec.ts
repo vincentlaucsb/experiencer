@@ -14,12 +14,13 @@ interface ColumnMetrics {
   columnContentRight: number;
   bulletRight: number;
   bulletLines: number;
+  wordRight: number;
   emailLines: number;
 }
 
 /** Measures rendered text lines, not boxes, so glyphs escaping a box are still counted. */
 async function measureColumns(page: Page, root: string): Promise<ColumnMetrics> {
-  return page.evaluate(({ root, longBullet, email }) => {
+  return page.evaluate(({ root, longBullet, longWord, email }) => {
     const lines = (element: Element) => {
       const range = document.createRange();
       range.selectNodeContents(element);
@@ -30,6 +31,8 @@ async function measureColumns(page: Page, root: string): Promise<ColumnMetrics> 
     const bounds = column.getBoundingClientRect();
     const bullet = Array.from(host.querySelectorAll('#experience li'))
       .find((item) => item.textContent === longBullet)!;
+    const word = Array.from(host.querySelectorAll('#experience li'))
+      .find((item) => item.textContent === longWord)!;
     const emailParagraph = Array.from(host.querySelectorAll('#sidebar p'))
       .find((item) => item.textContent === email)!;
     const bulletLines = lines(bullet);
@@ -38,20 +41,23 @@ async function measureColumns(page: Page, root: string): Promise<ColumnMetrics> 
       columnContentRight: bounds.right - parseFloat(getComputedStyle(column).paddingRight),
       bulletRight: Math.max(...bulletLines.map((line) => line.right)),
       bulletLines: new Set(bulletLines.map((line) => Math.round(line.top))).size,
+      wordRight: Math.max(...lines(word).map((line) => line.right)),
       emailLines: new Set(lines(emailParagraph).map((line) => Math.round(line.top))).size
     };
-  }, { root, longBullet: LONG_BULLET, email: SIDEBAR_EMAIL });
+  }, { root, longBullet: LONG_BULLET, longWord: LONG_WORD, email: SIDEBAR_EMAIL });
 }
 
 /**
- * An unbreakable token may overflow its own column, but it must not widen the column's grid
- * track: ordinary text beside it wraps within the track, and ordinary sidebar tokens stay whole.
+ * A long unbroken token wraps inside its own column (the shared body base sets
+ * `overflow-wrap: anywhere`) and cannot widen the column's grid track: ordinary text beside it
+ * wraps within the track, and ordinary sidebar tokens stay whole.
  */
 function expectColumnContract(metrics: ColumnMetrics) {
   const details = JSON.stringify(metrics);
   expect(metrics.columnWidth, details).toBeLessThanOrEqual(LETTER_WIDTH - INTEGRITY_SIDEBAR_WIDTH + 1);
   expect(metrics.bulletRight, details).toBeLessThanOrEqual(metrics.columnContentRight + 1);
   expect(metrics.bulletLines, details).toBeGreaterThan(2);
+  expect(metrics.wordRight, details).toBeLessThanOrEqual(metrics.columnContentRight + 1);
   expect(metrics.emailLines, details).toBe(1);
 }
 
@@ -66,7 +72,7 @@ async function replaceMarkdown(page: Page, selector: string, value: string, expe
   await expect(markdown).toContainText(expectedText);
 }
 
-test('keeps Integrity\'s main column at its track width beside an unbreakable word in the editor and print output', async ({ page, context }) => {
+test('wraps an unbreakable word inside Integrity\'s main column in the editor and print output', async ({ page, context }) => {
   await context.addInitScript(() => {
     window.print = () => undefined;
   });

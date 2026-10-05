@@ -3,7 +3,8 @@ import {
     createLiveCssBaseline,
     filterLiveCssChanges,
     inspectScopedLiveCssChanges,
-    liveCssBaselineStore
+    liveCssBaselineStore,
+    ScopedLiveCssTreeChange
 } from "@/shared/utils/liveCssBaseline";
 
 function addEditorStylesheet(css: string) {
@@ -70,6 +71,52 @@ test("keeps a genuine edit on a noisy rule without importing baseline declaratio
     expect(filtered[0].declarations).toEqual(new Map([
         ["padding-left", "42px"]
     ]));
+});
+
+test("treats a blank live value as removing the declaration", () => {
+    const change: ScopedLiveCssTreeChange = {
+        tree: "resume",
+        name: "Body",
+        path: [],
+        selector: "body",
+        status: "changed",
+        previousDeclarations: new Map([["color", "navy"], ["margin", "0"]]),
+        declarations: new Map([
+            ["color", ""],
+            ["margin", "0"],
+            ["--accent", "   "]
+        ]),
+        added: ["--accent"],
+        changed: ["color"],
+        removed: []
+    };
+
+    const filtered = filterLiveCssChanges([change], new Set());
+
+    expect(filtered).toHaveLength(1);
+    expect(filtered[0].added).toEqual([]);
+    expect(filtered[0].changed).toEqual([]);
+    expect(filtered[0].removed).toEqual(["color"]);
+    expect(filtered[0].declarations.has("color")).toBe(false);
+    expect(filtered[0].declarations.has("--accent")).toBe(false);
+    expect(filtered[0].declarations.get("margin")).toBe("0");
+});
+
+test("drops a blank addition that was never declared", () => {
+    const change: ScopedLiveCssTreeChange = {
+        tree: "resume",
+        name: "Body",
+        path: [],
+        selector: "body",
+        status: "changed",
+        previousDeclarations: new Map([["margin", "0"]]),
+        declarations: new Map([["margin", "0"], ["--accent", ""]]),
+        added: ["--accent"],
+        changed: [],
+        removed: []
+    };
+
+    expect(filterLiveCssChanges([change], new Set())).toEqual([]);
 });
 
 test("suppresses scans until the current stylesheet baseline is ready", () => {

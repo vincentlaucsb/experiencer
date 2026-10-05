@@ -144,6 +144,33 @@ describe('CSS-aware history', () => {
         expect(cssStore.data.properties.get('color')).toBe('purple');
     });
 
+    test('omits blank declarations when importing live CSS', () => {
+        applyScopedLiveCssChanges([
+            cssChange('root', new Map([['--accent', '   ']])),
+            cssChange('resume', new Map([['color', ''], ['margin', '1rem']])),
+        ]);
+
+        expect(rootCssStore.data.properties.has('--accent')).toBe(false);
+        expect(cssStore.data.properties.has('color')).toBe(false);
+        expect(cssStore.data.properties.get('margin')).toBe('1rem');
+        expect(rootCssStore.data.stylesheet()).not.toContain(': ;');
+        expect(cssStore.data.stylesheet()).not.toContain(': ;');
+    });
+
+    test('keeps an untouched blank declaration when importing another live edit', () => {
+        const change = cssChange('resume', new Map([['--accent', ''], ['margin', '1rem']]));
+        applyScopedLiveCssChanges([{
+            ...change,
+            previousDeclarations: new Map([['--accent', '']]),
+            added: ['margin'],
+            changed: [],
+            removed: [],
+        }]);
+
+        expect(cssStore.data.properties.get('--accent')).toBe('');
+        expect(cssStore.data.properties.get('margin')).toBe('1rem');
+    });
+
     test('inserts a node and seeds its CSS in one history entry', () => {
         resumeNodeStore.setNodes([]);
         const pageBreak = assignIds(

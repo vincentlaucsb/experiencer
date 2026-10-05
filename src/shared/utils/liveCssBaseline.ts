@@ -81,24 +81,43 @@ export function filterLiveCssChanges(
         // Import only genuine post-baseline edits. Starting from the authored
         // declarations prevents browser normalization noise on the same rule
         // from leaking into the CSS tree when a real edit is imported.
+        // A blank live value is a removal. CSSOM setProperty drops it, and the
+        // review must not offer to save `property: ;`.
         const declarations = new Map(change.previousDeclarations);
+        const blankProperties = new Set<string>();
         for (const property of [...added, ...changed]) {
             const value = change.declarations.get(property);
-            if (value !== undefined) {
-                declarations.set(property, value);
+            if (value === undefined) continue;
+            if (!value.trim()) {
+                declarations.delete(property);
+                blankProperties.add(property);
+                continue;
             }
+            declarations.set(property, value);
         }
         for (const property of removed) {
             declarations.delete(property);
+        }
+
+        const nextAdded = added.filter((property) => !blankProperties.has(property));
+        const nextChanged = changed.filter((property) => !blankProperties.has(property));
+        const nextRemoved = [
+            ...removed,
+            ...Array.from(blankProperties).filter((property) =>
+                change.previousDeclarations.has(property) && !removed.includes(property)
+            )
+        ];
+        if (nextAdded.length === 0 && nextChanged.length === 0 && nextRemoved.length === 0) {
+            return [];
         }
 
         return [{
             ...change,
             status: "changed" as const,
             declarations,
-            added,
-            changed,
-            removed
+            added: nextAdded,
+            changed: nextChanged,
+            removed: nextRemoved
         }];
     });
 }

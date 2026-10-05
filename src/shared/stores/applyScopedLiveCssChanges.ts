@@ -1,3 +1,4 @@
+import { declarationsKeepingUntouchedBlanks } from '@/shared/stores/cssEditorCommands';
 import { cssStore, rootCssStore } from '@/shared/stores/cssStoreHooks';
 import { runHistoryTransaction } from '@/shared/stores/historyStore';
 import { ScopedLiveCssTreeChange } from '@/shared/utils/liveCssBaseline';
@@ -14,7 +15,7 @@ export default function applyScopedLiveCssChanges(
             rootCssStore.updateCss((root) => {
                 for (const change of rootChanges) {
                     root.mustFindNode(Array.from(change.path))
-                        .setProperties(new Map(change.declarations));
+                        .setProperties(declarationsKeepingUntouchedBlanks(change));
                 }
             });
         }
@@ -23,7 +24,7 @@ export default function applyScopedLiveCssChanges(
             cssStore.updateCss((root) => {
                 for (const change of resumeChanges) {
                     root.mustFindNode(Array.from(change.path))
-                        .setProperties(new Map(change.declarations));
+                        .setProperties(declarationsKeepingUntouchedBlanks(change));
                 }
             });
         }

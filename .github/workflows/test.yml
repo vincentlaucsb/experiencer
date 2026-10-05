@@ -36,6 +36,8 @@ jobs:
       run: npm run test:coverage
 
     - name: Upload coverage to Codecov
+      # Downloading the uploader can throw before fail_ci_if_error applies.
+      continue-on-error: true
       uses: codecov/codecov-action@v3
       with:
         files: ./coverage/lcov.info

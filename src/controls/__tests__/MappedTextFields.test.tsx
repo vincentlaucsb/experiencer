@@ -110,6 +110,58 @@ describe("mapped CSS declarations", () => {
         expect(deleteKey).not.toHaveBeenCalled();
     });
 
+    test("cancels a typed property name on Escape", () => {
+        const { updateValue, deleteKey } = renderFields();
+
+        fireEvent.click(screen.getByRole("table"));
+        fireEvent.change(screen.getByLabelText("New property name value"), { target: { value: "margin" } });
+        fireEvent.keyDown(screen.getByLabelText("New property name value"), { key: "Escape" });
+
+        expect(screen.queryByLabelText("margin value")).toBeNull();
+        expect(screen.queryByText("margin")).toBeNull();
+        expect(updateValue).not.toHaveBeenCalled();
+        expect(deleteKey).not.toHaveBeenCalled();
+    });
+
+    test("does not save a draft when Escape is pressed on the delete button", () => {
+        const { updateValue, deleteKey } = renderFields();
+
+        fireEvent.click(screen.getByText("var(--text-color)"));
+        fireEvent.change(screen.getByLabelText("color value"), { target: { value: "blue" } });
+        fireEvent.keyDown(screen.getByRole("button", { name: "Delete property color" }), { key: "Escape" });
+
+        expect(screen.getByText("var(--text-color)")).toBeTruthy();
+        expect(screen.queryByLabelText("color value")).toBeNull();
+        expect(updateValue).not.toHaveBeenCalled();
+        expect(deleteKey).not.toHaveBeenCalled();
+    });
+
+    test("does not save a new property when Escape is pressed on its delete button", () => {
+        const { updateValue, deleteKey } = renderFields();
+
+        fireEvent.click(screen.getByRole("table"));
+        commit("New property name value", "margin");
+        fireEvent.change(screen.getByLabelText("margin value"), { target: { value: "1px" } });
+        fireEvent.keyDown(screen.getByRole("button", { name: "Delete property margin" }), { key: "Escape" });
+
+        expect(screen.queryByText("margin")).toBeNull();
+        expect(updateValue).not.toHaveBeenCalled();
+        expect(deleteKey).not.toHaveBeenCalled();
+    });
+
+    test("does not save a typed value when Escape cancels a new property", () => {
+        const { updateValue, deleteKey } = renderFields();
+
+        fireEvent.click(screen.getByRole("table"));
+        commit("New property name value", "margin");
+        fireEvent.change(screen.getByLabelText("margin value"), { target: { value: "1px" } });
+        fireEvent.keyDown(screen.getByLabelText("margin value"), { key: "Escape" });
+
+        expect(screen.queryByText("margin")).toBeNull();
+        expect(updateValue).not.toHaveBeenCalled();
+        expect(deleteKey).not.toHaveBeenCalled();
+    });
+
     test("saves a new property when its value is committed", () => {
         const { updateValue, deleteKey } = renderFields();
 

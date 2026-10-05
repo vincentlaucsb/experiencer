@@ -144,6 +144,19 @@ describe('CSS-aware history', () => {
         expect(cssStore.data.properties.get('color')).toBe('purple');
     });
 
+    test('omits blank declarations when importing live CSS', () => {
+        applyScopedLiveCssChanges([
+            cssChange('root', new Map([['--accent', '   ']])),
+            cssChange('resume', new Map([['color', ''], ['margin', '1rem']])),
+        ]);
+
+        expect(rootCssStore.data.properties.has('--accent')).toBe(false);
+        expect(cssStore.data.properties.has('color')).toBe(false);
+        expect(cssStore.data.properties.get('margin')).toBe('1rem');
+        expect(rootCssStore.data.stylesheet()).not.toContain(': ;');
+        expect(cssStore.data.stylesheet()).not.toContain(': ;');
+    });
+
     test('inserts a node and seeds its CSS in one history entry', () => {
         resumeNodeStore.setNodes([]);
         const pageBreak = assignIds(

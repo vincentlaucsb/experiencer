@@ -21,7 +21,7 @@ export type CssTreeUpdater = (
 export type CssCommandErrorReporter = (message: string) => void;
 
 /** Blank values are removals. Chromium's inspector and CSSOM setProperty drop them. */
-function withoutBlankDeclarations(declarations: ReadonlyMap<string, string>): Map<string, string> {
+export function withoutBlankDeclarations(declarations: ReadonlyMap<string, string>): Map<string, string> {
     return new Map(Array.from(declarations).filter(([, value]) => value.trim()));
 }
 

@@ -23,6 +23,8 @@ interface ValueState {
 class ValueField extends React.Component<ValueFieldProps, ValueState> {
     private readonly errorId = createUuid();
     private submittedValue: string;
+    /** Escape cancels the in-progress draft. Unmount must not submit the text it replaced. */
+    private cancelSubmit = false;
 
     constructor(props) {
         super(props);
@@ -69,6 +71,10 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
     }
 
     private submitDraft() {
+        if (this.cancelSubmit) {
+            this.cancelSubmit = false;
+            return;
+        }
         const next = this.state.value;
         const blank = next.trim().length === 0;
         const unchanged = next === this.submittedValue;
@@ -86,7 +92,8 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
             event.stopPropagation();
         }
         if (event.key === 'Escape') {
-            // Restore original value
+            this.cancelSubmit = true;
+            this.submittedValue = this.props.value || "";
             this.setState({ value: this.props.value || "" });
         }
     }
@@ -107,7 +114,9 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
         }
 
         if (this.props.isEditing) {
-            return <>
+            // The wrapper, not only the text input, must see Escape. The delete
+            // button is in this field, and a row-level Escape ends editing.
+            return <span className="property-value-editor" onKeyDown={this.keyDownHandler}>
                 <input
                     {...nonCredentialInputAttributes}
                     autoFocus
@@ -115,14 +124,13 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
                     aria-invalid={Boolean(error)}
                     aria-describedby={error ? errorId : undefined}
                     onChange={(event) => this.setState({ value: event.target.value })}
-                    onKeyDown={this.keyDownHandler}
                     value={this.state.value}
                     list={suggestionId}
                 />
                 {suggestions}
                 {this.deleter}
                 {feedback}
-            </>
+            </span>
         }
 
         return (
@@ -237,8 +245,13 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
     handleKeyDown(event: React.KeyboardEvent) {
         switch (event.key) {
             case 'Escape':
-                this.setState({ activeKey: '' });
-                this.setState({ isAddingKey: false });
+                // The field cancels its own draft. A pending name was never stored,
+                // so drop that row instead of leaving an empty declaration behind.
+                this.setState((state) => ({
+                    activeKey: '',
+                    isAddingKey: false,
+                    pendingKey: state.activeKey === state.pendingKey ? '' : state.pendingKey
+                }));
                 break;
             case 'Enter':
                 if (this.state.isAddingKey) {

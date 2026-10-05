@@ -166,3 +166,55 @@ test('a new property is stored only after it receives a value', async ({ page })
     await page.getByRole('button', { name: 'Undo', exact: true }).click();
     await expect(page.getByRole('tabpanel')).not.toContainText('outline-offset');
 });
+
+test('Enter commits a CSS value and keeps focus on it; keys there leave the selected node alone', async ({ page }) => {
+    await createResumeFromTemplate(page);
+    const entries = page.locator('#resume article.entry');
+    const selection = page.locator('.resume-hl-box-selected-node');
+    const entryCount = await entries.count();
+    expect(entryCount).toBeGreaterThan(0);
+    // Copy an entry, then select its section: a leaked paste would add an entry
+    // there, and a leaked Delete or cut would remove the section's entries.
+    await entries.first().evaluate(element => (element as HTMLElement).click());
+    await page.keyboard.press('Control+c');
+    await entries.first().evaluate(element => (element.closest('section') as HTMLElement).click());
+    await expect(selection).toHaveCount(1);
+    await page.getByRole('tab', { name: 'CSS', exact: true }).click();
+    // With a node selected, the multi-declaration body rule is a collapsed parent rule.
+    await page.locator('h2.css-title-heading').filter({
+        has: page.locator('span.css-title', { hasText: /^Resume CSS$/ })
+    }).locator('.css-title-trigger').click();
+    const rules = bodyRule(page);
+    await expect.poll(() => rules.locator('tr.property').count()).toBeGreaterThan(1);
+    const fontSizeRow = rules.locator('tr.property').filter({
+        has: page.locator('.property-key', { hasText: /^font-size$/ })
+    });
+    const editors = page.locator('.css-ruleset input');
+
+    await fontSizeRow.locator('.property-value').click();
+    await page.getByLabel('font-size value').fill('17px');
+    await page.getByLabel('font-size value').press('Enter');
+    await expect(editors).toHaveCount(0);
+    await expect(fontSizeRow.getByRole('button', { name: 'Edit font-size: 17px' })).toBeFocused();
+    await expect(page.locator('#resume')).toHaveCSS('font-size', '17px');
+    const fontSizeValue = fontSizeRow.getByRole('button', { name: 'Edit font-size: 17px' });
+    for (const key of ['Delete', 'Backspace', 'Control+x', 'Control+v', 'Escape']) {
+        await page.keyboard.press(key);
+        await expect(fontSizeValue).toBeFocused();
+    }
+    await expect(entries).toHaveCount(entryCount);
+    await expect(selection).toHaveCount(1);
+    await expect(editors).toHaveCount(0);
+    await expect(fontSizeRow.locator('.property-value')).toHaveText('17px');
+
+    await page.keyboard.press('Enter');
+    await expect(page.getByLabel('font-size value')).toBeFocused();
+    await page.getByLabel('font-size value').fill('19px');
+    await page.getByLabel('font-size value').press('Escape');
+    await expect(editors).toHaveCount(0);
+    await expect(fontSizeRow.getByRole('button', { name: 'Edit font-size: 17px' })).toBeFocused();
+    await expect(page.locator('#resume')).toHaveCSS('font-size', '17px');
+    await page.keyboard.press('Delete');
+    await expect(entries).toHaveCount(entryCount);
+    await expect(selection).toHaveCount(1);
+});

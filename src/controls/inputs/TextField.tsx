@@ -60,13 +60,29 @@ export default class TextField extends React.Component<TextFieldProps, TextField
         this.onKeyDown = this.onKeyDown.bind(this);
     }
 
+    /**
+     * The draft most recently offered to `onChange`. The parent may reject it and
+     * keep its value, so a later unrelated render must not offer the same draft
+     * again. A new edit session clears it, so the user can retry.
+     */
+    private submittedDraft: string | undefined;
+
+    private submit(value: string) {
+        this.submittedDraft = value;
+        this.props.onChange(value);
+    }
+
     /** Update parent when appropriate */
-    componentDidUpdate(prevProps: TextFieldProps) {
+    componentDidUpdate(prevProps: TextFieldProps, prevState: TextFieldState) {
+        if (this.state.isEditing && !prevState.isEditing) {
+            this.submittedDraft = undefined;
+        }
+
         /** Top level node gave us new data */
         if (this.props.static && this.state.isEditing) {
             // Save local changes before stopping edit mode
             if (this.state.value !== this.props.value) {
-                this.props.onChange(this.state.value);
+                this.submit(this.state.value);
             }
             this.setState({ isEditing: false });
         }
@@ -78,17 +94,18 @@ export default class TextField extends React.Component<TextFieldProps, TextField
                     value: this.props.value || ""
                 });
             } else if (this.state.value &&
-                this.state.value !== this.props.value) {
+                this.state.value !== this.props.value &&
+                this.state.value !== this.submittedDraft) {
                 // Update parent
-                this.props.onChange(this.state.value);
+                this.submit(this.state.value);
             }
         }
     }
-    
+
     onKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
         if (event.key === 'Enter') {
             this.setState({ isEditing: false });
-            this.props.onChange(this.state.value);
+            this.submit(this.state.value);
         }
         else if (event.key === 'Escape') {
             // Restore original value

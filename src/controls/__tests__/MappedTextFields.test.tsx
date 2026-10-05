@@ -56,6 +56,39 @@ function renderFields(updateValue = jest.fn(), deleteKey = jest.fn(), removable 
     return { updateValue, deleteKey };
 }
 
+/** Renders a rule with several declarations whose store applies every commit. */
+function renderRule(updateValue = jest.fn(), deleteKey = jest.fn()) {
+    function Harness() {
+        const [entries, setEntries] = React.useState(new Map([
+            ["color", "navy"],
+            ["text-decoration", "none"]
+        ]));
+        return (
+            <MappedTextFields
+                value={entries}
+                updateValue={(key, next) => {
+                    updateValue(key, next);
+                    setEntries(current => new Map(current).set(key, next));
+                }}
+                deleteKey={(key) => {
+                    deleteKey(key);
+                    setEntries(current => {
+                        const next = new Map(current);
+                        next.delete(key);
+                        return next;
+                    });
+                }}
+                validateValue={validate}
+                container={({ children, onClick }) => (
+                    <table onClick={onClick}><tbody>{children}</tbody></table>
+                )}
+            />
+        );
+    }
+    render(<Harness />);
+    return { updateValue, deleteKey };
+}
+
 function commit(label: string, value: string, key = "Enter") {
     const input = screen.getByLabelText(label);
     fireEvent.change(input, { target: { value } });
@@ -220,5 +253,109 @@ describe("mapped CSS declarations", () => {
         expect((screen.getByLabelText("color value") as HTMLInputElement).value).toBe("var(--text-color)");
         expect(updateValue).not.toHaveBeenCalled();
         expect(deleteKey).not.toHaveBeenCalled();
+    });
+
+    test("Enter commits a value and leaves edit mode without opening the next property", () => {
+        const { updateValue } = renderRule();
+
+        fireEvent.click(screen.getByText("navy"));
+        const input = screen.getByLabelText("color value");
+        fireEvent.change(input, { target: { value: "blue" } });
+        // Focus moves to the value button during keydown; the browser must not
+        // then turn the same Enter into a click that reopens the editor.
+        const notCancelled = fireEvent.keyDown(input, { key: "Enter" });
+
+        expect(notCancelled).toBe(false);
+        expect(updateValue).toHaveBeenCalledWith("color", "blue");
+        expect(screen.getByText("blue")).toBeTruthy();
+        expect(screen.queryByLabelText("text-decoration value")).toBeNull();
+        expect(document.querySelector(".property-value-editor")).toBeNull();
+        expect(document.querySelector("input")).toBeNull();
+        expect(document.activeElement).toBe(screen.getByRole("button", { name: "Edit color: blue" }));
+    });
+
+    test("Enter on the last value does not open a new property name", () => {
+        const { updateValue } = renderRule();
+
+        fireEvent.click(screen.getByText("none"));
+        commit("text-decoration value", "underline");
+
+        expect(updateValue).toHaveBeenCalledWith("text-decoration", "underline");
+        expect(screen.queryByLabelText("New property name value")).toBeNull();
+        expect(document.querySelector("input")).toBeNull();
+        expect(document.activeElement).toBe(screen.getByRole("button", { name: "Edit text-decoration: underline" }));
+    });
+
+    test("Escape cancels a value in a rule with several declarations", () => {
+        const { updateValue } = renderRule();
+
+        fireEvent.click(screen.getByText("navy"));
+        commit("color value", "blue", "Escape");
+
+        expect(updateValue).not.toHaveBeenCalled();
+        expect(screen.getByText("navy")).toBeTruthy();
+        expect(document.querySelector("input")).toBeNull();
+        expect(document.activeElement).toBe(screen.getByRole("button", { name: "Edit color: navy" }));
+    });
+
+    test("clearing a value moves focus to the next declaration", () => {
+        const { deleteKey } = renderRule();
+
+        fireEvent.click(screen.getByText("navy"));
+        commit("color value", "");
+
+        expect(deleteKey).toHaveBeenCalledWith("color");
+        expect(screen.queryByText("color")).toBeNull();
+        expect(document.activeElement).toBe(screen.getByRole("button", { name: "Edit text-decoration: none" }));
+    });
+
+    test("a new property keeps focus when its first value is stored", () => {
+        const { updateValue } = renderRule();
+
+        fireEvent.click(screen.getByRole("table"));
+        commit("New property name value", "margin");
+        commit("margin value", "1px");
+
+        expect(updateValue).toHaveBeenCalledWith("margin", "1px");
+        expect(document.activeElement).toBe(screen.getByRole("button", { name: "Edit margin: 1px" }));
+    });
+
+    test("Escape on a focused declaration that is not being edited keeps focus there", () => {
+        const { updateValue } = renderRule();
+
+        fireEvent.click(screen.getByText("navy"));
+        commit("color value", "blue");
+        const value = screen.getByRole("button", { name: "Edit color: blue" });
+        fireEvent.keyDown(value, { key: "Escape" });
+
+        expect(document.activeElement).toBe(value);
+        expect(document.querySelector("input")).toBeNull();
+        expect(updateValue).toHaveBeenCalledTimes(1);
+    });
+
+    test("an empty value's accessible name includes its visible placeholder", () => {
+        render(
+            <MappedTextFields
+                value={new Map([["margin", ""]])}
+                updateValue={jest.fn()}
+                deleteKey={jest.fn()}
+                container={({ children, onClick }) => (
+                    <table onClick={onClick}><tbody>{children}</tbody></table>
+                )}
+            />
+        );
+
+        const value = screen.getByRole("button", { name: "Edit margin: Enter a value" });
+        expect(value.textContent).toBe("Enter a value");
+    });
+    test("Enter on a focused declaration opens its editor", () => {
+        renderRule();
+
+        fireEvent.click(screen.getByText("navy"));
+        commit("color value", "blue");
+        // A browser turns Enter on a focused button into a click.
+        fireEvent.click(screen.getByRole("button", { name: "Edit color: blue" }));
+
+        expect((screen.getByLabelText("color value") as HTMLInputElement).value).toBe("blue");
     });
 });

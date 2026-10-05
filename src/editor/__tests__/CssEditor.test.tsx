@@ -226,4 +226,43 @@ describe("CssEditor views", () => {
         expect(container.querySelector("button.hl")?.classList.contains("hl-active")).toBe(false);
         expect(screen.queryByText("display")).toBeNull();
     });
+
+    test("does not resubmit a rejected selector when a declaration in the rule is committed", async () => {
+        const link = new CssNode("Link", { color: "navy", "text-decoration": "none" }, "a");
+        const commands = createCommands();
+        const liveSync = createLiveSync();
+        const { rerender } = render(
+            <CssEditor
+                commands={commands}
+                cssNode={new ReadonlyCssNode(link)}
+                isOpen
+                liveSync={liveSync}
+                liveTree="resume"
+            />
+        );
+        await screen.findAllByLabelText("Import live changes");
+
+        // The selector command rejects the draft, so the stored selector stays "a".
+        fireEvent.click(screen.getByText("a"));
+        fireEvent.change(screen.getByDisplayValue("a"), { target: { value: "#resume a" } });
+        fireEvent.keyDown(screen.getByDisplayValue("#resume a"), { key: "Enter" });
+        expect(commands.updateSelector).toHaveBeenCalledTimes(1);
+
+        fireEvent.click(screen.getByText("navy"));
+        fireEvent.change(screen.getByLabelText("color value"), { target: { value: "blue" } });
+        fireEvent.keyDown(screen.getByLabelText("color value"), { key: "Enter" });
+        link.setProperties(new Map([["color", "blue"], ["text-decoration", "none"]]));
+        rerender(
+            <CssEditor
+                commands={commands}
+                cssNode={new ReadonlyCssNode(link)}
+                isOpen
+                liveSync={liveSync}
+                liveTree="resume"
+            />
+        );
+
+        expect(commands.updateProperty).toHaveBeenCalledWith([], "color", "blue");
+        expect(commands.updateSelector).toHaveBeenCalledTimes(1);
+    });
 });

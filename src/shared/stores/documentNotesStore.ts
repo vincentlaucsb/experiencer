@@ -42,8 +42,8 @@ export class DocumentNotesStore extends ClassStore<ResumeNotes | undefined> {
         return this.pendingEdit || super.hasUnsavedChanges();
     }
 
-    setMarkdown(markdown: string): boolean {
-        if (markdown.length > MAXIMUM_NOTES_LENGTH || markdown === (this.data?.markdown ?? '')) return false;
+    setMarkdown(markdown: string, maximumLength = MAXIMUM_NOTES_LENGTH): boolean {
+        if (markdown.length > maximumLength || markdown === (this.data?.markdown ?? '')) return false;
         this.withMutation(() => {
             this.data = { ...this.data, markdown };
         });

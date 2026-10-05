@@ -50,6 +50,14 @@ test('canonical output preparation excludes the private addendum', () => {
     expect(JSON.stringify(prepareResumeDocument(source, 'print'))).not.toContain('PRIVATE_');
 });
 
+test('consumers can supply a text budget without changing the default limit', () => {
+    const markdown = 'x'.repeat(MAXIMUM_NOTES_LENGTH + 1);
+    expect(documentNotesStore.setMarkdown(markdown)).toBe(false);
+    expect(documentNotesStore.setMarkdown(markdown, markdown.length)).toBe(true);
+    expect(dump().notes?.markdown).toBe(markdown);
+    expect(documentNotesStore.setMarkdown(markdown + 'x', markdown.length)).toBe(false);
+});
+
 
 test('entry notes survive edits, copies and JSON round trips but are removed from rendering inputs', () => {
     hydrateResumeData({ ...emptyDocument(), childNodes: [

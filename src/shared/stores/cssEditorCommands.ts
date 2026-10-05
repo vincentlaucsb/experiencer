@@ -25,6 +25,28 @@ export function withoutBlankDeclarations(declarations: ReadonlyMap<string, strin
     return new Map(Array.from(declarations).filter(([, value]) => value.trim()));
 }
 
+/**
+ * Omits blank values from a replacement. A blank the change did not add, change,
+ * or remove stays, so importing another edit does not delete it unseen.
+ */
+export function declarationsKeepingUntouchedBlanks(change: LiveCssTreeChange): Map<string, string> {
+    const touched = new Set([...change.added, ...change.changed, ...change.removed]);
+    const next = new Map<string, string>();
+    for (const [property, previous] of change.previousDeclarations) {
+        if (!previous.trim() && !touched.has(property)) {
+            next.set(property, previous);
+            continue;
+        }
+        const value = change.declarations.get(property);
+        if (value?.trim()) next.set(property, value);
+    }
+    for (const [property, value] of change.declarations) {
+        if (!value.trim() || next.has(property)) continue;
+        next.set(property, value);
+    }
+    return next;
+}
+
 /** Builds the complete mutation boundary used by every CSS editor view. */
 export function createCssEditorCommands(
     updateTree: CssTreeUpdater,
@@ -107,7 +129,7 @@ export function createCssEditorCommands(
                 for (const change of changes) {
                     const node = cssTreeRoot.mustFindNode(Array.from(change.path));
                     if (!node.selector && node.isRoot) continue;
-                    node.setProperties(withoutBlankDeclarations(change.declarations));
+                    node.setProperties(declarationsKeepingUntouchedBlanks(change));
                 }
             });
         },

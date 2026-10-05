@@ -131,6 +131,27 @@ describe("CSS editor commands", () => {
         expect(reportError).toHaveBeenCalledTimes(1);
     });
 
+    test("keeps a blank declaration that the replacement did not change", () => {
+        const { commands, root } = createFixture();
+
+        commands.replaceProperties([{
+            status: "changed",
+            name: "Entry",
+            path: ["Entry"],
+            selector: "body .entry",
+            previousDeclarations: new Map([["--accent", ""], ["display", "block"]]),
+            declarations: new Map([["--accent", ""], ["display", "flex"]]),
+            added: [],
+            changed: ["display"],
+            removed: []
+        }]);
+
+        const entry = root.mustFindNode(["Entry"]);
+        expect(Array.from(entry.properties.keys())).toEqual(["--accent", "display"]);
+        expect(entry.properties.get("--accent")).toBe("");
+        expect(entry.properties.get("display")).toBe("flex");
+    });
+
     test.each(["addSelector", "updateSelector"] as const)(
         "rejects invalid selectors before %s can create an update",
         (commandName) => {

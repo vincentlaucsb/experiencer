@@ -157,6 +157,20 @@ describe('CSS-aware history', () => {
         expect(cssStore.data.stylesheet()).not.toContain(': ;');
     });
 
+    test('keeps an untouched blank declaration when importing another live edit', () => {
+        const change = cssChange('resume', new Map([['--accent', ''], ['margin', '1rem']]));
+        applyScopedLiveCssChanges([{
+            ...change,
+            previousDeclarations: new Map([['--accent', '']]),
+            added: ['margin'],
+            changed: [],
+            removed: [],
+        }]);
+
+        expect(cssStore.data.properties.get('--accent')).toBe('');
+        expect(cssStore.data.properties.get('margin')).toBe('1rem');
+    });
+
     test('inserts a node and seeds its CSS in one history entry', () => {
         resumeNodeStore.setNodes([]);
         const pageBreak = assignIds(

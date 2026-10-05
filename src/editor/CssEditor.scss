@@ -102,6 +102,23 @@ section.css-category {
                 span:not(.input-validation-error):not(.property-value-editor)::after {
                     content: ";";
                 }
+
+                // A read-only value is a ghost button, so it can hold keyboard
+                // focus after editing while still reading as declaration text.
+                button.property-value-display {
+                    background: none;
+                    border: none;
+                    color: inherit;
+                    cursor: pointer;
+                    font: inherit;
+                    padding: 0;
+                    text-align: inherit;
+
+                    &:focus-visible {
+                        outline: 3px solid colors.$focus-ring;
+                        outline-offset: 2px;
+                    }
+                }
             }
         }
     }

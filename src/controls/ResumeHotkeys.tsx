@@ -8,6 +8,7 @@ import { workspaceStore } from "@/shared/stores/workspaceStore";
 import useSelectedNodeActions from "@/shared/hooks/useSelectedNodeActions";
 import { saveLocal } from "@/shared/stores/saveResume";
 import { saveAsDialogStore } from "@/shared/stores/saveAsDialogStore";
+import { isFromLocalKeyboardScope } from "@/shared/ui/localKeyboardScope";
 
 export interface ResumeHotKeysProps extends SelectedNodeActions {
     save?: Action;
@@ -80,24 +81,31 @@ export const ResumeHotKeyMap: KeyMap = {
 /** Maps editor commands to keyboard shortcuts without owning command behavior. */
 export class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
     getHandlers() {
+        // Selected-node actions skip keys from controls that own their keyboard
+        // input (see localKeyboardScope). Save and undo/redo stay global.
+        const nodeAction = (action: () => void) => (event?: KeyboardEvent) => {
+            if (isFromLocalKeyboardScope(event)) return;
+            action();
+        };
+
         const handlers = {
-            COPY_SELECTED: (event) => {
+            COPY_SELECTED: nodeAction(() => {
                 this.props.copyClipboard();
-            },
+            }),
 
-            CUT_SELECTED: (event) => {
+            CUT_SELECTED: nodeAction(() => {
                 this.props.cutClipboard();
-            },
+            }),
 
-            PASTE_SELECTED: (event) => {
+            PASTE_SELECTED: nodeAction(() => {
                 if (this.props.pasteClipboard) {
                     this.props.pasteClipboard();
                 }
-            },
+            }),
 
-            ESCAPE: (event) => {
-                this.props.reset();  
-            },
+            ESCAPE: nodeAction(() => {
+                this.props.reset();
+            }),
 
             UNDO: (event) => {
                 if (this.props.undo) {
@@ -121,9 +129,9 @@ export class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
                 event.preventDefault();
             },
 
-            DELETE_SELECTED: (event) => {
+            DELETE_SELECTED: nodeAction(() => {
                 this.props.delete();
-            },
+            }),
 
         };
 

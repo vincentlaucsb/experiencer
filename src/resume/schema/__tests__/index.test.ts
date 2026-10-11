@@ -95,6 +95,12 @@ describe("schema childTypes", () => {
         expect(headerChildren).toContain(Group.type);
     });
 
+    test('page breaks are allowed in columns but not inside section or entry content', () => {
+        expect(ComponentTypes.instance.childTypes(Column.type)).toContain(PageBreak.type);
+        expect(ComponentTypes.instance.childTypes(Section.type)).not.toContain(PageBreak.type);
+        expect(ComponentTypes.instance.childTypes(Entry.type)).not.toContain(PageBreak.type);
+    });
+
     test("Group supports layout children like Row", () => {
         const groupChildren = ComponentTypes.instance.childTypes(Group.type) as string[];
 

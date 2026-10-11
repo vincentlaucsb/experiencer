@@ -4,6 +4,7 @@ import ComponentTypes from "@/resume/schema/ComponentTypes";
 import { resumeNodeStore } from "@/shared/stores/resumeNodeStore";
 import type { NodeProperty } from "@/types";
 import type { ContextMenuItemData } from "@/types/contextMenu";
+import { canInsertPageBreakBefore, insertPageBreakBefore } from '@/shared/stores/insertPageBreakBefore';
 
 interface ContextMenuActions {
     editNode: (uuid: string) => void;
@@ -31,6 +32,13 @@ export default function buildContextMenuItems(uuid: string, actions: ContextMenu
 
     const additionalItems: MenuItem[] = (resumeAppExtensionsStore.getSnapshot().editor?.nodeActions?.(node) ?? [])
         .map(action => ({ id: action.id, label: action.label, onSelect: action.run }));
+    if (canInsertPageBreakBefore(uuid)) {
+        additionalItems.push({
+            id: `page-break-before-${uuid}`,
+            label: 'Page break before',
+            onSelect: () => insertPageBreakBefore(uuid)
+        });
+    }
     if (ComponentTypes.instance.isEditable(node.type)) {
         additionalItems.push({
             id: `edit-${uuid}`,

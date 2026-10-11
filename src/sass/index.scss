@@ -155,7 +155,7 @@ button img {
             min-height: 297mm;
         }
 
-        &[data-resume-host="editor"]:has(.page-break-editing) {
+        &[data-resume-host="editor"]:has(> .page-break-editing) {
             align-items: start;
             align-content: start;
         }
@@ -223,6 +223,14 @@ button img {
                 user-select: none;
                 white-space: nowrap;
             }
+        }
+
+        // A column break fills only its own flow and must not spill into its neighbour.
+        .column > .page-break-editing {
+            width: 100%;
+            margin-left: 0;
+            margin-bottom: 0;
+            flex-shrink: 0;
         }
     }
 }

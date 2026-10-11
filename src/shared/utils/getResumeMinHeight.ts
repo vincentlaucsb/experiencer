@@ -1,12 +1,28 @@
 import PageSize from '@/types/PageSize';
 import { ResumeNode } from '@/types';
 
-/** Runtime node type used to identify explicit page breaks in the root resume list. */
+/** Runtime node type used to identify explicit page breaks. */
 const PAGE_BREAK_TYPE = 'PageBreak';
+
+/** Sibling columns share pages; sequential rows and other containers advance the flow. */
+function countFlowBreaks(nodes: ResumeNode[]): number {
+    let sequential = 0;
+    let columns = 0;
+    for (const node of nodes) {
+        if (node.type === 'Column') {
+            columns = Math.max(columns, countFlowBreaks(node.childNodes ?? []));
+        } else {
+            sequential += columns;
+            columns = 0;
+            sequential += node.type === PAGE_BREAK_TYPE ? 1 : countFlowBreaks(node.childNodes ?? []);
+        }
+    }
+    return sequential + columns;
+}
 
 /**
  * Compute the minimum visual height for the resume canvas based on page size and
- * top-level page break markers.
+ * the longest nested flow of explicit page break markers.
  *
  * Formula: minPages = pageBreakCount + 1
  * - Letter: 11in per page
@@ -20,7 +36,7 @@ const PAGE_BREAK_TYPE = 'PageBreak';
  * @returns CSS `min-height` value (for example `22in` or `891mm`).
  */
 export default function getResumeMinHeight(resumeNodes: ResumeNode[], pageSize: PageSize): string {
-    const pageBreakCount = resumeNodes.filter((node) => node.type === PAGE_BREAK_TYPE).length;
+    const pageBreakCount = countFlowBreaks(resumeNodes);
     const minPageCount = pageBreakCount + 1;
 
     if (pageSize === PageSize.A4) {

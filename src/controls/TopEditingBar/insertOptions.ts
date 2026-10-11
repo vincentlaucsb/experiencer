@@ -5,6 +5,7 @@ import Section from "@/resume/Section";
 import { DescriptionListItemType, DescriptionListType } from "@/resume/List";
 import type { AddChild, ResumeNode } from "@/types";
 import type { ToolbarItemData } from "../toolbar/ToolbarButton";
+import addNodeAndEnsureCss from '@/shared/stores/addNodeAndEnsureCss';
 
 interface AddOptionProps {
     options: string | Array<string>;
@@ -35,7 +36,7 @@ export function addOptions(data: AddOptionProps): ToolbarItemData {
                     icon: info.icon,
                     iconTone: isPrioritizedSectionEntry(nodeType, data.parentNode) ? "brand" : undefined,
                     text: getInsertOptionText(nodeType, info.text, data.parentNode),
-                    onClick: () => data.addChild(data.id, assignIds(info.node))
+                    onClick: () => insertNode(data, assignIds(info.node))
                 } as ToolbarItemData;
             })
         };
@@ -43,9 +44,17 @@ export function addOptions(data: AddOptionProps): ToolbarItemData {
 
     const node = nodeInfo(options);
     return {
-        onClick: () => data.addChild(data.id, assignIds(node.node)),
+        onClick: () => insertNode(data, assignIds(node.node)),
         text: getInsertOptionText(options, node.text, data.parentNode)
     };
+}
+
+function insertNode(data: AddOptionProps, node: ResumeNode): void {
+    if (node.type === 'PageBreak') {
+        addNodeAndEnsureCss(data.addChild, data.id, node);
+    } else {
+        data.addChild(data.id, node);
+    }
 }
 
 export function hasChildInsertOptions(options: string | Array<string>): boolean {

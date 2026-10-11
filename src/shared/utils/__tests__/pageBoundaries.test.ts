@@ -209,3 +209,25 @@ test('notifies only when the measured page geometry changes', () => {
         requestFrame.mockRestore();
     }
 });
+
+test('parallel column breaks retain their own fillers and preserve grid stretch', () => {
+    const resume = createResume([]);
+    for (const top of [300, 200]) {
+        const column = createResume([
+            { className: 'section', top: 0, height: top },
+            { className: 'page-break', top, height: PAGE - top, filler: PAGE - top },
+            { className: 'section', top: PAGE, height: 100 }
+        ]);
+        column.className = 'column';
+        resume.appendChild(column);
+    }
+    const result = syncPageBoundaries(resume, PageSize.Letter);
+    expect(result.contentHeightPixels).toBe(400);
+    expect(result.boundaries).toEqual([
+        { type: 'user', offset: 300, marginTop: 756 },
+        { type: 'user', offset: 200, marginTop: 856 }
+    ]);
+    expect([...resume.querySelectorAll<HTMLElement>('.page-break')].map(element =>
+        element.style.getPropertyValue('--page-break-filler'))).toEqual(['756px', '856px']);
+    expect(resume.style.alignItems).toBe('');
+});

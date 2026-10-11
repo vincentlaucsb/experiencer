@@ -81,6 +81,13 @@ The iframe or dedicated document body is the résumé canvas. It receives page-s
 - The public-review target returns its server-owned containment shell.
 - Read-only targets omit editing controls and page-break labels while preserving semantic page-break elements.
 
+Explicit page breaks may occur at the root or directly inside a column. The contextual
+“Page break before” action inserts a sibling of the selected section in its owning flow.
+Editor filler measurements are independent for sibling columns; a break in one column
+does not advance the other. Minimum canvas height uses the longest parallel column flow
+and includes subsequent sequential rows. Print/export retain the authored break rules
+and let the browser paginate rather than persisting editor filler heights.
+
 `PrintHelpers` adds only print page-size rules, document CSS, markup, and font assets to a new popup or export package. PNG capture and render-service consumers use the same prepared-document contract rather than the editor DOM.
 
 ## Required coverage

@@ -7,7 +7,6 @@ import { Button } from "@/controls/Buttons";
 import PureMenu from "@/controls/menus/PureMenu";
 import ThemeMenu from "@/controls/ThemeMenu";
 import useProgressiveOverflow from "@/shared/hooks/useProgressiveOverflow";
-import { measureHorizontalChildOverflow } from "@/shared/utils/overflow";
 import loadData from "@/shared/stores/loadData";
 import { saveLocal } from "@/shared/stores/saveResume";
 import { isEditingMode, workspaceStore } from "@/shared/stores/workspaceStore";
@@ -18,6 +17,7 @@ import AccountControls from "./AccountControls";
 import DocumentMenu from "./DocumentMenu";
 import FileMenu from "./FileMenu";
 import HelpMenu from "./HelpMenu";
+import { measureNavigationOverflow } from "./measureNavigationOverflow";
 import type { TopNavBarProps, TopNavBarWrapperProps } from "./types";
 
 export type { TopNavBarProps, TopNavBarWrapperProps } from "./types";
@@ -35,7 +35,7 @@ export function TopNavBar(props: TopNavBarProps) {
     const collapsedNavSteps = useProgressiveOverflow(
         brandRef,
         NAV_OVERFLOW_STEPS,
-        measureHorizontalChildOverflow
+        measureNavigationOverflow
     );
     const navDensity = collapsedNavSteps.size;
 
@@ -52,7 +52,7 @@ export function TopNavBar(props: TopNavBarProps) {
             id="brand"
             ref={brandRef}
             data-nav-density={navDensity}
-            className={`app-px-1 ${props.isEditing ? "is-editing" : "is-landing"}`}
+            className={`app-px-1 app-gap-2 ${props.isEditing ? "is-editing" : "is-landing"}`}
         >
             <div className="brand-primary">
                 <h1
@@ -73,7 +73,8 @@ export function TopNavBar(props: TopNavBarProps) {
                     <span className="brand-wordmark">Experiencer</span>
                 </h1>
                 {props.proBadge ? <span className="pro-badge">{props.proBadge}</span> : <></>}
-                <PureMenu id="top-menu" horizontal divProps={{ className: "app-ml-4" }}>
+                <PureMenu id="top-menu" horizontal divProps={{ className: "app-ml-4" }}
+                    listProps={{ className: "app-gap-1" }}>
                     {props.isEditing ? (
                         <>
                             <FileMenu

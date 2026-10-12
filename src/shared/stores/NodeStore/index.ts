@@ -228,6 +228,19 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
         return this.withTrackedMutation(() => this.data.moveDown(id));
     }
 
+    /** Tests the actual parent grammar before offering sibling insertion. */
+    canInsertSibling(id: string | IdType, node: ResumeNode): boolean {
+        const path = this.resolvePath(id);
+        return !!path?.length && this.canAddNode(path.slice(0, -1), node);
+    }
+
+    /** Inserts a sibling through the same validation and history boundary as child insertion. */
+    insertSibling(id: string | IdType, node: ResumeNode, before: boolean): string | undefined {
+        if (!this.canInsertSibling(id, node)) return undefined;
+        this.recordNodeHistory();
+        return this.withTrackedMutation(() => this.data.insertSibling(id, node, before));
+    }
+
     /** Duplicate a node next to its current sibling position. */
     duplicateNode(id: string | IdType, before: boolean): string | undefined {
         const hierarchicalId = this.resolvePath(id);

@@ -53,13 +53,14 @@ function isInFlow(element: HTMLElement): boolean {
 }
 
 /** Ignores stretched grid items and uses descendant in-flow boxes instead. */
-function readContentBottom(resumeRect: DOMRect, element: HTMLElement): number {
+function readContentBottom(resumeRect: DOMRect, element: HTMLElement, unpadded = false): number {
     if (element.classList.contains(OVERLAY_CLASS)) {
         return 0;
     }
 
     if (element.classList.contains('page-break')) {
-        return element.getBoundingClientRect().top - resumeRect.top;
+        return element.getBoundingClientRect().top - resumeRect.top
+            - (unpadded ? readPrecedingFiller(element) : 0);
     }
 
     let contentBottom = 0;
@@ -71,7 +72,7 @@ function readContentBottom(resumeRect: DOMRect, element: HTMLElement): number {
         }
 
         hasInFlowChild = true;
-        const childBottom = readContentBottom(resumeRect, child);
+        const childBottom = readContentBottom(resumeRect, child, unpadded);
         const stretchMargin = readMarginTop(child);
         contentBottom = Math.max(
             contentBottom,
@@ -80,10 +81,28 @@ function readContentBottom(resumeRect: DOMRect, element: HTMLElement): number {
     }
 
     if (!hasInFlowChild) {
-        return element.getBoundingClientRect().bottom - resumeRect.top;
+        return element.getBoundingClientRect().bottom - resumeRect.top
+            - (unpadded ? readPrecedingFiller(element) : 0);
     }
 
     return contentBottom;
+}
+
+/** Only preceding breaks in the same ancestor flow displace this box. */
+function readPrecedingFiller(element: HTMLElement): number {
+    let filler = 0;
+    let current: HTMLElement | null = element;
+    while (current) {
+        let sibling = current.previousElementSibling;
+        while (sibling) {
+            if (sibling instanceof HTMLElement && sibling.classList.contains('page-break')) {
+                filler += readAppliedFiller(sibling);
+            }
+            sibling = sibling.previousElementSibling;
+        }
+        current = current.parentElement;
+    }
+    return filler;
 }
 
 function readPrecedingBottom(resumeRect: DOMRect, element: HTMLElement): number {
@@ -105,17 +124,18 @@ function readPrecedingBottom(resumeRect: DOMRect, element: HTMLElement): number 
 /**
  * Reads break positions as if leftover-space padding were zero.
  * A newly inserted break can report a 0x0 box; preceding in-flow content is the floor.
- * Later breaks sit below earlier fillers, so those fillers are subtracted in document order.
+ * Sibling columns have independent flows: their fillers cannot be subtracted from each other.
  */
 function collectPageBreaks(resume: HTMLElement, resumeRect: DOMRect) {
-    let accumulatedFiller = 0;
+    const fillersByParent = new Map<Element | null, number>();
 
     return Array.from(resume.querySelectorAll<HTMLElement>('.page-break')).map((element) => {
         const filler = readAppliedFiller(element);
         const visualOffset = element.getBoundingClientRect().top - resumeRect.top;
         const rawOffset = Math.max(visualOffset, readPrecedingBottom(resumeRect, element));
+        const accumulatedFiller = fillersByParent.get(element.parentElement) ?? 0;
         const offset = rawOffset - accumulatedFiller;
-        accumulatedFiller += filler;
+        fillersByParent.set(element.parentElement, accumulatedFiller + filler);
         return { element, offset, filler };
     });
 }
@@ -134,21 +154,39 @@ export function measurePageBoundaries(
     const pageBreaks = collectPageBreaks(resume, resumeRect);
 
     let paddedExtent = 0;
+    let contentHeightPixels = 0;
     for (const child of Array.from(resume.children)) {
         if (!(child instanceof HTMLElement) || child.classList.contains(OVERLAY_CLASS)) {
             continue;
         }
 
         paddedExtent = Math.max(paddedExtent, readContentBottom(resumeRect, child));
+        contentHeightPixels = Math.max(contentHeightPixels, readContentBottom(resumeRect, child, true));
     }
 
-    const appliedFiller = pageBreaks.reduce((total, pageBreak) => total + pageBreak.filler, 0);
-    const contentHeightPixels = Math.max(0, paddedExtent - appliedFiller);
-    const boundaries = calculatePageBoundaries(
-        pageHeightPixels,
-        contentHeightPixels,
-        pageBreaks.map((pageBreak) => pageBreak.offset)
-    );
+    const flows = new Map<Element | null, typeof pageBreaks>();
+    for (const pageBreak of pageBreaks) {
+        const flow = flows.get(pageBreak.element.parentElement) ?? [];
+        flow.push(pageBreak);
+        flows.set(pageBreak.element.parentElement, flow);
+    }
+    const usersByElement = new Map<HTMLElement, UserPageBoundary>();
+    for (const flow of flows.values()) {
+        const users = calculatePageBoundaries(pageHeightPixels, 0, flow.map(item => item.offset))
+            .filter((boundary): boundary is UserPageBoundary => boundary.type === 'user');
+        flow.forEach((item, index) => {
+            if (users[index]) usersByElement.set(item.element, users[index]);
+        });
+    }
+    // Keep user markers in DOM order so filler writes still target their own element.
+    const users = pageBreaks.flatMap(item => {
+        const boundary = usersByElement.get(item.element);
+        return boundary ? [boundary] : [];
+    });
+    const explicitEdges = users.map(boundary => boundary.offset + boundary.marginTop);
+    const naturals = calculatePageBoundaries(pageHeightPixels, paddedExtent)
+        .filter(boundary => !explicitEdges.some(edge => Math.abs(edge - boundary.offset) < 1));
+    const boundaries = [...users, ...naturals];
 
     return { pageHeightPixels, contentHeightPixels, boundaries };
 }
@@ -181,7 +219,7 @@ export function applyPageBreakFillers(
 
 /** Prevents stretched grid columns from swallowing leftover space below the content. */
 function applyEditorPageBreakFlow(resume: HTMLElement): void {
-    if (resume.querySelector('.page-break')) {
+    if (Array.from(resume.children).some(element => element.classList.contains('page-break'))) {
         resume.style.alignItems = 'start';
         resume.style.alignContent = 'start';
     } else {

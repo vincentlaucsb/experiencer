@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 import ProgressiveOverflowCoordinator from "../ProgressiveOverflowCoordinator";
+import { measureHorizontalChildOverflow } from "@/shared/utils/overflow";
 import type {
     HorizontalOverflowMeasurement,
     HorizontalOverflowObserverOptions
@@ -109,6 +110,32 @@ test("expands higher-priority and later equal-priority items first", () => {
     ]);
     harness.emit();
     expect([...harness.coordinator.getSnapshot().collapsedIds]).toEqual(["first"]);
+});
+
+test("requires collision deficit plus headroom before restoring a section", () => {
+    const harness = createHarness({ clientWidth: 500, scrollWidth: 500 });
+    const first = document.createElement("div");
+    const second = document.createElement("div");
+    harness.element.append(first, second);
+    let colliding = true;
+    [first, second].forEach((child, index) => {
+        Object.defineProperty(child, "scrollWidth", { value: 100 });
+        jest.spyOn(child, "getBoundingClientRect").mockImplementation(() => {
+            const left = index === 0 ? 0 : colliding ? 75 : 125;
+            return { left, right: left + 100, top: 0, bottom: 30, width: 100, height: 30,
+                x: left, y: 0, toJSON: () => undefined };
+        });
+    });
+    harness.coordinator.setItems([{ id: "section" }]);
+    harness.coordinator.connect(harness.element, measureHorizontalChildOverflow);
+    expect(harness.coordinator.getSnapshot().collapsedIds.has("section")).toBe(true);
+    colliding = false;
+    harness.resize(548, 548);
+    harness.emit();
+    expect(harness.coordinator.getSnapshot().collapsedIds.has("section")).toBe(true);
+    harness.resize(549, 549);
+    harness.emit();
+    expect(harness.coordinator.getSnapshot().collapsedIds.has("section")).toBe(false);
 });
 
 test("removes stale collapsed identities when the projected items change", () => {

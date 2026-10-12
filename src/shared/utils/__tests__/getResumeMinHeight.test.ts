@@ -13,6 +13,19 @@ function createNode(type: string): ResumeNode {
 }
 
 describe('getResumeMinHeight', () => {
+    test('uses the longest column flow rather than summing parallel breaks', () => {
+        const column = (breaks: number): ResumeNode => ({ ...createNode('Column'),
+            childNodes: Array.from({ length: breaks }, () => createNode('PageBreak')) });
+        expect(getResumeMinHeight([column(1), column(1)], PageSize.Letter)).toBe('22in');
+        expect(getResumeMinHeight([column(1), column(2)], PageSize.A4)).toBe('891mm');
+        expect(getResumeMinHeight([column(1), createNode('PageBreak'), column(1)], PageSize.Letter)).toBe('44in');
+        expect(getResumeMinHeight([{ ...createNode('Row'), childNodes: [column(1), column(1)] },
+            createNode('PageBreak')], PageSize.Letter)).toBe('33in');
+        expect(getResumeMinHeight([
+            { ...createNode('Row'), childNodes: [column(1), column(1)] },
+            { ...createNode('Row'), childNodes: [column(1)] }
+        ], PageSize.Letter)).toBe('33in');
+    });
     beforeEach(() => {
         nodeCounter = 0;
     });

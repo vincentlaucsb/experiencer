@@ -1,6 +1,9 @@
+import { findElementCollisions } from "./collision";
+
 /** The small, DOM-only measurement contract shared by responsive controls. */
 export interface HorizontalOverflowMeasurement {
     clientWidth: number;
+    /** Required content width, including space lost to collisions when using child measurement. */
     scrollWidth: number;
     isOverflowing: boolean;
 }
@@ -8,6 +11,8 @@ export interface HorizontalOverflowMeasurement {
 export interface HorizontalOverflowObserverOptions {
     tolerance?: number;
     observeMutations?: boolean;
+    /** Watch intrinsic child-size changes, including font loads, without requiring a root resize. */
+    observeDescendants?: boolean;
     /** Notify after every observed layout mutation, even when overflow dimensions are unchanged. */
     notifyOnEveryObservation?: boolean;
 }
@@ -53,15 +58,22 @@ export function measureHorizontalChildOverflow(
         + (Number.parseFloat(style?.paddingRight ?? "0") || 0);
     const children = Array.from(element.children).filter(
         (child): child is HTMLElement => child instanceof HTMLElement
+            && view?.getComputedStyle(child).display !== "none"
     );
     const measuredChildren = children.map((child) => {
         const childStyle = view?.getComputedStyle(child);
         const margins = (Number.parseFloat(childStyle?.marginLeft ?? "0") || 0)
             + (Number.parseFloat(childStyle?.marginRight ?? "0") || 0);
         const bounds = child.getBoundingClientRect();
+        // scrollWidth/clientWidth are rounded integers. Start with the actual
+        // border-box width and add only real content spill, otherwise rounding
+        // accumulates across peers and falsely compacts a row that already fits.
+        const width = bounds.width > 0
+            ? bounds.width + Math.max(0, child.scrollWidth - child.clientWidth)
+            : child.scrollWidth;
         return {
             bounds,
-            width: Math.max(child.scrollWidth, bounds.width) + margins
+            width: width + margins
         };
     }).filter((child) => child.width > 0);
     const rows: Array<{ top: number; bottom: number; width: number }> = [];
@@ -93,9 +105,16 @@ export function measureHorizontalChildOverflow(
     // clientWidth/scrollWidth include padding, while flex children lay out in
     // the content box. Keep both sides of the comparison in content-box units.
     const clientWidth = Math.max(0, element.clientWidth - horizontalPadding);
+    const collisionWidth = findElementCollisions(children, tolerance).reduce(
+        (maximum, collision) => Math.max(maximum, collision.intersection.width),
+        0
+    );
     const scrollWidth = Math.max(
         Math.max(0, element.scrollWidth - horizontalPadding),
-        childrenWidth
+        childrenWidth,
+        // A collision may occur entirely inside the container. Record its width
+        // deficit too, so restoration cannot immediately retry at the same width.
+        collisionWidth > 0 ? clientWidth + collisionWidth : 0
     );
 
     return {
@@ -148,10 +167,29 @@ export function observeHorizontalOverflow(
     const resizeObserver = typeof ResizeObserver === "undefined"
         ? undefined
         : new ResizeObserver(schedule);
-    resizeObserver?.observe(element);
+    const resizeTargets = new Set<Element>();
+    const syncResizeTargets = () => {
+        if (!resizeObserver) return;
+        const nextTargets = new Set<Element>([element]);
+        if (options.observeDescendants) {
+            element.querySelectorAll("*").forEach(child => nextTargets.add(child));
+        }
+        resizeTargets.forEach(target => {
+            if (!nextTargets.has(target)) resizeObserver.unobserve(target);
+        });
+        nextTargets.forEach(target => {
+            if (!resizeTargets.has(target)) resizeObserver.observe(target);
+        });
+        resizeTargets.clear();
+        nextTargets.forEach(target => resizeTargets.add(target));
+    };
+    syncResizeTargets();
 
     const mutationObserver = options.observeMutations && typeof MutationObserver !== "undefined"
-        ? new MutationObserver(schedule)
+        ? new MutationObserver(() => {
+            syncResizeTargets();
+            schedule();
+        })
         : undefined;
     mutationObserver?.observe(element, {
         attributes: true,

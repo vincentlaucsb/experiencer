@@ -8,6 +8,7 @@ import type { ToolbarData } from "@/controls/toolbar/ToolbarMaker";
 import getClipboardMenu from "./clipboardMenu";
 import { addOptions, hasChildInsertOptions } from "./insertOptions";
 import type { EditingBarProps } from "./types";
+import { canInsertPageBreakBefore, insertPageBreakBefore } from '@/shared/stores/insertPageBreakBefore';
 
 const HtmlIdAdder = React.lazy(() => import("../HtmlIdAdder"));
 
@@ -33,6 +34,11 @@ export function projectSelectedNodeSections(
                     options: childTypes,
                     parentNode: selectedNode
                 })] : []),
+                ...(canInsertPageBreakBefore(selectedNode.uuid) ? [{
+                    text: 'Page break before',
+                    icon: 'page-break',
+                    onClick: () => insertPageBreakBefore(selectedNode.uuid)
+                }] : []),
                 {
                     onClick: props.delete,
                     icon: "ui-delete",

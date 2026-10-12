@@ -48,7 +48,7 @@ test('invalid CSS values cannot enter raw CSS, saved documents, or print output'
     await createResumeFromTemplate(page);
     await page.getByRole('tab', { name: 'CSS', exact: true }).click();
     const rules = bodyRule(page);
-    const fontSizeRow = rules.locator('tr.property').filter({
+    const fontSizeRow = rules.locator('.property').filter({
         has: page.locator('.property-key', { hasText: /^font-size$/ })
     });
     await fontSizeRow.locator('.property-value').click();
@@ -64,7 +64,7 @@ test('invalid CSS values cannot enter raw CSS, saved documents, or print output'
         await expect(page.locator('#resume')).toHaveCSS('font-size', originalComputed);
     }
     await input.press('Escape');
-    const fontFamilyRow = rules.locator('tr.property').filter({
+    const fontFamilyRow = rules.locator('.property').filter({
         has: page.locator('.property-key', { hasText: /^font-family$/ })
     });
     await fontFamilyRow.locator('.property-value').click();
@@ -103,7 +103,7 @@ test('Unicode custom properties keep balanced opaque values through save and rel
     await rules.evaluate(element => (element as HTMLElement).click());
     await page.getByLabel('New property name value').fill('--色');
     await page.getByLabel('New property name value').press('Enter');
-    const row = rules.locator('tr.property').filter({ has: page.locator('.property-key', { hasText: /^--色$/ }) });
+    const row = rules.locator('.property').filter({ has: page.locator('.property-key', { hasText: /^--色$/ }) });
     await row.locator('.property-value').click();
     await page.getByLabel('--色 value').fill('{ color: red; }');
     await page.getByRole('tab', { name: 'Raw CSS', exact: true }).click();
@@ -121,7 +121,7 @@ test('clearing a CSS value removes the declaration and undo restores it', async 
     await createResumeFromTemplate(page);
     await page.getByRole('tab', { name: 'CSS', exact: true }).click();
     const rules = bodyRule(page);
-    const fontSizeRow = rules.locator('tr.property').filter({
+    const fontSizeRow = rules.locator('.property').filter({
         has: page.locator('.property-key', { hasText: /^font-size$/ })
     });
     await fontSizeRow.locator('.property-value').click();
@@ -185,8 +185,8 @@ test('Enter commits a CSS value and keeps focus on it; keys there leave the sele
         has: page.locator('span.css-title', { hasText: /^Resume CSS$/ })
     }).locator('.css-title-trigger').click();
     const rules = bodyRule(page);
-    await expect.poll(() => rules.locator('tr.property').count()).toBeGreaterThan(1);
-    const fontSizeRow = rules.locator('tr.property').filter({
+    await expect.poll(() => rules.locator('.property').count()).toBeGreaterThan(1);
+    const fontSizeRow = rules.locator('.property').filter({
         has: page.locator('.property-key', { hasText: /^font-size$/ })
     });
     const editors = page.locator('.css-ruleset input');

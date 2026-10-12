@@ -15,18 +15,21 @@ import { liveCssSyncCoordinator } from "@/shared/stores/LiveCssSyncCoordinator";
 
 import ComponentTypes from "@/resume/schema/ComponentTypes";
 import makeCssVarSuggestions from "@/shared/utils/makeCssVarSuggestions";
+import { resolveCssRuleTarget, type CssRuleTarget } from '@/shared/utils/cssRuleInspection';
 import findApplicableCssAncestors from "@/shared/utils/findApplicableCssAncestors";
 
 interface ResumeCssEditorProps {
     css: CssNode;
     rootCss: CssNode;
     selectedNode?: ResumeNode;
+    target?: CssRuleTarget;
     updateCss: (updater: (css: CssNode) => void) => void;
     updateRootCss: (updater: (rootCss: CssNode) => void) => void;
 }
 
 interface ResumeCssEditorWrapperProps {
     selectedNodeId?: string;
+    target?: CssRuleTarget;
 }
 
 function findCssRule(css: CssNode, htmlId: string) {
@@ -42,13 +45,13 @@ function findParentCssRules(selectedNode: ResumeNode, css: CssNode) {
     return findApplicableCssAncestors(ancestorNodes, css);
 }
 
-function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss }: ResumeCssEditorProps) {
+function ResumeCssEditor({ css, rootCss, selectedNode, target, updateCss, updateRootCss }: ResumeCssEditorProps) {
     const liveSync = useSyncExternalStore(
         liveCssSyncCoordinator.subscribe,
         liveCssSyncCoordinator.getSnapshot
     );
     const resumeCommands = createCssEditorCommands(updateCss);
-    const rootCommands = createCssEditorCommands(updateRootCss);
+    const rootCommands = createCssEditorCommands(updateRootCss, undefined, "root");
 
     useEffect(() => {
         return liveCssSyncCoordinator.connect();
@@ -78,6 +81,19 @@ function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss 
             />
         </>
     );
+
+    const focused = resolveCssRuleTarget(target, css, rootCss);
+    if (focused) {
+        return <>
+            {syncControls}
+            <CssEditor key={JSON.stringify([focused.tree, focused.expandedPath])}
+                cssNode={new ReadonlyCssNode(focused.node)}
+                expandedPath={focused.expandedPath}
+                isOpen showAncestors liveTree={focused.tree}
+                varSuggestions={makeCssVarSuggestions(rootCss)}
+                commands={focused.tree === 'root' ? rootCommands : resumeCommands} />
+        </>;
+    }
 
     if (selectedNode) {
         let generalCssEditor = <></>
@@ -136,7 +152,7 @@ function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss 
     </>
 }
 
-function ResumeCssEditorWrapper({ selectedNodeId }: ResumeCssEditorWrapperProps) {
+function ResumeCssEditorWrapper({ selectedNodeId, target }: ResumeCssEditorWrapperProps) {
     const { css, rootCss, updateCss, updateRootCss } = useCssStore();
     const selectedNode = useResumeNodeByUuid(selectedNodeId || '');
 
@@ -145,6 +161,7 @@ function ResumeCssEditorWrapper({ selectedNodeId }: ResumeCssEditorWrapperProps)
             css={css}
             rootCss={rootCss}
             selectedNode={selectedNode}
+            target={target}
             updateCss={updateCss}
             updateRootCss={updateRootCss}
         />

@@ -77,6 +77,14 @@ export default class ComponentTypes {
         return cssName ? [...cssName] : [type];
     }
 
+    /** Component lookup paths are stable addresses, including their containing categories. */
+    ownsCssPath(path: ReadonlyArray<string>): boolean {
+        if (!path.length) return false;
+        return Array.from(this._cssNames.values()).some(componentPath =>
+            path.length <= componentPath.length && path.every((name, index) => componentPath[index] === name)
+        );
+    }
+
     /**
      * Get the default/template node data for a given type
      * @param type The node type to create a template for

@@ -151,6 +151,17 @@ export default class CssNode {
     }
 
     set name(newName: string) {
+        if (newName === this._name) return;
+        if (this.parent) {
+            if (this.parent.hasName(newName)) throw new Error(`Already have a child named ${newName}`);
+            // Names are mutation addresses. Rekey without changing cascade order,
+            // so paths from the inspector remain usable until the next rename.
+            this.parent._children = new Map(Array.from(this.parent._children, ([name, node]) =>
+                [node === this ? newName : name, node]
+            ));
+            this.parent._childNames.delete(this._name);
+            this.parent._childNames.add(newName);
+        }
         this._name = newName;
     }
 
@@ -365,30 +376,20 @@ export default class CssNode {
         return this;
     }
 
-    /** Return a CSS stylesheet */
-    stylesheet() {
+    /** Serialize each emitted rule with its tree path, preserving cascade order and duplicate selectors. */
+    stylesheetRules(): Array<{ path: string[]; stylesheet: string }> {
         if (!this.selector && this.properties.size > 0) {
             throw new Error('A CSS tree node with declarations needs a selector.');
         }
-        const cssProperties = this.formatProperties();
-        const selector = this.fullSelector;
-        const thisCss = this.properties.size > 0 ? `${selector} {\n${cssProperties}\n}` : ``;
+        const rules = this.properties.size > 0
+            ? [{ path: this.fullPath, stylesheet: `${this.fullSelector} {\n${this.formatProperties()}\n}` }]
+            : [];
+        return rules.concat(this.children.flatMap(child => child.stylesheetRules()));
+    }
 
-        let childStylesheets = new Array<string>();
-
-        for (let cssTree of this._children.values()) {
-            const childCss = cssTree.stylesheet();
-            if (childCss.length > 0) {
-                childStylesheets.push(childCss);
-            }
-        }
-
-        let finalStylesheet = thisCss ? [thisCss] : [];
-        if (childStylesheets.length > 0) {
-            finalStylesheet = finalStylesheet.concat(childStylesheets);
-        }
-
-        return finalStylesheet.join('\n\n');
+    /** Return the same ordered rules used by the raw CSS inspector. */
+    stylesheet(): string {
+        return this.stylesheetRules().map(rule => rule.stylesheet).join('\n\n');
     }
 
     // #endregion Public Methods

@@ -6,6 +6,8 @@ import { Button } from "./Buttons";
 
 export interface TabProps {
     children: React.ReactNode;
+    activeKey?: string;
+    onActiveKeyChange?: (key: string) => void;
 }
 
 export default function Tabs(props: TabProps) {
@@ -22,7 +24,12 @@ export default function Tabs(props: TabProps) {
         throw new Error("Key for immediate child of Tabs cannot be null");
     });
 
-    const [activeKey, setKey] = React.useState(keys[0]);
+    const [localKey, setLocalKey] = React.useState(keys[0]);
+    const activeKey = props.activeKey ?? localKey;
+    const setKey = (key: string) => {
+        setLocalKey(key);
+        props.onActiveKeyChange?.(key);
+    };
     const tabRefs = React.useRef<Record<string, HTMLButtonElement | null>>({});
     const idPrefix = React.useId().replace(/:/g, "");
     const activeIndex = keys.indexOf(activeKey);

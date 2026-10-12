@@ -8,6 +8,7 @@ import type {
     LiveCssSyncCoordinator,
     LiveCssTreeName
 } from "@/shared/stores/LiveCssSyncCoordinator";
+import ComponentTypes from '@/resume/schema/ComponentTypes';
 import CssPropertyEditor from "./CssPropertyEditor";
 
 const CssEditorToolbar = React.lazy(() => import("../CssEditorToolbar"));
@@ -42,7 +43,7 @@ export default function CssRuleEditor({
     varSuggestions
 }: CssRuleEditorProps) {
     const path = cssNode.fullPath;
-    const isNestedCategory = path.length > 1;
+    const isNestedCategory = path.length > 1 && !isAncestor;
     const headingSpacingClasses = isNestedCategory ? " app-my-0 app-py-2 app-px-5" : " app-my-1";
     const contentSpacingClasses = isNestedCategory ? " app-py-3 app-px-5" : "";
     const caret = isOpen
@@ -50,12 +51,13 @@ export default function CssRuleEditor({
         : <i className="icofont-caret-down" />;
     const highlighterClassName = highlight ? "hl hl-active" : "hl";
 
+    const fixedName = liveTree === "resume" && ComponentTypes.instance.ownsCssPath(path);
     const sectionName = (
-        <span onClick={(event) => {
+        <span title={fixedName ? "Component CSS rule names are fixed for selected-node editing." : undefined} onClick={(event) => {
             if (isOpen) event.stopPropagation();
         }}>
             <TextField
-                static={!isOpen}
+                static={!isOpen || fixedName}
                 defaultText="Enter a section name"
                 value={cssNode.name}
                 displayClassName="css-title"

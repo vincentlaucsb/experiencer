@@ -174,6 +174,7 @@ export interface ContainerProps {
 
 export interface MappedTextFieldsProps {
     value: Map<string, string>;
+    layout?: "table" | "declarations";
     updateValue: (key: string, value: string) => void;
     validateValue?: (key: string, value: string) => string | undefined;
     deleteKey: (key: string) => void;
@@ -377,10 +378,14 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
     }
 
     private renderPropertyRow(key: string, value: string, pending: boolean) {
+        const Row = this.props.layout === "declarations" ? "div" : "tr";
+        const Key = this.props.layout === "declarations" ? "span" : "th";
+        const Value = this.props.layout === "declarations" ? "span" : "td";
         return (
-            <tr className="property" key={key} {...this.inputContainerProps(key)}>
-                <th className="property-key app-pr-3">{key}</th>
-                <td className="property-value">
+            <Row className="property" key={key} {...this.inputContainerProps(key)}>
+                <Key className={this.props.layout === "declarations" ? "property-key" : "property-key app-pr-3"}>{key}</Key>
+                {this.props.layout === "declarations" ? ": " : null}
+                <Value className="property-value">
                     <ValueField
                         label={key}
                         isEditing={this.state.activeKey === key}
@@ -394,16 +399,18 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                             else this.displays.delete(key);
                         }}
                         delete={() => this.removeKey(key)} />
-                </td>
-            </tr>
+                </Value>
+            </Row>
         );
     }
     
     render() {
         let keyAdder = <></>
         if (this.state.isAddingKey) {
-            keyAdder = <tr>
-                <th scope="row" className="app-pr-3" {...this.inputContainerProps()}>
+            const Row = this.props.layout === "declarations" ? "div" : "tr";
+            const Key = this.props.layout === "declarations" ? "span" : "th";
+            keyAdder = <Row>
+                <Key {...this.inputContainerProps()}>
                     <ValueField
                         label="New property name"
                         isEditing={this.state.isAddingKey}
@@ -411,11 +418,9 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                         suggestions={this.props.keySuggestions}
                         validate={key => this.props.validateValue?.(key, '')}
                     />
-                </th>
-                <td>
-                    <input disabled />
-                </td>
-            </tr>
+                </Key>
+                {this.props.layout !== "declarations" && <td><input disabled /></td>}
+            </Row>
         }
 
         // Call the render prop rather than mounting it as a component. Callers pass

@@ -1,3 +1,5 @@
+import ComponentTypes from '@/resume/schema/ComponentTypes';
+import type { LiveCssTreeName } from '@/shared/stores/LiveCssSyncCoordinator';
 import CssNode from "@/shared/CssTree";
 import { showToast } from "@/shared/stores/toastStore";
 import type { LiveCssTreeChange } from "@/shared/utils/liveCssSync";
@@ -50,7 +52,8 @@ export function declarationsKeepingUntouchedBlanks(change: LiveCssTreeChange): M
 /** Builds the complete mutation boundary used by every CSS editor view. */
 export function createCssEditorCommands(
     updateTree: CssTreeUpdater,
-    reportError: CssCommandErrorReporter = showToast
+    reportError: CssCommandErrorReporter = showToast,
+    treeName: LiveCssTreeName = "resume"
 ): CssEditorCommands {
     const acceptSelector = (selector: string): boolean => {
         try {
@@ -77,8 +80,19 @@ export function createCssEditorCommands(
         },
 
         updateName: (path, value) => {
+            // Registered components locate their rules by these names. Renaming
+            // them would sever selected-node editing and cause duplicate seeding.
+            if (treeName === "resume" && ComponentTypes.instance.ownsCssPath(path)) {
+                reportError('Component CSS rule names are fixed. Rename a custom rule instead.');
+                return;
+            }
             updateTree((cssTreeRoot) => {
-                cssTreeRoot.mustFindNode(Array.from(path)).name = value;
+                const node = cssTreeRoot.mustFindNode(Array.from(path));
+                if (node.name !== value && node.ancestors[0]?.hasName(value)) {
+                    reportError(`Already have a child named ${value}`);
+                    return;
+                }
+                node.name = value;
             });
         },
 

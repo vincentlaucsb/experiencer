@@ -2,17 +2,14 @@ import * as React from 'react';
 import { createPortal } from 'react-dom';
 
 import PngExportFeature from '@/app/PngExportFeature';
-import ResumeCssEditor from '@/app/ResumeCssEditor';
+import ResumeEditorSidebar from '@/app/ResumeEditorSidebar';
 import { ResizableSidebarLayout } from '@/controls/Layouts';
 import ResumeHotKeys from '@/controls/ResumeHotkeys';
-import Tabs from '@/controls/Tabs';
 import Toast from '@/controls/Toast';
-import NodeTreeVisualizer from '@/editor/NodeTreeVisualizer';
 import ResumeRenderer, {
     type UpdateResumeData,
     type UpdateResumeDataFields
 } from '@/resume/ResumeRenderer';
-import { useEditorStore } from '@/shared/stores/editorStore';
 import { resumeNodeStore } from '@/shared/stores/resumeNodeStore';
 import { createContainer } from '@/shared/utils/createContainer';
 import type { ResumeNode } from '@/types';
@@ -49,25 +46,12 @@ const updateResumeDataFields: UpdateResumeDataFields = (id, patch) => {
 export default function ResumeEditor(props: ResumeEditorProps) {
     const resumeRef = React.useRef<HTMLDivElement>(null);
     const highlightContainer = createContainer('hl-box-container');
-    const sidebar = (
-        <Tabs>
-            <NodeTreeVisualizer
-                key="Tree"
-                childNodes={props.nodes}
-                selectNode={(uuid) => useEditorStore.getState().selectNode(uuid)}
-                selectedNode={props.selectedNodeId}
-            />
-            <ResumeCssEditor key="CSS" selectedNodeId={props.selectedNodeId} />
-            <div key="Raw CSS">
-                <pre>
-                    <code>{props.stylesheet}</code>
-                </pre>
-            </div>
-            {(props.additionalSidebarTabs ?? []).map((tab) => (
-                <React.Fragment key={tab.key}>{tab.content}</React.Fragment>
-            ))}
-        </Tabs>
-    );
+    const sidebar = <ResumeEditorSidebar
+        nodes={props.nodes}
+        selectedNodeId={props.selectedNodeId}
+        stylesheet={props.stylesheet}
+        additionalSidebarTabs={props.additionalSidebarTabs}
+    />;
     const canvas = (
         <>
             <PngExportFeature />

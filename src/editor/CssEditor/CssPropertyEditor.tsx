@@ -34,11 +34,9 @@ export default function CssPropertyEditor({
         return (
             <div className="css-ruleset" onClick={props.onClick}>
                 <span className="css-description app-mt-4">{selectorDisplay}</span> {"{"}
-                <table className="css-ruleset-table app-ml-4">
-                    <tbody>
+                <div className="css-declarations app-ml-4">
                         {props.children}
-                    </tbody>
-                </table>
+                </div>
                 {"}"}
             </div>
         );
@@ -52,6 +50,7 @@ export default function CssPropertyEditor({
 
     return (
         <MappedTextFields
+            layout="declarations"
             value={cssNode.properties as Map<string, string>}
             container={mapContainer}
             updateValue={commands.updateProperty.bind(null, path)}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import "../CssEditor.scss";
 
@@ -9,6 +9,7 @@ import {
     type LiveCssSyncCoordinator,
     type LiveCssTreeName
 } from "@/shared/stores/LiveCssSyncCoordinator";
+import { focusInspectedCssRule } from '@/shared/utils/cssRuleInspection';
 import CssAncestorRules from "./CssAncestorRules";
 import CssHighlightPortal from "./CssHighlightPortal";
 import CssRuleEditor from "./CssRuleEditor";
@@ -19,6 +20,7 @@ export interface CssEditorProps {
     cssNode: ReadonlyCssNode;
     isAncestor?: boolean;
     isOpen?: boolean;
+    expandedPath?: ReadonlyArray<string>;
     liveSync?: Pick<LiveCssSyncCoordinator, "importSection">;
     liveTree: LiveCssTreeName;
     showAncestors?: boolean;
@@ -28,22 +30,31 @@ export interface CssEditorProps {
 /** Composes the focused view adapters for one CSS subtree. */
 export default function CssEditor(props: CssEditorProps) {
     const [highlight, setHighlight] = useState(false);
-    const [isOpen, setIsOpen] = useState(props.isOpen || false);
+    const [isOpen, setIsOpen] = useState(Boolean(props.isOpen) || Boolean(
+        props.expandedPath && props.cssNode.fullPath.every((name, index) => props.expandedPath![index] === name)
+    ));
     const liveSync = props.liveSync || liveCssSyncCoordinator;
     const path = props.cssNode.fullPath;
+    const pathKey = JSON.stringify(path);
+    const sectionRef = useRef<HTMLElement>(null);
+    useEffect(() => {
+        focusInspectedCssRule(sectionRef.current, pathKey, props.expandedPath);
+    }, [pathKey, props.expandedPath]);
 
     const children = props.isAncestor ? <></> : props.cssNode.children.map((css) => (
         <CssEditor
             key={css.fullPath.join("-")}
             commands={props.commands}
             cssNode={css}
+            expandedPath={props.expandedPath}
+            varSuggestions={props.varSuggestions}
             liveSync={liveSync}
             liveTree={props.liveTree}
         />
     ));
 
     return (
-        <section className={`css-category no-print css-category-${path.length} app-my-4`}>
+        <section ref={sectionRef} tabIndex={props.expandedPath ? -1 : undefined} className={`css-category no-print css-category-${path.length}${props.isAncestor ? " css-category-ancestor" : ""} app-my-4`}>
             <CssHighlightPortal active={highlight} selector={props.cssNode.fullSelector} />
             <CssRuleEditor
                 commands={props.commands}

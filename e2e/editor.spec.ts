@@ -136,6 +136,24 @@ test('restores the editing toolbar and top navigation after widening the viewpor
   await expect(navigation).toHaveAttribute('data-nav-density', '0');
 });
 
+test('compacts colliding toolbar sections even when their content fits inside the viewport', async ({ page }) => {
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await createResumeFromTemplate(page);
+  const toolbar = page.locator('#toolbar');
+  await expect(toolbar.locator('.toolbar-section-collapsed')).toHaveCount(0);
+  // Reproduce a peer collision without overflowing the toolbar's outer boundary.
+  await page.addStyleTag({ content: '#toolbar [data-toolbar-section="Page Setup"]:not(.toolbar-section-collapsed) { transform: translateX(-80px); }' });
+  await page.setViewportSize({ width: 1580, height: 900 });
+  await expect(toolbar.locator('[data-toolbar-section="Page Setup"]')).toHaveClass(/toolbar-section-collapsed/);
+  await expect.poll(() => toolbar.evaluate(element => {
+    const sections = Array.from(element.children).map(child => child.getBoundingClientRect());
+    return sections.some((first, index) => sections.slice(index + 1).some(second => (
+      Math.min(first.right, second.right) - Math.max(first.left, second.left) > 1
+      && Math.min(first.bottom, second.bottom) - Math.max(first.top, second.top) > 1
+    )));
+  })).toBe(false);
+});
+
 test('pads an explicit page break to the next physical page', async ({ page }) => {
   await createResumeFromTemplate(page);
 

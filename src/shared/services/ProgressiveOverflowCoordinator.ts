@@ -96,6 +96,7 @@ export default class ProgressiveOverflowCoordinator {
             this.reconcile,
             {
                 observeMutations: true,
+                observeDescendants: true,
                 notifyOnEveryObservation: true
             }
         );

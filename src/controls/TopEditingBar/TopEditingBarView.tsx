@@ -3,6 +3,7 @@ import React, { useCallback, useRef, useState } from "react";
 import SpecialCharacterPicker from "@/controls/SpecialCharacterPicker";
 import Toolbar from "@/controls/toolbar/ToolbarMaker";
 import useProgressiveOverflow from "@/shared/hooks/useProgressiveOverflow";
+import { measureHorizontalChildOverflow } from "@/shared/utils/overflow";
 
 import { projectToolbar } from "./projectToolbar";
 import type { TopEditingBarViewProps } from "./types";
@@ -20,7 +21,7 @@ export default function TopEditingBarView(props: TopEditingBarViewProps) {
         id,
         priority: section.collapsePriority
     }));
-    const collapsedSections = useProgressiveOverflow(toolbarRef, overflowItems);
+    const collapsedSections = useProgressiveOverflow(toolbarRef, overflowItems, measureHorizontalChildOverflow);
     const className = collapsedSections.size > 0
         ? "toolbar-has-collapsed-sections"
         : "";

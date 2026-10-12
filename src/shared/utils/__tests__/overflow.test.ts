@@ -61,6 +61,26 @@ test("excludes container padding from the space available to flex children", () 
     });
 });
 
+test("detects sibling collisions entirely inside the container and records a width deficit", () => {
+    const element = document.createElement("div");
+    const first = document.createElement("div");
+    const second = document.createElement("div");
+    element.append(first, second);
+    mockWidths(element, 500, 500);
+    mockWidths(first, 100, 100);
+    mockWidths(second, 100, 100);
+    const bounds = (left: number): DOMRect => ({
+        left, right: left + 100, top: 0, bottom: 30, width: 100, height: 30,
+        x: left, y: 0, toJSON: () => undefined
+    });
+    jest.spyOn(first, "getBoundingClientRect").mockReturnValue(bounds(100));
+    jest.spyOn(second, "getBoundingClientRect").mockReturnValue(bounds(175));
+    expect(measureHorizontalOverflow(element).isOverflowing).toBe(false);
+    expect(measureHorizontalChildOverflow(element)).toEqual({
+        clientWidth: 500, scrollWidth: 525, isOverflowing: true
+    });
+});
+
 test("does not combine children that wrap onto separate rows", () => {
     const element = document.createElement("div");
     const primary = document.createElement("div");
@@ -95,6 +115,35 @@ test("does not combine children that wrap onto separate rows", () => {
     expect(measureHorizontalChildOverflow(element).isOverflowing).toBe(false);
 });
 
+test("does not count margins or gaps belonging to display-none controls", () => {
+    const element = document.createElement("div");
+    const hidden = document.createElement("span");
+    const visible = document.createElement("button");
+    element.append(hidden, visible);
+    element.style.gap = "8px";
+    hidden.style.display = "none";
+    hidden.style.marginRight = "8px";
+    mockWidths(element, 100, 100);
+    mockWidths(visible, 100, 100);
+    expect(measureHorizontalChildOverflow(element).isOverflowing).toBe(false);
+});
+
+test("does not accumulate integer scroll-width rounding across fractional-width peers", () => {
+    const element = document.createElement("div");
+    mockWidths(element, 150, 150);
+    for (let index = 0; index < 4; index += 1) {
+        const child = document.createElement("span");
+        element.append(child);
+        mockWidths(child, 38, 38);
+        const left = index * 37.6;
+        jest.spyOn(child, "getBoundingClientRect").mockReturnValue({
+            left, right: left + 37.6, top: 0, bottom: 30, width: 37.6, height: 30,
+            x: left, y: 0, toJSON: () => undefined
+        });
+    }
+    expect(measureHorizontalChildOverflow(element).isOverflowing).toBe(false);
+});
+
 test("notifies only when the measured dimensions change", () => {
     const element = document.createElement("div");
     mockWidths(element, 100, 100);
@@ -118,5 +167,49 @@ test("notifies only when the measured dimensions change", () => {
     finally {
         stopObserving();
         requestFrame.mockRestore();
+    }
+});
+
+test("observes changing descendant sizes and releases removed targets", async () => {
+    const observed = new Set<Element>();
+    let notifyResize: () => void = () => undefined;
+    const previousObserver = globalThis.ResizeObserver;
+    // ResizeObserver is a browser boundary; use its real MutationObserver counterpart below.
+    class TestResizeObserver {
+        constructor(callback: () => void) { notifyResize = callback; }
+        observe = (target: Element) => { observed.add(target); };
+        unobserve = (target: Element) => { observed.delete(target); };
+        disconnect = () => { observed.clear(); };
+    }
+    globalThis.ResizeObserver = TestResizeObserver as unknown as typeof ResizeObserver;
+    const element = document.createElement("div");
+    const child = document.createElement("span");
+    element.append(child);
+    const onChange = jest.fn();
+    const requestFrame = jest.spyOn(window, "requestAnimationFrame").mockImplementation(callback => {
+        callback(0);
+        return 1;
+    });
+    const stop = observeHorizontalOverflow(element, onChange, {
+        observeMutations: true, observeDescendants: true, notifyOnEveryObservation: true
+    });
+    try {
+        expect(observed.has(child)).toBe(true);
+        notifyResize();
+        expect(onChange).toHaveBeenCalledTimes(2);
+        const replacement = document.createElement("button");
+        child.replaceWith(replacement);
+        await Promise.resolve();
+        expect(observed.has(child)).toBe(false);
+        expect(observed.has(replacement)).toBe(true);
+        expect(onChange).toHaveBeenCalledTimes(3);
+        stop();
+        expect(observed.size).toBe(0);
+        notifyResize();
+        expect(onChange).toHaveBeenCalledTimes(3);
+    } finally {
+        stop();
+        requestFrame.mockRestore();
+        globalThis.ResizeObserver = previousObserver;
     }
 });

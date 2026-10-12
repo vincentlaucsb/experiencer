@@ -10,6 +10,7 @@ import {
     type LiveCssTreeName
 } from "@/shared/stores/LiveCssSyncCoordinator";
 import { focusInspectedCssRule } from '@/shared/utils/cssRuleInspection';
+import { localKeyboardScopeAttributes } from '@/shared/ui/localKeyboardScope';
 import CssAncestorRules from "./CssAncestorRules";
 import CssHighlightPortal from "./CssHighlightPortal";
 import CssRuleEditor from "./CssRuleEditor";
@@ -54,7 +55,7 @@ export default function CssEditor(props: CssEditorProps) {
     ));
 
     return (
-        <section ref={sectionRef} tabIndex={props.expandedPath ? -1 : undefined} className={`css-category no-print css-category-${path.length}${props.isAncestor ? " css-category-ancestor" : ""} app-my-4`}>
+        <section {...localKeyboardScopeAttributes} ref={sectionRef} tabIndex={props.expandedPath ? -1 : undefined} className={`css-category no-print css-category-${path.length}${props.isAncestor ? " css-category-ancestor" : ""} app-my-4`}>
             <CssHighlightPortal active={highlight} selector={props.cssNode.fullSelector} />
             <CssRuleEditor
                 commands={props.commands}

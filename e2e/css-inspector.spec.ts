@@ -39,6 +39,10 @@ test('raw rules open their editable owner and nested path, and resume selection 
     await page.getByRole('tab', { name: 'Raw CSS', exact: true }).click();
     await page.getByRole('button', { name: `Edit ${selector} in CSS`, exact: true }).click();
     await expect(page.locator('h2.css-title-heading .css-title').filter({ hasText: /^Renamed nested rule$/ })).toBeVisible();
+    const entryCount = await page.locator('#resume article.entry').count();
+    await page.keyboard.press('Delete');
+    await page.keyboard.press('Control+x');
+    await expect(page.locator('#resume article.entry')).toHaveCount(entryCount);
     await page.getByRole('tab', { name: 'Raw CSS', exact: true }).click();
     await page.getByRole('button', { name: 'Edit :root in CSS', exact: true }).click();
     await expect(page.locator('.css-ruleset').first()).toContainText(':root');

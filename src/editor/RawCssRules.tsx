@@ -1,3 +1,4 @@
+import { localKeyboardScopeAttributes } from '@/shared/ui/localKeyboardScope';
 import { Button } from '@/controls/Buttons';
 import { useCssStore } from '@/shared/stores/cssStoreHooks';
 import { getInspectableCssRules, type CssRuleTarget } from '@/shared/utils/cssRuleInspection';
@@ -17,7 +18,7 @@ export default function RawCssRules({ stylesheet, onInspect }: RawCssRulesProps)
     if (stylesheet !== `${rootCss.stylesheet()}\n\n${css.stylesheet()}`) {
         return <pre><code>{stylesheet}</code></pre>;
     }
-    return <div className="raw-css-rules">
+    return <div {...localKeyboardScopeAttributes} className="raw-css-rules">
         {rules.map(rule => <div className="raw-css-rule app-gap-2 app-mb-4"
             key={JSON.stringify([rule.target.tree, rule.path])}>
             <pre className="app-m-0"><code>{rule.stylesheet}</code></pre>

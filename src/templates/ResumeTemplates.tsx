@@ -7,6 +7,8 @@ import { ResumeSaveData } from "@/types";
 import { assuredCoverLetterNodes, assuredCoverLetterCss } from "./AssuredCoveredLetter";
 import { candorNodes, candorCss, candorRootCss } from "./Candor";
 import { candorCoverLetterNodes, candorCoverLetterCss } from "./CandorCoverLetter";
+import { earnestNodes, earnestCss, earnestRootCss } from "./Earnest";
+import { earnestCoverLetterNodes, earnestCoverLetterCss } from "./EarnestCoverLetter";
 import { integrityCoverLetterNodes, integrityCoverLetterCss } from "./IntegrityCoverLetter";
 import PageSize from "@/types/PageSize";
 import { withTemplateFonts } from "@/shared/fonts/templateFonts";
@@ -39,6 +41,20 @@ export function createResumeTemplates(coverLetterDate?: string) {
             builtinCss: candorCoverLetterCss().dump(),
             childNodes: assignIds(candorCoverLetterNodes(coverLetterDate)),
             rootCss: candorRootCss().dump(),
+            pageSize: PageSize.Letter
+        } as ResumeSaveData),
+
+        "Earnest": withTemplateFonts({
+            builtinCss: earnestCss().dump(),
+            childNodes: assignIds(earnestNodes()),
+            rootCss: earnestRootCss().dump(),
+            pageSize: PageSize.Letter
+        } as ResumeSaveData),
+
+        "Earnest: Cover Letter": withTemplateFonts({
+            builtinCss: earnestCoverLetterCss().dump(),
+            childNodes: assignIds(earnestCoverLetterNodes(coverLetterDate)),
+            rootCss: earnestRootCss().dump(),
             pageSize: PageSize.Letter
         } as ResumeSaveData),
 

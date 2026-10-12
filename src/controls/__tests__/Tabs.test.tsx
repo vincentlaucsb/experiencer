@@ -24,3 +24,14 @@ test("supports roving tab focus and arrow-key activation", () => {
     expect(tabs[1].getAttribute("tabindex")).toBe("0");
     expect(screen.getByRole("tabpanel").textContent).toContain("CSS content");
 });
+
+ test('a controlled tab follows programmatic activation and reports user activation', () => {
+    const changed = jest.fn();
+    const children = [<div key="Tree">Tree content</div>, <div key="CSS">CSS content</div>];
+    const { rerender } = render(<Tabs activeKey="Tree" onActiveKeyChange={changed}>{children}</Tabs>);
+    rerender(<Tabs activeKey="CSS" onActiveKeyChange={changed}>{children}</Tabs>);
+    expect(screen.getByRole('tabpanel').textContent).toBe('CSS content');
+    fireEvent.click(screen.getByRole('tab', { name: 'Tree' }));
+    expect(changed).toHaveBeenCalledWith('Tree');
+    expect(screen.getByRole('tabpanel').textContent).toBe('CSS content');
+});

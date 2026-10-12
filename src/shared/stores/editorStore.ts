@@ -1,12 +1,18 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import PageSize from '@/types/PageSize';
+import type { CssRuleTarget } from '@/shared/utils/cssRuleInspection';
 
 interface EditorState {
     // Selection state
     selectedNodeId: string | undefined;
     isEditingSelected: boolean;
     selectionEnabled: boolean;
+
+    cssRuleTarget: CssRuleTarget | undefined;
+    activeSidebarTab: string;
+    inspectCssRule: (target: CssRuleTarget) => void;
+    setActiveSidebarTab: (key: string) => void;
 
     // UI state
     leftPaneElement: HTMLDivElement | null;
@@ -29,6 +35,11 @@ interface EditorState {
 export const useEditorStore = create<EditorState>()(
     devtools(
         (set, get) => ({
+            // Inspector focus is transient and selection commands always retire it.
+            cssRuleTarget: undefined,
+            activeSidebarTab: 'Tree',
+            inspectCssRule: target => set({ cssRuleTarget: target, activeSidebarTab: 'CSS' }, false, 'inspectCssRule'),
+            setActiveSidebarTab: key => set({ activeSidebarTab: key }, false, 'setActiveSidebarTab'),
             // Initial state
             selectedNodeId: undefined,
             isEditingSelected: false,
@@ -41,16 +52,16 @@ export const useEditorStore = create<EditorState>()(
             // Actions
             selectNode: (nodeId: string) =>
                 set((state) => state.selectionEnabled
-                    ? { selectedNodeId: nodeId, isEditingSelected: false }
+                    ? { selectedNodeId: nodeId, isEditingSelected: false, cssRuleTarget: undefined }
                     : state, false, 'selectNode'),
 
             editNode: (nodeId: string) =>
                 set((state) => state.selectionEnabled
-                    ? { selectedNodeId: nodeId, isEditingSelected: true }
+                    ? { selectedNodeId: nodeId, isEditingSelected: true, cssRuleTarget: undefined }
                     : state, false, 'editNode'),
 
             unselectNode: () =>
-                set({ selectedNodeId: undefined, isEditingSelected: false }, false, 'unselectNode'),
+                set({ selectedNodeId: undefined, isEditingSelected: false, cssRuleTarget: undefined }, false, 'unselectNode'),
 
             setSelectionEnabled: (enabled: boolean) =>
                 set((state) => {
@@ -62,6 +73,7 @@ export const useEditorStore = create<EditorState>()(
                         ? { selectionEnabled: true }
                         : {
                             selectionEnabled: false,
+                            cssRuleTarget: undefined,
                             selectedNodeId: undefined,
                             isEditingSelected: false
                         };

@@ -18,9 +18,9 @@ module.exports = {
     },
     testEnvironment: 'jsdom',
     testPathIgnorePatterns: [
-        '<rootDir>/e2e/',
-        '<rootDir>/playwright-report/',
-        '<rootDir>/test-results/'
+        '[/\\\\]e2e[/\\\\]',
+        '[/\\\\]playwright-report[/\\\\]',
+        '[/\\\\]test-results[/\\\\]'
     ],
     setupFilesAfterEnv: ['<rootDir>/config/jest.setup.js'],
     transform: {

@@ -31,7 +31,7 @@ describe("CSS editor commands", () => {
         commands.updateName(["Entry", "Emphasis"], "Strong text");
         expect(node.name).toBe("Strong text");
 
-        commands.deleteNode(["Entry", "Emphasis"]);
+        commands.deleteNode(["Entry", "Strong text"]);
         expect(root.mustFindNode(["Entry"]).children).toHaveLength(0);
         expect(updateTree).toHaveBeenCalledTimes(7);
     });
@@ -170,4 +170,27 @@ describe("CSS editor commands", () => {
         expect(reportError).toHaveBeenCalledWith("#resume is reserved for Experiencer's editor host.");
         }
     );
+});
+
+test('component rule names remain stable while custom rules can be renamed', () => {
+    require('@/resume/schema').default();
+    const root = new CssNode('Resume', {}, 'body');
+    root.addNode('Entry', { color: 'black' }, '.entry');
+    root.addNode('Custom', { color: 'red' }, '.custom');
+    const report = jest.fn();
+    const commands = createCssEditorCommands(updater => updater(root), report);
+    commands.updateName(['Entry'], 'Changed');
+    expect(root.findNode('Entry')).toBeDefined();
+    expect(report).toHaveBeenCalledWith(expect.stringContaining('Component CSS rule names are fixed'));
+    commands.updateName(['Custom'], 'Renamed');
+    expect(root.findNode('Renamed')?.name).toBe('Renamed');
+});
+
+test('a root-tree custom rule can reuse and rename a component name', () => {
+    require('@/resume/schema').default();
+    const root = new CssNode('Variables', {}, ':root');
+    root.addNode('Entry', { '--ink': 'black' }, '.custom');
+    const commands = createCssEditorCommands(updater => updater(root), undefined, 'root');
+    commands.updateName(['Entry'], 'Renamed');
+    expect(root.findNode('Renamed')?.properties.get('--ink')).toBe('black');
 });

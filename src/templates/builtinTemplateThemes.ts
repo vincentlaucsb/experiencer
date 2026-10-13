@@ -27,6 +27,16 @@ const candor: readonly TemplateTheme[] = [
         transform: rootPalette({ '--accent': '#34495e', '--marker': '#2f7d78', '--panel': '#ecf0f2', '--panel-rule': '#d2dadf', '--rule': '#d0d6dc', '--ink': '#1f2830', '--meta': '#56606a' }) }
 ];
 
+const earnest: readonly TemplateTheme[] = [
+    { id: 'original', name: 'Original', fill: '#1f5a47', transform: css => css },
+    { id: 'ink', name: 'Ink', fill: '#1e3d6e',
+        transform: rootPalette({ '--accent': '#1e3d6e', '--rule': '#cbd3de', '--ink': '#1b1f27', '--meta': '#4b5463' }) },
+    { id: 'oxblood', name: 'Oxblood', fill: '#7b2a34',
+        transform: rootPalette({ '--accent': '#7b2a34', '--rule': '#dfd1d3', '--ink': '#231c1e', '--meta': '#5b4e51' }) },
+    { id: 'graphite', name: 'Graphite', fill: '#2f3538',
+        transform: rootPalette({ '--accent': '#2f3538', '--rule': '#d3d6d8', '--ink': '#1c1f21', '--meta': '#50565a' }) }
+];
+
 const integrity: readonly TemplateTheme[] = [
     { id: 'original', name: 'Original', fill: 'linear-gradient(135deg, #4eb3b9 50%, #fbdcb6 50%)', transform: css => css },
     { id: 'ocean', name: 'Ocean', fill: 'linear-gradient(135deg, #639bc8 50%, #dcebf5 50%)',
@@ -42,6 +52,8 @@ export const builtinTemplateThemes: Readonly<Record<string, readonly TemplateThe
     'Assured: Cover Letter': assured,
     Candor: candor,
     'Candor: Cover Letter': candor,
+    Earnest: earnest,
+    'Earnest: Cover Letter': earnest,
     Integrity: integrity,
     'Integrity: Cover Letter': integrity
 };

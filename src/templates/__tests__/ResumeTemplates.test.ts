@@ -46,6 +46,7 @@ describe('built-in templates', () => {
         for (const name of [
             'Assured: Cover Letter',
             'Candor: Cover Letter',
+            'Earnest: Cover Letter',
             'Integrity: Cover Letter',
             'Streamline: Cover Letter'
         ] as const) {
@@ -135,6 +136,7 @@ describe('built-in templates', () => {
     test.each([
         ['Assured: Cover Letter', 'Joe Blow'],
         ['Candor: Cover Letter', 'Bea Spoke'],
+        ['Earnest: Cover Letter', 'Ana Lytics'],
         ['Integrity: Cover Letter', 'Randy Marsh'],
         ['Streamline: Cover Letter', 'Dinesh Chugtai']
     ])('%s includes a handwritten signature and typed-name fallback', (templateName, name) => {
@@ -216,6 +218,150 @@ describe('built-in templates', () => {
             expect(root.properties.has('--small-spacing')).toBe(true);
             for (const theme of builtinTemplateThemes.Candor) {
                 const themed = CssNode.load(applyTemplateTheme(ResumeTemplates.templates.Candor, theme).rootCss);
+                expect([...themed.properties.keys()]).toEqual([...root.properties.keys()]);
+            }
+        });
+    });
+
+    describe('Earnest', () => {
+        const nodeTypes = (nodes: BasicResumeNode[] = []): string[] =>
+            nodes.flatMap(node => [node.type, ...nodeTypes(node.childNodes)]);
+        const earnestCss = () => CssNode.load(ResumeTemplates.templates.Earnest.builtinCss);
+
+        test('reads as one column: the header, then education-first sections', () => {
+            const nodes = ResumeTemplates.templates.Earnest.childNodes;
+            expect(nodes[0].type).toBe('Header');
+            expect(nodes.slice(1).map(node => [node.type, node.value])).toEqual([
+                ['Section', 'Education'],
+                ['Section', 'Experience'],
+                ['Section', 'Projects'],
+                ['Section', 'Leadership & Activities'],
+                ['Section', 'Skills & Interests']
+            ]);
+            for (const type of ['Column', 'Grid', 'Image']) {
+                expect(nodeTypes(nodes)).not.toContain(type);
+            }
+        });
+
+        test('keeps the header spacing when the optional summary is deleted', () => {
+            const header = ResumeTemplates.templates.Earnest.childNodes[0];
+            expect(header.childNodes?.map(node => node.htmlId)).toEqual(['earnest-contact', 'earnest-summary']);
+
+            // The header owns the gap before the first section; the summary only adds space above itself.
+            const css = earnestCss();
+            expect(css.findNode('Header')?.properties.get('margin')).toBe('0 0 var(--space-5)');
+            const summary = css.findNode(['Header', 'Summary']);
+            const summaryMargins = [...(summary?.properties.keys() ?? [])].filter(key => key.startsWith('margin'));
+            expect(summaryMargins).toEqual(['margin-top']);
+        });
+
+        test('draws section tabs, contact rules, and detail dots without text glyphs', () => {
+            const css = earnestCss();
+            const title = css.findNode(['Section', 'Title']);
+            expect(title?.properties.get('background-image')).toBe(
+                'linear-gradient(var(--accent), var(--accent)), linear-gradient(var(--rule), var(--rule))'
+            );
+            expect(title?.properties.get('print-color-adjust')).toBe('exact');
+            expect(title?.properties.get('letter-spacing')).toBe('0.08em');
+            for (const path of [
+                ['Header', 'Contact', 'Contact Rows', 'Contact Separators'],
+                ['Entry', 'Title Block', 'Subtitle', 'Detail Separators']
+            ]) {
+                const node = css.findNode(path);
+                expect(node?.properties.get('content')).toBe('""');
+                expect(node?.properties.get('print-color-adjust')).toBe('exact');
+            }
+            expect(css.findNode(['Header', 'Contact', 'Contact Rows', 'Contact Separators'])?.fullSelector)
+                .toBe('body header #earnest-contact .row > :not(:empty) ~ :not(:empty)::before');
+        });
+
+        test('paints bullet dashes in the item padding so loose lists keep them beside the first line', () => {
+            // A loose Markdown list wraps item text in <p>; an inline ::before marker would sit on its own line.
+            const dash = earnestCss().findNode(['Markdown', 'Bulleted Lists', 'Bullet Dashes']);
+            expect(dash?.fullSelector).toBe('body .text-content ul > li');
+            expect(dash?.properties.get('background-image')).toBe('linear-gradient(var(--accent), var(--accent))');
+            expect(dash?.properties.get('padding-left')).toBe('var(--list-indent)');
+            expect(dash?.properties.get('print-color-adjust')).toBe('exact');
+            expect(earnestCss().stylesheet()).not.toMatch(/li::(before|marker)/);
+        });
+
+        test('lets the entry gap reach education facts and keeps skill terms whole', () => {
+            const css = earnestCss();
+            expect(css.findNode(['Entry', 'Entry Details'])?.properties.get('margin-top')).toBe('var(--space-2)');
+            // Equal specificity with Entry Details, so any margin here would erase the gap above the facts.
+            expect([...(css.findNode(['Entry', 'Entry Facts'])?.properties.keys() ?? [])].filter(key => key.startsWith('margin'))).toEqual([]);
+
+            const term = css.findNode(['Description List', 'Term Rows', 'Row Terms']);
+            expect(term?.properties.get('overflow-wrap')).toBe('break-word');
+            expect(term?.properties.get('min-width')).toBe('var(--term-width)');
+        });
+
+        test('keeps section headings whole and attached to their content', () => {
+            const css = earnestCss();
+            const title = css.findNode(['Section', 'Title']);
+            expect(title?.properties.get('break-inside')).toBe('avoid');
+            expect(title?.properties.get('break-after')).toBe('avoid');
+            expect(css.findNode('Entry')?.properties.get('break-inside')).toBe('avoid');
+        });
+
+        test('keeps the date at the right of the primary entry title row', () => {
+            const title = earnestCss().findNode(['Entry', 'Title Block', 'Title']);
+            expect(title?.properties.get('display')).toBe('flex');
+            expect(title?.findNode('Last Field')?.properties.get('margin-left')).toBe('auto');
+        });
+
+        test('uses description lists with one value per definition for education facts and skills', () => {
+            const definitions = (nodes: BasicResumeNode[] = []): Array<[string | undefined, string[] | undefined]> =>
+                nodes.flatMap(node => [
+                    ...(node.type === 'Description List Item' ? [[node.value, (node as { definitions?: string[] }).definitions] as [string | undefined, string[] | undefined]] : []),
+                    ...definitions(node.childNodes)
+                ]);
+            const terms = new Map(definitions(ResumeTemplates.templates.Earnest.childNodes));
+            expect(terms.get('Relevant coursework')).toEqual(['Database Systems', 'Applied Regression', 'Data Visualization', 'Survey Methods']);
+            expect(terms.get('Technical')).toEqual(['SQL', 'Python (pandas, scikit-learn)', 'R', 'Excel']);
+
+            const css = earnestCss();
+            expect(css.findNode(['Entry', 'Entry Facts'])?.fullSelector).toBe('body .entry dl');
+            expect(css.findNode(['Entry', 'Entry Facts', 'Facts', 'Fact Label Colons'])?.properties.get('content')).toBe('":"');
+            expect(css.findNode(['Description List', 'Term Rows', 'Value Separators'])?.properties.get('content')).toBe('","');
+        });
+
+        test('uses reserved example contact data', () => {
+            const serialized = JSON.stringify(ResumeTemplates.templates.Earnest.childNodes);
+            expect(serialized).toContain('ana.lytics@mail.example');
+            expect(serialized).toContain('555-0147');
+            expect(serialized).toMatch(/linkedin\.com\/in\/[a-z-]+-example/);
+        });
+
+        test('the cover letter shares the header and palette and carries an application reference', () => {
+            const resume = ResumeTemplates.templates.Earnest;
+            const letter = createResumeTemplates('January 2, 2030')['Earnest: Cover Letter'];
+            expect(letter.rootCss).toEqual(resume.rootCss);
+            expect(letter.childNodes.map(node => node.htmlId ?? node.type)).toEqual(['Header', 'earnest-reference', 'earnest-letter']);
+            expect(letter.childNodes[0].childNodes?.map(node => node.htmlId)).toEqual(['earnest-contact']);
+
+            const reference = letter.childNodes[1].childNodes?.[0].childNodes?.map(item =>
+                [item.value, (item as { definitions?: string[] }).definitions]);
+            expect(reference).toEqual([
+                ['Date', ['January 2, 2030']],
+                ['Position', ['Data Analyst']],
+                ['Organization', ['Harborview Transit Authority']]
+            ]);
+
+            const letterCss = CssNode.load(letter.builtinCss);
+            expect(letterCss.findNode(['Letter', 'Letter Signature'])?.properties.get('break-inside')).toBe('avoid');
+            // Bullet dashes derive their offset from --line-height, so the letter changes the token, not only line-height.
+            expect(letterCss.findNode('Letter')?.properties.get('--line-height')).toBe('1.5');
+            expect(letterCss.findNode(['Letter', 'Letter Lists'])?.properties.get('margin')).toBe('0 0 var(--space-4)');
+        });
+
+        test('uses one root font size, the bundled CMU Serif, and palettes that change only existing variables', () => {
+            const root = CssNode.load(ResumeTemplates.templates.Earnest.rootCss);
+            expect(root.properties.get('--font-size')).toBe('11pt');
+            expect(root.properties.has('--small-spacing')).toBe(true);
+            expect(ResumeTemplates.templates.Earnest.fonts?.map(font => font.family)).toEqual(['CMU Serif']);
+            for (const theme of builtinTemplateThemes.Earnest) {
+                const themed = CssNode.load(applyTemplateTheme(ResumeTemplates.templates.Earnest, theme).rootCss);
                 expect([...themed.properties.keys()]).toEqual([...root.properties.keys()]);
             }
         });

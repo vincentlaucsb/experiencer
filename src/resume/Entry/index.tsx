@@ -138,7 +138,7 @@ export default function Entry(props: EntryProps) {
                     defaultText="Enter a value"
                     readOnly={props.readOnly}
                     displayProcessors={[process, toUrl]}
-                    contextMenuOptions={props.readOnly ? [] : [...textFieldOptions, ...actions.map(action => ({ text: action.label, onClick: action.run }))]}
+                    contextMenuOptions={props.readOnly ? [] : [...textFieldOptions, ...actions.map(action => ({ text: action.label, onClick: action.runFromContextMenu ?? action.run }))]}
                 />
                 {lineBreak}
             </React.Fragment>;

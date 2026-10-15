@@ -39,7 +39,7 @@ export function SelectedNodeHighlightBox() {
     
     const selectedNode = selectedNodeId ? resumeTree.getNodeByUuid(selectedNodeId) : undefined;
     const contextMenuItems = selectedNodeId
-        ? buildContextMenuItems(selectedNodeId, { selectNode, editNode })
+        ? buildContextMenuItems(selectedNodeId, { selectNode, editNode }, 'selection-menu')
         : [];
 
     // Selection changes can precede the DOM lookup effect by one render. Never

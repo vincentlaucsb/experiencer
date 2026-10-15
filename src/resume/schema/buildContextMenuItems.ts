@@ -11,7 +11,7 @@ interface ContextMenuActions {
     selectNode: (uuid: string) => void;
 }
 
-export default function buildContextMenuItems(uuid: string, actions: ContextMenuActions): MenuItem[] {
+export default function buildContextMenuItems(uuid: string, actions: ContextMenuActions, source: 'context-menu' | 'selection-menu' = 'context-menu'): MenuItem[] {
     const node = resumeNodeStore.getNodeByUuid(uuid);
     if (!node) {
         return [];
@@ -31,7 +31,7 @@ export default function buildContextMenuItems(uuid: string, actions: ContextMenu
     });
 
     const additionalItems: MenuItem[] = (resumeAppExtensionsStore.getSnapshot().editor?.nodeActions?.(node) ?? [])
-        .map(action => ({ id: action.id, label: action.label, onSelect: action.run }));
+        .map(action => ({ id: action.id, label: action.label, onSelect: source === 'context-menu' ? action.runFromContextMenu ?? action.run : action.run }));
     if (canInsertPageBreakBefore(uuid)) {
         additionalItems.push({
             id: `page-break-before-${uuid}`,

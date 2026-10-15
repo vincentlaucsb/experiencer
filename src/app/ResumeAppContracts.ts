@@ -61,6 +61,8 @@ export interface ResumeNodeAction {
     id: string;
     label: string;
     run: () => void;
+    /** Optional navigation behavior when invoked from a node context menu. */
+    runFromContextMenu?: () => void;
     treeIndicator?: string;
     /** Optional icon font class for a host-owned tree indicator. */
     treeIndicatorIcon?: string;

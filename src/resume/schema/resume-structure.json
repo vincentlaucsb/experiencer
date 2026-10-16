@@ -36,7 +36,7 @@
     },
     {
       "kind": "Column",
-      "children": { "mode": "explicit", "kinds": ["Row", "Grid", "Section", "Entry", "Markdown", "Link", "Bulleted List", "Description List", "Group", "Image", "PageBreak"] },
+      "children": { "mode": "explicit", "kinds": ["Row", "Grid", "Section", "Entry", "Markdown", "Link", "Bulleted List", "Description List", "Group", "Image", "PageBreak", "Header"] },
       "fields": {},
       "defaults": {}
     },

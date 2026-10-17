@@ -71,6 +71,11 @@ export default function OverlayEditor({
                 minWidth: `${position.width}px`,
             }}
             onClick={(e) => e.stopPropagation()}
+            // The portal's React parent is the edited node's parent container,
+            // whose right-button mousedown would reselect it and close this
+            // editor before the browser menu, with its spelling suggestions, opens.
+            onMouseDown={(e) => e.stopPropagation()}
+            onContextMenu={(e) => e.stopPropagation()}
         >
             {children}
         </div>,

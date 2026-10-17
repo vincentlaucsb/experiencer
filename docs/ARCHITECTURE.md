@@ -433,6 +433,7 @@ src/sass/
 ├── variables.scss          # CSS custom properties
 ├── forms.scss              # Form element styles
 ├── inputs.scss             # Input field styles
+├── surfaces.scss           # Shared cards and opt-in Pure form/table theme bridges
 ├── modals.scss             # Modal dialog styles
 ├── context-menu.scss       # Context menu styles
 ├── hl-box.scss             # Highlight box overlay
@@ -459,6 +460,18 @@ and JSX inline spacing, including duplicate legacy declarations, and requires
 removing migrated entries from `scripts/app-spacing-debt.json`. The debt file is
 a migration inventory, not an automatically refreshed allowlist. Browser tests
 verify that local font size does not change utility spacing.
+
+Application cards compose `app-card` with spacing such as `app-p-3`; the helper
+owns only the library surface, border, radius, and `.active` inset. It also supports
+selectable `Button` cards while retaining the shared button focus and disabled
+states. Keep feature-specific geometry outside the helper.
+
+Use `pure-form app-form` (optionally `pure-form-stacked`) and
+`pure-table pure-table-striped app-table` for themed forms and striped tables.
+Pure owns their base padding and layout; the opt-in helpers bridge application
+palette roles, form focus/read-only/disabled states, and checkbox/radio label
+alignment. Add `pure-checkbox` or `pure-radio` to the corresponding label. These
+helpers belong only to application UI and never to authored résumé content.
 
 **Spacing utilities** follow an `app-` prefix to avoid collisions with PureCSS and resume content styles:
 - `app-mb-1` through `app-mb-4` — margin-bottom

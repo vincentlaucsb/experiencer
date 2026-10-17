@@ -104,19 +104,9 @@
 
 .resume-library-item {
     align-items: center;
-    background: colors.$surface-card;
-    border: 1px solid colors.$border-strong;
-    border-radius: 6px;
     display: grid;
     gap: 1rem;
     grid-template-columns: minmax(0, 1fr) auto;
-    padding: 0.75rem;
-
-    &.active {
-        border-color: colors.$surface-interactive;
-        box-shadow: inset 4px 0 0 colors.$surface-interactive;
-    }
-
     h3,
     p {
         margin: 0;

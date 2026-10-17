@@ -1,0 +1,111 @@
+@use "colors/semantic" as colors;
+
+// Cards share the library surface; callers compose spacing and layout utilities.
+.app-card,
+.app-card.pure-button {
+    background: colors.$surface-card;
+    border: 1px solid colors.$border-strong;
+    border-radius: 6px;
+}
+
+.app-card.active,
+.app-card.pure-button.active {
+    border-color: colors.$surface-interactive;
+    box-shadow: inset 4px 0 0 colors.$surface-interactive;
+}
+
+// Selectable cards retain the shared button's keyboard and disabled behavior.
+.app-card.pure-button {
+    color: colors.$text-primary;
+
+    &:hover:not(:disabled, .pure-button-disabled),
+    &:focus:not(:disabled, .pure-button-disabled) {
+        background-image: none;
+        background-color: colors.$surface-muted;
+        color: colors.$text-primary;
+    }
+}
+
+// Opt in alongside Pure's form classes; vendor padding and form layout remain Pure-owned.
+.pure-form.app-form {
+    input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="submit"], [type="button"], [type="reset"], [type="hidden"]),
+    textarea,
+    select {
+        box-sizing: border-box;
+        min-width: 0;
+        max-width: 100%;
+        background: colors.$surface-raised;
+        border: 1px solid colors.$border-strong;
+        box-shadow: none;
+        color: colors.$text-primary;
+        font: inherit;
+
+        &[readonly],
+        &:disabled {
+            background: colors.$surface-muted;
+            border-color: colors.$border-strong;
+            color: colors.$text-secondary;
+        }
+
+        &:focus {
+            border-color: colors.$focus-ring;
+            outline: 2px solid colors.$focus-ring;
+            outline-offset: 2px;
+        }
+
+        &:focus:invalid,
+        &[aria-invalid="true"] {
+            border-color: colors.$danger;
+            color: colors.$danger;
+        }
+    }
+
+    textarea { resize: vertical; }
+
+    .pure-checkbox,
+    .pure-radio {
+        display: flex;
+        align-items: center;
+        gap: var(--app-space-2);
+    }
+
+    input[type="checkbox"],
+    input[type="radio"] {
+        flex: 0 0 auto;
+        accent-color: colors.$surface-interactive;
+
+        &:focus-visible {
+            outline: 2px solid colors.$focus-ring;
+            outline-offset: 2px;
+        }
+    }
+
+    legend {
+        border-color: colors.$border-subtle;
+        color: colors.$text-primary;
+    }
+}
+
+// Extend Pure's table/striped selectors rather than replacing its table geometry.
+.pure-table.app-table {
+    background: colors.$surface-card;
+    border-color: colors.$border-strong;
+    color: colors.$text-primary;
+
+    td,
+    th { border-color: colors.$border-strong; }
+
+    caption { color: colors.$text-primary; }
+
+    thead {
+        background: colors.$surface-muted;
+        color: colors.$text-primary;
+    }
+
+    .pure-table-odd td,
+    .pure-table-odd th[scope="row"],
+    &.pure-table-striped tr:nth-child(2n-1) td,
+    &.pure-table-striped tr:nth-child(2n-1) th[scope="row"] {
+        background: colors.$surface-muted;
+    }
+}

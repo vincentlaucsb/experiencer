@@ -70,6 +70,7 @@ export default function ResumeShell(props: ResumeShellProps) {
             {extensions.overlays}
             <SaveAsDialog isEditing={props.isEditing} />
             <TopNavBar
+                navigationHost={extensions.navigationHost}
                 exportHtml={() => output.exportHtml(source)}
                 exportToPng={() => output.exportPng(source)}
                 print={() => output.print(source)}

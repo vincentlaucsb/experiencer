@@ -1,4 +1,5 @@
 import * as React from "react";
+import { createPortal } from "react-dom";
 
 // A fixed raster keeps the small navigation mark consistent across Chromium paints.
 // The generated 128px source remains sharp at common display pixel densities.
@@ -31,6 +32,12 @@ const NAV_OVERFLOW_STEPS = [
 
 /** Composes the responsive editor navigation shell from focused child controls. */
 export function TopNavBar(props: TopNavBarProps) {
+    const navigation = <NavigationContent {...props} />;
+    return props.navigationHost ? createPortal(navigation, props.navigationHost) : navigation;
+}
+
+/** Owns measurement inside the selected host, reconnecting when the portal changes. */
+function NavigationContent(props: TopNavBarProps) {
     const brandRef = React.useRef<HTMLDivElement>(null);
     const collapsedNavSteps = useProgressiveOverflow(
         brandRef,
@@ -47,7 +54,7 @@ export function TopNavBar(props: TopNavBarProps) {
         }
     };
 
-    return (
+    const navigation = (
         <div
             id="brand"
             ref={brandRef}
@@ -117,6 +124,7 @@ export function TopNavBar(props: TopNavBarProps) {
             />
         </div>
     );
+    return navigation;
 }
 
 /** Supplies the OSS workspace and local-file defaults to the navigation view. */

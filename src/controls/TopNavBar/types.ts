@@ -24,6 +24,7 @@ export interface TopNavBarProps {
     documentItems?: React.ReactNode;
 
     /** Shared shell presentation and extensions. */
+    navigationHost?: HTMLElement;
     saveStatus?: string;
     proBadge?: string;
     accountLabel?: string;

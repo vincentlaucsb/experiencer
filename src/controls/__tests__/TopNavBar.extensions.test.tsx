@@ -26,6 +26,29 @@ const baseProps = {
     toggleLanding: jest.fn()
 };
 
+test("hosts the original navigation in an embedding header and restores inline rendering", () => {
+    const host = document.createElement("header");
+    document.body.append(host);
+    const print = jest.fn();
+    const { container, rerender, unmount } = render(
+        <TopNavBar {...baseProps} navigationHost={host} print={print} />
+    );
+    try {
+        expect(container.querySelector("#brand")).toBeNull();
+        fireEvent.click(within(host).getByRole("button", { name: "File" }));
+        fireEvent.click(screen.getByRole("menuitem", { name: "Print Ctrl + P" }));
+        expect(print).toHaveBeenCalledTimes(1);
+        expect(within(host).getByRole("button", { name: /^Theme:/ })).toBeTruthy();
+
+        rerender(<TopNavBar {...baseProps} />);
+        expect(host.querySelector("#brand")).toBeNull();
+        expect(container.querySelector("#brand")).toBeTruthy();
+    } finally {
+        unmount();
+        host.remove();
+    }
+});
+
 test("keeps Help visible while hiding document menus on the landing page", () => {
     render(<TopNavBar {...baseProps} isEditing={false} />);
 

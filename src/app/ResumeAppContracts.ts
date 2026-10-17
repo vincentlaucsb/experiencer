@@ -44,6 +44,8 @@ export type DeleteDocumentConfirmationRequest = (
 ) => void;
 
 export interface ResumeShellExtensions {
+    /** Optional host for the existing navigation chrome when embedding the editor in another shell. */
+    navigationHost?: HTMLElement;
     proBadge?: string;
     accountLabel?: string;
     editingStorage?: 'local' | 'cloud';
@@ -188,6 +190,7 @@ export type ResumeWrapperProps = Partial<Omit<ResumeProps, 'selectedNodeId' | 'i
 export function resolveResumeAppExtensions(props: ResumeWrapperProps | ResumeProps): ResumeAppExtensions {
     return {
         shell: {
+            navigationHost: props.extensions?.shell?.navigationHost,
             proBadge: props.extensions?.shell?.proBadge ?? props.proBadge,
             accountLabel: props.extensions?.shell?.accountLabel ?? props.accountLabel,
             editingStorage: props.extensions?.shell?.editingStorage ?? props.editingStorage,

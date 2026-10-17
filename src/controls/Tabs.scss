@@ -14,9 +14,14 @@
             color: colors.$text-primary;
         }
 
-        .tabs-button-active {
-            background: colors.$surface-interactive;
-            color: colors.$text-on-inverse;
+        // Selection must retain its fill when the shared button hover/focus rules apply.
+        .tabs-button-active.pure-button {
+            &,
+            &:hover,
+            &:focus {
+                background: colors.$surface-interactive;
+                color: colors.$text-on-inverse;
+            }
         }
     }
 

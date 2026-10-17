@@ -55,7 +55,7 @@ Markdown node schema or persistence format when changing the editor adapter.
 - [ ] Suggest improvements to bullet points (clarity, impact, action verbs)
 - [ ] Identify weak phrasing or passive voice
 - [ ] Recommend relevant skills based on job description
-- [ ] Grammar and spelling suggestions
+- [ ] Grammar suggestions (spelling uses the browser spellchecker)
 - [ ] Tone analyzer (professional, casual, technical)
 **Estimated effort**: 8-12 hours (requires API integration)
 **Status**: Nice-to-have, long-term feature
@@ -117,7 +117,7 @@ Similar situation to react-contextmenu - type compatibility issues with modern R
 - [ ] Multi-page resume support
 - [ ] Image upload and optimization
 - [ ] Font family selector in CSS editor
-- [ ] Spell check integration
+- [x] Spell check integration (native browser spellcheck in résumé text fields)
 - [~] Accessibility — initial ARIA pass complete (see `docs/ARIA-TODO.md` for remaining work)
 - [ ] Dark mode for editor UI (not resume)
 - [ ] Collaborative editing (WebRTC?)

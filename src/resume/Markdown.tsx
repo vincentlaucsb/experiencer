@@ -15,6 +15,7 @@ import { getMarkdownEditor } from "@/resume/markdownEditor";
 
 // Stores
 import { useEditorStore, useIsNodeEditing } from "@/shared/stores/editorStore";
+import { useResumeSpellCheck } from "@/shared/stores/resumeSpellCheckHooks";
 
 // Types
 import ResumeComponentProps from "@/types";
@@ -38,6 +39,7 @@ import ResumeComponentProps from "@/types";
 export default function MarkdownText(props: ResumeComponentProps) {
     const isEditing = useIsNodeEditing(props.uuid) && !props.readOnly;
     const toggleEdit = useEditorStore((state) => state.toggleEdit);
+    const spellCheck = useResumeSpellCheck();
     const textValue = props.value || "";
     
     // Local state for editing to prevent input reverting on every keystroke
@@ -77,6 +79,7 @@ export default function MarkdownText(props: ResumeComponentProps) {
                     onChange={setEditValue}
                     placeholder={`# Markdown supported\n\n- Lists\n- **Bold** *italic* ~~strikethrough~~\n- [Links](url)\n- \`code\` or \`\`\`code blocks\`\`\``}
                     autoFocus
+                    spellCheck={spellCheck}
                 />
             </div>
             <div className="resume-overlay-actions app-gap-2">

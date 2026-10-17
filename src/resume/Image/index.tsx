@@ -6,6 +6,7 @@ import "../OverlayEditing.scss";
 import Container from "@/resume/infrastructure/Container";
 import { Button } from "@/controls/Buttons";
 import { useEditorStore, useIsNodeEditing } from "@/shared/stores/editorStore";
+import { useResumeSpellCheck } from "@/shared/stores/resumeSpellCheckHooks";
 
 // Hooks
 import useEditingControls from "../hooks/useEditingControls";
@@ -40,6 +41,7 @@ export interface ImageProps extends ResumeComponentProps<ImageBase> { }
 export default function Image({ updateDataFields, ...props }: ImageProps) {
     const isEditing = useIsNodeEditing(props.uuid) && !props.readOnly;
     const toggleEdit = useEditorStore((state) => state.toggleEdit);
+    const spellCheck = useResumeSpellCheck();
     const [tempSrc, setTempSrc] = useState(props.value || "");
     const [tempAlt, setTempAlt] = useState(props.altText || "");
 
@@ -101,6 +103,7 @@ export default function Image({ updateDataFields, ...props }: ImageProps) {
                     value={tempSrc}
                     onChange={(e) => setTempSrc(e.target.value)}
                     onPaste={handleSourcePaste}
+                    spellCheck={false}
                     placeholder="https://example.com/image.png or data:image/png;base64,..."
                     autoFocus
                 />
@@ -137,6 +140,7 @@ export default function Image({ updateDataFields, ...props }: ImageProps) {
                     value={tempAlt}
                     onChange={(e) => setTempAlt(e.target.value)}
                     placeholder="Image description"
+                    spellCheck={spellCheck}
                 />
             </div>
             <div className="resume-overlay-actions app-gap-2">

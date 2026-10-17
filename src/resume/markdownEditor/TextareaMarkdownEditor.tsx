@@ -14,6 +14,7 @@ export default function TextareaMarkdownEditor(props: MarkdownEditorProps) {
             onChange={(event) => props.onChange(event.target.value)}
             placeholder={props.placeholder}
             autoFocus={props.autoFocus}
+            spellCheck={props.spellCheck ?? false}
         />
     );
 }

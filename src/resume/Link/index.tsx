@@ -2,6 +2,7 @@ import React from "react";
 import Container from "@/resume/infrastructure/Container";
 import { process } from "@/shared/utils/processText";
 import { useIsNodeEditing, useEditorStore } from "@/shared/stores/editorStore";
+import { useResumeSpellCheck } from "@/shared/stores/resumeSpellCheckHooks";
 import ResumeComponentProps from "@/types";
 import useEditingControls from "../hooks/useEditingControls";
 import useEditing from "../hooks/useEditing";
@@ -27,6 +28,7 @@ function getSafeHref(url?: string) {
 function Link(props: LinkProps) {
     const isEditing = useIsNodeEditing(props.uuid) && !props.readOnly;
     const toggleEdit = useEditorStore((state) => state.toggleEdit);
+    const spellCheck = useResumeSpellCheck();
     const storedLabel = process(props.value) as string;
     const url = getSafeHref(props.url);
     const visibleLabel = storedLabel.trim();
@@ -59,6 +61,7 @@ function Link(props: LinkProps) {
                     {...nonCredentialInputAttributes}
                     ref={inputRef}
                     type="text"
+                    spellCheck={spellCheck}
                     value={editValue}
                     onChange={(e) => setEditValue(e.target.value)}
                     placeholder="Enter link text"

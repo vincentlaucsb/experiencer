@@ -1,5 +1,5 @@
 import * as React from "react";
-import TextField from "@/controls/inputs/TextField";
+import ResumeTextField from "@/resume/helpers/ResumeTextField";
 import Container from "@/resume/infrastructure/Container";
 import { process } from "@/shared/utils/processText";
 import ResumeComponentProps from "@/types";
@@ -9,7 +9,7 @@ export default class Section extends React.PureComponent<ResumeComponentProps> {
     static readonly type = 'Section';
     
     render() {
-        const title = <TextField
+        const title = <ResumeTextField
             onChange={this.props.updateData.bind(this, "value")}
             value={this.props.value || ''}
             defaultText="Enter a title"

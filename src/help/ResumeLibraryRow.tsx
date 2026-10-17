@@ -80,7 +80,7 @@ export default function ResumeLibraryRow(props: ResumeLibraryRowProps) {
     const [editingTitle, setEditingTitle] = React.useState("");
     return (
         <article
-            className={["resume-library-item", document.id === props.activeDocumentId && "active", status.busy && "busy"].filter(Boolean).join(" ")}
+            className={["resume-library-item app-card app-p-3", document.id === props.activeDocumentId && "active", status.busy && "busy"].filter(Boolean).join(" ")}
             aria-busy={status.busy || undefined}
         >
             {editing ? (

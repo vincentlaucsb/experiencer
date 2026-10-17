@@ -128,6 +128,7 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
                     {...nonCredentialInputAttributes}
                     autoFocus
                     aria-label={`${this.props.label} value`}
+                    spellCheck={false}
                     aria-invalid={Boolean(error)}
                     aria-describedby={error ? errorId : undefined}
                     onChange={(event) => this.setState({ value: event.target.value })}

@@ -1,4 +1,4 @@
-import TextField from "@/controls/inputs/TextField";
+import ResumeTextField from "@/resume/helpers/ResumeTextField";
 import { deleteAt, moveUp, moveDown } from "@/shared/utils/arrayHelpers";
 import { process } from "@/shared/utils/processText";
 import ResumeComponentProps, { BasicResumeNode } from "@/types";
@@ -63,7 +63,7 @@ function getDefinitions(props: DescriptionItemProps, isSelected: boolean) {
             }
 
             return <dd key={`${index}/${arr.length}`}>
-                <TextField
+                <ResumeTextField
                     static={!isSelected}
                     onChange={(data: string) => updater(index, data)}
                     value={text}
@@ -84,7 +84,7 @@ export function DescriptionListItem(props: DescriptionItemProps) {
     const isSelected = useEditorStore(state => state.selectedNodeId === props.uuid);
 
     const term = !props.readOnly || (props.value || "").trim().length > 0
-        ? <TextField
+        ? <ResumeTextField
             id={`${props.uuid}-term`}
             label="Term"
             onChange={(text: string) => { props.updateData("value", text) }}

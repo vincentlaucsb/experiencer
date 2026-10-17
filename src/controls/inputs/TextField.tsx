@@ -12,7 +12,7 @@ interface ContextMenuOption {
     onClick: () => void;
 }
 
-interface TextFieldProps {
+export interface TextFieldProps {
     value?: string;
     label?: string;
     id?: string;
@@ -27,6 +27,8 @@ interface TextFieldProps {
     autoExpand?: boolean;
     /** Render the stored value only. Empty read-only fields stay empty instead of showing an editing hint. */
     readOnly?: boolean;
+    /** Ask the browser to check spelling while editing; generic fields leave it off. */
+    spellCheck?: boolean;
 
     contextMenuOptions?: Array<ContextMenuOption>;
     
@@ -142,6 +144,7 @@ export default class TextField extends React.Component<TextFieldProps, TextField
                 "aria-label": props.ariaLabel || props.label || props.defaultText || "Text field",
                 onChange: (event: React.ChangeEvent<HTMLInputElement>) => this.setState({ value: event.target.value }),
                 onKeyDown: this.onKeyDown,
+                spellCheck: props.spellCheck ?? false,
                 value: this.state.value
             };
 

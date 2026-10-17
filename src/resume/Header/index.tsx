@@ -3,6 +3,7 @@ import { useRef } from "react";
 import InlineMarkdown from "../helpers/InlineMarkdown";
 import Container from "@/resume/infrastructure/Container";
 import { useEditorStore, useIsNodeEditing } from "@/shared/stores/editorStore";
+import { useResumeSpellCheck } from "@/shared/stores/resumeSpellCheckHooks";
 import { RowBase } from "../Row";
 import useEditingControls from "../hooks/useEditingControls";
 import useAutoExpandInput from "../hooks/useAutoExpandInput";
@@ -23,6 +24,7 @@ export interface HeaderProps extends ResumeComponentProps<HeaderBase> {};
 export default function Header({ updateDataFields, ...props }: HeaderProps) {
     const isEditing = useIsNodeEditing(props.uuid) && !props.readOnly;
     const toggleEdit = useEditorStore((state) => state.toggleEdit);
+    const spellCheck = useResumeSpellCheck();
     const titleRef = useRef<HTMLInputElement>(null);
     const subtitleRef = useRef<HTMLInputElement>(null);
 
@@ -74,6 +76,7 @@ export default function Header({ updateDataFields, ...props }: HeaderProps) {
             id={`${props.uuid}-title`}
             aria-label="Title"
             type="text"
+            spellCheck={spellCheck}
             value={props.value || ""}
             onChange={(e) => props.updateData("value", e.target.value)}
             placeholder="Enter a title"
@@ -85,6 +88,7 @@ export default function Header({ updateDataFields, ...props }: HeaderProps) {
             id={`${props.uuid}-subtitle`}
             aria-label="Subtitle"
             type="text"
+            spellCheck={spellCheck}
             value={props.subtitle || ""}
             onChange={(e) => props.updateData("subtitle", e.target.value)}
             placeholder="Enter a subtitle"

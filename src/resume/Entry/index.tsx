@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Button } from "@/controls/Buttons";
 import { useNodeExtensions } from "@/shared/hooks/useNodeExtensions";
-import TextField from "@/controls/inputs/TextField";
+import ResumeTextField from "@/resume/helpers/ResumeTextField";
 import Container from "@/resume/infrastructure/Container";
 import { process } from "@/shared/utils/processText";
 import toUrl from "@/shared/utils/toUrl";
@@ -129,7 +129,7 @@ export default function Entry(props: EntryProps) {
 
             return <React.Fragment key={`${field.sourceIndex}/${fields.length}`}>
                 {carriedBreak}
-                <TextField
+                <ResumeTextField
                     displayClassName={getFieldClassName(classIndex, classCount)}
                     static={!isSelected}
                     startEditing={newField?.key === key && newField.index === field.sourceIndex}

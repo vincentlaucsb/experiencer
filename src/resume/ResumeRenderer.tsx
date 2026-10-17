@@ -3,6 +3,7 @@ import * as React from "react";
 import ResumeComponentFactory from "@/resume/ResumeComponent";
 import PageBoundaries from "@/resume/PageBoundaries";
 import getResumeMinHeight from "@/shared/utils/getResumeMinHeight";
+import { preserveNativeTextContextMenu } from "@/shared/utils/nativeTextContextMenu";
 import { IdType, NodeProperty, ResumeNode } from "@/types";
 import PageSize from "@/types/PageSize";
 import type { ResumeDocumentRoot } from '@/shared/resumeDocument/prepareResumeDocument';
@@ -37,6 +38,12 @@ export interface ResumeRendererProps {
 export default function ResumeRenderer(props: ResumeRendererProps) {
     const resumeRef = React.useRef<HTMLDivElement>(null);
     const renderContainer = props.root !== 'document-body';
+    const editable = props.root === 'editor-host' && !props.readOnly;
+
+    React.useEffect(() => {
+        if (!editable || !resumeRef.current) return;
+        return preserveNativeTextContextMenu(resumeRef.current);
+    }, [editable]);
 
     const setResumeRef = React.useCallback((element: HTMLDivElement | null) => {
         resumeRef.current = element;

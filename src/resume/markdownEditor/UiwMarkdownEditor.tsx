@@ -35,6 +35,7 @@ export default function UiwMarkdownEditor(props: MarkdownEditorProps) {
                     id: props.id,
                     "aria-label": props.ariaLabel,
                     placeholder: props.placeholder,
+                    spellCheck: props.spellCheck ?? false,
                 }}
                 highlightEnable={false}
             />

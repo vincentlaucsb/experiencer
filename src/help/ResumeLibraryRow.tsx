@@ -15,6 +15,7 @@ interface ResumeLibraryRowProps {
     activeDocumentId?: string;
     label?: string;
     metadata?: string;
+    accessory?: React.ReactNode;
     actions?: ResumeDocumentAction[];
     statusSource?: ResumeDocumentStatusSource;
     openDocument?: (id: string) => void;
@@ -27,6 +28,7 @@ function DocumentActionsMenu(props: {
     document: ResumeDocumentSummary;
     actions?: ResumeDocumentAction[];
     onRename?: () => void;
+    onDelete?: () => void;
 }) {
     const [open, setOpen] = React.useState(false);
     const menuId = `document-actions-${React.useId().replace(/:/g, "")}`;
@@ -42,7 +44,9 @@ function DocumentActionsMenu(props: {
             label: action.label,
             disabled: props.disabled || action.disabled,
             onSelect: () => void action.run()
-        }))
+        })),
+        ...(props.onDelete ? [{ id: `delete-${props.document.id}`, label: "Delete", variant: "danger" as const,
+            disabled: props.disabled, onSelect: props.onDelete }] : [])
     ];
 
     if (!items.length) return null;
@@ -121,6 +125,7 @@ export default function ResumeLibraryRow(props: ResumeLibraryRowProps) {
                         >
                             {document.title}
                         </span>
+                        {props.accessory}
                         {props.label
                             ? (
                                 <span className="document-label">
@@ -153,19 +158,13 @@ export default function ResumeLibraryRow(props: ResumeLibraryRowProps) {
                     disabled={status.busy}
                     document={document}
                     actions={props.actions}
+                    onDelete={props.deleteDocument ? () => props.deleteDocument?.(document.id) : undefined}
                     onRename={props.renameDocument ? () => {
                         setEditing(true);
                         setEditingTitle(document.title);
                     } : undefined}
                 />
-                <Button
-                    disabled={status.busy}
-                    appearance="outline"
-                    variant="error"
-                    onClick={() => props.deleteDocument?.(document.id)}
-                >
-                    Delete
-                </Button>
+
             </div>
         </article>
     );

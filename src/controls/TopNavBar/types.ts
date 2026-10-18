@@ -22,6 +22,7 @@ export interface TopNavBarProps {
     selectDocument?: (id: string) => void;
     renameDocument?: (id: string, title: string) => Promise<string | null>;
     documentItems?: React.ReactNode;
+    documentMenuActions?: Record<string, MenuItem[]>;
 
     /** Shared shell presentation and extensions. */
     navigationHost?: HTMLElement;

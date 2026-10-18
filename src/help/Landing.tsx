@@ -19,6 +19,7 @@ interface LandingProps {
     hasLocalResume?: boolean;
     documents?: ResumeDocumentSummary[];
     documentLibraryLead?: React.ReactNode;
+    documentAccessories?: Record<string, React.ReactNode>;
     documentLabels?: Record<string, string>;
     documentMetadata?: Record<string, string>;
     documentGroups?: ResumeDocumentGroup[];
@@ -86,7 +87,7 @@ export default function Landing(props: LandingProps) {
 
     return (
         <>
-            <Modal title="Load File" isOpen={isOpen} close={() => setOpen(false)} className="landing-modal file-loader-modal">
+            <Modal title="Import resume JSON" isOpen={isOpen} close={() => setOpen(false)} className="landing-modal file-loader-modal">
                 {modalContent}
             </Modal>
             <div id="landing" className={['app-px-2', props.className].filter(Boolean).join(' ')}>
@@ -98,7 +99,7 @@ export default function Landing(props: LandingProps) {
                     <PureMenu divProps={{ className: "landing-menu" }}>
                         {returnButton}
                         <MenuItem onClick={() => props.new()} icon="paper">New</MenuItem>
-                        <MenuItem onClick={() => setOpen(true)} icon="folder-open">Load</MenuItem>
+                        <MenuItem onClick={() => setOpen(true)} icon="folder-open">Import resume JSON</MenuItem>
                     </PureMenu>
                 </>}
                 {props.documents?.length || groups.some((group) => group.showWhenEmpty) ? (
@@ -128,6 +129,7 @@ export default function Landing(props: LandingProps) {
                                     activeDocumentId={props.activeDocumentId}
                                     label={props.documentLabels?.[document.id]}
                                     metadata={props.documentMetadata?.[document.id]}
+                                    accessory={props.documentAccessories?.[document.id]}
                                     actions={props.documentActions?.[document.id]}
                                     statusSource={props.documentStatusSource}
                                     openDocument={props.openDocument}

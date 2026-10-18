@@ -513,7 +513,8 @@ test('Deleting a resume requires confirmation in the app modal', async () => {
     render(<Resume mode="landing" resumeLibraryStore={libraryStore} />);
 
     await screen.findByText("Saved Resume");
-    fireEvent.click(screen.getByRole("button", { name: "Delete" }));
+    fireEvent.click(screen.getByRole("button", { name: /^More Actions for/ }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Delete" }));
 
     let dialog = screen.getByRole("dialog", { name: "Delete resume" });
     expect(within(dialog).getByText(/Saved Resume/)).toBeTruthy();
@@ -523,7 +524,8 @@ test('Deleting a resume requires confirmation in the app modal', async () => {
     expect(screen.queryByRole("dialog", { name: "Delete resume" })).toBeNull();
     expect(repository.delete).not.toHaveBeenCalled();
 
-    fireEvent.click(screen.getByRole("button", { name: "Delete" }));
+    fireEvent.click(screen.getByRole("button", { name: /^More Actions for/ }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Delete" }));
     dialog = screen.getByRole("dialog", { name: "Delete resume" });
     fireEvent.click(within(dialog).getByRole("button", { name: "Delete" }));
 

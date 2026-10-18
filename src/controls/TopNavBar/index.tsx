@@ -104,6 +104,7 @@ function NavigationContent(props: TopNavBarProps) {
                                 <DocumentMenu
                                     activeDocumentId={props.activeDocumentId}
                                     documentLabels={props.documentLabels}
+                                    documentMenuActions={props.documentMenuActions}
                                     documents={props.documents}
                                     renameDocument={props.renameDocument}
                                     selectDocument={props.selectDocument}

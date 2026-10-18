@@ -111,23 +111,51 @@ test('horizontal header editing preserves contact group geometry and excludes co
   await expect(printed.getByRole('button', { name: 'Done', exact: true })).toHaveCount(0);
 });
 
-test('CSS compact actions have names and matching hover and focus help', async ({ page }) => {
+for (const theme of ['light', 'dark']) {
+test(`CSS compact actions have readable hover and focus help in ${theme}`, async ({ page }) => {
   await createResumeFromTemplate(page);
+  await page.locator('html').evaluate((element, selectedTheme) => element.setAttribute('data-theme', selectedTheme), theme);
   await page.getByRole('tab', { name: 'CSS', exact: true }).click();
   for (const name of ['Add nested rule to Resume CSS', 'Highlight elements matching body', 'Add pseudo-class or pseudo-element to Resume CSS']) {
     const action = page.getByRole('button', { name, exact: true });
     await expect(action).toHaveAttribute('title', name);
     await action.focus();
     await expect(action.locator('..').getByRole('tooltip')).toHaveText(name);
+    await expect(action.locator('..').getByRole('tooltip')).toHaveCSS('letter-spacing', 'normal');
+    await expect(action.locator('..').getByRole('tooltip')).toHaveCSS('word-spacing', '0px');
     await page.locator('#resume').hover();
     await action.hover();
     await expect(action.locator('..').getByRole('tooltip')).toBeVisible();
   }
   const add = page.getByRole('button', { name: 'Add nested rule to Resume CSS', exact: true });
   await add.focus();
+  const prose = await add.locator('..').getByRole('tooltip').evaluate(element => {
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    const context = document.createElement('canvas').getContext('2d')!;
+    context.font = getComputedStyle(element).font;
+    return { width: range.getBoundingClientRect().width, expected: context.measureText(element.textContent!).width };
+  });
+  // A one-line explanation must retain normal glyph advances rather than button-group compression.
+  expect(prose.width).toBeGreaterThanOrEqual(prose.expected - 2);
+  expect(prose.width).toBeLessThanOrEqual(prose.expected + 2);
   await add.press('Enter');
   await expect(page.getByRole('button', { name: /^Delete Resume CSS Ruleset/ })).toBeVisible();
+  const nestedAction = page.getByRole('button', { name: /^Add nested rule to Resume CSS Ruleset/ });
+  await nestedAction.focus();
+  const nestedTooltip = nestedAction.locator('..').getByRole('tooltip');
+  await expect(nestedTooltip).toBeVisible();
+  const contrast = await nestedTooltip.evaluate(element => {
+    const rgb = (value: string) => value.match(/[\d.]+/g)!.slice(0, 3).map(Number);
+    const luminance = (values: number[]) => values.map(value => value / 255).map(value => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4).reduce((sum, value, index) => sum + value * [0.2126, 0.7152, 0.0722][index], 0);
+    const style = getComputedStyle(element);
+    const foreground = luminance(rgb(style.color));
+    const background = luminance(rgb(style.backgroundColor));
+    return (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05);
+  });
+  expect(contrast).toBeGreaterThanOrEqual(4.5);
 });
+}
 
 for (const theme of ['light', 'dark']) {
   test(`inspector tabs stay on one row and toolbar captions meet contrast in ${theme}`, async ({ page }) => {

@@ -22,6 +22,12 @@
         border: 1px solid colors.$border-strong;
         font-size: 0.8rem;
         font-weight: normal;
+        // Pure's button-group whitespace compression belongs to controls, not explanatory prose.
+        letter-spacing: normal;
+        word-spacing: normal;
+        line-height: 1.3;
+        text-align: left;
+        white-space: normal;
         pointer-events: none;
     }
     &:hover, &:focus-within {
@@ -181,7 +187,8 @@ section.css-category-1 {
             
             // Make sure inputs, text and buttons inside the heading
             // are visible on dark backgrounds
-            &, * {
+            // Tooltips own a raised surface and its matching foreground in either theme.
+            &, *:not(.css-action-tooltip) {
                 color: colors.$text-on-inverse;
             }
         }

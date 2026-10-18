@@ -5,7 +5,7 @@ import Section from "@/resume/Section";
 import { DescriptionListItemType, DescriptionListType } from "@/resume/List";
 import type { AddChild, ResumeNode } from "@/types";
 import type { ToolbarItemData } from "../toolbar/ToolbarButton";
-import addNodeAndEnsureCss from '@/shared/stores/addNodeAndEnsureCss';
+import { insertEditorNode } from '@/shared/stores/insertEditorNode';
 
 interface AddOptionProps {
     options: string | Array<string>;
@@ -50,11 +50,7 @@ export function addOptions(data: AddOptionProps): ToolbarItemData {
 }
 
 function insertNode(data: AddOptionProps, node: ResumeNode): void {
-    if (node.type === 'PageBreak') {
-        addNodeAndEnsureCss(data.addChild, data.id, node);
-    } else {
-        data.addChild(data.id, node);
-    }
+    insertEditorNode(data.addChild, data.id, node);
 }
 
 export function hasChildInsertOptions(options: string | Array<string>): boolean {

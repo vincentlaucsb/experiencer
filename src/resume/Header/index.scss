@@ -2,6 +2,27 @@ header {
     hgroup {
         input {
             display: block;
+            font: inherit;
+            color: inherit;
+            line-height: inherit;
+            max-width: 100%;
         }
     }
+}
+
+.header-edit-actions {
+    // Editor chrome lives outside the authored header's distribution and cannot shrink its content groups.
+    position: fixed;
+    bottom: var(--app-space-4);
+    right: var(--app-space-4);
+    z-index: var(--xp-z-floating-action);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 1rem;
+    font-weight: normal;
+    text-transform: none;
+    color: var(--xp-text-primary);
+    background: var(--xp-surface-raised);
+    border: 1px solid var(--xp-border-strong);
 }

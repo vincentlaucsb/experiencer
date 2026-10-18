@@ -32,7 +32,7 @@ export default function FileMenu(props: FileMenuProps) {
         },
         {
             id: "load",
-            label: "Load",
+            label: "Import resume JSON",
             icon: createPoprightIcon("folder-open"),
             onSelect: () => setLoadOpen(true)
         },
@@ -64,7 +64,7 @@ export default function FileMenu(props: FileMenuProps) {
         },
         {
             id: "print",
-            label: "Print",
+            label: "Print / Save as PDF",
             shortcut: "Ctrl + P",
             icon: createPoprightIcon("printer"),
             onSelect: () => props.print()
@@ -75,7 +75,7 @@ export default function FileMenu(props: FileMenuProps) {
         <>
             <Modal
                 isOpen={isLoadOpen}
-                title="Load File"
+                title="Import resume JSON"
                 close={closeLoad}
                 className="file-loader-modal"
             >

@@ -49,7 +49,7 @@ describe("ResumeCssEditor", () => {
         expect(await screen.findByText("Contact")).toBeTruthy();
         expect(screen.getByText("Streamline Pro Header")).toBeTruthy();
         expect(screen.getAllByText("PARENT")).toHaveLength(2);
-        expect(screen.getByText((text) => text.includes("#streamline-pro-contact"))).toBeTruthy();
+        expect(screen.getByText('body #streamline-pro-contact', { selector: '.css-description' })).toBeTruthy();
     });
 
     test("displays component CSS rules from ancestors without HTML IDs", async () => {

@@ -115,7 +115,7 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
      * @param parentId - UUID, hierarchical ID, or undefined for root insertion
      * @param node - The node to add
      */
-    addNode(parentId: string | IdType | undefined, node: ResumeNode): void {
+    addNode(parentId: string | IdType | undefined, node: ResumeNode): string | undefined {
         const normalizedParentId: string | IdType = parentId ?? [];
         const parentNode = this.getParentNode(parentId);
 
@@ -131,7 +131,7 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
         }
 
         this.recordNodeHistory();
-        this.withTrackedMutation(() => this.data.addNestedChild(normalizedParentId, node));
+        return this.withTrackedMutation(() => this.data.addNestedChild(normalizedParentId, node));
     }
 
     /**

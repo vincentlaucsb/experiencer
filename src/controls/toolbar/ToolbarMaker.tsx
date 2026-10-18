@@ -79,7 +79,7 @@ export default function Toolbar(props: ToolbarProps) {
                         </PureMenu>
                     )}
                     {isCollapsed ? <></> : (
-                        <span className="toolbar-label app-text-light-accent">{key}</span>
+                        <span className="toolbar-label app-text-on-inverse">{key}</span>
                     )}
                 </div>
             );

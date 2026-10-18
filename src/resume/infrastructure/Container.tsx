@@ -115,6 +115,7 @@ export function ContainerPresentation(props: ContainerPresentationProps) {
         style: props.style,
         id: props.htmlId,
         'data-uuid': props.uuid,
+        'data-resume-interactive': props.readOnly ? undefined : '',
         ref: elementRef,
         ...selectTriggerProps
     }

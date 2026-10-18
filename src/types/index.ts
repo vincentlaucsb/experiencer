@@ -11,7 +11,7 @@ export class Globals {
 
 export type IdType = Array<number>;
 export type Action = (() => void);
-export type AddChild = ((parentUuid: string | undefined, node: ResumeNode) => void);
+export type AddChild = ((parentUuid: string | undefined, node: ResumeNode) => string | void);
 export type ModifyChild = (id: IdType) => void;
 export type NodeProperty = string | string[] | boolean | number | number[];
 

@@ -43,7 +43,7 @@ export default function TopEditingBarAdapter(props: TopEditingBarWrapperProps) {
                 addCssClasses(node, classes);
             }}
             addChild={(parentUuid: string | undefined, node: ResumeNode) => {
-                resumeNodeStore.addNode(parentUuid, node);
+                return resumeNodeStore.addNode(parentUuid, node);
             }}
             pageSize={pageSize}
             redo={canRedo ? redo : undefined}

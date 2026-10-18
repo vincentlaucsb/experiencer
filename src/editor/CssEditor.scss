@@ -4,6 +4,31 @@
 @use "../sass/variables";
 @use "../sass/zindex";
 
+.css-action-help {
+    position: relative;
+    display: inline-flex;
+    .css-action-tooltip {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        z-index: zindex.$sticky-content;
+        width: max-content;
+        max-width: 18rem;
+        // Tooltip padding separates explanatory text from its own surface edge.
+        padding: var(--app-space-2);
+        color: colors.$text-primary;
+        background: colors.$surface-raised;
+        border: 1px solid colors.$border-strong;
+        font-size: 0.8rem;
+        font-weight: normal;
+        pointer-events: none;
+    }
+    &:hover, &:focus-within {
+        .css-action-tooltip { display: block; }
+    }
+}
+
 .live-css-sync-banner {
     position: sticky;
     top: 0;

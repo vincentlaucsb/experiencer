@@ -3,6 +3,7 @@ import { Button } from "@/controls/Buttons";
 import { useNodeExtensions } from "@/shared/hooks/useNodeExtensions";
 import ComponentTypes from "@/resume/schema/ComponentTypes";
 import { ResumeNode } from "@/types";
+import { nodeTreeLabel } from '@/shared/utils/nodeTreeLabel';
 
 import "./NodeTreeVisualizer.scss";
 
@@ -19,10 +20,10 @@ function NodeRepresentation({ node }: { node: ResumeNode }) {
     const htmlId = node.htmlId ? `#${node.htmlId}` : "";
     const cssClasses = node.classNames ? node.classNames.split(' ').map(
         (name) => `.${name}`).join('') : "";
-    const text = ComponentTypes.instance.treeRepresentation(node);
+    const text = nodeTreeLabel(node);
 
     return (
-        <span className={classNames.join(' ')}>{text}
+        <span className={classNames.join(' ')} title={text.full}>{text.short}
             <span className="tree-item-selector app-pl-2">{htmlId}{cssClasses}</span>
             {actions.filter(action => action.treeIndicator).map(action => <Button key={action.id}
                 aria-label={action.label} onKeyDown={event => event.stopPropagation()}
@@ -118,6 +119,7 @@ function TreeMapper({ root, selectNode, selectedNode, depth = 0 }: TreeMapperPro
                 const isFirstTreeItem = !selectedNode && depth === 0 && index === 0;
 
                 return <li
+                    aria-label={nodeTreeLabel(node).full}
                     aria-expanded={node.childNodes?.length ? true : undefined}
                     aria-level={depth + 1}
                     aria-selected={isSelected}

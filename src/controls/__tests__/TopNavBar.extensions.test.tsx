@@ -36,7 +36,7 @@ test("hosts the original navigation in an embedding header and restores inline r
     try {
         expect(container.querySelector("#brand")).toBeNull();
         fireEvent.click(within(host).getByRole("button", { name: "File" }));
-        fireEvent.click(screen.getByRole("menuitem", { name: "Print Ctrl + P" }));
+        fireEvent.click(screen.getByRole("menuitem", { name: "Print / Save as PDF Ctrl + P" }));
         expect(print).toHaveBeenCalledTimes(1);
         expect(within(host).getByRole("button", { name: /^Theme:/ })).toBeTruthy();
 
@@ -262,7 +262,7 @@ test("advertises registered File-menu shortcuts", () => {
     expect(screen.getByRole("menuitem", {
         name: "Save As Ctrl + Shift + S"
     })).toBeTruthy();
-    expect(screen.getByRole("menuitem", { name: "Print Ctrl + P" })).toBeTruthy();
+    expect(screen.getByRole("menuitem", { name: "Print / Save as PDF Ctrl + P" })).toBeTruthy();
 });
 
 test("opens the standalone Save As dialog from the File menu", () => {
@@ -286,9 +286,9 @@ test("owns the file-load modal within the File menu", async () => {
     render(<TopNavBar {...baseProps} />);
 
     fireEvent.click(screen.getByRole("button", { name: "File" }));
-    fireEvent.click(screen.getByRole("menuitem", { name: "Load" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Import resume JSON" }));
 
-    const loadDialog = screen.getByRole("dialog", { name: "Load File" });
+    const loadDialog = screen.getByRole("dialog", { name: "Import resume JSON" });
     expect(loadDialog.classList).toContain("file-loader-modal");
     expect(within(loadDialog).getByRole("button", { name: "Choose file" })).toBeTruthy();
 });

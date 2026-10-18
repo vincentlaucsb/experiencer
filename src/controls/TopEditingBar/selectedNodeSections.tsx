@@ -9,6 +9,7 @@ import getClipboardMenu from "./clipboardMenu";
 import { addOptions, hasChildInsertOptions } from "./insertOptions";
 import type { EditingBarProps } from "./types";
 import { canInsertPageBreakBefore, insertPageBreakBefore } from '@/shared/stores/insertPageBreakBefore';
+import { useEditorStore } from '@/shared/stores/editorStore';
 
 const HtmlIdAdder = React.lazy(() => import("../HtmlIdAdder"));
 
@@ -28,6 +29,11 @@ export function projectSelectedNodeSections(
         [`Current Node (${selectedNode.type})`, {
             icon: "gear",
             items: [
+                ...(ComponentTypes.instance.isEditable(type) ? [{
+                    text: 'Edit content',
+                    icon: 'ui-edit',
+                    onClick: () => useEditorStore.getState().editNode(selectedNode.uuid)
+                }] : []),
                 ...(canInsertChildren ? [addOptions({
                     id: selectedNode.uuid,
                     addChild: props.addChild,

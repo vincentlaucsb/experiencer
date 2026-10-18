@@ -1,5 +1,6 @@
 import React from "react";
-import { Button, Confirm } from "@/controls/Buttons";
+import { Button } from "@/controls/Buttons";
+import CssActionButton from './CssActionButton';
 import { ReadonlyCssNode } from "@/shared/CssTree";
 import { Popover } from "react-tiny-popover";
 import { TrashIcon, AddIcon } from "@/controls/InterfaceIcons";
@@ -30,14 +31,22 @@ const pseudoElements = [
  */
 export default function CssEditorToolbar(props: CssEditorToolbarProps) {
     let [pseudoMenuActive, setPseudoMenuActive] = React.useState(false);
+    const [deletePrompt, setDeletePrompt] = React.useState(false);
     const newSectionName = `${props.cssNode.name} Ruleset #${props.cssNode.children.length}`;
 
     // Don't show delete button for root nodes
     let deleteButton = (props.cssNode.isRoot) ?
         <></> : (
-            <Confirm onConfirm={() => props.deleteNode()}>
+            deletePrompt ? <>
+                <CssActionButton label={`Confirm delete ${props.cssNode.name} rule`} variant="error" onClick={props.deleteNode}>
+                    <i className="icofont-ui-check" aria-hidden="true" />
+                </CssActionButton>
+                <CssActionButton label="Cancel deleting rule" onClick={() => setDeletePrompt(false)}>
+                    <i className="icofont-ui-close" aria-hidden="true" />
+                </CssActionButton>
+            </> : <CssActionButton label={`Delete ${props.cssNode.name} rule`} variant="error" appearance="outline" onClick={() => setDeletePrompt(true)}>
                 <TrashIcon />
-            </Confirm>
+            </CssActionButton>
         );
 
     let pseudoMenu = (
@@ -66,20 +75,19 @@ export default function CssEditorToolbar(props: CssEditorToolbarProps) {
             }}>
             {props.cssNode.fullSelector && <Popover containerClassName="pseudo-options-container"
                 content={pseudoMenu} isOpen={pseudoMenuActive}>
-                <Button onClick={() =>
+                <CssActionButton label={`Add pseudo-class or pseudo-element to ${props.cssNode.name}`} aria-expanded={pseudoMenuActive} onClick={() =>
                     setPseudoMenuActive(!pseudoMenuActive)
-                }>::</Button>
+                }><span aria-hidden="true">::</span></CssActionButton>
             </Popover>}
-            <Button
-                aria-label="Import live changes"
-                title="Import live rule changes from browser DevTools"
+            <CssActionButton
+                label="Import live changes"
                 onClick={props.importLiveChanges}
             >
                 <i className="icofont-refresh" aria-hidden="true" />
-            </Button>
-            <Button onClick={() => props.addSelector(newSectionName, "#some-id.some-class")}>
+            </CssActionButton>
+            <CssActionButton label={`Add nested rule to ${props.cssNode.name}`} onClick={() => props.addSelector(newSectionName, "#some-id.some-class")}>
                 <AddIcon />
-            </Button>
+            </CssActionButton>
             {deleteButton}
         </ButtonGroup>
     );

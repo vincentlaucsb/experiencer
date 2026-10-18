@@ -72,7 +72,7 @@ test('switches page size and adds a new section', async ({ page }) => {
   await page.getByRole('menuitem', { name: 'Section', exact: true }).click();
 
   await expect(page.locator('#resume section')).toHaveCount(sectionCount + 1);
-  await expect(page.getByRole('heading', { name: 'Enter a title' })).toBeVisible();
+  await expect(page.getByRole('textbox', { name: 'Section title' })).toBeFocused();
 });
 
 test('loads the rich Markdown editor on demand and saves its content', async ({ page }) => {

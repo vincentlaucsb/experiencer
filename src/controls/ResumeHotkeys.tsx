@@ -84,7 +84,7 @@ export class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
         // Selected-node actions skip keys from controls that own their keyboard
         // input (see localKeyboardScope). Save and undo/redo stay global.
         const nodeAction = (action: () => void) => (event?: KeyboardEvent) => {
-            if (isFromLocalKeyboardScope(event)) return;
+            if (event?.defaultPrevented || isFromLocalKeyboardScope(event)) return;
             action();
         };
 
@@ -103,9 +103,13 @@ export class ResumeHotKeys extends React.Component<ResumeHotKeysProps> {
                 }
             }),
 
-            ESCAPE: nodeAction(() => {
+            ESCAPE: (event?: KeyboardEvent) => {
+                // Menu-owned keys must retire the menu before touching the underlying selection.
+                if (event?.defaultPrevented || isFromLocalKeyboardScope(event)) return;
+                if (event?.target instanceof Element && event.target.closest('[data-popright-menu]')) return;
+                if (document.querySelector('[data-popright-menu]')) return;
                 this.props.reset();
-            }),
+            },
 
             UNDO: (event) => {
                 if (this.props.undo) {

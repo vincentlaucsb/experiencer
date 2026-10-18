@@ -15,6 +15,7 @@ import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttr
 interface DocumentMenuProps {
     activeDocumentId?: string;
     documentLabels?: Record<string, string>;
+    documentMenuActions?: Record<string, MenuItem[]>;
     documents: ResumeDocumentSummary[];
     renameDocument?: (id: string, title: string) => Promise<string | null>;
     selectDocument?: (id: string) => void;
@@ -51,7 +52,7 @@ export default function DocumentMenu(props: DocumentMenuProps) {
                 title: activeDocument.title
             })
         }] : []),
-        ...props.documents.map((document, index) => ({
+        ...props.documents.flatMap((document, index): MenuItem[] => [{
             id: `document-${document.id}-${index}`,
             label: [
                 document.title,
@@ -62,7 +63,7 @@ export default function DocumentMenu(props: DocumentMenuProps) {
                 document.id === props.activeDocumentId ? "check" : "paper"
             ),
             onSelect: () => props.selectDocument?.(document.id)
-        }))
+        }, ...(props.documentMenuActions?.[document.id] ?? [])])
     ];
 
     return (

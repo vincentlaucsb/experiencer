@@ -94,6 +94,7 @@ export default function ResumeShell(props: ResumeShellProps) {
                 helpMenuItems={extensions.helpMenuItems}
                 secondaryItems={extensions.topSecondaryItems}
                 documentItems={extensions.documentMenuItems}
+                documentMenuActions={extensions.documentMenuActions}
             />
             {props.isEditing ? (
                 <TopEditingBar

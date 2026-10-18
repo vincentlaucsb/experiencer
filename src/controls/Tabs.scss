@@ -7,7 +7,13 @@
     height: 100%;
 
     .tabs {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        flex-shrink: 0;
         .tabs-button {
+            flex-shrink: 0;
+            white-space: nowrap;
             background: inherit;
             border: none;
             border-radius: unset;

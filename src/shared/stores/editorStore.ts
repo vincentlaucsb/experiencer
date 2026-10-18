@@ -26,6 +26,7 @@ interface EditorState {
     unselectNode: () => void;
     setSelectionEnabled: (enabled: boolean) => void;
     toggleEdit: () => void;
+    finishEditingNode: (nodeId: string) => void;
     setLeftPaneElement: (element: HTMLDivElement | null) => void;
     setPageSize: (pageSize: PageSize) => void;
     loadPageSize: (pageSize: PageSize) => void;
@@ -83,6 +84,10 @@ export const useEditorStore = create<EditorState>()(
                 set((state) => state.selectionEnabled
                     ? { isEditingSelected: !state.isEditingSelected }
                     : state, false, 'toggleEdit'),
+
+            // A late field blur must not end an edit that now belongs to another node.
+            finishEditingNode: nodeId => set(state => state.selectedNodeId === nodeId
+                ? { isEditingSelected: false } : state, false, 'finishEditingNode'),
 
             setLeftPaneElement: (element: HTMLDivElement | null) =>
                 set((state) => {

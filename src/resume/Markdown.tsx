@@ -48,7 +48,7 @@ export default function MarkdownText(props: ResumeComponentProps) {
         (newValue) => props.updateData("value", newValue)
     );
     
-    const { cancel, save } = useEditingControls({
+    const { cancel, save } = useEditingControls<string>({
         isEditing,
         ctrlEnter: true,
         value: textValue,

@@ -55,6 +55,7 @@ export interface ResumeShellExtensions {
     helpMenuItems?: MenuItem[];
     topSecondaryItems?: React.ReactNode;
     documentMenuItems?: React.ReactNode;
+    documentMenuActions?: Record<string, MenuItem[]>;
     overlays?: React.ReactNode;
 }
 
@@ -93,6 +94,7 @@ export interface ResumeLandingExtensions {
     landingClassName?: string;
     showLandingSocialLinks?: boolean;
     documentLibraryLead?: React.ReactNode;
+    documentAccessories?: Record<string, React.ReactNode>;
     documentLabels?: Record<string, string>;
     documentMetadata?: Record<string, string>;
     documentGroups?: ResumeDocumentGroup[];
@@ -200,6 +202,7 @@ export function resolveResumeAppExtensions(props: ResumeWrapperProps | ResumePro
             helpMenuItems: props.extensions?.shell?.helpMenuItems ?? props.helpMenuItems,
             topSecondaryItems: props.extensions?.shell?.topSecondaryItems ?? props.topSecondaryItems,
             documentMenuItems: props.extensions?.shell?.documentMenuItems ?? props.documentMenuItems,
+            documentMenuActions: props.extensions?.shell?.documentMenuActions,
             overlays: props.extensions?.shell?.overlays ?? props.overlays
         },
         editor: {
@@ -216,6 +219,7 @@ export function resolveResumeAppExtensions(props: ResumeWrapperProps | ResumePro
             showLandingSocialLinks: props.extensions?.landing?.showLandingSocialLinks
                 ?? props.showLandingSocialLinks,
             documentLibraryLead: props.extensions?.landing?.documentLibraryLead,
+            documentAccessories: props.extensions?.landing?.documentAccessories,
             documentStatusSource: props.extensions?.landing?.documentStatusSource,
             documentLabels: props.extensions?.landing?.documentLabels ?? props.documentLabels,
             documentMetadata: props.extensions?.landing?.documentMetadata,

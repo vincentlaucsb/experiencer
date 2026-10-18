@@ -20,6 +20,8 @@ export interface TextFieldProps {
     defaultText?: string;
     /** Start the newly-created field in edit mode. */
     startEditing?: boolean;
+    /** Notify the owning editor when this field finishes or cancels its local draft. */
+    onEditingEnd?: () => void;
     displayClassName?: string;
     displayValue?: string;
     static?: boolean;
@@ -76,6 +78,11 @@ export default class TextField extends React.Component<TextFieldProps, TextField
 
     /** Update parent when appropriate */
     componentDidUpdate(prevProps: TextFieldProps, prevState: TextFieldState) {
+        // A node may enter editing after its field already owns a draft. Keep that input and draft intact.
+        if (this.props.startEditing && !prevProps.startEditing && !this.state.isEditing) {
+            this.setState({ isEditing: true });
+        }
+        if (prevState.isEditing && !this.state.isEditing) this.props.onEditingEnd?.();
         if (this.state.isEditing && !prevState.isEditing) {
             this.submittedDraft = undefined;
         }
@@ -106,10 +113,14 @@ export default class TextField extends React.Component<TextFieldProps, TextField
 
     onKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
         if (event.key === 'Enter') {
+            event.preventDefault();
+            event.stopPropagation();
             this.setState({ isEditing: false });
             this.submit(this.state.value);
         }
         else if (event.key === 'Escape') {
+            event.preventDefault();
+            event.stopPropagation();
             // Restore original value
             this.setState({
                 isEditing: false,

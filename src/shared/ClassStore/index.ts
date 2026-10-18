@@ -8,8 +8,12 @@ export default abstract class ClassStore<T> {
     private cachedSnapshot: { data: T; version: number } | null = null;
     private _initialLoad = false;
     private _unsavedChanges = false;
+    private savedSignature: string | undefined;
 
     protected abstract _data: T;
+
+    /** Document stores opt into value-based dirtiness so undo can return to the saved baseline. */
+    protected getSaveSignature(): string | undefined { return undefined; }
 
     get data() {
         return this._data;
@@ -66,6 +70,7 @@ export default abstract class ClassStore<T> {
         }
         else {
             this._initialLoad = true;
+            this.savedSignature = this.getSaveSignature();
         }
 
         this.notifyListeners();
@@ -76,6 +81,7 @@ export default abstract class ClassStore<T> {
      * Check if there are unsaved changes.
      */
     hasUnsavedChanges(): boolean {
+        if (this.savedSignature !== undefined) return this.getSaveSignature() !== this.savedSignature;
         return this._unsavedChanges;
     }
 
@@ -84,6 +90,8 @@ export default abstract class ClassStore<T> {
      */
     clearUnsavedChanges(): void {
         this._unsavedChanges = false;
+        this._initialLoad = true;
+        this.savedSignature = this.getSaveSignature();
         this.notifyListeners();
     }
 }

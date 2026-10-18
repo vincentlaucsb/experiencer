@@ -1,6 +1,5 @@
 import React, { type ReactNode } from "react";
 
-import { Button } from "@/controls/Buttons";
 import TextField from "@/controls/inputs/TextField";
 import type { ReadonlyCssNode } from "@/shared/CssTree";
 import type { CssEditorCommands } from "@/shared/stores/cssEditorCommands";
@@ -10,6 +9,7 @@ import type {
 } from "@/shared/stores/LiveCssSyncCoordinator";
 import ComponentTypes from '@/resume/schema/ComponentTypes';
 import CssPropertyEditor from "./CssPropertyEditor";
+import CssActionButton from '../CssActionButton';
 
 const CssEditorToolbar = React.lazy(() => import("../CssEditorToolbar"));
 const PARENT_RULE_TITLE = "Parent rule shown because it may affect the selected node.";
@@ -67,15 +67,16 @@ export default function CssRuleEditor({
     );
 
     const highlighter = !cssNode.fullSelector || cssNode.fullSelector === ":root" ? <></> : (
-        <Button
+        <CssActionButton
+            label={`Highlight elements matching ${cssNode.fullSelector}`}
             className={highlighterClassName}
             onClick={(event) => {
                 onToggleHighlight();
                 event.stopPropagation();
             }}
         >
-            <i className="icofont-binoculars" />
-        </Button>
+            <i className="icofont-binoculars" aria-hidden="true" />
+        </CssActionButton>
     );
 
     const heading = (

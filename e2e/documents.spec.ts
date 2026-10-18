@@ -29,7 +29,8 @@ test('renames and deletes a saved resume from the landing page', async ({ page }
   await page.getByRole('button', { name: 'Use this Template' }).click();
   await page.getByRole('button', { name: 'Go to landing page' }).click();
 
-  await page.locator('.resume-library-item').filter({ hasText: 'Product Resume' }).getByRole('button', { name: 'Delete' }).click();
+  await page.locator('.resume-library-item').filter({ hasText: 'Product Resume' }).getByRole('button', { name: 'More Actions for Product Resume' }).click();
+  await page.getByRole('menuitem', { name: 'Delete', exact: true }).click();
 
   const dialog = page.getByRole('dialog', { name: 'Delete resume' });
   await expect(dialog).toContainText('Product Resume');

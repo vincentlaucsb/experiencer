@@ -1,6 +1,12 @@
 ﻿@use "sass:color";
 @use "colors/semantic" as colors;
 
+// Only the innermost pointer target receives the preview outline; outlines do not change layout.
+#resume [data-resume-interactive]:hover:not(:has([data-resume-interactive]:hover)):not([data-selected]) {
+    outline: 1px dashed colors.$focus-ring;
+    outline-offset: 1px;
+}
+
 .resume-hl-box {
     background: colors.$highlight;
     border-color: colors.$border-subtle;

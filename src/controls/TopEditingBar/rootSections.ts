@@ -5,7 +5,7 @@ import Row from "@/resume/Row";
 import Section from "@/resume/Section";
 import Column from "@/resume/Column";
 import { assignIds } from "@/shared/utils/assignIds";
-import addNodeAndEnsureCss from "@/shared/stores/addNodeAndEnsureCss";
+import { insertEditorNode } from '@/shared/stores/insertEditorNode';
 import type PageSize from "@/types/PageSize";
 import type { ToolbarData } from "@/controls/toolbar/ToolbarMaker";
 import { ResumeHotKeyMap } from "@/controls/ResumeHotkeys";
@@ -39,12 +39,12 @@ export function projectRootSections(options: {
                     text: "Insert",
                     items: [
                         {
-                            onClick: () => props.addChild(undefined, assignIds({ type: Section.type })),
+                            onClick: () => insertEditorNode(props.addChild, undefined, assignIds({ type: Section.type })),
                             icon: "book-mark",
                             text: "Section"
                         },
                         {
-                            onClick: () => addNodeAndEnsureCss(
+                            onClick: () => insertEditorNode(
                                 props.addChild,
                                 undefined,
                                 assignIds(ComponentTypes.instance.defaultValue(PageBreak.type).node)
@@ -53,7 +53,7 @@ export function projectRootSections(options: {
                             text: "Page break"
                         },
                         {
-                            onClick: () => props.addChild(
+                            onClick: () => insertEditorNode(props.addChild,
                                 undefined,
                                 assignIds(ComponentTypes.instance.defaultValue(Row.type).node)
                             ),
@@ -61,7 +61,7 @@ export function projectRootSections(options: {
                             text: "Rows"
                         },
                         {
-                            onClick: () => props.addChild(
+                            onClick: () => insertEditorNode(props.addChild,
                                 undefined,
                                 assignIds(ComponentTypes.instance.defaultValue(Column.type).node)
                             ),
@@ -69,7 +69,7 @@ export function projectRootSections(options: {
                             text: "Columns"
                         },
                         {
-                            onClick: () => props.addChild(
+                            onClick: () => insertEditorNode(props.addChild,
                                 undefined,
                                 assignIds(ComponentTypes.instance.defaultValue(Grid.type).node)
                             ),

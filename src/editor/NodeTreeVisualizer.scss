@@ -8,6 +8,7 @@
 
     li {
         list-style-type: none;
+        overflow-wrap: anywhere;
         cursor: pointer;
 
         &:focus-visible {

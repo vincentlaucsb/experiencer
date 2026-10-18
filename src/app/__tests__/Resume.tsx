@@ -35,6 +35,8 @@ beforeEach(() => {
  */
 function setupResumeForTest(template: ResumeSaveData) {
     act(() => {
+        // Fixture UUIDs can be reused between tests; a prior edit must not hide the next fixture's text in an input.
+        useEditorStore.getState().unselectNode();
         resumeNodeStore.setNodes(assignIds(template.childNodes));
         rootCssStore.setCss(CssNode.load(template.rootCss));
         cssStore.setCss(CssNode.load(template.builtinCss));
@@ -207,7 +209,7 @@ test('Resume Select Test', async () => {
     const { container } = render(<Resume mode="normal" />);
 
     // Test Selection
-    const header = getByText(container, 'Randy Marsh');
+    const header = await within(container).findByText('Randy Marsh');
     await selectNode(header);
 
     const selected = container.querySelector("[data-selected]");
@@ -230,7 +232,7 @@ test('Resume Select Parent + Child Test', async () => {
     const { container } = render(<Resume mode="normal" />);
 
     // Select entry
-    const entries = getAllByText(container, 'Tegridy Farms');
+    const entries = await within(container).findAllByText('Tegridy Farms');
     const entryText = entries.filter((elem) => {
         return elem.classList.contains('field');
     })[0];
@@ -283,10 +285,10 @@ test('CSS editor reopens for a new selected node of the same type', async () => 
 
     const { container } = render(<Resume mode="normal" />);
 
-    const experience = getAllByText(container, 'Experience').filter((elem) => {
+    const experience = (await within(container).findAllByText('Experience')).filter((elem) => {
         return !elem.classList.contains('tree-item-section');
     })[0];
-    const education = getAllByText(container, 'Education').filter((elem) => {
+    const education = (await within(container).findAllByText('Education')).filter((elem) => {
         return !elem.classList.contains('tree-item-section');
     })[0];
 
@@ -513,7 +515,8 @@ test('Deleting a resume requires confirmation in the app modal', async () => {
     render(<Resume mode="landing" resumeLibraryStore={libraryStore} />);
 
     await screen.findByText("Saved Resume");
-    fireEvent.click(screen.getByRole("button", { name: "Delete" }));
+    fireEvent.click(screen.getByRole("button", { name: /^More Actions for/ }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Delete" }));
 
     let dialog = screen.getByRole("dialog", { name: "Delete resume" });
     expect(within(dialog).getByText(/Saved Resume/)).toBeTruthy();
@@ -523,7 +526,8 @@ test('Deleting a resume requires confirmation in the app modal', async () => {
     expect(screen.queryByRole("dialog", { name: "Delete resume" })).toBeNull();
     expect(repository.delete).not.toHaveBeenCalled();
 
-    fireEvent.click(screen.getByRole("button", { name: "Delete" }));
+    fireEvent.click(screen.getByRole("button", { name: /^More Actions for/ }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Delete" }));
     dialog = screen.getByRole("dialog", { name: "Delete resume" });
     fireEvent.click(within(dialog).getByRole("button", { name: "Delete" }));
 

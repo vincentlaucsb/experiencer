@@ -8,6 +8,8 @@ import { RowBase } from "../Row";
 import useEditingControls from "../hooks/useEditingControls";
 import useAutoExpandInput from "../hooks/useAutoExpandInput";
 import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
+import { Button } from '@/controls/Buttons';
+import { createPortal } from 'react-dom';
 
 import "./index.scss";
 import ResumeComponentProps, { BasicResumeNode } from "@/types";
@@ -38,7 +40,7 @@ export default function Header({ updateDataFields, ...props }: HeaderProps) {
         subtitle: props.subtitle || "",
     };
 
-    useEditingControls({
+    const { save, cancel } = useEditingControls({
         isEditing,
         ctrlEnter: false,
         value: editValue,
@@ -70,19 +72,20 @@ export default function Header({ updateDataFields, ...props }: HeaderProps) {
     let subtitle = <h2 className="subtitle"><InlineMarkdown>{props.subtitle || ""}</InlineMarkdown></h2>
 
     if (isEditing) {
-        value = <input
+        value = <h1><input
             {...nonCredentialInputAttributes}
             ref={titleRef}
             id={`${props.uuid}-title`}
             aria-label="Title"
+            autoFocus
             type="text"
             spellCheck={spellCheck}
             value={props.value || ""}
             onChange={(e) => props.updateData("value", e.target.value)}
             placeholder="Enter a title"
-        />
+        /></h1>
 
-        subtitle = <input
+        subtitle = <h2 className="subtitle"><input
             {...nonCredentialInputAttributes}
             ref={subtitleRef}
             id={`${props.uuid}-subtitle`}
@@ -92,17 +95,23 @@ export default function Header({ updateDataFields, ...props }: HeaderProps) {
             value={props.subtitle || ""}
             onChange={(e) => props.updateData("subtitle", e.target.value)}
             placeholder="Enter a subtitle"
-        />
+        /></h2>
     }
     
     return (
-        <Container displayAs="header" {...props} style={style}>
+        <><Container displayAs="header" {...props} style={style}>
             <hgroup>
                 {value}
                 {subtitle}
             </hgroup>
             {props.children}
         </Container>
+            {isEditing && createPortal(<div role="toolbar" aria-label="Header editing" className="header-edit-actions no-print app-gap-2 app-p-3" onClick={event => event.stopPropagation()}>
+                <Button variant="primary" onClick={save}>Done</Button>
+                <Button onClick={cancel}>Cancel</Button>
+                <span>Enter to finish · Escape to cancel</span>
+            </div>, document.body)}
+        </>
     );
 }
 

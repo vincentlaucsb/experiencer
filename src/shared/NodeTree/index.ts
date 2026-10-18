@@ -231,7 +231,7 @@ export default class ResumeNodeTree implements ResumeNode {
      * @param id - Hierarchical ID of the parent node
      * @param node - The node to add as a child
      */
-    addNestedChild(id: string | IdType, node: ResumeNode): void {
+    addNestedChild(id: string | IdType, node: ResumeNode): string | undefined {
         const hierarchicalId = typeof id === 'string' ? this.getHierarchicalId(id) : id;
         if (!hierarchicalId) return;
 
@@ -244,6 +244,7 @@ export default class ResumeNodeTree implements ResumeNode {
         targetNode.childNodes.push(newNode);
         const path = [...hierarchicalId, targetNode.childNodes.length - 1];
         this.addToIndex(newNode, path);
+        return newNode.uuid;
     }
 
     /** Insert a fresh-ID copy immediately before or after a node's sibling position. */

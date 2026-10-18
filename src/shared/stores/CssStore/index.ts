@@ -12,6 +12,8 @@ export default class CssStore extends ClassStore<CssNode> {
     /** Last committed tree, retained independently of mutable live CSS references. */
     private committedCss: CssNodeDump;
 
+    protected getSaveSignature(): string { return JSON.stringify(this.committedCss); }
+
     constructor(initialCss: CssNode) {
         super();
         this._data = initialCss;

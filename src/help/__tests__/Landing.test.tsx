@@ -105,10 +105,7 @@ test("renders grouped documents and invokes origin-specific secondary actions", 
     const localGroup = screen.getByRole("heading", { name: "On this device" })
         .closest<HTMLElement>(".resume-library-group")!;
     expect(within(localGroup).getByText("Local Resume")).toBeTruthy();
-    expect(
-        within(localGroup).getByRole("button", { name: "Delete" })
-            .classList.contains("pure-button-outline")
-    ).toBe(true);
+    expect(within(localGroup).queryByRole("button", { name: "Delete" })).toBeNull();
 
     fireEvent.click(within(localGroup).getByRole("button", {
         name: "More Actions for Local Resume"

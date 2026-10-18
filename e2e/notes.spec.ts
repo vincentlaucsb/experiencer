@@ -7,7 +7,7 @@ test('standalone editor offers Notes and preserves imported notes read-only', as
   await expect(page.getByRole('button', { name: 'Upgrade to Pro' })).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'Notes Markdown' })).toHaveCount(0);
   await page.getByRole('button', { name: 'File', exact: true }).click();
-  await page.getByRole('menuitem', { name: 'Load', exact: true }).click();
+  await page.getByRole('menuitem', { name: 'Import resume JSON', exact: true }).click();
   await page.locator('input[type=file]').setInputFiles({ name: 'with-notes.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({
     childNodes: [{ type: 'Section', value: 'Resume content', childNodes: [{ type: 'Entry', title: ['Example entry'], notes: 'Entry private guidance' }] }],
     builtinCss: { name: 'Resume CSS', selector: 'body', properties: [], children: [] },

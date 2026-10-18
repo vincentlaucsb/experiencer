@@ -49,14 +49,14 @@ describe("NodeTreeVisualizer", () => {
             />
         );
 
-        expect(screen.getByText("Experience").closest("span")?.classList.contains("tree-item-section")).toBe(true);
-        expect(screen.getByText("Acme Corp").closest("span")?.classList.contains("tree-item-entry")).toBe(true);
-        expect(screen.getByText("Portfolio").closest("span")?.classList.contains("tree-item-Link")).toBe(true);
-        expect(screen.getByText("Headshot").closest("span")?.classList.contains("tree-item-Image")).toBe(true);
+        expect(screen.getByText("Section: Experience").closest("span")?.classList.contains("tree-item-section")).toBe(true);
+        expect(screen.getByText("Entry: Acme Corp").closest("span")?.classList.contains("tree-item-entry")).toBe(true);
+        expect(screen.getByText("Link: Portfolio").closest("span")?.classList.contains("tree-item-Link")).toBe(true);
+        expect(screen.getByText("Image: Headshot").closest("span")?.classList.contains("tree-item-Image")).toBe(true);
         expect(screen.getByText("#experience.primary.featured")).toBeTruthy();
-        expect(screen.getByText("Acme Corp").closest("li")?.classList.contains("tree-item-selected")).toBe(true);
+        expect(screen.getByText("Entry: Acme Corp").closest("li")?.classList.contains("tree-item-selected")).toBe(true);
 
-        fireEvent.click(screen.getByText("Portfolio"));
+        fireEvent.click(screen.getByText("Link: Portfolio"));
         expect(selectNode).toHaveBeenCalledWith("link-1");
     });
 
@@ -85,9 +85,9 @@ describe("NodeTreeVisualizer", () => {
             />
         );
 
-        expect(screen.getByText("https://fallback.example")).toBeTruthy();
-        expect(screen.getByText("https://example.com/fallback.png")).toBeTruthy();
-        expect(screen.getByText("UnknownType").closest("span")?.classList.contains("tree-item-UnknownType")).toBe(true);
+        expect(screen.getByText("Link: https://fallback.example")).toBeTruthy();
+        expect(screen.getByText("Image: https://example.com/fallback.png")).toBeTruthy();
+        expect(screen.getByText("UnknownType (empty)").closest("span")?.classList.contains("tree-item-UnknownType")).toBe(true);
     });
 
     test("exposes tree selection through keyboard navigation", () => {

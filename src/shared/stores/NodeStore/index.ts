@@ -20,6 +20,8 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
     private selectedNodeIdProvider: () => string | undefined = () => undefined;
     private clearSelection: () => void = () => undefined;
 
+    protected getSaveSignature(): string { return JSON.stringify(this.committedNodes); }
+
     setHistoryRecorder(recorder?: HistoryRecorder): void {
         this.historyRecorder = recorder ?? (() => undefined);
     }
@@ -178,8 +180,15 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
      * @param data - New value for the property
      */
     updateNode(id: string | IdType, key: string, data: any): void {
-        this.recordNodeHistory();
-        this.withTrackedMutation(() => this.data.updateChild(id, key, data));
+        // Explicit single-field removal remains supported; partial patches skip undefined entries.
+        if (data === undefined) {
+            const path = this.resolvePath(id);
+            if (!path || new ResumeNodeTree(this.committedNodes).getNodeById(path)?.[key] === undefined) return;
+            this.recordNodeHistory();
+            this.withTrackedMutation(() => this.data.updateChild(id, key, data));
+            return;
+        }
+        this.updateNodeFields(id, { [key]: data });
     }
 
     /**
@@ -187,7 +196,13 @@ export default class NodeStore extends ClassStore<ResumeNodeTree> {
      * Accepts either a UUID string or hierarchical ID.
      */
     updateNodeFields(id: string | IdType, patch: Partial<Record<string, unknown>>): void {
-        const entries = Object.entries(patch).filter(([, value]) => value !== undefined);
+        const path = this.resolvePath(id);
+        if (!path) return;
+        const committed = new ResumeNodeTree(this.committedNodes).getNodeById(path);
+        if (!committed) return;
+        // Compare the immutable committed value, including arrays callers may have mutated in place.
+        const entries = Object.entries(patch).filter(([key, value]) => value !== undefined
+            && JSON.stringify(committed[key] ?? '') !== JSON.stringify(value));
         if (entries.length === 0) {
             return;
         }

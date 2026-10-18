@@ -42,6 +42,30 @@ describe('NodeStore history recording', () => {
         expect(mockRecordHistory).toHaveBeenCalledTimes(1);
     });
 
+    test('semantic no-op fields do not create history or dirty state', () => {
+        const store = makeStore([{ type: 'Header', value: 'Jordan Sample', subtitle: 'Engineer' }]);
+        store.clearUnsavedChanges();
+        const header = store.data.childNodes[0];
+        store.updateNodeFields(header.uuid, { value: 'Jordan Sample', subtitle: 'Engineer' });
+        store.updateNode(header.uuid, 'value', 'Jordan Sample');
+        expect(mockRecordHistory).not.toHaveBeenCalled();
+        expect(store.hasUnsavedChanges()).toBe(false);
+    });
+
+    test('real node history returns to the saved baseline on undo and becomes dirty on redo', () => {
+        resumeNodeStore.setNodes(assignIds([{ type: 'Header', value: 'Jordan Sample' }]));
+        useHistoryStore.getState().clear();
+        resumeNodeStore.clearUnsavedChanges();
+        const header = resumeNodeStore.data.childNodes[0];
+        resumeNodeStore.updateNode(header.uuid, 'value', 'Jordan Updated');
+        expect(resumeNodeStore.hasUnsavedChanges()).toBe(true);
+        useHistoryStore.getState().undo();
+        expect(resumeNodeStore.hasUnsavedChanges()).toBe(false);
+        useHistoryStore.getState().redo();
+        expect(resumeNodeStore.hasUnsavedChanges()).toBe(true);
+        useHistoryStore.getState().clear();
+    });
+
     test('updateNode history preserves the committed value when an array was mutated before the call', () => {
         const store = makeStore([
             {

@@ -42,7 +42,7 @@
     }
 }
 
-// The hint owns a row in the canvas flow so it cannot obscure the inspector.
+// The hint owns a sidebar row so it cannot obscure tabs or move document content.
 .resume-selection-hint {
     display: flex;
     align-items: center;
@@ -56,10 +56,6 @@
     > span {
         flex: 1;
         min-width: 0;
-    }
-
-    &--pending {
-        visibility: hidden;
     }
 
     &__close {

@@ -39,7 +39,7 @@ export function observeElementGeometry(
     if (layoutRoot) resizeObserver?.observe(layoutRoot);
 
     // A sibling can move an anchor without resizing either the anchor or its
-    // scroll pane (for example when dismissing a normal-flow onboarding note).
+    // scroll pane, for example when an earlier document sibling reflows.
     const mutations = typeof MutationObserver === 'undefined' ? undefined : new MutationObserver(schedule);
     mutations?.observe(layoutRoot ?? element.parentElement ?? element, {
         childList: true, subtree: true, characterData: true,

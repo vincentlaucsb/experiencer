@@ -15,9 +15,13 @@ for (const viewportWidth of [1280, 900]) {
 test(`first-selection guidance leaves inspector navigation usable at ${viewportWidth}px and stays dismissed`, async ({ page }) => {
   await page.setViewportSize({ width: viewportWidth, height: 720 });
   await createAssured(page);
+  await expect(page.locator('.resume-selection-hint')).toHaveCount(0);
+  const initialResumeTop = (await page.locator('#resume').boundingBox())!.y;
   await page.locator('#resume h1').click();
+  await expect.poll(async () => (await page.locator('#resume').boundingBox())!.y).toBe(initialResumeTop);
   const hint = page.getByRole('note');
   await expect(hint).toContainText('node menu');
+  await expect(page.locator('.split-pane__inspector').getByRole('note')).toBeVisible();
 
   for (const name of ['CSS', 'Tree']) {
     await page.getByRole('tab', { name, exact: true }).click();
@@ -27,6 +31,7 @@ test(`first-selection guidance leaves inspector navigation usable at ${viewportW
 
   await page.getByRole('button', { name: 'Dismiss node options tip' }).click();
   await expect(hint).toHaveCount(0);
+  await expect.poll(async () => (await page.locator('#resume').boundingBox())!.y).toBe(initialResumeTop);
   await expect.poll(async () => {
     const header = await page.locator('#resume header').boundingBox();
     const outline = await page.locator('.resume-hl-box-selected-node').boundingBox();
@@ -42,8 +47,11 @@ test(`first-selection guidance leaves inspector navigation usable at ${viewportW
 test('direct header double-click still enters editing before the first tip is dismissed', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   await createAssured(page);
+  const initialResumeTop = (await page.locator('#resume').boundingBox())!.y;
   await page.locator('#resume h1').dblclick();
   await expect(page.getByRole('textbox', { name: 'Title', exact: true })).toBeFocused();
+  await expect(page.locator('.resume-selection-hint')).toHaveCount(0);
+  await expect.poll(async () => (await page.locator('#resume').boundingBox())!.y).toBe(initialResumeTop);
   await expect(page.getByRole('button', { name: /Save/ }).first()).toBeVisible();
 });
 

@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom';
 
 import PngExportFeature from '@/app/PngExportFeature';
 import ResumeEditorSidebar from '@/app/ResumeEditorSidebar';
-import SelectionHint from '@/app/SelectionHint';
 import { ResizableSidebarLayout } from '@/controls/Layouts';
 import ResumeHotKeys from '@/controls/ResumeHotkeys';
 import Toast from '@/controls/Toast';
@@ -56,7 +55,6 @@ export default function ResumeEditor(props: ResumeEditorProps) {
     const canvas = (
         <>
             <PngExportFeature />
-            <SelectionHint />
             <div id="resume-container">
                 <ResumeRenderer
                     nodes={props.nodes}

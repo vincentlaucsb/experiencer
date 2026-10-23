@@ -21,6 +21,7 @@ export interface IconProps extends IconBase, ResumeComponentProps {}
 
 export const IconType = "Icon";
 
+/** Decorative contact glyph; substantive images use the Image node and its alternative text. */
 export default function Icon(props: IconProps) {
     let src = '';
 
@@ -51,7 +52,7 @@ export default function Icon(props: IconProps) {
     return <Container displayAs="img"
         className="icon"
         attributes={{
-            alt: "Icon",
+            alt: "",
             src: src
         }}
 

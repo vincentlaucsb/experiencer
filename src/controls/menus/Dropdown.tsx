@@ -22,11 +22,9 @@ export default function Dropdown({ trigger, items, className, wrapperClassName }
     const accessibleTrigger = React.cloneElement(trigger, {
         "aria-haspopup": "menu",
         "aria-controls": menuId,
-        "aria-expanded": isOpen,
-        onClick: (event: React.MouseEvent) => {
-            trigger.props.onClick?.(event);
-            setIsOpen((current) => !current);
-        }
+        // Popright's lifecycle is authoritative: guessing from a click races
+        // its native event handler and can announce an open menu as collapsed.
+        "aria-expanded": isOpen
     });
 
     return (

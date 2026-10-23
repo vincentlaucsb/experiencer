@@ -41,7 +41,7 @@ jobs:
 
     - name: Verify editor usability and print browser boundaries
       if: matrix.node-version == '22.x'
-      run: npx playwright test e2e/editor-usability.spec.ts e2e/editor.spec.ts e2e/css-inspector.spec.ts --workers=2
+      run: npx playwright test e2e/editor-usability.spec.ts e2e/editor.spec.ts e2e/css-inspector.spec.ts e2e/editor-control-accessibility.spec.ts e2e/ui-document-accessibility.spec.ts --workers=2
 
     - name: Upload coverage to Codecov
       # Downloading the uploader can throw before fail_ci_if_error applies.

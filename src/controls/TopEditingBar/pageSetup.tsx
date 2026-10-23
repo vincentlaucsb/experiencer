@@ -18,12 +18,14 @@ function PageSizeControls(props: PageSizeControlsProps) {
             <div className="page-size-toggle">
                 <Button
                     className={`page-size-option${pageSize === PageSize.Letter ? ' active' : ''}`}
+                    aria-pressed={pageSize === PageSize.Letter}
                     onClick={() => setPageSize(PageSize.Letter)}
                 >
                     Letter
                 </Button>
                 <Button
                     className={`page-size-option${pageSize === PageSize.A4 ? ' active' : ''}`}
+                    aria-pressed={pageSize === PageSize.A4}
                     onClick={() => setPageSize(PageSize.A4)}
                 >
                     A4

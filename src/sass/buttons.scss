@@ -95,8 +95,9 @@
 
 .pure-button.pure-button-primary.pure-button-outline,
 .pure-button.pure-button-selected.pure-button-outline {
+    // A filled surface is too dim as text on dark application surfaces.
     @include outline-button(
-        colors.$button-primary-surface,
+        colors.$text-interactive,
         colors.$button-primary-surface,
         colors.$button-primary-text
     );

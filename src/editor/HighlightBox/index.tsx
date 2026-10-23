@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useSyncExternalStore } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DropdownMenu } from '@popright/react';
 
 import { HighlightBox as HighlightBoxComponent } from './HighlightBox';
@@ -17,11 +17,9 @@ export function SelectedNodeHighlightBox() {
     const leftPaneElement = useLeftPaneElement();
     // Subscribe to selected node changes
     const selectedNodeId = useEditorStore(state => state.selectedNodeId);
-    const isEditingSelected = useEditorStore(state => state.isEditingSelected);
     const selectNode = useEditorStore(state => state.selectNode);
     const editNode = useEditorStore(state => state.editNode);
     const resumeTree = useResumeTree();
-    const hintSnapshot = useSyncExternalStore(hintStore.subscribe, hintStore.getSnapshot);
     const [selectedElement, setSelectedElement] = useState<HTMLElement | null>(null);
     const [menuOpen, setMenuOpen] = useState(false);
     const menuId = `selected-node-options-${React.useId().replace(/:/g, "")}`;
@@ -51,9 +49,6 @@ export function SelectedNodeHighlightBox() {
         return null;
     }
 
-    const selectionHint = !isEditingSelected && !hintSnapshot.dismissed[HintKey.NodeOptions]
-        ? "Tip: use the node menu or right-click the selected node for more options."
-        : undefined;
     const nodeLabel = getNodeLabel(selectedNode.type);
     
     return (
@@ -61,8 +56,6 @@ export function SelectedNodeHighlightBox() {
             className="resume-hl-box resume-hl-box-selected-node"
             elem={selectedElement}
             leftPaneElement={leftPaneElement}
-            selectionHint={selectionHint}
-            onDismissSelectionHint={() => hintStore.dismiss(HintKey.NodeOptions)}
         >
             <DropdownMenu
                 id={menuId}

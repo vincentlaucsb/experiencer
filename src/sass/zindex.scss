@@ -59,10 +59,6 @@ header#app-header {
     z-index: $selection-overlay;
 }
 
-.resume-selection-hint {
-    z-index: $popover;
-}
-
 /** Pro overlays read these variables instead of inventing another number. */
 :root {
     --xp-z-floating-action: #{$floating-action};

@@ -4,6 +4,7 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { SelectedNodeHighlightBox } from "@/editor/HighlightBox";
+import SelectionHint from "@/app/SelectionHint";
 import registerNodes from "@/resume/schema";
 import { useEditorStore } from "@/shared/stores/editorStore";
 import { HintKey, hintStore } from "@/shared/stores/hintStore";
@@ -38,6 +39,7 @@ test("keeps one node menu visible as selection and editing state change", async 
             <section data-uuid="section-1">Experience</section>
             <article data-uuid="entry-1">Example Company</article>
             <SelectedNodeHighlightBox />
+            <SelectionHint />
         </>
     );
 

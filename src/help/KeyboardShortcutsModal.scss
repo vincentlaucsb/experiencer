@@ -47,7 +47,7 @@
 }
 
 @media screen and (max-width: 32rem) {
-    .keyboard-shortcuts-modal .keyboard-shortcuts dl {
+    .app-modal.keyboard-shortcuts-modal .keyboard-shortcuts dl {
         grid-template-columns: 1fr;
 
         dd {

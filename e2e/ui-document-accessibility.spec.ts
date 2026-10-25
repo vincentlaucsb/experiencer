@@ -193,3 +193,31 @@ for (const theme of ['light', 'dark']) {
     }
   });
 }
+
+for (const theme of ['light', 'dark']) {
+  test(`File menu exposes keyboard selection in ${theme} theme`, async ({ page }) => {
+    await page.addInitScript(theme => localStorage.setItem('experiencer.theme', theme), theme);
+    await createResumeFromTemplate(page, 'Assured');
+    const trigger = page.getByRole('button', { name: 'File', exact: true });
+    await trigger.click();
+    const menu = page.getByRole('menu');
+    await expect(menu).toBeFocused();
+    const active = async () => {
+      const id = await menu.getAttribute('aria-activedescendant');
+      expect(id).toBeTruthy();
+      const row = page.locator(`[id="${id}"]`);
+      await expect(row).toHaveAttribute('role', 'menuitem');
+      await expect(row).toHaveAttribute('data-active', '');
+      return id;
+    };
+    const first = await active();
+    await page.keyboard.press('ArrowDown');
+    expect(await active()).not.toBe(first);
+    await page.keyboard.press('Home');
+    expect(await active()).toBe(first);
+    await page.keyboard.press('End');
+    expect(await active()).not.toBe(first);
+    await page.keyboard.press('Escape');
+    await expect(trigger).toBeFocused();
+  });
+}

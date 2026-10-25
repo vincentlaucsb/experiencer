@@ -3,9 +3,9 @@ import { createResumeFromTemplate } from './helpers';
 
 const pixel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=';
 
-function documentFixture(dark: boolean) {
+function documentFixture(dark: boolean, empty = false) {
   return {
-    childNodes: [{ type: 'Header', value: 'Synthetic Applicant', subtitle: 'Platform Engineer', childNodes: [] }],
+    childNodes: [{ type: 'Header', value: empty ? '' : 'Synthetic Applicant', subtitle: empty ? '' : 'Platform Engineer', childNodes: [] }],
     rootCss: { name: ':root', selector: ':root', properties: [], children: [] },
     builtinCss: { name: 'Resume CSS', selector: 'body',
       properties: [['background-color', dark ? '#242527' : '#ffffff'], ['color', dark ? '#f2eee7' : '#151318']],
@@ -20,13 +20,26 @@ function documentFixture(dark: boolean) {
   };
 }
 
-async function importFixture(page: Page, dark: boolean) {
+async function importFixture(page: Page, dark: boolean, empty = false) {
   await createResumeFromTemplate(page, 'Assured');
   await page.getByRole('button', { name: 'File', exact: true }).click();
   await page.getByRole('menuitem', { name: 'Import resume JSON', exact: true }).click();
   await page.locator('input[type=file]').setInputFiles({ name: 'authored-header.json', mimeType: 'application/json',
-    buffer: Buffer.from(JSON.stringify(documentFixture(dark))) });
-  await expect(page.locator('#resume header h1')).toHaveText('Synthetic Applicant');
+    buffer: Buffer.from(JSON.stringify(documentFixture(dark, empty))) });
+  await expect(page.locator('#resume header h1')).toHaveText(empty ? 'Enter a title' : 'Synthetic Applicant');
+}
+
+async function expectReadablePlaceholder(field: Locator) {
+  await expect(field).toHaveValue('');
+  // Visibility alone passes for the collapsed caret-width field that caused this regression.
+  await expect.poll(() => field.evaluate(element => {
+    const input = element as HTMLInputElement;
+    const style = getComputedStyle(input);
+    const context = document.createElement('canvas').getContext('2d')!;
+    context.font = getComputedStyle(input, '::placeholder').font;
+    const available = input.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    return available - context.measureText(input.placeholder).width;
+  })).toBeGreaterThanOrEqual(-1);
 }
 
 async function editHeader(page: Page) {
@@ -63,14 +76,27 @@ for (const theme of ['light', 'dark']) {
       }
       await subtitle.fill('');
       expect(await subtitle.evaluate(element => getComputedStyle(element, '::placeholder').color)).toBe(before[1].color);
+      await expectReadablePlaceholder(subtitle);
+      await title.fill('');
+      await expectReadablePlaceholder(title);
+      await expectReadablePlaceholder(subtitle);
+      const hintWidth = (await title.boundingBox())!.width;
+      await title.fill('W'.repeat(30));
+      expect((await title.boundingBox())!.width).toBeGreaterThan(hintWidth);
+      await title.fill('I');
+      expect((await title.boundingBox())!.width).toBeLessThan(hintWidth);
+      await title.fill('');
+      await expectReadablePlaceholder(title);
       await subtitle.fill('Platform Engineer');
       await title.fill('Saved Applicant');
       await page.getByRole('button', { name: 'Done', exact: true }).click();
       await expect(header.locator('h1')).toHaveText('Saved Applicant');
       await editHeader(page);
       await title.fill('Cancelled Applicant');
+      await subtitle.fill('Cancelled role');
       await title.press('Escape');
       await expect(header.locator('h1')).toHaveText('Saved Applicant');
+      await expect(header.locator('h2')).toHaveText('Platform Engineer');
 
       if (theme === 'dark' && paper === 'dark') {
         await editHeader(page);
@@ -86,6 +112,17 @@ for (const theme of ['light', 'dark']) {
       }
     });
   }
+
+  test(`initially empty header fields show readable hints in ${theme} chrome`, async ({ page }) => {
+    await importFixture(page, true, true);
+    await page.locator('html').evaluate((element, value) => element.setAttribute('data-theme', value), theme);
+    await editHeader(page);
+    await expectReadablePlaceholder(page.getByRole('textbox', { name: 'Title', exact: true }));
+    await expectReadablePlaceholder(page.getByRole('textbox', { name: 'Subtitle', exact: true }));
+    await page.getByRole('textbox', { name: 'Title', exact: true }).press('Escape');
+    await expect(page.locator('#resume header h1')).toHaveText('Enter a title');
+    await expect(page.locator('#resume header h2')).toBeEmpty();
+  });
 }
 
 test('isolated résumé iframe silences contact glyphs without dropping meaningful image alternatives', async ({ page }) => {

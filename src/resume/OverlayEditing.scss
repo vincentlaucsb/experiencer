@@ -9,7 +9,10 @@
     color-scheme: light;
     display: flex;
     flex-direction: column;
-    min-width: 320px;
+    // OverlayEditor keeps the shell inside the viewport. On a phone this floor
+    // must not push it back out: 4rem covers the overlay's 8px viewport margins
+    // plus this content-box shell's padding and border.
+    min-width: min(320px, calc(100vw - 4rem));
     max-width: 600px;
     margin-top: -1rem;
     margin-left: -1rem;
@@ -21,7 +24,7 @@
 }
 
 .resume-overlay-editor--image {
-    min-width: 400px;
+    min-width: min(400px, calc(100vw - 4rem));
 }
 
 .resume-overlay-field {

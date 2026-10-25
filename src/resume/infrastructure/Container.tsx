@@ -8,6 +8,7 @@ import buildContextMenuItems from "@/resume/schema/buildContextMenuItems";
 
 // Components
 import OverlayEditor from "./OverlayEditor";
+import { isTouchClick, notePointerDown, recordSelectingTap, takeDoubleTapTarget } from "./touchDoubleTap";
 
 // Stores
 import { useEditorStore, useIsNodeEditing, useIsNodeSelected } from "@/shared/stores/editorStore";
@@ -57,6 +58,8 @@ export interface ContainerPresentationProps extends ContainerProps {
  * Handles the core interaction patterns for all resume nodes:
  * - Single click: Select the node
  * - Double click (when selected): Enter edit mode
+ * - Touch double-tap: Enter edit mode on the node the first tap selected, even
+ *   if the layout moved it out from under the second tap
  * - Right click: Open context menu (suppressed while editing)
  * - Overlay editor positioning when in edit mode
  * 
@@ -75,6 +78,17 @@ export function ContainerPresentation(props: ContainerPresentationProps) {
 
     /** Props for managing selection and focus */
     const selectTriggerProps = {
+        // Runs outermost-first, before components' own title/heading click handlers,
+        // so the second tap of a touch double-tap reaches the node the first tap selected.
+        onClickCapture: (event: React.MouseEvent) => {
+            if (props.readOnly || !isTouchClick(event.nativeEvent)) return;
+
+            const firstTapTarget = takeDoubleTapTarget(event.clientX, event.clientY, performance.now());
+            if (firstTapTarget === undefined) return;
+
+            event.stopPropagation();
+            props.onEdit(firstTapTarget);
+        },
         onClick: (event: React.MouseEvent) => {
             props.onClick?.(event);
             if (props.isSelected) {
@@ -82,9 +96,13 @@ export function ContainerPresentation(props: ContainerPresentationProps) {
             }
             else {
                 props.onSelect(props.uuid);
+                if (!props.readOnly && isTouchClick(event.nativeEvent)) {
+                    recordSelectingTap(props.uuid, event.clientX, event.clientY, performance.now());
+                }
             }
             event.stopPropagation();
-        }
+        },
+        onPointerDownCapture: (event: React.PointerEvent) => notePointerDown(event.pointerType)
     }
 
     const handleMouseDown = (event: React.MouseEvent) => {

@@ -1,6 +1,27 @@
 import { expect, test } from '@playwright/test';
 
 for (const pageSize of ['letter', 'a4'] as const) {
+    test(`default Assured prints two pages after a break before Projects on ${pageSize}`, async ({ page, context }, testInfo) => {
+        await context.addInitScript(() => { window.print = () => undefined; });
+        await page.goto('/');
+        await page.getByRole('button', { name: 'New' }).click();
+        await page.getByText('Assured', { exact: true }).click();
+        await page.getByRole('button', { name: 'Use this Template' }).click();
+        if (pageSize === 'a4') await page.getByRole('button', { name: 'A4', exact: true }).click();
+        await page.locator('#resume').getByRole('heading', { name: 'Projects', exact: true }).click();
+        await page.getByRole('button', { name: 'Page break before', exact: true }).click();
+        await expect(page.locator('#resume .page-break-editing')).toHaveCount(1);
+        await page.getByRole('button', { name: 'File', exact: true }).click();
+        const opened = page.waitForEvent('popup');
+        await page.getByRole('menuitem', { name: 'Print' }).click();
+        const preview = await opened;
+        await expect(preview.getByRole('heading', { name: 'Projects', exact: true })).toBeVisible();
+        const pdf = await preview.pdf({ preferCSSPageSize: true, printBackground: true });
+        await testInfo.attach('assured-projects-print.pdf', { body: pdf, contentType: 'application/pdf' });
+        expect(pdf.toString('latin1').match(/\/Type\s*\/Page\b/g)).toHaveLength(2);
+        await preview.close();
+    });
+
     test(`inserts a break before Education in its column, saves, undoes and prints on ${pageSize}`, async ({ page, context }, testInfo) => {
         await context.addInitScript(() => { window.print = () => undefined; });
         await page.goto('/');

@@ -175,6 +175,24 @@ export default function getDefaultCss(): CssNode {
     let dlCss = defaultCss.addNode('Description List', { }, 'dl');
     dlCss.addNode('Definitions', { 'padding-left': '0.5rem' }, 'dd');
 
+    // A sparse last page must stretch the owning row, rather than leave its rail or divider
+    // at the last text line. This applies only to nested two-column flows with explicit breaks.
+    defaultCss.addNode('Column Continuation Canvas', {
+        'display': 'flex',
+        'flex-direction': 'column'
+    }, ':has(> .grid-container > .column > .page-break)');
+    defaultCss.addNode('Single Column Continuation Canvas', {
+        'display': 'flex',
+        'flex-direction': 'column'
+    }, ':has(> .column > .page-break):not(:has(> .column ~ .column))');
+    defaultCss.addNode('Single Column Continuation Flow', {
+        'flex': '1'
+    }, ':has(> .column > .page-break):not(:has(> .column ~ .column)) > .column');
+    defaultCss.addNode('Column Continuation Row', {
+        'flex': '1',
+        'align-items': 'stretch !important'
+    }, '> .grid-container:has(> .column > .page-break)');
+
     defaultCss.addNode('Row', {}, '.row');
     defaultCss.addNode('Column', {}, '.column');
     defaultCss.addNode('Grid', {}, '.grid-container');

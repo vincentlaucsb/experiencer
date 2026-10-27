@@ -464,6 +464,11 @@ export function candorCss(): CssNode {
         "background": "var(--paper)"
     });
 
+    // Keep the root page canvas behind short rail fragments on continuation pages.
+    css.addNode("Continuation Rail Canvas", {
+        "background": "linear-gradient(to right, var(--paper) 0 calc(100% - var(--rail-width)), var(--panel) calc(100% - var(--rail-width)) 100%)"
+    }, ":has(> .column > .page-break)");
+
     css.mustFindNode("Link").setProperties({
         "color": "inherit",
         "text-decoration": "underline",

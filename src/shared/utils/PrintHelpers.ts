@@ -66,6 +66,11 @@ async function capturePrintableResume(
     if (hasColumnPageBreak(prepared.nodes)) {
         const mounted = await mountResumeDocument(prepared);
         try {
+            // Measure authored margins, not the browser's default 8px body margin.
+            // Low specificity lets résumé CSS retain its own physical page insets.
+            const reset = mounted.document.createElement('style');
+            reset.textContent = ':where(body) { margin: 0; }';
+            mounted.document.head.prepend(reset);
             mounted.document.body.style.removeProperty('margin');
             geometry = getResumePrintGeometry(mounted.document.body, prepared.pageSize);
         } finally {

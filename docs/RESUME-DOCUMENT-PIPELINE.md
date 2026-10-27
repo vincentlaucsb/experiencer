@@ -94,6 +94,9 @@ the root canvas, so native fragmentation cannot truncate its background after th
 line of text. Native PDF, browser print and HTML export share `resumePrintGeometry`:
 cloned root insets reduce the retained logical continuation extent, preventing a blank
 extra page. Ordinary documents and direct body grids retain content-driven pagination.
+Print and saved-PDF adapters install a zero-specificity body-margin fallback before
+measuring root insets, so browser defaults cannot become authored page padding.
+Authored résumé margins still take precedence.
 
 
 `PrintHelpers` adds only print page-size rules, document CSS, markup, and font assets to a new popup or export package. PNG capture and render-service consumers use the same prepared-document contract rather than the editor DOM.

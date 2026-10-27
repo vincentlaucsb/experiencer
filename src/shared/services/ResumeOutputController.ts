@@ -1,6 +1,7 @@
 import PageSize from '@/types/PageSize';
 import type { ResumeDocumentSource } from '@/shared/resumeDocument/prepareResumeDocument';
 import { useEditorStore } from '@/shared/stores/editorStore';
+import { resumeTextOverflowStore } from '@/shared/stores/resumeTextOverflowStore';
 import { pngExportStore } from '@/shared/stores/pngExportStore';
 import { showToast } from '@/shared/stores/toastStore';
 import { exportResumeAsHtml, printResume } from '@/shared/utils/PrintHelpers';
@@ -12,13 +13,15 @@ export interface ResumeOutputPorts {
     print(source: ResumeDocumentSource): Promise<void>;
     startPng(source: ResumeDocumentSource): void;
     showError(message: string): void;
+    hasTextOverflow?(): boolean;
 }
 
 const browserPorts: ResumeOutputPorts = {
     exportHtml: exportResumeAsHtml,
     print: printResume,
     startPng: (source) => pngExportStore.start(source),
-    showError: showToast
+    showError: showToast,
+    hasTextOverflow: () => resumeTextOverflowStore.measureCurrent().count > 0
 };
 
 function printPageSizeCss(pageSize: PageSize): string {
@@ -30,7 +33,31 @@ function printPageSizeCss(pageSize: PageSize): string {
  * PNG resource ownership remains in pngExportStore.
  */
 export class ResumeOutputController {
+    private pendingPrint?: ResumeDocumentSource;
+    private readonly printReviewListeners = new Set<() => void>();
     constructor(private readonly ports: ResumeOutputPorts = browserPorts) {}
+
+    /** Binds the visible canvas and drops its private print snapshot when that editor leaves. */
+    bindEditor(root: HTMLElement, pageSize: PageSize): () => void {
+        const dispose = resumeTextOverflowStore.bind(root, pageSize);
+        return () => { dispose(); this.cancelPrintReview(); };
+    }
+
+    getPrintReviewSnapshot = () => Boolean(this.pendingPrint);
+    subscribePrintReview = (listener: () => void) => {
+        this.printReviewListeners.add(listener);
+        return () => this.printReviewListeners.delete(listener);
+    };
+    cancelPrintReview = () => {
+        this.pendingPrint = undefined;
+        this.printReviewListeners.forEach(listener => listener());
+    };
+    continuePrint = () => {
+        const source = this.pendingPrint;
+        this.cancelPrintReview();
+        // The explicit continue click opens the popup synchronously, preserving browser gesture rules.
+        if (source) this.printImmediately(source);
+    };
 
     exportHtml(source: ResumeDocumentSource): void {
         void this.ports.exportHtml(source, 'resume.zip').catch((error: unknown) => {
@@ -41,6 +68,15 @@ export class ResumeOutputController {
     }
 
     print(source: ResumeDocumentSource): void {
+        if (this.ports.hasTextOverflow?.()) {
+            this.pendingPrint = source;
+            this.printReviewListeners.forEach(listener => listener());
+            return;
+        }
+        this.printImmediately(source);
+    }
+
+    private printImmediately(source: ResumeDocumentSource): void {
         void this.ports.print(source).catch((error: unknown) => {
             this.ports.showError(
                 error instanceof Error ? error.message : 'Could not open the print preview.'

@@ -9,6 +9,9 @@ import {
 import { renderResumeMarkup } from '@/shared/resumeDocument/renderResumeMarkup';
 import { buildHtmlExportPackage } from '@/shared/utils/HtmlExportPackage';
 import PageSize from '@/types/PageSize';
+import { hasColumnPageBreak } from '@/shared/utils/getResumeMinHeight';
+import { mountResumeDocument } from '@/shared/resumeDocument/mountResumeDocument';
+import { getResumePrintGeometry } from '@/shared/utils/resumePrintGeometry';
 
 /** Opens a resume-only tab and invokes the browser print dialog after its assets settle. */
 export async function printResume(
@@ -59,7 +62,17 @@ async function capturePrintableResume(
     target: Extract<ResumeRenderTarget, 'print' | 'export'>
 ): Promise<{ html: string; resumeHtml: string; stylesheet: string }> {
     const prepared = prepareResumeDocument(source, target);
-    const stylesheetWithPageSize = `${pageSizeRule(prepared.pageSize)}\n${prepared.stylesheet}`;
+    let geometry: Readonly<Record<string, string>> = { 'min-height': '0' };
+    if (hasColumnPageBreak(prepared.nodes)) {
+        const mounted = await mountResumeDocument(prepared);
+        try {
+            mounted.document.body.style.removeProperty('margin');
+            geometry = getResumePrintGeometry(mounted.document.body, prepared.pageSize);
+        } finally {
+            mounted.dispose();
+        }
+    }
+    const stylesheetWithPageSize = `${pageSizeRule(prepared.pageSize, geometry)}\n${prepared.stylesheet}`;
     const resumeHtml = await renderResumeMarkup(prepared);
     const html = documentFontsStore.data
         ? generateHtml(stylesheetWithPageSize, resumeHtml, documentFontsStore.data)
@@ -74,18 +87,18 @@ async function capturePrintableResume(
  * inherited and applied at the root without !important, so authored CSS may
  * still opt an element back into economy printing.
  */
-const PRINT_DOCUMENT_RULES = [
+const printDocumentRules = (geometry: Readonly<Record<string, string>>) => [
     '@media print {',
     '    html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }',
-    '    body { min-height: 0 !important; }',
+    `    body { ${Object.entries(geometry).map(([key, value]) => `${key}: ${value} !important;`).join(' ')} }`,
     '}'
 ].join('\n');
 
-function pageSizeRule(pageSize: PageSize): string {
+function pageSizeRule(pageSize: PageSize, geometry: Readonly<Record<string, string>>): string {
     const pageRule = pageSize === PageSize.A4
         ? '@page { size: A4; margin: 0; }'
         : '@page { size: Letter; margin: 0; }';
-    return `${pageRule}\n${PRINT_DOCUMENT_RULES}`;
+    return `${pageRule}\n${printDocumentRules(geometry)}`;
 }
 
 function showPrintLoadingState(printWindow: Window): void {

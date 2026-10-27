@@ -88,6 +88,14 @@ does not advance the other. Minimum canvas height uses the longest parallel colu
 and includes subsequent sequential rows. Print/export retain the authored break rules
 and let the browser paginate rather than persisting editor filler heights.
 
+For sparse column continuations, built-in layouts stretch their owning normal-flow row
+through the minimum page canvas. Direct body-grid rails paint their repeating panel on
+the root canvas, so native fragmentation cannot truncate its background after the last
+line of text. Native PDF, browser print and HTML export share `resumePrintGeometry`:
+cloned root insets reduce the retained logical continuation extent, preventing a blank
+extra page. Ordinary documents and direct body grids retain content-driven pagination.
+
+
 `PrintHelpers` adds only print page-size rules, document CSS, markup, and font assets to a new popup or export package. PNG capture and render-service consumers use the same prepared-document contract rather than the editor DOM.
 
 ## Required coverage

@@ -45,3 +45,10 @@ export default function getResumeMinHeight(resumeNodes: ResumeNode[], pageSize: 
 
     return `${11 * minPageCount}in`;
 }
+
+
+/** Only a column-local break needs the page canvas retained for continuation decoration. */
+export function hasColumnPageBreak(nodes: ResumeNode[]): boolean {
+    return nodes.some(node => (node.type === 'Column' && node.childNodes?.some(child => child.type === PAGE_BREAK_TYPE))
+        || hasColumnPageBreak(node.childNodes ?? []));
+}

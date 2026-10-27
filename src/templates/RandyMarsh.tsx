@@ -22,6 +22,12 @@ export function randyMarshCss() {
         "height": "100%"
     });
 
+    // The root background propagates to every printed page; a short final grid fragment
+    // must not truncate the rail below its last section.
+    randyCss.addNode('Continuation Rail Canvas', {
+        'background': 'linear-gradient(to right, var(--secondary-color) 0 250px, white 250px 100%)'
+    }, ':has(> .column > .page-break)');
+
     /** Headshot */
     randyCss.addNode(
         '#headshot', {

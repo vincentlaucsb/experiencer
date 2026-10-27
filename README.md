@@ -53,3 +53,10 @@ You can use this app live at [https://experiencer.app](https://experiencer.app).
 ## Thanks
  * [Feather Icons](https://feathericons.com/)
  * [IcoFont](https://icofont.com/)
+
+
+### Template content starting points
+
+The template preview lets you choose content independently of layout and theme when a template authors alternatives. Integrity offers its original fun sample (the default) and a professional Maya Patel example. Templates with one starting point show no extra choice. Choosing content never changes the template’s CSS, fonts or paper size.
+
+Template authors register `TemplateStartingPoint` factories in `src/templates/builtinTemplateStartingPoints.ts`. Each factory owns that template’s complete editable node tree; do not reuse a universal sample across unrelated layouts. Additional template integrations may supply the same optional `startingPoints` contract. Keep the original content first and give alternatives stable identifiers. Professional contact fixtures use reserved `.example` domains and synthetic identities.

@@ -1,3 +1,4 @@
+import type { TemplateStartingPoint } from '@/shared/templates/templateStartingPoint';
 import { TemplateThemeSelector } from './TemplateThemeSelector';
 import type { TemplateTheme } from '@/shared/templates/templateTheme';
 import * as React from 'react';
@@ -25,6 +26,7 @@ export interface AdditionalTemplateOption {
     previewAlt?: string;
     previewLabel?: string;
     themes?: readonly TemplateTheme[];
+    startingPoints?: readonly TemplateStartingPoint[];
     use: (data?: ResumeSaveData) => Promise<void> | void;
     useLabel?: string;
     useDescription?: React.ReactNode;
@@ -227,8 +229,15 @@ export default function ResumeTemplateSelector(props: ResumeTemplateSelectorProp
     return (
         <StaticSidebarLayout
             topNav={props.topNav}
-            main={snapshot.themes?.length ? <div className="template-themed-preview">
+            main={snapshot.themes?.length || (snapshot.startingPoints?.length ?? 0) > 1 ? <div className="template-themed-preview">
                 {preview}
+                {(snapshot.startingPoints?.length ?? 0) > 1 && <label className="pure-form app-form app-p-3">Content starting point
+                    <select aria-label="Content starting point" value={snapshot.selectedStartingPointId}
+                        disabled={snapshot.actionStatus === 'using' || snapshot.preview.status !== 'ready'}
+                        onChange={event => store.selectStartingPoint(event.target.value)}>
+                        {snapshot.startingPoints?.map(point => <option key={point.id} value={point.id}>{point.label}</option>)}
+                    </select>
+                </label>}
                 <TemplateThemeSelector themes={snapshot.themes ?? []} selectedId={snapshot.selectedThemeId}
                     disabled={snapshot.actionStatus === 'using' || snapshot.preview.status !== 'ready'}
                     select={store.selectTheme} />

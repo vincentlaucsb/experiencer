@@ -1,3 +1,5 @@
+import { builtinTemplateStartingPoints } from '@/templates/builtinTemplateStartingPoints';
+import { applyTemplateStartingPoint, type TemplateStartingPoint } from '@/shared/templates/templateStartingPoint';
 import { builtinTemplateThemes } from '@/templates/builtinTemplateThemes';
 import { applyTemplateTheme, type TemplateTheme } from '@/shared/templates/templateTheme';
 import loadData from '@/shared/stores/loadData';
@@ -15,6 +17,8 @@ export interface TemplatePreviewSnapshot {
 }
 
 export interface TemplateSelectorSnapshot {
+    selectedStartingPointId?: string;
+    startingPoints?: readonly TemplateStartingPoint[];
     selectedThemeId?: string;
     themes?: readonly TemplateTheme[];
     selectedBuiltInKey: string;
@@ -29,6 +33,7 @@ export interface TemplateSelectorOption {
     loadPreview?: () => Promise<ResumeSaveData>;
     previewImage?: string;
     themes?: readonly TemplateTheme[];
+    startingPoints?: readonly TemplateStartingPoint[];
     use: (data?: ResumeSaveData) => Promise<void> | void;
 }
 
@@ -49,6 +54,7 @@ export interface TemplateSelectorController {
     selectBuiltIn(key: string): void;
     selectAdditional(groupId: string, templateId: string): void;
     selectTheme(id: string): void;
+    selectStartingPoint(id: string): void;
     useSelected(): Promise<void>;
 }
 
@@ -72,13 +78,16 @@ function actionErrorMessage(error: unknown): string {
         : 'Could not create a document from this template.';
 }
 
-function builtInPreview(key: string): Pick<TemplateSelectorSnapshot, 'preview' | 'themes' | 'selectedThemeId'> {
+function builtInPreview(key: string): Pick<TemplateSelectorSnapshot, 'preview' | 'themes' | 'selectedThemeId' | 'startingPoints' | 'selectedStartingPointId'> {
     const themes = builtinTemplateThemes[key];
+    const startingPoints = builtinTemplateStartingPoints[key];
+    const data = ResumeTemplates.templates[key];
     return {
+        startingPoints, selectedStartingPointId: startingPoints?.[0]?.id,
         themes,
         selectedThemeId: themes?.[0]?.id,
-        preview: themes?.length
-            ? { status: 'ready', data: applyTemplateTheme(ResumeTemplates.templates[key], themes[0]) }
+        preview: themes?.length || startingPoints?.length
+            ? { status: 'ready', data: themes?.length ? applyTemplateTheme(data, themes[0]) : data }
             : idlePreview
     };
 }
@@ -185,7 +194,7 @@ export class TemplateSelectorStore implements TemplateSelectorController {
 
         const requestId = ++this.actionRequestId;
         // Only theme-capable options receive local preview data. Remote templates retain their server-owned creation path.
-        const data = this.snapshot.themes?.length ? this.snapshot.preview.data : undefined;
+        const data = this.snapshot.themes?.length || this.snapshot.startingPoints?.length ? this.snapshot.preview.data : undefined;
         const command = option
             ? () => data ? option.use(data) : option.use()
             : () => data ? this.useBuiltInTemplate(this.snapshot.selectedBuiltInKey, data)
@@ -217,8 +226,7 @@ export class TemplateSelectorStore implements TemplateSelectorController {
     selectTheme = (id: string): void => {
         if (this.snapshot.actionStatus === 'using' || this.snapshot.preview.status !== 'ready') return;
         const theme = this.snapshot.themes?.find(candidate => candidate.id === id);
-        const data = this.snapshot.selectedAdditionalKey
-            ? this.defaultPreview : ResumeTemplates.templates[this.snapshot.selectedBuiltInKey];
+        const data = this.contentPreview();
         if (!theme || !data) return;
         try {
             const themed = applyTemplateTheme(data, theme);
@@ -228,6 +236,24 @@ export class TemplateSelectorStore implements TemplateSelectorController {
             this.setSnapshot({ ...this.snapshot, actionError: actionErrorMessage(error) });
         }
     };
+
+    selectStartingPoint = (id: string): void => {
+        if (this.snapshot.actionStatus === 'using' || this.snapshot.preview.status !== 'ready') return;
+        if (!this.snapshot.startingPoints?.some(point => point.id === id)) return;
+        const data = this.contentPreview(id);
+        if (!data) return;
+        const theme = this.snapshot.themes?.find(item => item.id === this.snapshot.selectedThemeId);
+        this.setSnapshot({...this.snapshot, selectedStartingPointId: id,
+            preview: {status: 'ready', data: theme ? applyTemplateTheme(data, theme) : data}, actionError: undefined});
+    };
+
+    private contentPreview(id = this.snapshot.selectedStartingPointId): ResumeSaveData | undefined {
+        const base = this.snapshot.selectedAdditionalKey ? this.defaultPreview : ResumeTemplates.templates[this.snapshot.selectedBuiltInKey];
+        if (!base) return undefined;
+        const point = this.snapshot.startingPoints?.find(item => item.id === id);
+        // The first point is the template’s original tree. Preserve its node identities when changing only a palette.
+        return point && point !== this.snapshot.startingPoints?.[0] ? applyTemplateStartingPoint(base, point) : base;
+    }
 
     reset = (): void => {
         this.invalidateRequests();
@@ -250,8 +276,11 @@ export class TemplateSelectorStore implements TemplateSelectorController {
         const theme = (preserveTheme
             ? option.themes?.find(candidate => candidate.id === this.snapshot.selectedThemeId)
             : undefined) ?? option.themes?.[0];
-        this.snapshot = { ...this.snapshot, themes: option.themes, selectedThemeId: theme?.id };
-        if (option.previewImage && !option.themes?.length) {
+        const point = (preserveTheme ? option.startingPoints?.find(item => item.id === this.snapshot.selectedStartingPointId) : undefined)
+            ?? option.startingPoints?.[0];
+        this.snapshot = { ...this.snapshot, themes: option.themes, selectedThemeId: theme?.id,
+            startingPoints: option.startingPoints, selectedStartingPointId: point?.id };
+        if (option.previewImage && !option.themes?.length && !option.startingPoints?.length) {
             this.setSnapshot({
                 ...this.snapshot,
                 selectedAdditionalKey: key,
@@ -298,7 +327,8 @@ export class TemplateSelectorStore implements TemplateSelectorController {
                 this.defaultPreview = data;
                 this.setSnapshot({
                     ...this.snapshot,
-                    preview: { status: 'ready', data: theme ? applyTemplateTheme(data, theme) : data }
+                    preview: { status: 'ready', data: theme ? applyTemplateTheme(point ? applyTemplateStartingPoint(data, point) : data, theme)
+                        : point ? applyTemplateStartingPoint(data, point) : data }
                 });
             })
             .catch((error: unknown) => this.finishPreviewError(requestId, key, error));

@@ -98,8 +98,8 @@ export function randyMarshCss() {
         }, ["Title", "First Title Field"]
         ).setProperties({"font-weight": "normal"}, ["Title", "Other Title Fields"]
         ).mustFindNode(["Subtitle", "Last Field"]).addNode('::before', {
-            "content": '"\\1f33f"',
-            "padding": "var(--spacing)"
+            "content": '"\\00b7"',
+            "padding": "0 var(--spacing)"
         });
 
     /** Columns */

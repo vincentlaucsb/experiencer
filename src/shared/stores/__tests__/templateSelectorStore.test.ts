@@ -166,3 +166,50 @@ test('returns to the built-in selection when an additional template disappears',
     });
     expect(store.getSnapshot().selectedAdditionalKey).toBeUndefined();
 });
+
+
+test('starting points change only content, retain the chosen theme and reach the creation command', async () => {
+    let created: ResumeSaveData | undefined;
+    const store = new TemplateSelectorStore((_key, data) => {created = data;});
+    store.selectBuiltIn('Integrity');
+    expect(store.getSnapshot().selectedStartingPointId).toBe('sample');
+    const original = store.getSnapshot().preview.data!;
+    expect(JSON.stringify(original.childNodes)).toContain('Randy');
+    store.selectTheme('forest');
+    const themed = store.getSnapshot().preview.data!;
+    store.selectStartingPoint('professional');
+    const professional = store.getSnapshot().preview.data!;
+    expect(store.getSnapshot().selectedThemeId).toBe('forest');
+    expect(JSON.stringify(professional.childNodes)).toContain('Maya Patel');
+    expect(JSON.stringify(professional.childNodes)).not.toContain('Randy');
+    expect(professional.builtinCss).toEqual(themed.builtinCss);
+    expect(professional.rootCss).toEqual(themed.rootCss);
+    expect(professional.fonts).toEqual(themed.fonts);
+    expect(professional.pageSize).toBe(themed.pageSize);
+    store.selectTheme('ocean');
+    expect(JSON.stringify(store.getSnapshot().preview.data!.childNodes)).toContain('Maya Patel');
+    await store.useSelected();
+    expect(JSON.stringify(created!.childNodes)).toContain('Maya Patel');
+    store.selectBuiltIn('Streamline');
+    expect(store.getSnapshot().startingPoints).toBeUndefined();
+    expect(store.getSnapshot().selectedStartingPointId).toBeUndefined();
+    store.selectStartingPoint('professional');
+    expect(store.getSnapshot().startingPoints).toBeUndefined();
+});
+
+
+test('an additional template with a thumbnail and starting points loads real content without requiring themes', async () => {
+    let created: ResumeSaveData | undefined;
+    const store = new TemplateSelectorStore(() => {});
+    store.configure({groups: [{id: 'local', templates: [{id: 'example', previewImage: '/example.png',
+        loadPreview: async () => preview, use: data => {created = data;},
+        startingPoints: [{id: 'original', label: 'Original', createContent: () => preview.childNodes},
+            {id: 'alternate', label: 'Alternate', createContent: () => [{type: 'Header', value: 'Alternate name', childNodes: []}]}]}]}]});
+    store.selectAdditional('local', 'example');
+    await Promise.resolve();
+    expect(store.getSnapshot().preview.data).toBeDefined();
+    store.selectStartingPoint('alternate');
+    expect(JSON.stringify(store.getSnapshot().preview.data?.childNodes)).toContain('Alternate name');
+    await store.useSelected();
+    expect(JSON.stringify(created?.childNodes)).toContain('Alternate name');
+});

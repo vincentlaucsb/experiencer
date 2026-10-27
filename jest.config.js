@@ -2,7 +2,7 @@
 module.exports = {
     moduleNameMapper: {
         "\\.(css|scss|sass)(\\?.*)?$": "<rootDir>/config/StyleStubber",
-        "\\.(svg|png|jpg|jpeg|gif)(\\?.*)?$": "<rootDir>/config/StyleStubber",
+        "\\.(svg|png|jpg|jpeg|gif|webp)(\\?.*)?$": "<rootDir>/config/StyleStubber",
         "^react-markdown$": "<rootDir>/config/ReactMarkdownMock.js",
         "^@uiw/react-md-editor$": "<rootDir>/config/ReactMarkdownEditorMock.tsx",
         "^@popright/react$": "<rootDir>/config/PoprightReactMock.tsx",

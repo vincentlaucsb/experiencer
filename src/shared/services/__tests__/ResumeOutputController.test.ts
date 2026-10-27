@@ -47,3 +47,39 @@ test('reports HTML and print failures without throwing', async () => {
     expect(outputPorts.showError).toHaveBeenCalledWith('export failed');
     expect(outputPorts.showError).toHaveBeenCalledWith('print failed');
 });
+
+
+test('overflow review can cancel or continue exactly one print without changing the source', () => {
+    const outputPorts = { ...ports(), hasTextOverflow: () => true };
+    const controller = new ResumeOutputController(outputPorts);
+    const snapshots: boolean[] = [];
+    const dispose = controller.subscribePrintReview(() => snapshots.push(controller.getPrintReviewSnapshot()));
+    controller.print(source);
+    expect(controller.getPrintReviewSnapshot()).toBe(true);
+    expect(outputPorts.print).not.toHaveBeenCalled();
+    controller.cancelPrintReview();
+    expect(controller.getPrintReviewSnapshot()).toBe(false);
+    expect(outputPorts.print).not.toHaveBeenCalled();
+    controller.print(source);
+    controller.continuePrint();
+    controller.continuePrint();
+    expect(outputPorts.print).toHaveBeenCalledTimes(1);
+    expect(outputPorts.print).toHaveBeenCalledWith(source);
+    expect(snapshots.slice(0, 4)).toEqual([true, false, true, false]);
+    dispose();
+});
+
+
+test('leaving the editor cancels its retained print request before another editor can mount', () => {
+    const outputPorts = { ...ports(), hasTextOverflow: () => true };
+    const controller = new ResumeOutputController(outputPorts);
+    const leave = controller.bindEditor(document.createElement('div'), PageSize.Letter);
+    controller.print(source);
+    expect(controller.getPrintReviewSnapshot()).toBe(true);
+    leave();
+    const leaveNext = controller.bindEditor(document.createElement('div'), PageSize.A4);
+    expect(controller.getPrintReviewSnapshot()).toBe(false);
+    controller.continuePrint();
+    expect(outputPorts.print).not.toHaveBeenCalled();
+    leaveNext();
+});

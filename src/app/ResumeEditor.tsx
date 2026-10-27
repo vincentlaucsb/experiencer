@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 
+import ResumeTextOverflowNotice from '@/app/ResumeTextOverflowNotice';
 import PngExportFeature from '@/app/PngExportFeature';
 import ResumeEditorSidebar from '@/app/ResumeEditorSidebar';
 import { ResizableSidebarLayout } from '@/controls/Layouts';
@@ -55,6 +56,7 @@ export default function ResumeEditor(props: ResumeEditorProps) {
     const canvas = (
         <>
             <PngExportFeature />
+            <ResumeTextOverflowNotice resumeRef={resumeRef} pageSize={props.pageSize} />
             <div id="resume-container">
                 <ResumeRenderer
                     nodes={props.nodes}

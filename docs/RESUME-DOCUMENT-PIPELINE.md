@@ -132,3 +132,15 @@ and use named native radio controls so selection does not depend on perceiving c
 The optional `ResumeSaveData.notes` object retains Markdown and inherited template guidance through JSON import/export and repository persistence. It is document metadata, not a resume node. `createResumeDocumentSource` deliberately omits it: adapters must never render notes or copy them into output markup, stylesheets, public review data, or PDF metadata.
 
 Entry nodes may carry private `notes` Markdown alongside their fields. Tree persistence retains it; `prepareResumeDocument` strips it recursively for every non-editor target. Host-owned node actions expose note indicators and access points only in the editing UI. General note edits are capped at 8,000 characters; importing legacy guidance does not truncate it.
+
+
+## Text overflow diagnostics
+
+The shared `measureResumeTextOverflow` utility reads painted text ranges against page bounds,
+column content boxes, and clipping ancestors. It reports bounded numeric geometry and runtime node
+IDs, never resume text, contact strings, authored IDs, or complete DOM measurements. The editor's
+transient notice stays outside the document root, and the print command offers return/continue
+review before opening the print window. Standalone render-service consumers reuse the utility;
+neither path changes authored CSS or reflows saved documents. Print, export, and public review do
+not contain the editor notice. The observer coalesces layout mutations and asset/style changes and
+releases its observers and pending animation frame when the editor unbinds.

@@ -212,3 +212,30 @@ test("marks long resume titles for visual truncation while preserving the full n
     expect(titleText.getAttribute("title")).toBe(title);
     expect(screen.getByText("Cloud")).toBeTruthy();
 });
+
+test("renders host-owned group controls beside their title and summary", () => {
+    const selected: string[] = [];
+    render(
+        <Landing
+            documentGroups={[
+                {
+                    id: "recent", title: "Recent documents", summary: "0 documents",
+                    showWhenEmpty: true, documentIds: [],
+                    headingActions: <button onClick={() => selected.push("recent")}>Group action</button>
+                },
+                { id: "archive", title: "Archive", showWhenEmpty: true, documentIds: [] }
+            ]}
+            documents={[]}
+            loadData={() => undefined}
+            loadLocal={() => undefined}
+            new={() => undefined}
+        />
+    );
+
+    const heading = screen.getByRole("heading", { name: "Recent documents" }).parentElement!;
+    expect(within(heading).getByText("0 documents")).toBeTruthy();
+    fireEvent.click(within(heading).getByRole("button", { name: "Group action" }));
+    expect(selected).toEqual(["recent"]);
+    const archive = screen.getByRole("heading", { name: "Archive" }).parentElement!;
+    expect(within(archive).queryByRole("button")).toBeNull();
+});

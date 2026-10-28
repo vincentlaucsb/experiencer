@@ -120,6 +120,7 @@ export default function Landing(props: LandingProps) {
                                     {group.summary
                                         ? <span className="resume-library-group-summary">{group.summary}</span>
                                         : <></>}
+                                    {group.headingActions}
                                 </div>
                                 {documents.length ? <div className="resume-library-list">
                             {documents.map((document) => (

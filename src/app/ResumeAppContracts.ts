@@ -26,6 +26,8 @@ export interface ResumeDocumentGroup {
     id: string;
     title: string;
     summary?: string;
+    /** Host-owned controls rendered beside the group title and summary. */
+    headingActions?: React.ReactNode;
     showWhenEmpty?: boolean;
     documentIds: string[];
 }

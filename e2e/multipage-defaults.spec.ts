@@ -150,3 +150,38 @@ test('physical canvas owns paper bounds for block BODY and important root height
     expect(result.textTops[0]).toBeGreaterThanOrEqual(48);
     expect(result.textTops[1]).toBeGreaterThanOrEqual(1104);
 });
+
+for (const size of ['letter', 'a4']) for (const mode of ['overflow', 'short', 'trailing-break']) {
+    test(`physical ${size} ${mode} canvas is independent of tall viewports`, async ({page}) => {
+        await page.goto('/');
+        const result = await page.evaluate(async ({size, mode}) => {
+            const {createResumeDocumentSource, prepareResumeDocument} = await import('/src/shared/resumeDocument/prepareResumeDocument.ts');
+            const {mountResumeDocument} = await import('/src/shared/resumeDocument/mountResumeDocument.tsx');
+            const {getResumePhysicalCanvas} = await import('/src/shared/resumeDocument/resumePagination.ts');
+            const {captureResumePng} = await import('/src/shared/utils/ExportPng.ts');
+            const height = size === 'a4' ? 297 * 96 / 25.4 : 1056;
+            const bottom = mode === 'overflow' ? (size === 'a4' ? height - 68 : 989) : 48;
+            const data = {rootCss: {name: 'Root', selector: ':root', properties: [], children: []},
+                builtinCss: {name: 'Body', selector: 'body', properties: [
+                    ['padding', `48px 48px ${bottom}px`], ['margin', '0'], ['font', '16px/20px Arial']
+                ], children: [{name: 'Text', selector: 'p', properties: [['margin', '0']], children: []}]},
+                childNodes: [{type: 'Markdown', value: 'Physical overflow marker'}, ...(mode === 'trailing-break' ? [{type: 'PageBreak'}] : [])]};
+            const source = createResumeDocumentSource(data, 'Physical canvas rounding', size);
+            const mounted = await mountResumeDocument(prepareResumeDocument(source, 'png'));
+            let canvas;
+            try {
+                mounted.iframe.style.height = '1800px';
+                await new Promise(resolve => requestAnimationFrame(resolve));
+                canvas = getResumePhysicalCanvas(mounted.document.body);
+            }
+            finally {mounted.dispose();}
+            const bitmap = await createImageBitmap(await captureResumePng(source));
+            const png = {width: bitmap.width, height: bitmap.height}; bitmap.close();
+            return {canvas, png};
+        }, {size, mode});
+        const pages = size === 'letter' && mode === 'overflow' ? 2 : 1;
+        expect(result.canvas!.pageCount).toBe(pages);
+        expect(result.png.height).toBe(Math.ceil(pages * (size === 'a4' ? 297 * 96 / 25.4 : 1056)) * 6);
+        expect(result.png.width).toBe(Math.ceil(size === 'a4' ? 210 * 96 / 25.4 : 816) * 6);
+    });
+}

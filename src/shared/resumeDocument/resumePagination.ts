@@ -44,12 +44,14 @@ export function installResumePagination(body: HTMLElement, pageSize: PageSize): 
         :where(body) { margin: 0; } body > #root:not([data-uuid]) { display: none !important; }
         @page { size: ${pageSize === PageSize.A4 ? 'A4' : 'Letter'}; margin: 0; }
         ${getResumeFragmentRules(geometry)}
+        ${getResumePaginationRules(pageSize)}
         @media print {
             html:root { display: block !important; width: auto !important; min-width: 0 !important; max-width: none !important;
+                height: auto !important; min-height: 0 !important; max-height: none !important;
                 margin: 0 !important; padding: 0 !important; column-count: auto !important; column-height: auto !important; column-wrap: nowrap !important; }
+            .page-break { break-after: page !important; }
             body { min-height: ${geometry['min-height']} !important; }
         }
-        ${getResumePaginationRules(pageSize)}
     `;
     for (const [key, value] of Object.entries(geometry)) body.style.setProperty(key, value, 'important');
     const minimum = Math.max(height, Number.parseFloat(geometry['min-height']));
@@ -107,6 +109,23 @@ export function getResumePhysicalCanvas(body: HTMLElement): {x: number; y: numbe
     const pageHeight = installedPagination.get(body)!.pageHeight;
     // Native wrapped layout consists of whole paper rows. Integer scroll/PNG heights
     // can round A4 up or down, so count the unrounded layout rather than raster pixels.
-    return {x: bounds.x, y: bounds.y, width: bounds.width, height: Math.ceil(bounds.height),
-        pageHeight, pageCount: Math.max(1, Math.round(bounds.height / pageHeight))};
+    const wrappedPages = Math.max(1, Math.round(bounds.height / pageHeight));
+    // An unfragmentable authored box/decoration can overflow the wrapped rows. It
+    // still occupies additional PDF paper; ignore only integer raster rounding.
+    let overflowHeight = root.scrollHeight;
+    if (overflowHeight > Math.ceil(bounds.height) && overflowHeight <= body.ownerDocument.defaultView!.innerHeight) {
+        // Root scrollHeight is floored by the viewport. Read actual rendered boxes
+        // only in that ambiguous case; resizing a frame must not invent paper.
+        const range = body.ownerDocument.createRange();
+        range.selectNodeContents(root);
+        let bottom = bounds.bottom;
+        for (const rect of range.getClientRects()) bottom = Math.max(bottom, rect.bottom);
+        range.detach();
+        overflowHeight = Math.ceil(bottom - bounds.top);
+    }
+    const overflowPages = overflowHeight > Math.ceil(bounds.height)
+        ? Math.ceil(overflowHeight / pageHeight) : wrappedPages;
+    const pageCount = Math.max(wrappedPages, overflowPages);
+    return {x: bounds.x, y: bounds.y, width: bounds.width,
+        height: Math.ceil(Math.max(bounds.height, pageCount * pageHeight)), pageHeight, pageCount};
 }

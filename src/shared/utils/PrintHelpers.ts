@@ -1,6 +1,5 @@
 import type { ResumeFont } from '@/types';
 import { waitForResumeDocumentAssets } from '@/shared/resumeDocument/resumeDocumentReadiness';
-import { getResumePaginationRules } from '@/shared/resumeDocument/resumePagination';
 import { saveAs } from 'file-saver';
 import generateHtml from '@/editor/GenerateHtml';
 import {
@@ -89,12 +88,12 @@ async function capturePrintableResume(
  * inherited and applied at the root without !important, so authored CSS may
  * still opt an element back into economy printing.
  */
-const printDocumentRules = (geometry: Readonly<Record<string, string>>, pageSize: PageSize) => [
+const printDocumentRules = (geometry: Readonly<Record<string, string>>) => [
     '@media print {',
     getResumeFragmentRules(geometry),
-    '    html:root { display: block !important; width: auto !important; min-width: 0 !important; max-width: none !important; margin: 0 !important; padding: 0 !important; column-count: auto !important; column-height: auto !important; column-wrap: nowrap !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }',
+    '    html:root { display: block !important; width: auto !important; min-width: 0 !important; max-width: none !important; margin: 0 !important; padding: 0 !important; height: auto !important; min-height: 0 !important; max-height: none !important; column-count: auto !important; column-height: auto !important; column-wrap: nowrap !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }',
     `    body { ${Object.entries(geometry).map(([key, value]) => `${key}: ${value} !important;`).join(' ')} }`,
-    getResumePaginationRules(pageSize),
+    '    .page-break { break-after: page !important; }',
     '}'
 ].join('\n');
 
@@ -102,7 +101,7 @@ function pageSizeRule(pageSize: PageSize, geometry: Readonly<Record<string, stri
     const pageRule = pageSize === PageSize.A4
         ? '@page { size: A4; margin: 0; }'
         : '@page { size: Letter; margin: 0; }';
-    return `${pageRule}\n${printDocumentRules(geometry, pageSize)}`;
+    return `${pageRule}\n${printDocumentRules(geometry)}`;
 }
 
 function showPrintLoadingState(printWindow: Window): void {

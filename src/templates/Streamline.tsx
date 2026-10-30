@@ -15,6 +15,7 @@ import Row from "@/resume/Row";
 
 /** Applies the shared Streamline header treatment to any document variant. */
 export function addStreamlineHeaderCss(css: CssNode): CssNode {
+    css.setProperties(current => new Map([...current, ['--resume-page-layout', 'flow']]));
     const header = css.mustFindNode("Header").setProperties({
         "margin-bottom": "var(--small-spacing)",
         "padding-bottom": "var(--small-spacing)",

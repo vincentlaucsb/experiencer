@@ -85,7 +85,8 @@ function source(pageSize: PageSize) {
 
 function printWindow(): Window {
     return {closed: false, document: {open: jest.fn(), write: jest.fn(), close: jest.fn(),
-        fonts: {ready: Promise.resolve()}, images: []}, focus: jest.fn(), print: jest.fn(),
+        fonts: {ready: Promise.resolve()}, images: [], querySelectorAll: () => [],
+        defaultView: {requestAnimationFrame: (callback: FrameRequestCallback) => {callback(0); return 1;}}}, focus: jest.fn(), print: jest.fn(),
         requestAnimationFrame: (callback: FrameRequestCallback) => {callback(0); return 1;}
     } as unknown as Window;
 }

@@ -10,6 +10,7 @@ import Link from "@/resume/Link";
 
 /** Applies the shared Assured header and contact treatment to either document variant. */
 export function addAssuredHeaderCss(css: CssNode): CssNode {
+    css.setProperties(current => new Map([...current, ['--resume-page-layout', 'flow']]));
     css.addNode('Icon', {
         'display': 'inline-block',
         'vertical-align': 'middle'

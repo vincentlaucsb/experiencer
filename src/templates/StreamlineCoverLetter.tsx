@@ -94,6 +94,7 @@ export function streamlineCoverLetterCss() {
 
     /** Cover letter body */
     const content = css.addNode("#content", {
+        '--resume-page-flow': '1',
         "font-family": "var(--sans-serif)",
         "font-size": "12pt",
         "line-height": "1.55",
@@ -124,6 +125,7 @@ export function streamlineCoverLetterCss() {
     }, "#body");
 
     css.addNode("#signature", {
+        '--resume-page-flow': '1',
         "margin-top": "var(--large-spacing)",
         "margin-bottom": "var(--large-spacing)",
         "padding-left": "var(--edge-margin)",

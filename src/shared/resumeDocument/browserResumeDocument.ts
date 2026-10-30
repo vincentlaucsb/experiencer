@@ -1,3 +1,4 @@
+import { configureResumeCanvasMinimum } from './resumeDocumentCanvas';
 import { getBuiltinFontStylesheet, getGoogleFontRequests } from '@/shared/fonts/builtinFonts';
 import { RESUME_PAGINATION_ID } from './resumePagination';
 import type { PreparedResumeDocument } from '@/shared/resumeDocument/prepareResumeDocument';
@@ -69,6 +70,7 @@ export function configureResumeDocumentBody(
     prepared: PreparedResumeDocument
 ): () => void {
     const body = target.body;
+    const restoreCanvas = configureResumeCanvasMinimum(body, prepared.minHeight);
     const previous = {
         pageSize: body.dataset.pageSize,
         ariaLabel: body.getAttribute('aria-label'),
@@ -89,6 +91,7 @@ export function configureResumeDocumentBody(
     body.style.pointerEvents = 'none';
 
     return () => {
+        restoreCanvas();
         if (previous.pageSize === undefined) delete body.dataset.pageSize;
         else body.dataset.pageSize = previous.pageSize;
         if (previous.ariaLabel === null) body.removeAttribute('aria-label');

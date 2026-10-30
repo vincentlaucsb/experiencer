@@ -97,6 +97,7 @@ export function assuredCoverLetterCss() {
 
     /** Letter */
     let content = css.addNode("#content", {
+        '--resume-page-flow': '1',
         "font-family": "var(--serif)",
         "font-size": "12pt",
         "line-height": "1.6",

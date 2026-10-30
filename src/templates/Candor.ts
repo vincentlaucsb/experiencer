@@ -452,6 +452,7 @@ function styleRail(css: CssNode): void {
 /** Applies the Candor page, header, section, entry, and rail treatment shared by both documents. */
 export function candorCss(): CssNode {
     const css = getDefaultCss().setProperties({
+        '--resume-page-layout': 'flow',
         ...resumeBodyBaseProperties,
         "display": "grid",
         "grid-template-columns": "minmax(0, 1fr) var(--rail-width)",

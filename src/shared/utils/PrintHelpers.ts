@@ -1,3 +1,5 @@
+import { waitForResumeDocumentAssets } from '@/shared/resumeDocument/resumeDocumentReadiness';
+import { getResumePaginationRules } from '@/shared/resumeDocument/resumePagination';
 import { saveAs } from 'file-saver';
 import generateHtml from '@/editor/GenerateHtml';
 import { documentFontsStore } from '@/shared/stores/documentFontsStore';
@@ -88,11 +90,12 @@ async function capturePrintableResume(
  * inherited and applied at the root without !important, so authored CSS may
  * still opt an element back into economy printing.
  */
-const printDocumentRules = (geometry: Readonly<Record<string, string>>) => [
+const printDocumentRules = (geometry: Readonly<Record<string, string>>, pageSize: PageSize) => [
     '@media print {',
     getResumeFragmentRules(geometry),
     '    html:root { display: block !important; width: auto !important; min-width: 0 !important; max-width: none !important; margin: 0 !important; padding: 0 !important; column-count: auto !important; column-height: auto !important; column-wrap: nowrap !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }',
     `    body { ${Object.entries(geometry).map(([key, value]) => `${key}: ${value} !important;`).join(' ')} }`,
+    getResumePaginationRules(pageSize),
     '}'
 ].join('\n');
 
@@ -100,7 +103,7 @@ function pageSizeRule(pageSize: PageSize, geometry: Readonly<Record<string, stri
     const pageRule = pageSize === PageSize.A4
         ? '@page { size: A4; margin: 0; }'
         : '@page { size: Letter; margin: 0; }';
-    return `${pageRule}\n${printDocumentRules(geometry)}`;
+    return `${pageRule}\n${printDocumentRules(geometry, pageSize)}`;
 }
 
 function showPrintLoadingState(printWindow: Window): void {
@@ -110,27 +113,5 @@ function showPrintLoadingState(printWindow: Window): void {
 }
 
 async function waitForPrintableDocument(printWindow: Window): Promise<void> {
-    const fonts = printWindow.document.fonts;
-    if (fonts) await fonts.ready;
-    await Promise.all(Array.from(printWindow.document.images).map(waitForImage));
-    await nextAnimationFrame(printWindow);
-    await nextAnimationFrame(printWindow);
-}
-
-async function waitForImage(image: HTMLImageElement): Promise<void> {
-    if (!image.complete) {
-        await new Promise<void>((resolve) => {
-            image.addEventListener('load', () => resolve(), { once: true });
-            image.addEventListener('error', () => resolve(), { once: true });
-        });
-    }
-    try {
-        await image.decode();
-    } catch {
-        // A broken optional image must not prevent the user from printing the document.
-    }
-}
-
-function nextAnimationFrame(targetWindow: Window): Promise<void> {
-    return new Promise((resolve) => targetWindow.requestAnimationFrame(() => resolve()));
+    await waitForResumeDocumentAssets(printWindow.document);
 }

@@ -13,17 +13,19 @@ export function getResumePrintGeometry(body: HTMLElement, pageSize: PageSize): R
     const authoredBottom = readInset(style, 'bottom');
     const fallback = defaultInset(body, style);
     const pageHeight = pageSize === PageSize.A4 ? 297 * 96 / 25.4 : 1056;
-    const owners = declaredFlowOwners(body);
     const hasBodyFrame = Number.parseFloat(style.borderTopWidth) > 0 || Number.parseFloat(style.borderBottomWidth) > 0;
     // Declaring BODY geometry takes precedence as a whole: mixing cloned BODY decoration
     // with synthesized inner insets produces inconsistent native Grid fragmentation.
-    const flowOwned = style.getPropertyValue('--resume-page-layout').trim() === 'flow'
-        && authoredTop === 0 && authoredBottom === 0 && !hasBodyFrame && owners.length > 0;
+    const flowLayout = style.getPropertyValue('--resume-page-layout').trim() === 'flow'
+        && authoredTop === 0 && authoredBottom === 0 && !hasBodyFrame;
+    const owners = flowLayout ? declaredFlowOwners(body) : [];
+    const flowOwned = owners.length > 0;
     const top = flowOwned ? 0 : authoredTop || fallback;
     const bottom = flowOwned ? 0 : authoredBottom || fallback;
     const geometry: Geometry = {};
-    for (const owner of owners) geometry[`--resume-fragment-${owner.dataset.uuid}`] = 'clone';
     if (flowOwned) {
+        // BODY-owned layouts retain authored descendant decoration, including continuous gradients.
+        for (const owner of owners) geometry[`--resume-fragment-${owner.dataset.uuid}`] = 'clone';
         prepareFlowInset(geometry, owners, 'top', fallback, body, pageHeight);
         prepareFlowInset(geometry, owners, 'bottom', fallback, body, pageHeight);
     }

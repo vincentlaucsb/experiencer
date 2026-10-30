@@ -70,6 +70,44 @@ describe('resume printing and HTML export', () => {
         } finally {open.mockRestore();}
     });
 
+    test('print uses the captured document font manifest rather than another active document', async () => {
+        const popup = printWindow();
+        const open = jest.spyOn(window, 'open').mockReturnValue(popup);
+        documentFontsStore.load([{provider: 'google', family: 'Lato'}]);
+        try {
+            await printResume({...source(PageSize.Letter), fonts: [{provider: 'builtin', family: 'Open Sans'}]});
+            const html = (popup.document.write as jest.Mock).mock.calls.at(-1)[0] as string;
+            expect(html).toContain('@font-face');
+            expect(html).toContain('Open Sans');
+            expect(html).not.toContain('fonts.googleapis.com');
+            expect(html).not.toContain('Lato');
+        } finally {open.mockRestore();}
+    });
+
+    test('HTML packaging includes the source font assets and license rather than active fonts', async () => {
+        documentFontsStore.load([{provider: 'google', family: 'Lato'}]);
+        global.fetch = jest.fn(async (url) => {
+            if (String(url).includes('google')) throw new Error('Unexpected active font request');
+            return {ok: true, headers: new Headers({'content-type': 'font/woff2'}),
+                arrayBuffer: async () => new Uint8Array([1, 2, 3]).buffer,
+                text: async () => 'Synthetic source font license'} as Response;
+        });
+        await exportResumeAsHtml({...source(PageSize.Letter), fonts: [{provider: 'builtin', family: 'Open Sans'}]});
+        const text = await blobText(save.mock.calls[0][0] as Blob);
+        expect(text).toContain('Open Sans');
+        expect(text).toContain('fonts/licenses/open-sans.txt');
+        expect(text).toContain('Synthetic source font license');
+        expect(text).not.toContain('Lato');
+    });
+
+    test.each([[], undefined])('an empty or legacy source font manifest cannot borrow active fonts: %p', async fonts => {
+        documentFontsStore.load([{provider: 'google', family: 'Lato'}]);
+        await exportResumeAsHtml({...source(PageSize.Letter), fonts});
+        const text = await blobText(save.mock.calls[0][0] as Blob);
+        expect(text).not.toContain('Lato');
+        expect(fetch).not.toHaveBeenCalled();
+    });
+
     test('reports a blocked popup without mounting a document', async () => {
         const open = jest.spyOn(window, 'open').mockReturnValue(null);
         try {await expect(printResume(source(PageSize.Letter))).rejects.toThrow('print preview was blocked');}

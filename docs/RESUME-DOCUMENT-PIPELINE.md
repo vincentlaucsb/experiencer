@@ -100,7 +100,7 @@ measuring root insets, so browser defaults cannot become authored page padding.
 Authored résumé margins still take precedence.
 
 
-`PrintHelpers` adds only print page-size rules, document CSS, markup, and font assets to a new popup or export package. PNG capture and render-service consumers use the same prepared-document contract rather than the editor DOM.
+`PrintHelpers` adds only print page-size rules, document CSS, markup, and font assets to a new popup or export package. Both outputs use the prepared source font manifest, preserving an explicit empty manifest; they must never borrow the active editor's font state. PNG capture and render-service consumers use the same prepared-document contract rather than the editor DOM.
 
 ## Required coverage
 

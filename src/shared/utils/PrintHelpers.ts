@@ -1,8 +1,8 @@
+import type { ResumeFont } from '@/types';
 import { waitForResumeDocumentAssets } from '@/shared/resumeDocument/resumeDocumentReadiness';
 import { getResumePaginationRules } from '@/shared/resumeDocument/resumePagination';
 import { saveAs } from 'file-saver';
 import generateHtml from '@/editor/GenerateHtml';
-import { documentFontsStore } from '@/shared/stores/documentFontsStore';
 import {
     prepareResumeDocument,
     type ResumeDocumentSource,
@@ -52,7 +52,7 @@ export async function exportResumeAsHtml(
     const archive = await buildHtmlExportPackage({
         stylesheet: capture.stylesheet,
         resumeHtml: capture.resumeHtml,
-        documentFonts: documentFontsStore.data,
+        documentFonts: capture.fonts,
         baseUrl: window.location.href
     });
     saveAs(archive, filename.replace(/\.html?$/i, '.zip'));
@@ -61,7 +61,7 @@ export async function exportResumeAsHtml(
 async function capturePrintableResume(
     source: ResumeDocumentSource,
     target: Extract<ResumeRenderTarget, 'print' | 'export'>
-): Promise<{ html: string; resumeHtml: string; stylesheet: string }> {
+): Promise<{ html: string; resumeHtml: string; stylesheet: string; fonts?: ResumeFont[] }> {
     const prepared = prepareResumeDocument(source, target);
     const mounted = await mountResumeDocument(prepared);
     let geometry: Readonly<Record<string, string>>;
@@ -77,10 +77,8 @@ async function capturePrintableResume(
     }
     const stylesheetWithPageSize = `${pageSizeRule(prepared.pageSize, geometry)}\n${prepared.stylesheet}`;
     const resumeHtml = await renderResumeMarkup(prepared);
-    const html = documentFontsStore.data
-        ? generateHtml(stylesheetWithPageSize, resumeHtml, documentFontsStore.data)
-        : generateHtml(stylesheetWithPageSize, resumeHtml);
-    return { html, resumeHtml, stylesheet: stylesheetWithPageSize };
+    const html = generateHtml(stylesheetWithPageSize, resumeHtml, prepared.fonts);
+    return { html, resumeHtml, stylesheet: stylesheetWithPageSize, fonts: prepared.fonts };
 }
 
 /**

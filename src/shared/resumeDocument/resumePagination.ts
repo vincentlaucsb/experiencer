@@ -21,7 +21,7 @@ export function getResumePaginationRules(pageSize: PageSize): string {
     const width = pageSize === PageSize.A4 ? '210mm' : '8.5in';
     return `@supports (column-height: 1px) and (column-wrap: wrap) {
         html:root { display: block !important; width: ${width} !important; min-width: 0 !important;
-            max-width: none !important; column-count: 1 !important; column-height: ${height}px !important;
+            max-width: none !important; height: auto !important; min-height: 0 !important; max-height: none !important; column-count: 1 !important; column-height: ${height}px !important;
             column-wrap: wrap !important; column-fill: auto !important; column-gap: 0 !important;
             row-gap: 0 !important; padding: 0 !important; margin: 0 auto !important; }
         .page-break { break-after: column !important; height: 0 !important; min-height: 0 !important; }
@@ -96,4 +96,17 @@ export function scheduleResumePagination(body: HTMLElement, pageSize: PageSize):
 
 export async function waitForResumePagination(body: HTMLElement): Promise<void> {
     await pendingPagination.get(body);
+}
+
+
+/** The physical page canvas is HTML; a fragmented BODY's union box is not paper geometry. */
+export function getResumePhysicalCanvas(body: HTMLElement): {x: number; y: number; width: number; height: number; pageHeight: number; pageCount: number} | undefined {
+    if (!hasResumePagination(body)) return undefined;
+    const root = body.ownerDocument.documentElement;
+    const bounds = root.getBoundingClientRect();
+    const pageHeight = installedPagination.get(body)!.pageHeight;
+    // Native wrapped layout consists of whole paper rows. Integer scroll/PNG heights
+    // can round A4 up or down, so count the unrounded layout rather than raster pixels.
+    return {x: bounds.x, y: bounds.y, width: bounds.width, height: Math.ceil(bounds.height),
+        pageHeight, pageCount: Math.max(1, Math.round(bounds.height / pageHeight))};
 }

@@ -122,3 +122,31 @@ for (const type of ['Row', 'Grid']) {
         }
     });
 }
+
+
+test('physical canvas owns paper bounds for block BODY and important root height limits', async ({page}) => {
+    await page.goto('/');
+    const result = await page.evaluate(async () => {
+        const {createResumeDocumentSource, prepareResumeDocument} = await import('/src/shared/resumeDocument/prepareResumeDocument.ts');
+        const {mountResumeDocument} = await import('/src/shared/resumeDocument/mountResumeDocument.tsx');
+        const {getResumePhysicalCanvas} = await import('/src/shared/resumeDocument/resumePagination.ts');
+        const data = {rootCss: {name: 'Root', selector: ':root', properties: [['height', '100px !important'], ['max-height', '100px !important']], children: []},
+            builtinCss: {name: 'Body', selector: 'body', properties: [['margin', '0'], ['padding', '.5in'], ['font', '16px/20px Arial']], children: [
+                {name: 'Paragraph', selector: 'p', properties: [['margin', '0']], children: []}
+            ]}, childNodes: [{type: 'Markdown', value: 'First physical page.'}, {type: 'PageBreak'}, {type: 'Markdown', value: 'Last physical page.'}]};
+        const mounted = await mountResumeDocument(prepareResumeDocument(createResumeDocumentSource(data, 'Physical canvas'), 'render-service'));
+        try {
+            const doc = mounted.document;
+            const canvas = getResumePhysicalCanvas(doc.body)!;
+            const textTops = [...doc.querySelectorAll('p')].map(element => {
+                const range = doc.createRange(); range.selectNodeContents(element); return range.getBoundingClientRect().top;
+            });
+            return {width: canvas.width, height: canvas.height, pages: canvas.pageCount, textTops};
+        } finally {mounted.dispose();}
+    });
+    expect(result.width).toBe(816);
+    expect(result.height).toBe(2112);
+    expect(result.pages).toBe(2);
+    expect(result.textTops[0]).toBeGreaterThanOrEqual(48);
+    expect(result.textTops[1]).toBeGreaterThanOrEqual(1104);
+});

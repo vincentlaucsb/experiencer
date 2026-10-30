@@ -66,6 +66,7 @@ Do not add string-based selector rewriting or another CSS parser.
 The only retained or installed stylesheet resources are:
 
 - `#resume-document-stylesheet` for authored résumé CSS;
+- `#resume-document-pagination` for adapter-owned physical page geometry;
 - `#resume-document-builtin-fonts` for requested bundled fonts;
 - `#resume-document-google-fonts` for the validated Google Fonts request.
 
@@ -155,3 +156,13 @@ review before opening the print window. Standalone render-service consumers reus
 neither path changes authored CSS or reflows saved documents. Print, export, and public review do
 not contain the editor notice. The observer coalesces layout mutations and asset/style changes and
 releases its observers and pending animation frame when the editor unbinds.
+
+## Physical page insets
+
+Paged read-only adapters use `resumePagination` and `getResumePrintGeometry` to share one measured geometry snapshot with PNG capture, saved PDFs, and print-pagination measurement. Print popups and HTML export measure the same authored geometry for every document, including documents with no explicit page break.
+
+Authored vertical body margins join body padding as repeated fragment insets. Padded parallel columns retain their own insets through `box-decoration-break: clone`; adding a second body inset would change their first page. A document without either arrangement receives continuation insets from `--resume-page-inset`, then `--edge-margin`, then a half-inch default. An explicit `--resume-page-inset: 0` permits deliberate zero insets. First/last flow compensation retains existing full-bleed first-page design rather than moving a header or adding padding twice. These rules are adapter infrastructure and never mutate saved CSS.
+
+Chromium 145 and later can display physical pages as vertically wrapped native CSS columns. PNG/render-service and read-only previews use that fragmentation rather than cutting an unbroken flow into paper-height images. Unsupported screen engines retain continuous preview; native print still uses the shared fragment insets. The editing canvas remains continuous, with its existing page guides, and is not treated as the source of physical print geometry.
+
+The pagination stylesheet and inline adapter geometry have an explicit cleanup lifecycle. A portal-only application mount is excluded before measuring direct-body grid children. Host chrome rules must stop matching once the body becomes a résumé document; a saved-PDF host reset must not erase authored padding before measurement.

@@ -1,3 +1,4 @@
+import { installResumePagination } from './resumePagination';
 import { flushSync } from 'react-dom';
 import { createRoot, type Root } from 'react-dom/client';
 
@@ -68,6 +69,7 @@ export async function mountResumeDocument(
     let root: Root | undefined;
     let removeHead: () => void = () => undefined;
     let restoreBody: () => void = () => undefined;
+    let removePagination: () => void = () => undefined;
     try {
         const frameDocument = await waitForFrame(iframe);
         removeHead = installResumeDocumentHead(frameDocument, prepared);
@@ -93,11 +95,16 @@ export async function mountResumeDocument(
             await new Promise<void>((resolve) => frameWindow.requestAnimationFrame(() => resolve()));
         }
 
+        if (prepared.target !== 'print' && prepared.target !== 'export') {
+            removePagination = installResumePagination(frameDocument.body, prepared.pageSize);
+        }
+
         return {
             iframe,
             document: frameDocument,
             dispose: () => {
                 flushSync(() => root?.unmount());
+                removePagination();
                 restoreBody();
                 removeHead();
                 iframe.remove();
@@ -105,6 +112,7 @@ export async function mountResumeDocument(
         };
     } catch (error) {
         flushSync(() => root?.unmount());
+        removePagination();
         restoreBody();
         removeHead();
         iframe.remove();

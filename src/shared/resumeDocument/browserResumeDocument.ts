@@ -1,4 +1,5 @@
 import { getBuiltinFontStylesheet, getGoogleFontRequests } from '@/shared/fonts/builtinFonts';
+import { RESUME_PAGINATION_ID } from './resumePagination';
 import type { PreparedResumeDocument } from '@/shared/resumeDocument/prepareResumeDocument';
 import {
     ensureGoogleFontsLink,
@@ -18,6 +19,7 @@ export function isolateResumeDocumentHead(
         RESUME_STYLESHEET_ID,
         RESUME_BUILTIN_FONTS_ID,
         RESUME_GOOGLE_FONTS_ID,
+        RESUME_PAGINATION_ID,
         ...retainedInfrastructureIds
     ]);
     target.head.querySelectorAll<HTMLStyleElement | HTMLLinkElement>(
@@ -84,7 +86,8 @@ export function configureResumeDocumentBody(
     body.style.width = prepared.width;
     body.style.minHeight = prepared.minHeight;
     body.style.boxSizing = 'border-box';
-    body.style.margin = '0 auto';
+    body.style.marginLeft = 'auto';
+    body.style.marginRight = 'auto';
     body.style.pointerEvents = 'none';
 
     return () => {

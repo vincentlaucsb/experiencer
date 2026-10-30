@@ -9,9 +9,8 @@ import {
 import { renderResumeMarkup } from '@/shared/resumeDocument/renderResumeMarkup';
 import { buildHtmlExportPackage } from '@/shared/utils/HtmlExportPackage';
 import PageSize from '@/types/PageSize';
-import { hasColumnPageBreak } from '@/shared/utils/getResumeMinHeight';
 import { mountResumeDocument } from '@/shared/resumeDocument/mountResumeDocument';
-import { getResumePrintGeometry } from '@/shared/utils/resumePrintGeometry';
+import { getResumePrintGeometry, getResumeFragmentRules } from '@/shared/utils/resumePrintGeometry';
 
 /** Opens a resume-only tab and invokes the browser print dialog after its assets settle. */
 export async function printResume(
@@ -62,20 +61,17 @@ async function capturePrintableResume(
     target: Extract<ResumeRenderTarget, 'print' | 'export'>
 ): Promise<{ html: string; resumeHtml: string; stylesheet: string }> {
     const prepared = prepareResumeDocument(source, target);
-    let geometry: Readonly<Record<string, string>> = { 'min-height': '0' };
-    if (hasColumnPageBreak(prepared.nodes)) {
-        const mounted = await mountResumeDocument(prepared);
-        try {
-            // Measure authored margins, not the browser's default 8px body margin.
-            // Low specificity lets résumé CSS retain its own physical page insets.
-            const reset = mounted.document.createElement('style');
-            reset.textContent = ':where(body) { margin: 0; }';
-            mounted.document.head.prepend(reset);
-            mounted.document.body.style.removeProperty('margin');
-            geometry = getResumePrintGeometry(mounted.document.body, prepared.pageSize);
-        } finally {
-            mounted.dispose();
-        }
+    const mounted = await mountResumeDocument(prepared);
+    let geometry: Readonly<Record<string, string>>;
+    try {
+        // Exclude the browser's default body margin while honoring authored physical insets.
+        const reset = mounted.document.createElement('style');
+        reset.textContent = ':where(body) { margin: 0; }';
+        mounted.document.head.prepend(reset);
+        mounted.document.body.style.removeProperty('margin');
+        geometry = getResumePrintGeometry(mounted.document.body, prepared.pageSize);
+    } finally {
+        mounted.dispose();
     }
     const stylesheetWithPageSize = `${pageSizeRule(prepared.pageSize, geometry)}\n${prepared.stylesheet}`;
     const resumeHtml = await renderResumeMarkup(prepared);
@@ -94,6 +90,7 @@ async function capturePrintableResume(
  */
 const printDocumentRules = (geometry: Readonly<Record<string, string>>) => [
     '@media print {',
+    getResumeFragmentRules(geometry),
     '    html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }',
     `    body { ${Object.entries(geometry).map(([key, value]) => `${key}: ${value} !important;`).join(' ')} }`,
     '}'

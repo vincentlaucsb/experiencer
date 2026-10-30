@@ -85,6 +85,7 @@ function NavigationContent(props: TopNavBarProps) {
                     {props.isEditing ? (
                         <>
                             <FileMenu
+                                readOnly={props.readOnly}
                                 exportHtml={props.exportHtml}
                                 exportToPng={props.exportToPng}
                                 extensionItems={props.fileMenuItems}
@@ -97,7 +98,7 @@ function NavigationContent(props: TopNavBarProps) {
                         </>
                     ) : <></>}
                     <HelpMenu extensionItems={props.helpMenuItems} />
-                    {props.isEditing ? (
+                    {props.isEditing && !props.readOnly ? (
                         <>
                             {props.documentItems}
                             {props.documents?.length ? (

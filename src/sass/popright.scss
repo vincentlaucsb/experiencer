@@ -21,3 +21,8 @@
 [data-popright-separator] {
     background: colors.$highlight;
 }
+
+/* Portal-owned phone menus need the same touch targets as application buttons. */
+@media (max-width: 760px) {
+    [data-popright-menu][data-popright-menu-type] [data-popright-item] { min-height: 44px; box-sizing: border-box; }
+}

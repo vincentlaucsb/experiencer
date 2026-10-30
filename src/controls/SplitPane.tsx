@@ -4,7 +4,7 @@ import './SplitPane.scss';
 
 interface SplitPaneProps {
     left: React.ReactNode;
-    right: React.ReactNode;
+    right?: React.ReactNode;
     defaultSize?: number;  // Width of left pane in pixels
     minSize?: number;      // Minimum left pane width
     maxSize?: number;      // Maximum left pane width
@@ -29,6 +29,7 @@ export const SplitPane = React.forwardRef<HTMLDivElement, SplitPaneProps>(functi
     maxSize,
     storageKey = 'splitpane-width'
 }: SplitPaneProps, ref) {
+    const hasInspector = right !== undefined && right !== null;
     // Load initial width from localStorage or use default
     const getInitialWidth = () => {
         if (storageKey) {
@@ -125,13 +126,13 @@ export const SplitPane = React.forwardRef<HTMLDivElement, SplitPaneProps>(functi
                         ref.current = el;
                     }
                 }}
-                style={{ width: leftWidth, overflow: 'auto', height: '100%' }}
+                style={{ width: hasInspector ? leftWidth : '100%', overflow: 'auto', height: '100%' }}
             >
                 {left}
             </div>
             
-            {/* Resizer */}
-            <div
+            {/* Keep the main pane mounted when a host removes its inspector; output dialogs own work inside it. */}
+            {hasInspector && <div
                 className="split-pane__divider"
                 onMouseDown={(e) => {
                     e.preventDefault();
@@ -145,12 +146,12 @@ export const SplitPane = React.forwardRef<HTMLDivElement, SplitPaneProps>(functi
                     position: 'relative'
                 }}
                 title="Drag to resize, double-click to reset"
-            />
+            />}
             
             {/* Right pane */}
-            <div className="split-pane__inspector" style={{ flex: 1, overflow: 'auto', height: '100%' }}>
+            {hasInspector && <div className="split-pane__inspector" style={{ flex: 1, overflow: 'auto', height: '100%' }}>
                 {right}
-            </div>
+            </div>}
         </div>
     );
 });

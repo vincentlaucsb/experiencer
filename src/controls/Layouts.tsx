@@ -7,7 +7,7 @@ interface DefaultLayoutProps {
 }
 
 interface SidebarLayoutProps extends DefaultLayoutProps {
-    sidebar: React.ReactNode;
+    sidebar?: React.ReactNode;
 }
 
 export function DefaultLayout(props: DefaultLayoutProps) {

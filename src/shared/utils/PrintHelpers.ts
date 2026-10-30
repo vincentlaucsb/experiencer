@@ -53,6 +53,7 @@ export async function exportResumeAsHtml(
         stylesheet: capture.stylesheet,
         resumeHtml: capture.resumeHtml,
         documentFonts: capture.fonts,
+        bodyProperties: capture.geometry,
         baseUrl: window.location.href
     });
     saveAs(archive, filename.replace(/\.html?$/i, '.zip'));
@@ -61,7 +62,7 @@ export async function exportResumeAsHtml(
 async function capturePrintableResume(
     source: ResumeDocumentSource,
     target: Extract<ResumeRenderTarget, 'print' | 'export'>
-): Promise<{ html: string; resumeHtml: string; stylesheet: string; fonts?: ResumeFont[] }> {
+): Promise<{ html: string; resumeHtml: string; stylesheet: string; fonts?: ResumeFont[]; geometry: Readonly<Record<string, string>> }> {
     const prepared = prepareResumeDocument(source, target);
     const mounted = await mountResumeDocument(prepared);
     let geometry: Readonly<Record<string, string>>;
@@ -77,8 +78,8 @@ async function capturePrintableResume(
     }
     const stylesheetWithPageSize = `${pageSizeRule(prepared.pageSize, geometry)}\n${prepared.stylesheet}`;
     const resumeHtml = await renderResumeMarkup(prepared);
-    const html = generateHtml(stylesheetWithPageSize, resumeHtml, prepared.fonts);
-    return { html, resumeHtml, stylesheet: stylesheetWithPageSize, fonts: prepared.fonts };
+    const html = generateHtml(stylesheetWithPageSize, resumeHtml, prepared.fonts, undefined, geometry);
+    return { html, resumeHtml, stylesheet: stylesheetWithPageSize, fonts: prepared.fonts, geometry };
 }
 
 /**

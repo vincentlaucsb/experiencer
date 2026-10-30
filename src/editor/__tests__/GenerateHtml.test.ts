@@ -40,4 +40,14 @@ describe('generateHtml', () => {
         expect(html.match(/<\/style>/g)).toHaveLength(2);
         expect(html).toContain('id="resume-document-stylesheet"');
     });
+    test('adapter body geometry has inline important precedence and cannot inject attributes', () => {
+        const html = generateHtml('body {padding: 0 !important}', '<main>Content</main>', [], undefined,
+            {'padding-top': '48px', '--test': '" onload="alert(1)'});
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        expect(doc.body.style.getPropertyValue('padding-top')).toBe('48px');
+        expect(doc.body.style.getPropertyPriority('padding-top')).toBe('important');
+        expect(doc.body.hasAttribute('onload')).toBe(false);
+        expect(doc.querySelector('main')?.textContent).toBe('Content');
+    });
+
 });

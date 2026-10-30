@@ -14,7 +14,8 @@ export default function generateHtml(
     stylesheet: string,
     bodyHtml: string,
     requestedFontFamilies?: GoogleFontRequest[],
-    bundledFontStylesheet?: string
+    bundledFontStylesheet?: string,
+    bodyProperties?: Readonly<Record<string, string>>
 ) {
     const fontFamilies = requestedFontFamilies ?? extractFontFamiliesFromCss(stylesheet);
     const googleFontsUrl = bundledFontStylesheet === undefined
@@ -24,6 +25,10 @@ export default function generateHtml(
         fontFamilies.filter((font): font is ResumeFont => typeof font !== 'string')
     );
     const safeStylesheet = escapeStylesheetForHtml(stylesheet);
+    const bodyStyle = bodyProperties
+        ? Object.entries(bodyProperties).map(([property, value]) => `${property}: ${value} !important;`).join(' ')
+        : 'margin: 0';
+    const safeBodyStyle = bodyStyle.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
     const fontsLinkTag = googleFontsUrl
         ? `\n        <link href="${googleFontsUrl}" rel="stylesheet">`
         : '';
@@ -42,7 +47,7 @@ export default function generateHtml(
         </style>
         ${fontsLinkTag}
     </head>
-    <body style="margin: 0">
+    <body style="${safeBodyStyle}">
         ${bodyHtml}
     </body>
 </html>

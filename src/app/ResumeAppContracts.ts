@@ -46,6 +46,8 @@ export type DeleteDocumentConfirmationRequest = (
 ) => void;
 
 export interface ResumeShellExtensions {
+    /** Retains output commands while hiding document mutation controls. */
+    readOnly?: boolean;
     /** Optional host for the existing navigation chrome when embedding the editor in another shell. */
     navigationHost?: HTMLElement;
     proBadge?: string;
@@ -74,6 +76,8 @@ export interface ResumeNodeAction {
 }
 
 export interface ResumeEditorExtensions {
+    /** Uses the existing canvas without editors, selection or mutation shortcuts. */
+    readOnly?: boolean;
     nodeActions?: (node: ResumeNode) => ResumeNodeAction[];
     additionalToolbarSections?: ToolbarData;
     additionalSidebarTabs?: AdditionalSidebarTab[];
@@ -194,6 +198,7 @@ export type ResumeWrapperProps = Partial<Omit<ResumeProps, 'selectedNodeId' | 'i
 export function resolveResumeAppExtensions(props: ResumeWrapperProps | ResumeProps): ResumeAppExtensions {
     return {
         shell: {
+            readOnly: props.extensions?.shell?.readOnly,
             navigationHost: props.extensions?.shell?.navigationHost,
             proBadge: props.extensions?.shell?.proBadge ?? props.proBadge,
             accountLabel: props.extensions?.shell?.accountLabel ?? props.accountLabel,
@@ -208,6 +213,7 @@ export function resolveResumeAppExtensions(props: ResumeWrapperProps | ResumePro
             overlays: props.extensions?.shell?.overlays ?? props.overlays
         },
         editor: {
+            readOnly: props.extensions?.editor?.readOnly,
             nodeActions: props.extensions?.editor?.nodeActions,
             additionalToolbarSections: props.extensions?.editor?.additionalToolbarSections
                 ?? props.additionalToolbarSections,

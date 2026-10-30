@@ -1,3 +1,5 @@
+import { waitForResumeDocumentAssets } from './resumeDocumentReadiness';
+import { installResumePagination } from './resumePagination';
 import { flushSync } from 'react-dom';
 import { createRoot, type Root } from 'react-dom/client';
 
@@ -27,22 +29,6 @@ function waitForFrame(iframe: HTMLIFrameElement): Promise<Document> {
     });
 }
 
-async function waitForImages(target: Document): Promise<void> {
-    await Promise.all(Array.from(target.images).map(async (image) => {
-        if (!image.complete) {
-            await new Promise<void>((resolve) => {
-                image.addEventListener('load', () => resolve(), { once: true });
-                image.addEventListener('error', () => resolve(), { once: true });
-            });
-        }
-        try {
-            await image.decode();
-        } catch {
-            // An optional broken image must not block document capture.
-        }
-    }));
-}
-
 /** Mounts a standalone document in an off-screen isolated browser for visual capture. */
 export async function mountResumeDocument(
     prepared: PreparedResumeDocument,
@@ -68,6 +54,7 @@ export async function mountResumeDocument(
     let root: Root | undefined;
     let removeHead: () => void = () => undefined;
     let restoreBody: () => void = () => undefined;
+    let removePagination: () => void = () => undefined;
     try {
         const frameDocument = await waitForFrame(iframe);
         removeHead = installResumeDocumentHead(frameDocument, prepared);
@@ -86,11 +73,10 @@ export async function mountResumeDocument(
                 />
             );
         });
-        await frameDocument.fonts.ready;
-        await waitForImages(frameDocument);
-        const frameWindow = iframe.contentWindow;
-        if (frameWindow) {
-            await new Promise<void>((resolve) => frameWindow.requestAnimationFrame(() => resolve()));
+        await waitForResumeDocumentAssets(frameDocument);
+
+        if (prepared.target !== 'print' && prepared.target !== 'export') {
+            removePagination = installResumePagination(frameDocument.body, prepared.pageSize);
         }
 
         return {
@@ -98,6 +84,7 @@ export async function mountResumeDocument(
             document: frameDocument,
             dispose: () => {
                 flushSync(() => root?.unmount());
+                removePagination();
                 restoreBody();
                 removeHead();
                 iframe.remove();
@@ -105,6 +92,7 @@ export async function mountResumeDocument(
         };
     } catch (error) {
         flushSync(() => root?.unmount());
+        removePagination();
         restoreBody();
         removeHead();
         iframe.remove();

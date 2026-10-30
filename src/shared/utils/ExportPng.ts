@@ -1,4 +1,5 @@
 import html2canvas from 'html2canvas';
+import { getResumePhysicalCanvas } from '@/shared/resumeDocument/resumePagination';
 import { mountResumeDocument } from '@/shared/resumeDocument/mountResumeDocument';
 import {
     prepareResumeDocument,
@@ -127,7 +128,14 @@ export async function captureResumePng(
     const mounted = await mountResumeDocument(prepareResumeDocument(source, 'png'));
     try {
         throwIfAborted(signal);
-        const canvas = await html2canvas(mounted.document.body, {
+        const physical = getResumePhysicalCanvas(mounted.document.body);
+        // HTML owns physical paper and CSS canvas-background propagation. Capturing
+        // BODY alone loses its propagated background after overflowing content ends.
+        const target = physical ? mounted.document.documentElement : mounted.document.body;
+        const canvas = await html2canvas(target, {
+            // html2canvas otherwise includes BODY overflow beyond the native paper rows.
+            // Match the canonical physical canvas while retaining the continuous fallback.
+            ...(physical ? { width: Math.ceil(physical.width), height: physical.height } : {}),
             scale: 6,
             useCORS: true,
             logging: false,

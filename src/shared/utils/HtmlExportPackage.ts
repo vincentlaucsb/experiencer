@@ -15,6 +15,7 @@ interface HtmlExportPackageOptions {
     stylesheet: string;
     resumeHtml: string;
     documentFonts?: ResumeFont[];
+    bodyProperties?: Readonly<Record<string, string>>;
     baseUrl?: string;
     fetchAsset?: typeof fetch;
 }
@@ -38,7 +39,8 @@ export async function buildHtmlExportPackage(
         options.stylesheet,
         options.resumeHtml,
         fontRequests,
-        bundle.stylesheet
+        bundle.stylesheet,
+        options.bodyProperties
     );
 
     return createZipArchive([

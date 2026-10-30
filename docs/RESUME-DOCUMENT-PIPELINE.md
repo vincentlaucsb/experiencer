@@ -66,10 +66,11 @@ Do not add string-based selector rewriting or another CSS parser.
 The only retained or installed stylesheet resources are:
 
 - `#resume-document-stylesheet` for authored résumé CSS;
+- `#resume-document-pagination` for adapter-owned physical page geometry;
 - `#resume-document-builtin-fonts` for requested bundled fonts;
 - `#resume-document-google-fonts` for the validated Google Fonts request.
 
-The iframe or dedicated document body is the résumé canvas. It receives page-size metadata, width, minimum height, centered margins, and read-only pointer behavior. Application stylesheets and application `data-theme` attributes are not document dependencies.
+The iframe or dedicated document body is the résumé canvas. It receives page-size metadata, width, minimum height, adapter-owned page geometry and read-only pointer behavior. Application stylesheets and application `data-theme` attributes are not document dependencies.
 
 `ResumePreviewFrame` uses an empty `srcdoc` document and portals `ResumeRenderer` directly into its body. `StandaloneResumePreview` uses the dedicated route's body. `mountResumeDocument` creates an off-screen isolated iframe for capture and owns its complete cleanup lifecycle.
 
@@ -99,7 +100,7 @@ measuring root insets, so browser defaults cannot become authored page padding.
 Authored résumé margins still take precedence.
 
 
-`PrintHelpers` adds only print page-size rules, document CSS, markup, and font assets to a new popup or export package. PNG capture and render-service consumers use the same prepared-document contract rather than the editor DOM.
+`PrintHelpers` adds only print page-size rules, document CSS, markup, and font assets to a new popup or export package. Both outputs use the prepared source font manifest, preserving an explicit empty manifest; they must never borrow the active editor's font state. PNG capture and render-service consumers use the same prepared-document contract rather than the editor DOM.
 
 ## Required coverage
 
@@ -155,3 +156,23 @@ review before opening the print window. Standalone render-service consumers reus
 neither path changes authored CSS or reflows saved documents. Print, export, and public review do
 not contain the editor notice. The observer coalesces layout mutations and asset/style changes and
 releases its observers and pending animation frame when the editor unbinds.
+
+## Physical page insets
+
+Paged read-only adapters use `resumePagination` and `getResumePrintGeometry` to share one measured geometry snapshot with PNG capture, saved PDFs, and print-pagination measurement. Print popups and HTML export measure the same authored geometry for every document, including documents with no explicit page break.
+
+BODY owns all four physical page insets by default. Authored BODY margins join padding per side; missing sides use `--resume-page-inset`, then `--edge-margin`, then half an inch. Explicit `--resume-page-inset: 0` disables fallback spacing. Inner Row/Grid margins remain ordinary layout spacing, including after automatic or explicit breaks. Blank and newly authored documents retain this default.
+
+Designed full-bleed layouts explicitly persist `--resume-page-layout: flow`. Canonical Columns and vertical groups marked `--resume-page-flow: 1` then own repeated insets through cloned decoration. Initial flow compensation preserves designed full-bleed first pages. Any BODY vertical inset or border takes precedence for the whole BODY, avoiding mixed ownership. Unflagged saved/custom documents receive BODY default spacing even when their former zero-inset first page relied on inner margins; authors can explicitly select flow mode or zero fallback. Template customization retains persisted mode semantics. These adapter rules never rewrite authored CSS.
+
+The owned HTML canvas includes complete native paper rows plus whole additional rows required by genuine vertical root overflow. Compare scroll extent with the upward-rounded root bounds so fractional A4 raster rounding does not add a page. Measurements never resize authored BODY to derive a count; PNG captures the owned HTML canvas and its propagated background.
+
+Supported engines render physical pages as vertically wrapped native CSS columns. PNG/render-service and read-only previews use that wrapping; native print and printed HTML exports use page fragmentation with the same geometry. Browsers without `column-height`/`column-wrap` support retain continuous screen preview and native print fragmentation with shared insets. Canonical Windows Chromium verifies the wrapped PNG/PDF path; the editor remains deliberately continuous with existing guides.
+
+Pagination waits for document font stylesheets, fonts, and image dimensions before measuring flow positions. Disposed previews cancel installation. Geometry preserves authored minimum heights; only known adapter-managed multipage canvas minima are normalized for native allocation, with sparse parallel continuation canvases retaining their rail extent. Observing page count must never resize the fragmented BODY or redistribute auto-margin footers.
+
+The pagination stylesheet and inline adapter geometry have an explicit cleanup lifecycle. A portal-only application mount is excluded before measuring direct-body grid children. Host chrome rules must stop matching once the body becomes a résumé document; a saved-PDF host reset must not erase authored padding before measurement.
+
+The adapter owns the physical HTML fragmentation scaffold, including block layout and column geometry, so authored document-root display rules cannot silently disable pagination. Active pagination detection checks the computed layout. Author-owned resume layout stays on the body and semantic nodes.
+
+When unfragmentable BODY padding exceeds a paper, the complete PNG canvas can include paper beyond the old BODY image extent. PNG preserves the original BODY image pixels but does not extrapolate authored BODY background images into that additional tail; solid canvas colors, frames and content remain preserved. Wrapped screen/CLI background-image fragmentation can differ from native print in this exceptional no-usable-area case. Adapters do not infer arbitrary image tiling; inspect the native PDF for those backgrounds. Ordinary template gradients and rails remain covered by output regressions.

@@ -94,6 +94,7 @@ export function streamlineCoverLetterCss() {
 
     /** Cover letter body */
     const content = css.addNode("#content", {
+        '--resume-page-flow': '1',
         "font-family": "var(--sans-serif)",
         "font-size": "12pt",
         "line-height": "1.55",
@@ -123,14 +124,20 @@ export function streamlineCoverLetterCss() {
         "margin-bottom": "var(--spacing)"
     }, "#body");
 
-    css.addNode("#signature", {
+    const signature = css.addNode("#signature", {
+        '--resume-page-flow': '1',
         "margin-top": "var(--large-spacing)",
         "margin-bottom": "var(--large-spacing)",
         "padding-left": "var(--edge-margin)",
         "padding-right": "var(--edge-margin)",
         "text-align": "right",
         "font-size": "12pt"
-    }, "#signature").addNode("Signature", {
+    }, "#signature");
+    // The signature flow retains its authored first-page box when pagination
+    // adds fragment padding; edge paragraph margins must not collapse through it.
+    signature.addNode("Opening Paragraph", { "margin-top": "0" }, "> .text-content:first-child > p");
+    signature.addNode("Closing Paragraph", { "margin-bottom": "0" }, "> .text-content:last-child > p");
+    signature.addNode("Signature", {
         "display": "block",
         "width": "auto",
         "height": "72px",

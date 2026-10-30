@@ -1,4 +1,6 @@
+import { configureResumeCanvasMinimum } from './resumeDocumentCanvas';
 import { getBuiltinFontStylesheet, getGoogleFontRequests } from '@/shared/fonts/builtinFonts';
+import { RESUME_PAGINATION_ID } from './resumePagination';
 import type { PreparedResumeDocument } from '@/shared/resumeDocument/prepareResumeDocument';
 import {
     ensureGoogleFontsLink,
@@ -18,6 +20,7 @@ export function isolateResumeDocumentHead(
         RESUME_STYLESHEET_ID,
         RESUME_BUILTIN_FONTS_ID,
         RESUME_GOOGLE_FONTS_ID,
+        RESUME_PAGINATION_ID,
         ...retainedInfrastructureIds
     ]);
     target.head.querySelectorAll<HTMLStyleElement | HTMLLinkElement>(
@@ -67,6 +70,7 @@ export function configureResumeDocumentBody(
     prepared: PreparedResumeDocument
 ): () => void {
     const body = target.body;
+    const restoreCanvas = configureResumeCanvasMinimum(body, prepared.minHeight);
     const previous = {
         pageSize: body.dataset.pageSize,
         ariaLabel: body.getAttribute('aria-label'),
@@ -84,10 +88,10 @@ export function configureResumeDocumentBody(
     body.style.width = prepared.width;
     body.style.minHeight = prepared.minHeight;
     body.style.boxSizing = 'border-box';
-    body.style.margin = '0 auto';
     body.style.pointerEvents = 'none';
 
     return () => {
+        restoreCanvas();
         if (previous.pageSize === undefined) delete body.dataset.pageSize;
         else body.dataset.pageSize = previous.pageSize;
         if (previous.ariaLabel === null) body.removeAttribute('aria-label');

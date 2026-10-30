@@ -1,3 +1,4 @@
+import { scheduleResumePagination } from '@/shared/resumeDocument/resumePagination';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 
@@ -72,7 +73,9 @@ export function ResumePreviewFrame(props: ResumePreviewFrameProps) {
         if (!frameDocument) return;
         const removeHead = installResumeDocumentHead(frameDocument, prepared);
         const restoreBody = configureResumeDocumentBody(frameDocument, prepared);
+        const removePagination = scheduleResumePagination(frameDocument.body, prepared.pageSize);
         return () => {
+            removePagination();
             restoreBody();
             removeHead();
         };
@@ -108,7 +111,9 @@ export function StandaloneResumePreview(props: StandaloneResumePreviewProps) {
     React.useLayoutEffect(() => {
         const removeHead = installResumeDocumentHead(document, prepared);
         const restoreBody = configureResumeDocumentBody(document, prepared);
+        const removePagination = scheduleResumePagination(document.body, prepared.pageSize);
         return () => {
+            removePagination();
             restoreBody();
             removeHead();
         };

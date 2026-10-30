@@ -94,14 +94,19 @@ export function assuredCoverLetterCss() {
     });
 
     addAssuredHeaderCss(css);
+    // Keep the header-to-letter gap inside the flow owner so fragment padding
+    // does not change the first page through collapsed sibling/paragraph margins.
+    css.mustFindNode('Header').setProperties(current => new Map([...current, ['margin-bottom', '0']]));
 
     /** Letter */
     let content = css.addNode("#content", {
+        '--resume-page-flow': '1',
         "font-family": "var(--serif)",
         "font-size": "12pt",
         "line-height": "1.6",
         "padding-left": "var(--edge-margin)",
-        "padding-right": "var(--edge-margin)"
+        "padding-right": "var(--edge-margin)",
+        "padding-top": "2em"
     }, '#content');
 
     content.addNode("Paragraph", {
@@ -111,8 +116,10 @@ export function assuredCoverLetterCss() {
     });
 
     css.addNode("#date", {
-        "margin-top": "2em",
-    }, "#date");
+        "margin-top": "0",
+    }, "#date").addNode("Paragraph", {
+        "margin-top": "0"
+    }, "p");
 
     css.addNode("#salutation", {
         "margin-top": "2em"

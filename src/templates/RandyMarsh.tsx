@@ -14,6 +14,7 @@ const headshot = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAP8AAADaCAYAAABp
 
 export function randyMarshCss() {
     let randyCss = getDefaultCss().setProperties({
+        '--resume-page-layout': 'flow',
         ...resumeBodyBaseProperties,
         "font-family": "var(--sans-serif)",
         "font-size": "11pt",

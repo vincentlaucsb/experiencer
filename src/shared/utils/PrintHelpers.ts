@@ -1,6 +1,7 @@
+import type { ResumeFont } from '@/types';
+import { waitForResumeDocumentAssets } from '@/shared/resumeDocument/resumeDocumentReadiness';
 import { saveAs } from 'file-saver';
 import generateHtml from '@/editor/GenerateHtml';
-import { documentFontsStore } from '@/shared/stores/documentFontsStore';
 import {
     prepareResumeDocument,
     type ResumeDocumentSource,
@@ -9,9 +10,8 @@ import {
 import { renderResumeMarkup } from '@/shared/resumeDocument/renderResumeMarkup';
 import { buildHtmlExportPackage } from '@/shared/utils/HtmlExportPackage';
 import PageSize from '@/types/PageSize';
-import { hasColumnPageBreak } from '@/shared/utils/getResumeMinHeight';
 import { mountResumeDocument } from '@/shared/resumeDocument/mountResumeDocument';
-import { getResumePrintGeometry } from '@/shared/utils/resumePrintGeometry';
+import { getResumePrintGeometry, getResumeFragmentRules } from '@/shared/utils/resumePrintGeometry';
 
 /** Opens a resume-only tab and invokes the browser print dialog after its assets settle. */
 export async function printResume(
@@ -51,7 +51,8 @@ export async function exportResumeAsHtml(
     const archive = await buildHtmlExportPackage({
         stylesheet: capture.stylesheet,
         resumeHtml: capture.resumeHtml,
-        documentFonts: documentFontsStore.data,
+        documentFonts: capture.fonts,
+        bodyProperties: capture.geometry,
         baseUrl: window.location.href
     });
     saveAs(archive, filename.replace(/\.html?$/i, '.zip'));
@@ -60,29 +61,24 @@ export async function exportResumeAsHtml(
 async function capturePrintableResume(
     source: ResumeDocumentSource,
     target: Extract<ResumeRenderTarget, 'print' | 'export'>
-): Promise<{ html: string; resumeHtml: string; stylesheet: string }> {
+): Promise<{ html: string; resumeHtml: string; stylesheet: string; fonts?: ResumeFont[]; geometry: Readonly<Record<string, string>> }> {
     const prepared = prepareResumeDocument(source, target);
-    let geometry: Readonly<Record<string, string>> = { 'min-height': '0' };
-    if (hasColumnPageBreak(prepared.nodes)) {
-        const mounted = await mountResumeDocument(prepared);
-        try {
-            // Measure authored margins, not the browser's default 8px body margin.
-            // Low specificity lets résumé CSS retain its own physical page insets.
-            const reset = mounted.document.createElement('style');
-            reset.textContent = ':where(body) { margin: 0; }';
-            mounted.document.head.prepend(reset);
-            mounted.document.body.style.removeProperty('margin');
-            geometry = getResumePrintGeometry(mounted.document.body, prepared.pageSize);
-        } finally {
-            mounted.dispose();
-        }
+    const mounted = await mountResumeDocument(prepared);
+    let geometry: Readonly<Record<string, string>>;
+    try {
+        // Exclude the browser's default body margin while honoring authored physical insets.
+        const reset = mounted.document.createElement('style');
+        reset.textContent = ':where(body) { margin: 0; }';
+        mounted.document.head.prepend(reset);
+        mounted.document.body.style.removeProperty('margin');
+        geometry = getResumePrintGeometry(mounted.document.body, prepared.pageSize);
+    } finally {
+        mounted.dispose();
     }
     const stylesheetWithPageSize = `${pageSizeRule(prepared.pageSize, geometry)}\n${prepared.stylesheet}`;
     const resumeHtml = await renderResumeMarkup(prepared);
-    const html = documentFontsStore.data
-        ? generateHtml(stylesheetWithPageSize, resumeHtml, documentFontsStore.data)
-        : generateHtml(stylesheetWithPageSize, resumeHtml);
-    return { html, resumeHtml, stylesheet: stylesheetWithPageSize };
+    const html = generateHtml(stylesheetWithPageSize, resumeHtml, prepared.fonts, undefined, geometry);
+    return { html, resumeHtml, stylesheet: stylesheetWithPageSize, fonts: prepared.fonts, geometry };
 }
 
 /**
@@ -94,8 +90,10 @@ async function capturePrintableResume(
  */
 const printDocumentRules = (geometry: Readonly<Record<string, string>>) => [
     '@media print {',
-    '    html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }',
+    getResumeFragmentRules(geometry),
+    '    html:root { display: block !important; width: auto !important; min-width: 0 !important; max-width: none !important; margin: 0 !important; padding: 0 !important; height: auto !important; min-height: 0 !important; max-height: none !important; column-count: auto !important; column-height: auto !important; column-wrap: nowrap !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }',
     `    body { ${Object.entries(geometry).map(([key, value]) => `${key}: ${value} !important;`).join(' ')} }`,
+    '    .page-break { break-after: page !important; }',
     '}'
 ].join('\n');
 
@@ -113,27 +111,5 @@ function showPrintLoadingState(printWindow: Window): void {
 }
 
 async function waitForPrintableDocument(printWindow: Window): Promise<void> {
-    const fonts = printWindow.document.fonts;
-    if (fonts) await fonts.ready;
-    await Promise.all(Array.from(printWindow.document.images).map(waitForImage));
-    await nextAnimationFrame(printWindow);
-    await nextAnimationFrame(printWindow);
-}
-
-async function waitForImage(image: HTMLImageElement): Promise<void> {
-    if (!image.complete) {
-        await new Promise<void>((resolve) => {
-            image.addEventListener('load', () => resolve(), { once: true });
-            image.addEventListener('error', () => resolve(), { once: true });
-        });
-    }
-    try {
-        await image.decode();
-    } catch {
-        // A broken optional image must not prevent the user from printing the document.
-    }
-}
-
-function nextAnimationFrame(targetWindow: Window): Promise<void> {
-    return new Promise((resolve) => targetWindow.requestAnimationFrame(() => resolve()));
+    await waitForResumeDocumentAssets(printWindow.document);
 }

@@ -75,7 +75,7 @@ export default function FileMenu(props: FileMenuProps) {
     return (
         <>
             <Modal
-                isOpen={isLoadOpen}
+                isOpen={isLoadOpen && !props.readOnly}
                 title="Import resume JSON"
                 close={closeLoad}
                 className="file-loader-modal"

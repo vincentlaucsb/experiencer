@@ -82,16 +82,12 @@ export default function ResumeEditor(props: ResumeEditorProps) {
         </>
     );
 
-    if (readOnly) return <div className="resume-readonly-view">
-        {props.topNav}
-        <div className="resume-readonly-scroll" aria-label="Read-only résumé">{canvas}</div>
-    </div>;
 
     return (
         <ResizableSidebarLayout
             topNav={props.topNav}
             main={canvas}
-            sidebar={sidebar}
+            sidebar={readOnly ? undefined : sidebar}
         />
     );
 }

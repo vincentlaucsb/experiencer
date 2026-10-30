@@ -71,6 +71,7 @@ export default function ResumeShell(props: ResumeShellProps) {
             <SaveAsDialog isEditing={props.isEditing} />
             <TopNavBar
                 navigationHost={extensions.navigationHost}
+                readOnly={extensions.readOnly}
                 exportHtml={() => output.exportHtml(source)}
                 exportToPng={() => output.exportPng(source)}
                 print={() => output.print(source)}
@@ -96,7 +97,7 @@ export default function ResumeShell(props: ResumeShellProps) {
                 documentItems={extensions.documentMenuItems}
                 documentMenuActions={extensions.documentMenuActions}
             />
-            {props.isEditing ? (
+            {props.isEditing && !extensions.readOnly ? (
                 <TopEditingBar
                     saveLocal={props.saveCurrentDocument}
                     additionalToolbarSections={props.additionalToolbarSections}

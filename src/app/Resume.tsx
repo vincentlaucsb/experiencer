@@ -132,7 +132,7 @@ export function Resume(props: ResumeProps) {
                     pageSize={pageSize}
                     selectedNodeId={props.selectedNodeId}
                     stylesheet={props.stylesheet}
-                    additionalSidebarTabs={extensions.editor?.additionalSidebarTabs}
+                    extensions={extensions.editor}
                 />
             );
     }

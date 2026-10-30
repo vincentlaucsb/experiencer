@@ -10,6 +10,7 @@ import { saveAsDialogStore } from "@/shared/stores/saveAsDialogStore";
 import type { Action } from "@/types";
 
 interface FileMenuProps {
+    readOnly?: boolean;
     exportHtml: Action;
     exportToPng: Action;
     extensionItems?: MenuItem[];
@@ -83,7 +84,7 @@ export default function FileMenu(props: FileMenuProps) {
             </Modal>
             <Dropdown
                 className="toolbar-dropdown"
-                items={items}
+                items={props.readOnly ? items.filter(item => ('id' in item && ['print', 'export-html', 'export-png'].includes(item.id ?? '')) || props.extensionItems?.includes(item)) : items}
                 trigger={(
                     <Button aria-label="File">
                         <i className="icofont-file" aria-hidden="true" />

@@ -6,6 +6,7 @@ import type { Action } from "@/types";
 
 export interface TopNavBarProps {
     isEditing: boolean;
+    readOnly?: boolean;
 
     /** File and output commands. */
     exportHtml: Action;

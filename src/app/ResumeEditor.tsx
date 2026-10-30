@@ -2,6 +2,7 @@ import * as React from 'react';
 import { createPortal } from 'react-dom';
 
 import ResumeTextOverflowNotice from '@/app/ResumeTextOverflowNotice';
+import type { ResumeEditorExtensions } from '@/app/ResumeAppContracts';
 import PngExportFeature from '@/app/PngExportFeature';
 import ResumeEditorSidebar from '@/app/ResumeEditorSidebar';
 import { ResizableSidebarLayout } from '@/controls/Layouts';
@@ -33,6 +34,7 @@ export interface ResumeEditorProps {
     stylesheet: string;
     saveCurrentDocument?: () => void;
     additionalSidebarTabs?: AdditionalSidebarTab[];
+    extensions?: ResumeEditorExtensions;
 }
 
 const updateResumeData: UpdateResumeData = (id, key, data) => {
@@ -45,30 +47,32 @@ const updateResumeDataFields: UpdateResumeDataFields = (id, patch) => {
 
 /** Renders the active editing workspace and binds its views to editor stores. */
 export default function ResumeEditor(props: ResumeEditorProps) {
+    const readOnly = props.extensions?.readOnly;
     const resumeRef = React.useRef<HTMLDivElement>(null);
     const highlightContainer = createContainer('hl-box-container');
     const sidebar = <ResumeEditorSidebar
         nodes={props.nodes}
         selectedNodeId={props.selectedNodeId}
         stylesheet={props.stylesheet}
-        additionalSidebarTabs={props.additionalSidebarTabs}
+        additionalSidebarTabs={props.extensions?.additionalSidebarTabs ?? props.additionalSidebarTabs}
     />;
     const canvas = (
         <>
             <PngExportFeature />
-            <ResumeTextOverflowNotice resumeRef={resumeRef} pageSize={props.pageSize} />
+            {!readOnly && <ResumeTextOverflowNotice resumeRef={resumeRef} pageSize={props.pageSize} />}
             <div id="resume-container">
                 <ResumeRenderer
                     nodes={props.nodes}
                     pageSize={props.pageSize}
                     root="editor-host"
+                    readOnly={readOnly}
                     containerRef={resumeRef}
-                    beforeNodes={<ResumeHotKeys save={props.saveCurrentDocument} />}
+                    beforeNodes={!readOnly && <ResumeHotKeys save={props.saveCurrentDocument} />}
                     updateResumeData={updateResumeData}
                     updateResumeDataFields={updateResumeDataFields}
                 />
             </div>
-            {createPortal(
+            {!readOnly && createPortal(
                 <React.Suspense fallback={null}>
                     <SelectedNodeHighlightBox />
                 </React.Suspense>,
@@ -77,6 +81,11 @@ export default function ResumeEditor(props: ResumeEditorProps) {
             <Toast />
         </>
     );
+
+    if (readOnly) return <div className="resume-readonly-view">
+        {props.topNav}
+        <div className="resume-readonly-scroll" aria-label="Read-only résumé">{canvas}</div>
+    </div>;
 
     return (
         <ResizableSidebarLayout

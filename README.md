@@ -45,8 +45,6 @@ You can use this app live at [https://experiencer.app](https://experiencer.app).
 
 ## Development
 
-[![Launch on PicoRunner](https://picorunner.com/badges/launch.svg)](https://picorunner.com/launch/?repository=https%3A%2F%2Fgithub.com%2Fvincentlaucsb%2Fexperiencer)
-
 - [`AGENTS.md`](AGENTS.md) is the canonical contributor and agent guide.
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) describes the editor architecture.
 - [`docs/RESUME-DOCUMENT-PIPELINE.md`](docs/RESUME-DOCUMENT-PIPELINE.md) defines the

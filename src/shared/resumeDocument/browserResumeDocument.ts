@@ -86,8 +86,6 @@ export function configureResumeDocumentBody(
     body.style.width = prepared.width;
     body.style.minHeight = prepared.minHeight;
     body.style.boxSizing = 'border-box';
-    body.style.marginLeft = 'auto';
-    body.style.marginRight = 'auto';
     body.style.pointerEvents = 'none';
 
     return () => {

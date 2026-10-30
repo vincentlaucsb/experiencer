@@ -91,7 +91,7 @@ async function capturePrintableResume(
 const printDocumentRules = (geometry: Readonly<Record<string, string>>) => [
     '@media print {',
     getResumeFragmentRules(geometry),
-    '    html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }',
+    '    html:root { display: block !important; width: auto !important; min-width: 0 !important; max-width: none !important; margin: 0 !important; padding: 0 !important; column-count: auto !important; column-height: auto !important; column-wrap: nowrap !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }',
     `    body { ${Object.entries(geometry).map(([key, value]) => `${key}: ${value} !important;`).join(' ')} }`,
     '}'
 ].join('\n');

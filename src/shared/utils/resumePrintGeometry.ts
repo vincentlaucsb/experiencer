@@ -31,7 +31,8 @@ export function getResumePrintGeometry(body: HTMLElement, pageSize: PageSize): R
     return {
         ...geometry,
         'min-height': `${Math.max(0, minimum)}px`,
-        'margin-top': '0', 'margin-bottom': '0',
+        'margin-top': '0', 'margin-bottom': '0', 'margin-left': '0', 'margin-right': '0',
+        'padding-left': `${readInset(style, 'left')}px`, 'padding-right': `${readInset(style, 'right')}px`,
         'padding-top': `${top}px`, 'padding-bottom': `${bottom}px`,
         '-webkit-box-decoration-break': 'clone', 'box-decoration-break': 'clone'
     };
@@ -75,9 +76,9 @@ function inheritedInset(parent: HTMLElement | null, body: HTMLElement, side: Sid
     return 0;
 }
 
-function readInset(style: CSSStyleDeclaration, side: Side): number {
-    const margin = Number.parseFloat(side === 'top' ? style.marginTop : style.marginBottom) || 0;
-    const padding = Number.parseFloat(side === 'top' ? style.paddingTop : style.paddingBottom) || 0;
+function readInset(style: CSSStyleDeclaration, side: Side | 'left' | 'right'): number {
+    const margin = Number.parseFloat(style.getPropertyValue(`margin-${side}`)) || 0;
+    const padding = Number.parseFloat(style.getPropertyValue(`padding-${side}`)) || 0;
     return Math.max(0, margin + padding);
 }
 

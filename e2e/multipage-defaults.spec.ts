@@ -4,7 +4,7 @@ function fixture() {
     const column = () => ({type: 'Column', childNodes: [{type: 'Section', value: 'Synthetic flow', childNodes: [
         {type: 'Markdown', value: Array.from({length: 75}, (_, i) => `Synthetic paragraph ${i + 1}.`).join('\n\n')}
     ]}]});
-    return {rootCss: {name: 'Root', selector: ':root', properties: [], children: []},
+    return {rootCss: {name: 'Root', selector: ':root', properties: [['display', 'flex !important']], children: []},
         builtinCss: {name: 'Document', selector: 'body', properties: [
             ['font-family', 'Arial, sans-serif'], ['font-size', '10pt'], ['line-height', '20px'],
             ['margin', '0'], ['padding', '0'], ['display', 'grid'], ['grid-template-columns', 'repeat(2, minmax(0, 1fr))']
@@ -61,6 +61,7 @@ for (const size of ['letter', 'a4']) {
         const data = fixture();
         data.builtinCss.properties.find(([key]) => key === 'padding')![1] = '.5in';
         data.builtinCss.children = [];
+        data.rootCss.properties.push(['padding', '1in !important'], ['margin', '.25in !important']);
         data.childNodes = [data.childNodes[0]];
         const opened = page.waitForEvent('popup');
         const printing = page.evaluate(async ({data, size}) => {
@@ -71,6 +72,13 @@ for (const size of ['letter', 'a4']) {
         }, {data, size});
         const popup = await opened;
         await printing;
+        await popup.emulateMedia({media: 'print'});
+        const rootGeometry = await popup.evaluate(() => ({
+            padding: getComputedStyle(document.documentElement).padding,
+            margin: getComputedStyle(document.documentElement).margin,
+            left: document.querySelector('h2')!.getBoundingClientRect().left
+        }));
+        expect(rootGeometry).toEqual({padding: '0px', margin: '0px', left: 48});
         // Chromium's native PDF has one /Page object per physical sheet, independent of screen height.
         const pages = (await popup.pdf({preferCSSPageSize: true})).toString('latin1').match(/\/Type\s*\/Page\b/g) ?? [];
         expect(pages.length).toBeGreaterThanOrEqual(2);

@@ -76,6 +76,23 @@ The iframe or dedicated document body is the résumé canvas. It receives page-s
 
 ## Markup and output
 
+All Markdown display adapters use `SafeMarkdown` and the shared `markdownHtmlPolicy`.
+Raw HTML is parsed with `rehype-raw`, then sanitized with `rehype-sanitize` using an
+explicit document-formatting allowlist. `<mark>highlighted</mark>` and
+`<u>underlined</u>` text work in block text, inline fields, notes, and output.
+Scripts, embeds, forms, event handlers, inline styles, and IDs are not allowed;
+links and images retain the default safe URL protocols. Arbitrary class names are
+preserved as styling hooks for authored résumé CSS. A prefix such as `md-` is a
+useful convention for avoiding application-style collisions, not a restriction.
+Safe HTML tables are supported too. The source editor's existing GFM task-list
+preview retains passive, forcibly disabled checkboxes; document output allows no inputs.
+The source editor sanitizes authored content before adding trusted preview controls
+such as heading links, syntax highlighting, and code-copy buttons. Sanitization
+also removes the editor's attribute-annotation plugin: it can interpret ordinary
+`rehype:` text as attributes and would otherwise bypass the sanitizer.
+Public review links independently sanitize captured markup on the server and must
+preserve the same supported formatting elements.
+
 `renderResumeMarkup` renders an isolated `ResumeRenderer` instance from a prepared document.
 
 - Document-body targets return the renderer descendants without an outer `#resume` wrapper.

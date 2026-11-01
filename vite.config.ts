@@ -18,6 +18,8 @@ export default defineConfig(({ mode }) => ({
   ],
   
   resolve: {
+    // Keep UIW and the preview policy on the same attribute-plugin instance.
+    dedupe: ['rehype-attr'],
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -50,5 +52,8 @@ export default defineConfig(({ mode }) => ({
     open: true,
   },
   
-  base: '/'
+  base: '/',
+  optimizeDeps: {
+    include: ['@uiw/react-md-editor', 'rehype-attr'],
+  },
 }));

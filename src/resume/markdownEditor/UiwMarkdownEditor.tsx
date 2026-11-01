@@ -5,6 +5,7 @@ import { MarkdownEditorSizing, MINIMUM_MARKDOWN_EDITOR_HEIGHT } from "@/shared/u
 import type { MarkdownEditorProps } from "./types";
 
 import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
+import { markdownPreviewPlugins } from "@/shared/utils/markdownPreviewPolicy";
 
 import "@uiw/react-md-editor/markdown-editor.css";
 import "./UiwMarkdownEditor.scss";
@@ -27,6 +28,11 @@ export default function UiwMarkdownEditor(props: MarkdownEditorProps) {
                 value={props.value}
                 onChange={(value) => props.onChange(value ?? "")}
                 preview="edit"
+                previewOptions={{
+                    // Strip authored raw HTML and comments before UIW adds trusted
+                    // heading links, syntax tokens, and code-copy controls.
+                    pluginsFilter: markdownPreviewPlugins,
+                }}
                 height={props.sizing === 'fill' ? '100%' : height}
                 visibleDragbar={false}
                 autoFocus={props.autoFocus}

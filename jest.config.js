@@ -3,7 +3,6 @@ module.exports = {
     moduleNameMapper: {
         "\\.(css|scss|sass)(\\?.*)?$": "<rootDir>/config/StyleStubber",
         "\\.(svg|png|jpg|jpeg|gif|webp)(\\?.*)?$": "<rootDir>/config/StyleStubber",
-        "^react-markdown$": "<rootDir>/config/ReactMarkdownMock.js",
         "^@uiw/react-md-editor$": "<rootDir>/config/ReactMarkdownEditorMock.tsx",
         "^@popright/react$": "<rootDir>/config/PoprightReactMock.tsx",
         "^@/assets/(.*)$": "<rootDir>/src/assets/$1",
@@ -24,7 +23,7 @@ module.exports = {
     ],
     setupFilesAfterEnv: ['<rootDir>/config/jest.setup.js'],
     transform: {
-        '^.+\\.tsx?$': ['@swc/jest', {
+        '^.+\\.[tj]sx?$': ['@swc/jest', {
             jsc: {
                 parser: {
                     syntax: 'typescript',
@@ -39,10 +38,8 @@ module.exports = {
             },
         }]
     },
-    // Handle ESM packages like react-markdown, rehype-raw
-    transformIgnorePatterns: [
-        'node_modules/(?!(react-markdown|micromark|character-entities|decode-named-character-reference|unist-|unified|ccount|rehype-|hast-|vfile|web-namespaces|comma-separated-tokens|property-information|space-separated-tokens)/)'
-    ],
+    // Exercise the real Markdown pipeline, including its ESM-only plugin dependencies.
+    transformIgnorePatterns: [],
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
     collectCoverageFrom: [
         'src/**/*.{ts,tsx}',

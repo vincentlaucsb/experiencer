@@ -10,6 +10,23 @@ import { deepCopy } from '@/shared/utils/deepCopy';
 
 registerNodes();
 
+test.each(['isolated-preview', 'standalone-preview', 'print', 'export', 'png', 'render-service', 'public-review'] as const)(
+    '%s preserves safe HTML formatting without executable markup', async target => {
+        const document = {
+            ...ResumeTemplates.templates.Integrity,
+            childNodes: [
+                { type: 'Header', value: '<u>Jordan Sample</u>', subtitle: '' },
+                { type: 'Markdown', value: '<mark onclick="alert(1)">Highlighted</mark> and <u>underlined</u>.\n\n'
+                    + '<script>alert(1)</script>\n\n<a href="javascript:alert(1)">Link</a>' },
+            ],
+        };
+        const markup = await renderResumeMarkup(prepareResumeDocument(createResumeDocumentSource(document, 'HTML formatting'), target));
+        expect(markup).toContain('<u>Jordan Sample</u>');
+        expect(markup).toContain('<mark>Highlighted</mark> and <u>underlined</u>');
+        expect(markup).not.toMatch(/<script|onclick|javascript:|alert\(1\)/i);
+    }
+);
+
 test.each(['print', 'export', 'render-service'] as const)('%s omits empty entry subtitle headings', async target => {
     const document = {
         ...ResumeTemplates.templates.Integrity,

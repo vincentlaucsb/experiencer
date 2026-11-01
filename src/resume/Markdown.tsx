@@ -1,5 +1,5 @@
 import type { MouseEvent } from "react";
-import Markdown from "react-markdown";
+import Markdown from "@/shared/ui/SafeMarkdown";
 
 import "./OverlayEditing.scss";
 import "./Markdown.scss";
@@ -26,7 +26,7 @@ import ResumeComponentProps from "@/types";
  * Features:
  * - Edit mode: Plain textarea with Markdown syntax hints (displayed as overlay popover)
  * - View mode: Rendered Markdown (headings, lists, bold, italic, links, code blocks, etc.)
- * - Data URIs: Supports base64 encoded images (e.g., signatures)
+ * - HTML: Supports sanitized document formatting, including highlighting and underlining
  * - Printing/export: Renders as formatted HTML
  * - Stable layout: Editing UI overlays content without shifting layout
  * 

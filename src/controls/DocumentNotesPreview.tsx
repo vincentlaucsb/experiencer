@@ -1,5 +1,5 @@
 import { useSyncExternalStore, type ReactNode } from 'react';
-import Markdown from 'react-markdown';
+import Markdown from '@/shared/ui/SafeMarkdown';
 import { readOnlyNotesStore } from '@/shared/stores/readOnlyNotesStore';
 import Modal from './Modal';
 import { Button } from './Buttons';

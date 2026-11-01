@@ -1,4 +1,4 @@
-import Markdown from 'react-markdown';
+import Markdown from '@/shared/ui/SafeMarkdown';
 
 /**
  * InlineMarkdown - Renders Markdown without wrapping content in block-level elements
@@ -6,10 +6,8 @@ import Markdown from 'react-markdown';
  * Use this component when rendering Markdown inside inline contexts (headings, spans, etc.)
  * to prevent react-markdown from wrapping content in <p> tags, which breaks layout.
  * 
- * Supports HTML (e.g., <img>, <br>, <span>) for backwards compatibility with RichText.
- * Allows data URIs for embedded images (e.g., base64 encoded signatures).
- * 
- * See .claude/rules/component-development.md for full Markdown rendering guidelines.
+ * Supports allowlisted HTML formatting, including <mark>, <u>, and <br>.
+ * Uses the same sanitizer as block Markdown and standalone document rendering.
  * 
  * @example
  * // Good - inline context

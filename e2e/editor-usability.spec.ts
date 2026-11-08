@@ -118,18 +118,20 @@ test(`CSS compact actions have readable hover and focus help in ${theme}`, async
   await page.getByRole('tab', { name: 'CSS', exact: true }).click();
   for (const name of ['Add nested rule to Resume CSS', 'Highlight elements matching body', 'Add pseudo-class or pseudo-element to Resume CSS']) {
     const action = page.getByRole('button', { name, exact: true });
-    await expect(action).toHaveAttribute('title', name);
+    const tooltip = page.getByRole('tooltip', { name, exact: true });
     await action.focus();
-    await expect(action.locator('..').getByRole('tooltip')).toHaveText(name);
-    await expect(action.locator('..').getByRole('tooltip')).toHaveCSS('letter-spacing', 'normal');
-    await expect(action.locator('..').getByRole('tooltip')).toHaveCSS('word-spacing', '0px');
+    await expect(tooltip).toBeVisible();
+    await expect(tooltip).toHaveCSS('letter-spacing', 'normal');
+    await expect(tooltip).toHaveCSS('word-spacing', '0px');
+    await action.press('Escape');
+    await expect(tooltip).toHaveCount(0);
     await page.locator('#resume').hover();
     await action.hover();
-    await expect(action.locator('..').getByRole('tooltip')).toBeVisible();
+    await expect(tooltip).toBeVisible();
   }
   const add = page.getByRole('button', { name: 'Add nested rule to Resume CSS', exact: true });
   await add.focus();
-  const prose = await add.locator('..').getByRole('tooltip').evaluate(element => {
+  const prose = await page.getByRole('tooltip', { name: 'Add nested rule to Resume CSS', exact: true }).evaluate(element => {
     const range = document.createRange();
     range.selectNodeContents(element);
     const context = document.createElement('canvas').getContext('2d')!;
@@ -143,7 +145,7 @@ test(`CSS compact actions have readable hover and focus help in ${theme}`, async
   await expect(page.getByRole('button', { name: /^Delete Resume CSS Ruleset/ })).toBeVisible();
   const nestedAction = page.getByRole('button', { name: /^Add nested rule to Resume CSS Ruleset/ });
   await nestedAction.focus();
-  const nestedTooltip = nestedAction.locator('..').getByRole('tooltip');
+  const nestedTooltip = page.getByRole('tooltip', { name: /^Add nested rule to Resume CSS Ruleset/ });
   await expect(nestedTooltip).toBeVisible();
   const contrast = await nestedTooltip.evaluate(element => {
     const rgb = (value: string) => value.match(/[\d.]+/g)!.slice(0, 3).map(Number);

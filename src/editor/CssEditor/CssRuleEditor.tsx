@@ -1,4 +1,4 @@
-import React, { type ReactNode } from "react";
+import React, { useState } from "react";
 
 import TextField from "@/controls/inputs/TextField";
 import type { ReadonlyCssNode } from "@/shared/CssTree";
@@ -7,7 +7,6 @@ import type {
     LiveCssSyncCoordinator,
     LiveCssTreeName
 } from "@/shared/stores/LiveCssSyncCoordinator";
-import ComponentTypes from '@/resume/schema/ComponentTypes';
 import CssPropertyEditor from "./CssPropertyEditor";
 import CssActionButton from '../CssActionButton';
 
@@ -15,7 +14,6 @@ const CssEditorToolbar = React.lazy(() => import("../CssEditorToolbar"));
 const PARENT_RULE_TITLE = "Parent rule shown because it may affect the selected node.";
 
 interface CssRuleEditorProps {
-    children: ReactNode;
     commands: CssEditorCommands;
     cssNode: ReadonlyCssNode;
     highlight: boolean;
@@ -28,9 +26,8 @@ interface CssRuleEditorProps {
     varSuggestions?: Array<string>;
 }
 
-/** Renders one editable CSS rule while delegating every mutation to explicit ports. */
+/** Binds a CSS block and its quick actions to the rule's stable tree path. */
 export default function CssRuleEditor({
-    children,
     commands,
     cssNode,
     highlight,
@@ -42,81 +39,92 @@ export default function CssRuleEditor({
     onToggleOpen,
     varSuggestions
 }: CssRuleEditorProps) {
+    const [showDescription, setShowDescription] = useState(false);
     const path = cssNode.fullPath;
-    const isNestedCategory = path.length > 1 && !isAncestor;
-    const headingSpacingClasses = isNestedCategory ? " app-my-0 app-py-2 app-px-5" : " app-my-1";
-    const contentSpacingClasses = isNestedCategory ? " app-py-3 app-px-5" : "";
-    const caret = isOpen
-        ? <i className="icofont-caret-up" />
-        : <i className="icofont-caret-down" />;
-    const highlighterClassName = highlight ? "hl hl-active" : "hl";
+    const selector = cssNode.fullSelector;
+    const comment = cssNode.displayName.replace(/\*\//g, "* /");
 
-    const fixedName = liveTree === "resume" && ComponentTypes.instance.ownsCssPath(path);
-    const sectionName = (
-        <span title={fixedName ? "Component CSS rule names are fixed for selected-node editing." : undefined} onClick={(event) => {
-            if (isOpen) event.stopPropagation();
-        }}>
-            <TextField
-                static={!isOpen || fixedName}
-                defaultText="Enter a section name"
-                value={cssNode.name}
-                displayClassName="css-title"
-                onChange={(text) => commands.updateName(path, text)}
-            />
-        </span>
-    );
-
-    const highlighter = !cssNode.fullSelector || cssNode.fullSelector === ":root" ? <></> : (
-        <CssActionButton
-            label={`Highlight elements matching ${cssNode.fullSelector}`}
-            className={highlighterClassName}
-            onClick={(event) => {
-                onToggleHighlight();
-                event.stopPropagation();
-            }}
-        >
-            <i className="icofont-binoculars" aria-hidden="true" />
-        </CssActionButton>
-    );
-
-    const heading = (
-        <h2 className={`css-title-heading${headingSpacingClasses}`} onClick={onToggleOpen}>
-            <span className="css-title-trigger">{caret}</span>
-            {sectionName}
-            {isAncestor ? (
-                <span className="css-parent-badge" title={PARENT_RULE_TITLE}>
-                    PARENT
-                </span>
-            ) : <></>}
-            {highlighter}
+    const actions = (
+        <div className="css-rule-actions app-gap-1">
+            {selector && selector !== ":root" && <CssActionButton
+                label={`Highlight elements matching ${selector}`}
+                className={highlight ? "hl hl-active" : "hl"}
+                aria-pressed={highlight}
+                onClick={onToggleHighlight}
+            >
+                <i className="icofont-binoculars" aria-hidden="true" />
+            </CssActionButton>}
+            <CssActionButton
+                label="Rule description"
+                aria-expanded={showDescription}
+                onClick={() => setShowDescription(current => !current)}
+            >
+                <i className="icofont-ui-edit" aria-hidden="true" />
+            </CssActionButton>
             <React.Suspense fallback={null}>
                 <CssEditorToolbar
                     cssNode={cssNode}
-                    addSelector={(name, selector) => commands.addSelector(path, name, selector)}
+                    addSelector={(name, value) => commands.addSelector(path, name, value)}
                     importLiveChanges={() => liveSync.importSection(liveTree, cssNode, commands)}
                     deleteNode={() => commands.deleteNode(path)}
                 />
             </React.Suspense>
+        </div>
+    );
+
+    const heading = (
+        <h2 className="css-title-heading app-gap-2">
+            {selector && <CssActionButton
+                label={`${isOpen ? "Collapse" : "Expand"} ${cssNode.displayName} declarations`}
+                className="css-title-trigger"
+                aria-expanded={isOpen}
+                onClick={onToggleOpen}
+            >
+                <i className={isOpen ? "icofont-caret-up" : "icofont-caret-down"} aria-hidden="true" />
+            </CssActionButton>}
+            <span className="css-rule-comment">
+                {"/* "}
+                <TextField plainText ariaLabel="Rule name" value={cssNode.displayName}
+                    displayValue={comment} displayClassName="css-title"
+                    onChange={value => commands.updateDisplayName(path, value)} />
+                {" */"}
+            </span>
+            {isAncestor && <span className="css-parent-badge" title={PARENT_RULE_TITLE}>PARENT</span>}
         </h2>
     );
 
-    const content = isOpen ? (
-        <div className={`css-category-content${contentSpacingClasses}`}>
+    return <>
+        {selector ? heading : <div className="css-selector-row app-gap-2">{heading}{actions}</div>}
+        {showDescription && <div className="app-mb-2">
             <TextField
-                defaultText="No description provided"
+                plainText
+                ariaLabel="Rule description"
+                defaultText="Add a description"
                 value={cssNode.description || ""}
-                displayClassName="css-description"
-                onChange={(text) => commands.updateDescription(path, text)}
+                onChange={text => commands.updateDescription(path, text)}
             />
-            {cssNode.fullSelector && <CssPropertyEditor
+        </div>}
+        {selector && <div className="css-ruleset">
+            <div className="css-selector-row app-gap-2">
+                <span className="css-selector">
+                    <TextField
+                        plainText
+                        ariaLabel="Selector"
+                        value={cssNode.selector}
+                        displayValue={selector}
+                        displayClassName="css-description"
+                        onChange={text => commands.updateSelector(path, text)}
+                    />
+                    {isOpen ? " {" : " { … }"}
+                </span>
+                {actions}
+            </div>
+            {isOpen && <CssPropertyEditor
                 commands={commands}
                 cssNode={cssNode}
                 path={path}
                 varSuggestions={varSuggestions}
             />}
-            {children}
-        </div>
-    ) : <></>;
-
-    return <>{heading}{content}</>;
+        </div>}
+    </>;
 }

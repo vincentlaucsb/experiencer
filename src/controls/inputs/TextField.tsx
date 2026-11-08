@@ -24,6 +24,8 @@ export interface TextFieldProps {
     onEditingEnd?: () => void;
     displayClassName?: string;
     displayValue?: string;
+    /** Render literal text in a keyboard-accessible inline edit button. */
+    plainText?: boolean;
     static?: boolean;
     /** Expand the inline editor to fit its value; opt out only for fixed-width utility fields. */
     autoExpand?: boolean;
@@ -70,9 +72,12 @@ export default class TextField extends React.Component<TextFieldProps, TextField
      * again. A new edit session clears it, so the user can retry.
      */
     private submittedDraft: string | undefined;
+    private displayButton = React.createRef<HTMLButtonElement>();
+    private restoreDisplayFocus = false;
 
     private submit(value: string) {
         this.submittedDraft = value;
+        if (this.props.plainText && value === (this.props.value ?? '')) return;
         this.props.onChange(value);
     }
 
@@ -83,6 +88,10 @@ export default class TextField extends React.Component<TextFieldProps, TextField
             this.setState({ isEditing: true });
         }
         if (prevState.isEditing && !this.state.isEditing) this.props.onEditingEnd?.();
+        if (!this.state.isEditing && this.restoreDisplayFocus) {
+            this.restoreDisplayFocus = false;
+            this.displayButton.current?.focus();
+        }
         if (this.state.isEditing && !prevState.isEditing) {
             this.submittedDraft = undefined;
         }
@@ -115,12 +124,14 @@ export default class TextField extends React.Component<TextFieldProps, TextField
         if (event.key === 'Enter') {
             event.preventDefault();
             event.stopPropagation();
+            this.restoreDisplayFocus = Boolean(this.props.plainText);
             this.setState({ isEditing: false });
             this.submit(this.state.value);
         }
         else if (event.key === 'Escape') {
             event.preventDefault();
             event.stopPropagation();
+            this.restoreDisplayFocus = Boolean(this.props.plainText);
             // Restore original value
             this.setState({
                 isEditing: false,
@@ -161,6 +172,11 @@ export default class TextField extends React.Component<TextFieldProps, TextField
 
             return <span
                 onBlur={(event: React.FocusEvent) => {
+                    if (props.plainText) {
+                        this.submit(this.state.value);
+                        this.setState({ isEditing: false });
+                        return;
+                    }
                     // Avoid triggering event if delete button
                     // was clicked
                     if (isNullOrUndefined(event.relatedTarget)) {
@@ -184,6 +200,15 @@ export default class TextField extends React.Component<TextFieldProps, TextField
         }
         else {
             displayValue = "Enter a value";
+        }
+
+        if (props.plainText) {
+            return <button type="button" ref={this.displayButton}
+                className={`text-field-plain ${props.displayClassName ?? ''}`}
+                aria-label={props.ariaLabel ? `${props.ariaLabel}: ${displayValue}` : undefined}
+                onClick={() => this.setState({ isEditing: true, value: props.value ?? '' })}>
+                {displayValue}
+            </button>;
         }
 
         const contextMenuItems: MenuItem[] = [

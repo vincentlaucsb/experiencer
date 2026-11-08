@@ -32,19 +32,24 @@ const pseudoElements = [
 export default function CssEditorToolbar(props: CssEditorToolbarProps) {
     let [pseudoMenuActive, setPseudoMenuActive] = React.useState(false);
     const [deletePrompt, setDeletePrompt] = React.useState(false);
-    const newSectionName = `${props.cssNode.name} Ruleset #${props.cssNode.children.length}`;
+    const addRule = () => {
+        let index = props.cssNode.children.length;
+        const name = () => `${props.cssNode.name} Ruleset #${index}`;
+        while (props.cssNode.hasName(name())) index++;
+        props.addSelector(name(), "#some-id.some-class");
+    };
 
     // Don't show delete button for root nodes
     let deleteButton = (props.cssNode.isRoot) ?
         <></> : (
             deletePrompt ? <>
-                <CssActionButton label={`Confirm delete ${props.cssNode.name} rule`} variant="error" onClick={props.deleteNode}>
+                <CssActionButton label={`Confirm delete ${props.cssNode.displayName} rule`} variant="error" onClick={props.deleteNode}>
                     <i className="icofont-ui-check" aria-hidden="true" />
                 </CssActionButton>
                 <CssActionButton label="Cancel deleting rule" onClick={() => setDeletePrompt(false)}>
                     <i className="icofont-ui-close" aria-hidden="true" />
                 </CssActionButton>
-            </> : <CssActionButton label={`Delete ${props.cssNode.name} rule`} variant="error" appearance="outline" onClick={() => setDeletePrompt(true)}>
+            </> : <CssActionButton label={`Delete ${props.cssNode.displayName} rule`} variant="error" appearance="outline" onClick={() => setDeletePrompt(true)}>
                 <TrashIcon />
             </CssActionButton>
         );
@@ -59,6 +64,7 @@ export default function CssEditorToolbar(props: CssEditorToolbarProps) {
                 return (
                     <Button key={sel} onClick={(event) => {
                         props.addSelector(sel, sel);
+                        setPseudoMenuActive(false);
                         event.stopPropagation();
                     }}>{sel}</Button>
                 );
@@ -75,7 +81,7 @@ export default function CssEditorToolbar(props: CssEditorToolbarProps) {
             }}>
             {props.cssNode.fullSelector && <Popover containerClassName="pseudo-options-container"
                 content={pseudoMenu} isOpen={pseudoMenuActive}>
-                <CssActionButton label={`Add pseudo-class or pseudo-element to ${props.cssNode.name}`} aria-expanded={pseudoMenuActive} onClick={() =>
+                <CssActionButton label={`Add pseudo-class or pseudo-element to ${props.cssNode.displayName}`} aria-expanded={pseudoMenuActive} onClick={() =>
                     setPseudoMenuActive(!pseudoMenuActive)
                 }><span aria-hidden="true">::</span></CssActionButton>
             </Popover>}
@@ -85,7 +91,7 @@ export default function CssEditorToolbar(props: CssEditorToolbarProps) {
             >
                 <i className="icofont-refresh" aria-hidden="true" />
             </CssActionButton>
-            <CssActionButton label={`Add nested rule to ${props.cssNode.name}`} onClick={() => props.addSelector(newSectionName, "#some-id.some-class")}>
+            <CssActionButton label={`Add nested rule to ${props.cssNode.displayName}`} onClick={addRule}>
                 <AddIcon />
             </CssActionButton>
             {deleteButton}

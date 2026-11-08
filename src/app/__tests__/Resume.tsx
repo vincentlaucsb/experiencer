@@ -298,7 +298,7 @@ test('CSS editor reopens for a new selected node of the same type', async () => 
     await selectNode(experience);
     await selectNode(getByText(container, 'CSS'));
 
-    const firstHeading = container.querySelector('.css-title-heading') as HTMLElement | null;
+    const firstHeading = container.querySelector('.css-title-trigger') as HTMLElement | null;
     expect(firstHeading).not.toBeNull();
 
     if (!firstHeading) {
@@ -312,11 +312,12 @@ test('CSS editor reopens for a new selected node of the same type', async () => 
         });
     });
 
-    expect(container.querySelector('.css-category-content')).toBeNull();
+    expect(firstHeading.closest('.css-category')?.querySelector('.css-declarations')).toBeNull();
 
     await selectNode(education);
 
-    expect(container.querySelector('.css-category-content')).not.toBeNull();
+    const reopened = container.querySelector('.css-title-trigger');
+    expect(reopened?.closest('.css-category')?.querySelector('.css-declarations')).toBeTruthy();
 });
 
 test('Template switcher previews the selected template', async () => {

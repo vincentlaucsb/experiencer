@@ -69,7 +69,7 @@ describe("ResumeCssEditor", () => {
 
         render(<ResumeCssEditor selectedNodeId={descriptionListUuid} />);
 
-        expect(await screen.findByText("Description List")).toBeTruthy();
+        expect(await screen.findByRole("button", { name: "Rule name: Description List" })).toBeTruthy();
         expect(screen.getByText("Section")).toBeTruthy();
         expect(screen.getAllByText("PARENT")).toHaveLength(2);
     });

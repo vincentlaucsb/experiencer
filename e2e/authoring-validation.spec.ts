@@ -43,7 +43,7 @@ test('ID and classes stay unchanged until both fields are corrected, then persis
     await expect(restored.locator('#resume #experience-entry.featured.muted')).toBeVisible();
 });
 
-test('invalid CSS values cannot enter raw CSS, saved documents, or print output', async ({ page, context }) => {
+test('invalid CSS values cannot enter saved documents or print output', async ({ page, context }) => {
     await context.addInitScript(() => { window.print = () => undefined; });
     await createResumeFromTemplate(page);
     await page.getByRole('tab', { name: 'CSS', exact: true }).click();
@@ -71,10 +71,7 @@ test('invalid CSS values cannot enter raw CSS, saved documents, or print output'
     await page.getByLabel('font-family value').fill('red; } body { display:none');
     await page.getByLabel('font-family value').press('Enter');
     await expect(fontFamilyRow.getByRole('alert')).toBeVisible();
-    await page.getByRole('tab', { name: 'Raw CSS', exact: true }).click();
-    await expect(page.getByRole('tabpanel')).not.toContainText('display:none');
-    await expect(page.getByRole('tabpanel')).not.toContainText('notacolor');
-    await page.getByRole('tab', { name: 'CSS', exact: true }).click();
+    await page.getByLabel('font-family value').press('Escape');
     await fontSizeRow.locator('.property-value').click();
     await expect(page.getByLabel('font-size value')).toHaveValue(original);
     await page.getByLabel('font-size value').fill('18px');
@@ -100,20 +97,20 @@ test('Unicode custom properties keep balanced opaque values through save and rel
     await createResumeFromTemplate(page);
     await page.getByRole('tab', { name: 'CSS', exact: true }).click();
     const rules = bodyRule(page);
-    await rules.evaluate(element => (element as HTMLElement).click());
+    await rules.getByRole('button', { name: 'Add property', exact: true }).click();
     await page.getByLabel('New property name value').fill('--色');
     await page.getByLabel('New property name value').press('Enter');
     const row = rules.locator('.property').filter({ has: page.locator('.property-key', { hasText: /^--色$/ }) });
     await row.locator('.property-value').click();
     await page.getByLabel('--色 value').fill('{ color: red; }');
-    await page.getByRole('tab', { name: 'Raw CSS', exact: true }).click();
-    await expect(page.getByRole('tabpanel')).toContainText('--色: { color: red; };');
+    await page.getByLabel('--色 value').press('Enter');
+    await expect(row).toContainText('--色: { color: red; };');
     await page.keyboard.press('Control+s');
     await expect(page.locator('.save-status')).toContainText('Saved v2');
     const restored = await page.context().newPage();
     await restored.goto('/');
     await restored.getByRole('button', { name: 'Open', exact: true }).click();
-    await restored.getByRole('tab', { name: 'Raw CSS', exact: true }).click();
+    await restored.getByRole('tab', { name: 'CSS', exact: true }).click();
     await expect(restored.getByRole('tabpanel')).toContainText('--色: { color: red; };');
 });
 
@@ -132,7 +129,6 @@ test('clearing a CSS value removes the declaration and undo restores it', async 
         await input.fill(cleared);
         await input.press('Enter');
         await expect(fontSizeRow).toHaveCount(0);
-        await page.getByRole('tab', { name: 'Raw CSS', exact: true }).click();
         await expect(page.getByRole('tabpanel')).not.toContainText('font-size: ;');
         await page.getByRole('button', { name: 'Undo', exact: true }).click();
         await page.getByRole('tab', { name: 'CSS', exact: true }).click();
@@ -145,7 +141,7 @@ test('a new property is stored only after it receives a value', async ({ page })
     await createResumeFromTemplate(page);
     await page.getByRole('tab', { name: 'CSS', exact: true }).click();
     const rules = bodyRule(page);
-    await rules.evaluate(element => (element as HTMLElement).click());
+    await rules.getByRole('button', { name: 'Add property', exact: true }).click();
     await page.getByLabel('New property name value').fill('outline-offset');
     await page.getByLabel('New property name value').press('Enter');
     const pending = page.getByLabel('outline-offset value');
@@ -153,16 +149,15 @@ test('a new property is stored only after it receives a value', async ({ page })
     await pending.press('Escape');
     await expect(rules.locator('.property-key', { hasText: /^outline-offset$/ })).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Undo', exact: true })).toBeDisabled();
-    await page.getByRole('tab', { name: 'Raw CSS', exact: true }).click();
     await expect(page.getByRole('tabpanel')).not.toContainText('outline-offset');
 
     await page.getByRole('tab', { name: 'CSS', exact: true }).click();
-    await rules.evaluate(element => (element as HTMLElement).click());
+    await rules.getByRole('button', { name: 'Add property', exact: true }).click();
     await page.getByLabel('New property name value').fill('outline-offset');
     await page.getByLabel('New property name value').press('Enter');
     await page.getByLabel('outline-offset value').fill('2px');
-    await page.getByRole('tab', { name: 'Raw CSS', exact: true }).click();
-    await expect(page.getByRole('tabpanel')).toContainText('outline-offset: 2px;');
+    await page.getByLabel('outline-offset value').press('Enter');
+    await expect(rules).toContainText('outline-offset: 2px;');
     await page.getByRole('button', { name: 'Undo', exact: true }).click();
     await expect(page.getByRole('tabpanel')).not.toContainText('outline-offset');
 });
@@ -182,7 +177,7 @@ test('Enter commits a CSS value and keeps focus on it; keys there leave the sele
     await page.getByRole('tab', { name: 'CSS', exact: true }).click();
     // With a node selected, the multi-declaration body rule is a collapsed parent rule.
     await page.locator('h2.css-title-heading').filter({
-        has: page.locator('span.css-title', { hasText: /^Resume CSS$/ })
+        has: page.locator('.css-title', { hasText: /^Resume CSS$/ })
     }).locator('.css-title-trigger').click();
     const rules = bodyRule(page);
     await expect.poll(() => rules.locator('.property').count()).toBeGreaterThan(1);
@@ -205,7 +200,7 @@ test('Enter commits a CSS value and keeps focus on it; keys there leave the sele
     await expect(entries).toHaveCount(entryCount);
     await expect(selection).toHaveCount(1);
     await expect(editors).toHaveCount(0);
-    await expect(fontSizeRow.locator('.property-value')).toHaveText('17px');
+    await expect(fontSizeRow.locator('.property-value')).toHaveText('17px;');
 
     await page.keyboard.press('Enter');
     await expect(page.getByLabel('font-size value')).toBeFocused();

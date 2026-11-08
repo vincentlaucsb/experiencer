@@ -16,6 +16,7 @@ interface ValueFieldProps {
     discardUnchangedBlank?: boolean;
     /** Receives the focusable read-only value, so focus can return to it after editing. */
     displayRef?: React.Ref<HTMLButtonElement>;
+    displaySuffix?: string;
 }
 
 interface ValueState {
@@ -154,6 +155,7 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
                     aria-label={`Edit ${this.props.label}: ${display}`}
                 >
                     <span>{display}</span>
+                    {this.props.displaySuffix && <span aria-hidden="true">{this.props.displaySuffix}</span>}
                 </button>
                 {feedback}
             </>
@@ -395,6 +397,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                         suggestions={this.suggestionsFor(key)}
                         validate={draft => this.props.validateValue?.(key, draft)}
                         discardUnchangedBlank={pending}
+                        displaySuffix={this.props.layout === "declarations" && !pending ? ";" : undefined}
                         displayRef={(element) => {
                             if (element) this.displays.set(key, element);
                             else this.displays.delete(key);

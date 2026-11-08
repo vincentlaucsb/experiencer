@@ -31,7 +31,6 @@ export interface ResumeEditorProps {
     nodes: ResumeNode[];
     pageSize: PageSize;
     selectedNodeId?: string;
-    stylesheet: string;
     saveCurrentDocument?: () => void;
     additionalSidebarTabs?: AdditionalSidebarTab[];
     extensions?: ResumeEditorExtensions;
@@ -53,7 +52,6 @@ export default function ResumeEditor(props: ResumeEditorProps) {
     const sidebar = <ResumeEditorSidebar
         nodes={props.nodes}
         selectedNodeId={props.selectedNodeId}
-        stylesheet={props.stylesheet}
         additionalSidebarTabs={props.extensions?.additionalSidebarTabs ?? props.additionalSidebarTabs}
     />;
     const canvas = (

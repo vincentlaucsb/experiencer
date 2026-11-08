@@ -7,32 +7,32 @@
 .css-action-help {
     position: relative;
     display: inline-flex;
-    .css-action-tooltip {
-        display: none;
-        position: absolute;
-        top: 100%;
-        right: 0;
-        z-index: zindex.$sticky-content;
-        width: max-content;
-        max-width: 18rem;
-        // Tooltip padding separates explanatory text from its own surface edge.
-        padding: var(--app-space-2);
-        color: colors.$text-primary;
-        background: colors.$surface-raised;
-        border: 1px solid colors.$border-strong;
-        font-size: 0.8rem;
-        font-weight: normal;
-        // Pure's button-group whitespace compression belongs to controls, not explanatory prose.
-        letter-spacing: normal;
-        word-spacing: normal;
-        line-height: 1.3;
-        text-align: left;
-        white-space: normal;
-        pointer-events: none;
-    }
-    &:hover, &:focus-within {
-        .css-action-tooltip { display: block; }
-    }
+}
+
+.css-action-tooltip-anchor {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.css-action-tooltip-layer {
+    z-index: zindex.$popover;
+}
+
+.css-action-tooltip {
+    display: block;
+    box-sizing: border-box;
+    max-width: min(18rem, 100vw);
+    // Tooltip padding separates explanatory text from its own surface edge.
+    padding: var(--app-space-2);
+    color: colors.$text-primary;
+    background: colors.$surface-raised;
+    border: 1px solid colors.$border-strong;
+    font-size: 0.8rem;
+    font-weight: normal;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+    text-align: left;
 }
 
 .live-css-sync-banner {
@@ -67,169 +67,107 @@
     }
 }
 
-section.css-category * {
-    margin: 0;
+.css-scope,
+.css-title-heading,
+.css-rule-actions,
+.css-rule-end {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+}
+
+.css-scope,
+.css-rule-end {
+    justify-content: space-between;
 }
 
 section.css-category {
-    font-size: 11pt;
-    /** || Heading */
-    h2.css-title-heading {
-        cursor: pointer;
-        display: flex;
-        align-items: center; /** Vertical alignment */
-        justify-content: flex-start;
-        column-gap: 0.5rem;
+    font: 0.875rem / 1.5 variables.$monospace;
+    overflow-wrap: anywhere;
 
-        span.css-title {
-            flex-shrink: 0;
-        }
+    .css-selector-row {
+        display: grid;
+        // Reserve the right column for actions so long selectors wrap in place.
+        grid-template-columns: minmax(0, 1fr) fit-content(70%);
+        align-items: start;
+    }
+
+    h2.css-title-heading {
+        margin: 0;
+        font: inherit;
+    }
+
+    .css-rule-comment {
+        min-width: 0;
+        color: colors.$text-secondary;
+    }
+
+    .css-rule-actions {
+        min-width: 0;
+        justify-content: flex-end;
+        font-size: 0.8rem;
 
         .css-title-toolbar {
-            margin-left: auto;
+            display: flex;
+            min-width: 0;
+            flex-wrap: wrap;
+            justify-content: flex-end;
         }
     }
 
-    th {
-        text-align: left;
+    .css-title-trigger,
+    .css-rule-actions .pure-button,
+    .css-rule-end .pure-button {
+        // Tight icon controls keep the selectors readable in the sidebar.
+        padding: var(--app-space-1) var(--app-space-2);
     }
 
-    /* || Controls */
-    .css-title-toolbar {
-        font-size: initial;
-        text-align: right;
-
-        button {
-            font-size: 9pt;
-        }
+    .hl-active {
+        outline: 2px solid colors.$focus-ring;
     }
 
     input {
-        padding: 2px;
+        max-width: 100%;
     }
 
-    /** || Highlighting Button */
-    button.hl {
-        background: inherit;
+    .property-key {
+        color: colors.$css-property;
+    }
+
+    .text-field-plain,
+    .property-value-display {
+        background: none;
         border: none;
-        color: colors.$text-secondary;
+        color: inherit;
+        cursor: pointer;
+        font: inherit;
+        padding: 0;
+        text-align: start;
+        overflow-wrap: anywhere;
+        max-width: 100%;
 
-        &:hover, &.hl-active {
-            color: colors.$text-primary;
+        &:hover {
+            text-decoration: underline;
         }
-    }
 
-    /* || Rulesets */
-    /* || Property Lists */
-    div.css-ruleset {
-        font-family: variables.$monospace;
-
-        .css-declarations {
-            .property {
-                overflow-wrap: anywhere;
-            }
-
-            .property-key {
-                color: colors.$css-property;
-                font-weight: normal;
-            }
-
-            .property-value {
-                span:not(.input-validation-error):not(.property-value-editor)::after {
-                    content: ";";
-                }
-
-                // A read-only value is a ghost button, so it can hold keyboard
-                // focus after editing while still reading as declaration text.
-                button.property-value-display {
-                    background: none;
-                    border: none;
-                    color: inherit;
-                    cursor: pointer;
-                    font: inherit;
-                    padding: 0;
-                    text-align: inherit;
-
-                    &:focus-visible {
-                        outline: 3px solid colors.$focus-ring;
-                        outline-offset: 2px;
-                    }
-                }
-            }
+        &:focus-visible {
+            outline: 3px solid colors.$focus-ring;
+            outline-offset: 2px;
         }
     }
 }
 
-/** || Nested Categories */
 .css-ancestor-context {
-    margin-top: 1rem;
-    padding-top: 0.5rem;
     border-top: 1px solid colors.$border-subtle;
 }
 
 .css-parent-badge {
     @include badges.badge(palette.$optimistic-teal, $filled: false);
-    flex-shrink: 0;
 }
 
 .css-show-more-parents {
-    margin: 0.5rem 0;
     font-size: 0.85em;
 }
-
-section.css-category-1 {
-    /** All nested categories */
-    section.css-category:not(.css-category-ancestor) {
-        border: 1px solid colors.$border-strong;
-
-        > h2 {
-            margin: 0;
-            
-            // Make sure inputs, text and buttons inside the heading
-            // are visible on dark backgrounds
-            // Tooltips own a raised surface and its matching foreground in either theme.
-            &, *:not(.css-action-tooltip) {
-                color: colors.$text-on-inverse;
-            }
-        }
-
-        > div.css-category-content {
-            background: colors.$surface-raised;
-        }
-
-        button {
-            background: inherit;
-            color: inherit;
-        }
-    }
-
-    /** First nested category */
-    section.css-category-2:not(.css-category-ancestor) > h2 {
-        background: colors.$surface-inverse;
-        font-size: large;
-    }
-
-    section.css-category-3:not(.css-category-ancestor) {
-        > h2 {
-            background: colors.$surface-interactive;
-            font-size: medium;
-        }
-    }
-
-    section.css-category-4:not(.css-category-ancestor) > h2 {
-        background: colors.$surface-inverse;
-        font-size: small;
-    }
-
-    section.css-category-5:not(.css-category-ancestor) > h2 {
-        background: colors.$surface-muted;
-
-        &, * {
-            color: colors.$text-primary;
-        }
-    }
-}
-
 /** || Popovers */
 .pseudo-options {
     display: flex;
@@ -242,17 +180,5 @@ section.css-category-1 {
         border-radius: unset;
         flex-grow: 1;
         font-size: smaller;
-    }
-}
-
-.raw-css-rule {
-    display: flex;
-    align-items: flex-start;
-
-    pre {
-        flex: 1;
-        min-width: 0;
-        white-space: pre-wrap;
-        overflow-wrap: anywhere;
     }
 }

@@ -49,6 +49,7 @@ export interface CssNodeDump {
     children: Array<CssNodeDump>;
     root?: CssNodeDump;
     name: string;
+    displayName?: string;
     description?: string;
     selector: string;
     properties: Array<[string, string]>;

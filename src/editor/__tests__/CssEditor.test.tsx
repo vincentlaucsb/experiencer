@@ -10,7 +10,7 @@ import type { CssEditorCommands } from "@/shared/stores/cssEditorCommands";
 function createCommands(): jest.Mocked<CssEditorCommands> {
     return {
         addSelector: jest.fn(),
-        updateName: jest.fn(),
+        updateDisplayName: jest.fn(),
         updateProperty: jest.fn(),
         updateDescription: jest.fn(),
         updateSelector: jest.fn(),
@@ -42,17 +42,14 @@ describe("CssEditor views", () => {
         );
         await screen.findAllByRole("button", { name: "Import live changes" });
 
-        const rootHeading = container.querySelector("section.css-category-0 > h2")!;
-        expect(container.querySelector(".css-ruleset")).toBeNull();
-        expect(rootHeading.querySelector(".hl")).toBeNull();
-        expect(within(rootHeading as HTMLElement).queryByText("::")).toBeNull();
-
-        fireEvent.click(screen.getByText("Page"));
-        expect(container.querySelector(".css-ruleset")).not.toBeNull();
-        expect(container.querySelector(".hl")).not.toBeNull();
+        const rootSection = container.querySelector<HTMLElement>("section.css-category-0")!;
+        expect(rootSection.querySelector(".css-ruleset")).toBeNull();
+        expect(rootSection.querySelector(".hl")).toBeNull();
+        expect(within(rootSection).queryByText("::")).toBeNull();
+        expect(screen.getByText("black")).toBeTruthy();
     });
 
-    test("keeps recursive rules collapsed until their own heading expands", async () => {
+    test("opens nested rules inline and collapses declarations independently", async () => {
         const root = new CssNode("Resume CSS", { color: "black" }, "body");
         root.addNode("Entry", { display: "grid" }, ".entry");
 
@@ -67,14 +64,13 @@ describe("CssEditor views", () => {
         );
         await screen.findAllByLabelText("Import live changes");
 
-        expect(screen.getByText("color")).toBeTruthy();
+        expect(screen.getByText("display")).toBeTruthy();
+        fireEvent.click(screen.getByRole("button", { name: "Collapse Entry declarations" }));
         expect(screen.queryByText("display")).toBeNull();
-
-        fireEvent.click(screen.getByText("Entry"));
-
+        expect(screen.getByText("color")).toBeTruthy();
+        fireEvent.click(screen.getByRole("button", { name: "Expand Entry declarations" }));
         expect(screen.getByText("display")).toBeTruthy();
     });
-
     test("orders and deduplicates parent rules, reveals three initially, and never recurses", async () => {
         const root = new CssNode("Root", {}, "body");
         const levelOne = root.addNode("Level 1", {}, ".one");
@@ -105,7 +101,7 @@ describe("CssEditor views", () => {
         expect(screen.queryByText("Root")).toBeNull();
         expect(container.querySelectorAll("section.css-category")).toHaveLength(4);
 
-        fireEvent.click(screen.getByText("Level 3"));
+        fireEvent.click(screen.getByRole("button", { name: "Expand Level 3 declarations" }));
         expect(screen.getByText("padding")).toBeTruthy();
         expect(screen.getAllByText("Selected")).toHaveLength(1);
 
@@ -133,7 +129,7 @@ describe("CssEditor views", () => {
             />
         );
 
-        const rootHeading = screen.getByText("Resume CSS").closest("h2") as HTMLElement;
+        const rootHeading = screen.getByText("Resume CSS").closest("section") as HTMLElement;
         fireEvent.click(await within(rootHeading).findByLabelText("Import live changes"));
         expect(liveSync.importSection).toHaveBeenCalledWith(
             "resume",
@@ -145,7 +141,7 @@ describe("CssEditor views", () => {
         fireEvent.click(await screen.findByText("::before"));
         expect(commands.addSelector).toHaveBeenCalledWith([], "::before", "::before");
 
-        const addButton = rootHeading.querySelector(".icofont-ui-add")?.closest("button");
+        const addButton = within(rootHeading).getByRole("button", { name: "Add nested rule to Resume CSS" });
         expect(addButton).toBeTruthy();
         fireEvent.click(addButton!);
         expect(commands.addSelector).toHaveBeenCalledWith(
@@ -154,7 +150,7 @@ describe("CssEditor views", () => {
             "#some-id.some-class"
         );
 
-        const childHeading = screen.getByText("Entry").closest("h2") as HTMLElement;
+        const childHeading = screen.getByText("Entry").closest("section") as HTMLElement;
         const deleteButton = childHeading.querySelector(".icofont-ui-delete")?.closest("button");
         expect(deleteButton).toBeTruthy();
         fireEvent.click(deleteButton!);

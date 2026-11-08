@@ -28,10 +28,10 @@ describe("CSS editor commands", () => {
         expect(node.selector).toBe("b");
         expect(node.properties.has("font-weight")).toBe(false);
 
-        commands.updateName(["Entry", "Emphasis"], "Strong text");
-        expect(node.name).toBe("Strong text");
+        commands.updateDisplayName(["Entry", "Emphasis"], "Strong text");
+        expect(node.displayName).toBe("Strong text");
 
-        commands.deleteNode(["Entry", "Strong text"]);
+        commands.deleteNode(["Entry", "Emphasis"]);
         expect(root.mustFindNode(["Entry"]).children).toHaveLength(0);
         expect(updateTree).toHaveBeenCalledTimes(7);
     });
@@ -172,25 +172,19 @@ describe("CSS editor commands", () => {
     );
 });
 
-test('component rule names remain stable while custom rules can be renamed', () => {
-    require('@/resume/schema').default();
-    const root = new CssNode('Resume', {}, 'body');
-    root.addNode('Entry', { color: 'black' }, '.entry');
-    root.addNode('Custom', { color: 'red' }, '.custom');
-    const report = jest.fn();
-    const commands = createCssEditorCommands(updater => updater(root), report);
-    commands.updateName(['Entry'], 'Changed');
-    expect(root.findNode('Entry')).toBeDefined();
-    expect(report).toHaveBeenCalledWith(expect.stringContaining('Component CSS rule names are fixed'));
-    commands.updateName(['Custom'], 'Renamed');
-    expect(root.findNode('Renamed')?.name).toBe('Renamed');
-});
+test('display labels round-trip without changing rule addresses or authored CSS', () => {
+    const { root, commands } = createFixture();
+    const stylesheet = root.stylesheet();
 
-test('a root-tree custom rule can reuse and rename a component name', () => {
-    require('@/resume/schema').default();
-    const root = new CssNode('Variables', {}, ':root');
-    root.addNode('Entry', { '--ink': 'black' }, '.custom');
-    const commands = createCssEditorCommands(updater => updater(root), undefined, 'root');
-    commands.updateName(['Entry'], 'Renamed');
-    expect(root.findNode('Renamed')?.properties.get('--ink')).toBe('black');
+    commands.updateDisplayName(['Entry'], 'Experience entry');
+    const restored = CssNode.load(JSON.parse(JSON.stringify(root.dump())));
+    expect(restored.mustFindNode('Entry').displayName).toBe('Experience entry');
+    expect(restored.stylesheet()).toBe(stylesheet);
+
+    const imported = JSON.parse(JSON.stringify(root.dump()));
+    imported.children[0].displayName = { invalid: true };
+    expect(CssNode.load(imported).mustFindNode('Entry').displayName).toBeUndefined();
+
+    commands.updateDisplayName(['Entry'], '  ');
+    expect(root.mustFindNode('Entry').displayName).toBeUndefined();
 });

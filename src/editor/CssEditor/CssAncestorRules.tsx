@@ -49,11 +49,11 @@ export default function CssAncestorRules({
     const hiddenAncestorCount = ancestors.length - visibleAncestors.length;
 
     return (
-        <div className="css-ancestor-context" aria-label="Parent CSS rules">
+        <div className="css-ancestor-context app-mt-4 app-pt-2" aria-label="Parent CSS rules">
             {visibleAncestors.map(renderAncestor)}
             {hiddenAncestorCount > 0 ? (
                 <Button
-                    className="css-show-more-parents"
+                    className="css-show-more-parents app-my-2"
                     onClick={() => setShowAll(true)}
                 >
                     Show {hiddenAncestorCount} more parent{hiddenAncestorCount === 1 ? "" : "s"}

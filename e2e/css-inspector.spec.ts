@@ -1,53 +1,57 @@
 import { expect, test } from '@playwright/test';
 import { createResumeFromTemplate } from './helpers';
 
-test('raw rules open their editable owner and nested path, and resume selection replaces inspector focus', async ({ page }) => {
+test('one CSS view edits full rules and keeps renamed rules scoped after reopening', async ({ page, context }) => {
     await createResumeFromTemplate(page);
-    await page.getByRole('tab', { name: 'Raw CSS', exact: true }).click();
-    const block = page.locator('.raw-css-rule').filter({ hasText: 'body .entry > hgroup > h3' }).first();
-    const selector = (await block.locator('code').innerText()).split(' {')[0];
-    const button = block.getByRole('button');
-    await button.focus();
-    await button.press('Enter');
-    await expect(page.getByRole('tab', { name: 'CSS', exact: true })).toHaveAttribute('aria-selected', 'true');
-    const focused = page.locator('section.css-category').filter({ has: page.locator('.css-description', { hasText: selector }) }).last();
-    await expect(focused).toBeFocused();
-    await expect(focused).toHaveCount(1);
-    await expect(focused.locator('.css-ruleset').first()).toContainText(selector);
-    const property = focused.locator('.property').first();
-    const key = await property.locator('.property-key').innerText();
-    await property.locator('.property-value-display').click();
-    await expect(page.getByLabel(`${key} value`)).toBeFocused();
-    await page.getByLabel(`${key} value`).press('Escape');
-    await expect(property.locator('.property-value-display')).toBeFocused();
-    await page.locator('#resume article.entry').first().evaluate(element => (element as HTMLElement).click());
-    await expect(page.getByText('PARENT', { exact: true }).first()).toBeVisible();
-    const parents = page.locator('section.css-category-ancestor');
-    await expect(parents.first()).toHaveCSS('border-top-width', '0px');
-    // Component addresses stay fixed while ordinary nested rules remain renameable.
-    const entryTitle = page.locator('h2.css-title-heading .css-title').filter({ hasText: /^Entry$/ }).first();
-    await entryTitle.click();
-    await expect(page.getByRole('textbox', { name: 'Enter a section name' })).toHaveCount(0);
-    await expect(page.locator('.css-ruleset').first()).toContainText('body .entry');
-    await page.getByRole('tab', { name: 'Raw CSS', exact: true }).click();
-    await page.getByRole('button', { name: `Edit ${selector} in CSS`, exact: true }).click();
-    const nestedTitle = page.locator('section.css-category:focus > h2 .css-title');
-    await nestedTitle.click();
-    const nameInput = page.getByRole('textbox', { name: 'Enter a section name' });
-    await nameInput.fill('Renamed nested rule');
-    await nameInput.press('Enter');
-    await page.getByRole('tab', { name: 'Raw CSS', exact: true }).click();
-    await page.getByRole('button', { name: `Edit ${selector} in CSS`, exact: true }).click();
-    await expect(page.locator('h2.css-title-heading .css-title').filter({ hasText: /^Renamed nested rule$/ })).toBeVisible();
-    const entryCount = await page.locator('#resume article.entry').count();
-    await page.keyboard.press('Delete');
-    await page.keyboard.press('Control+x');
-    await expect(page.locator('#resume article.entry')).toHaveCount(entryCount);
-    await page.getByRole('tab', { name: 'Raw CSS', exact: true }).click();
-    await page.getByRole('button', { name: 'Edit :root in CSS', exact: true }).click();
-    await expect(page.locator('.css-ruleset').first()).toContainText(':root');
-});
+    await page.getByRole('tab', { name: 'CSS', exact: true }).click();
+    await expect(page.getByRole('tab', { name: 'Raw CSS', exact: true })).toHaveCount(0);
+    const panel = page.getByRole('tabpanel', { name: 'CSS' });
+    const nested = panel.locator('section.css-category').filter({
+        has: page.getByRole('button', { name: 'Selector: body .entry > hgroup > h3', exact: true })
+    }).first();
+    const value = nested.locator('.property-value-display').first();
+    await value.press('Enter');
+    const draft = nested.locator('.property-value input');
+    await expect(draft).toBeFocused();
+    await draft.press('Escape');
+    await expect(value).toBeFocused();
 
+    const entry = page.locator('#resume article.entry').first();
+    await entry.evaluate(element => (element as HTMLElement).click());
+    const allCss = page.getByRole('button', { name: 'All CSS', exact: true });
+    await expect(allCss).toHaveAttribute('aria-pressed', 'false');
+    await expect(panel.getByRole('button', { name: 'Selector: :root', exact: true })).toHaveCount(0);
+    await expect(panel.getByText('PARENT', { exact: true }).first()).toBeVisible();
+    const entryName = panel.getByRole('button', { name: 'Rule name: Entry', exact: true });
+    await entryName.press('Enter');
+    const nameInput = panel.getByRole('textbox', { name: 'Rule name', exact: true });
+    await nameInput.fill('Work experience *entry*');
+    await nameInput.press('Enter');
+    const renamed = panel.getByRole('button', { name: 'Rule name: Work experience *entry*', exact: true });
+    await expect(renamed).toBeFocused();
+    await expect(renamed.locator('..')).toHaveText('/* Work experience *entry* */');
+    await expect(panel.getByRole('button', { name: 'Delete Work experience *entry* rule', exact: true })).toBeVisible();
+    await renamed.press('Enter');
+    await nameInput.fill('Discard this label');
+    await nameInput.press('Escape');
+    await expect(renamed).toBeFocused();
+    await expect(panel.getByRole('button', { name: 'Highlight elements matching body .entry', exact: true })).toBeVisible();
+
+    await allCss.click();
+    await expect(allCss).toHaveAttribute('aria-pressed', 'true');
+    await expect(panel.getByRole('button', { name: 'Selector: :root', exact: true })).toBeVisible();
+    await allCss.click();
+    await expect(renamed).toBeVisible();
+    await page.keyboard.press('Control+s');
+    await expect(page.locator('.save-status')).toContainText('Saved v2');
+
+    const restored = await context.newPage();
+    await restored.goto('/');
+    await restored.getByRole('button', { name: 'Open', exact: true }).click();
+    await restored.locator('#resume article.entry').first().evaluate(element => (element as HTMLElement).click());
+    await restored.getByRole('tab', { name: 'CSS', exact: true }).click();
+    await expect(restored.getByRole('button', { name: 'Rule name: Work experience *entry*', exact: true })).toBeVisible();
+});
 test('declarations flow after their own property and remain readable in dark mode', async ({ page }) => {
     await createResumeFromTemplate(page);
     await page.getByRole('tab', { name: 'CSS', exact: true }).click();
@@ -67,4 +71,43 @@ test('declarations flow after their own property and remain readable in dark mod
     await expect(rows.first().locator('.property-key')).toHaveCSS('color', 'rgb(57, 183, 165)');
     await page.setViewportSize({ width: 1000, height: 900 });
     await expect(rows.first()).toBeVisible();
+});
+
+test('long selectors wrap beside right-aligned actions and tooltips cross the pane edge', async ({ page }) => {
+    await page.setViewportSize({ width: 1000, height: 800 });
+    await createResumeFromTemplate(page);
+    await page.getByRole('tab', { name: 'CSS', exact: true }).click();
+
+    const rule = page.locator('section.css-category-1').filter({
+        has: page.getByRole('button', { name: 'Rule name: Image', exact: true })
+    });
+    await rule.getByRole('button', { name: 'Selector: body img', exact: true }).click();
+    const selectorInput = rule.getByRole('textbox', { name: 'Selector', exact: true });
+    await selectorInput.fill('img.profile, img.illustration, img.chart, img.background, img.placeholder');
+    await selectorInput.press('Enter');
+
+    const selector = rule.getByRole('button', { name: /^Selector: body img.profile/ });
+    const action = rule.getByRole('button', { name: /^Highlight elements matching body img.profile/ });
+    await action.hover();
+    const tooltip = page.getByRole('tooltip', { name: /^Highlight elements matching body img.profile/ });
+    await expect(tooltip).toBeVisible();
+    const row = rule.locator('.css-selector-row');
+    const buttons = rule.locator('.css-rule-actions');
+    const geometry = await Promise.all([selector, row, buttons].map(locator => locator.boundingBox()));
+    const [selectorBox, rowBox, actionBox] = geometry.map(box => box!);
+    expect(selectorBox.height).toBeGreaterThan(actionBox.height * 2);
+    expect(Math.abs(actionBox.y - rowBox.y)).toBeLessThan(2);
+    expect(Math.abs(actionBox.x + actionBox.width - rowBox.x - rowBox.width)).toBeLessThan(2);
+    expect(selectorBox.x + selectorBox.width).toBeLessThan(actionBox.x);
+
+    const inspector = page.locator('.split-pane__inspector');
+    const inspectorBox = (await inspector.boundingBox())!;
+    await expect.poll(() => tooltip.evaluate((element, divider) => {
+        const bounds = element.getBoundingClientRect();
+        const point = document.elementFromPoint(divider - 5, bounds.top + bounds.height / 2);
+        return bounds.left < divider - 5 && element.contains(point);
+    }, inspectorBox.x)).toBe(true);
+    await action.press('Escape');
+    await expect(tooltip).toHaveCount(0);
+    await expect(action).toBeFocused();
 });

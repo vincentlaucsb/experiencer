@@ -15,7 +15,7 @@ for (const theme of ['Light', 'Dark'] as const) {
         const initialText = await tree.evaluate(element => getComputedStyle(element).color);
         expect(initialFill).not.toBe('rgba(0, 0, 0, 0)');
 
-        for (const name of ['CSS', 'Raw CSS', 'Tree']) {
+        for (const name of ['CSS', 'Tree']) {
             const tab = tabs.getByRole('tab', { name, exact: true });
             await tab.click();
             await expect(tab).toHaveAttribute('aria-selected', 'true');

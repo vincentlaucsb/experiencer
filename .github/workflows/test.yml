@@ -8,7 +8,8 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # Keep Chromium setup on an Ubuntu release supported by the locked Playwright version.
+    runs-on: ubuntu-24.04
 
     strategy:
       matrix:

@@ -1,6 +1,7 @@
 import MappedTextFields, { type ContainerProps } from "@/controls/inputs/MappedTextFields";
-import TextField from "@/controls/inputs/TextField";
+import CssActionButton from "@/editor/CssActionButton";
 import CssSuggestions from "@/editor/CssSuggestions";
+import { AddIcon } from "@/controls/InterfaceIcons";
 import type { ReadonlyCssNode } from "@/shared/CssTree";
 import type { CssEditorCommands } from "@/shared/stores/cssEditorCommands";
 import { getCssDeclarationError } from '@/shared/utils/transformResumeStylesheet';
@@ -12,41 +13,23 @@ interface CssPropertyEditorProps {
     varSuggestions?: Array<string>;
 }
 
-/** Adapts one CSS rule's selector and declarations to editable text fields. */
+/** Renders one CSS block's declarations with the existing validation and suggestions. */
 export default function CssPropertyEditor({
     commands,
     cssNode,
     path,
     varSuggestions
 }: CssPropertyEditorProps) {
-    const mapContainer = (props: ContainerProps) => {
-        const selectorDisplay = (
-            <span onClick={(event) => event.stopPropagation()}>
-                <TextField
-                    value={cssNode.selector || ""}
-                    displayValue={cssNode.fullSelector}
-                    displayClassName="css-description"
-                    onChange={(text) => commands.updateSelector(path, text)}
-                />
-            </span>
-        );
-
-        return (
-            <div className="css-ruleset" onClick={props.onClick}>
-                <span className="css-description app-mt-4">{selectorDisplay}</span> {"{"}
-                <div className="css-declarations app-ml-4">
-                        {props.children}
-                </div>
+    const mapContainer = (props: ContainerProps) => (
+        <div className="css-rule-body">
+            <div className="css-declarations app-ml-4">{props.children}</div>
+            <div className="css-rule-end app-gap-2">
                 {"}"}
+                <CssActionButton label="Add property" onClick={props.onClick}><AddIcon /></CssActionButton>
             </div>
-        );
-    };
-
+        </div>
+    );
     const cssSuggestions = CssSuggestions.properties;
-    const genericValueSuggestions = varSuggestions || [];
-
-    // Preserve the existing ineffective expression until its behavior is changed deliberately.
-    genericValueSuggestions.concat(["initial", "inherit", "unset"]);
 
     return (
         <MappedTextFields
@@ -57,7 +40,7 @@ export default function CssPropertyEditor({
             validateValue={getCssDeclarationError}
             deleteKey={commands.deleteKey.bind(null, path)}
             keySuggestions={Array.from(cssSuggestions.keys())}
-            genericValueSuggestions={genericValueSuggestions}
+            genericValueSuggestions={varSuggestions}
             valueSuggestions={cssSuggestions}
         />
     );

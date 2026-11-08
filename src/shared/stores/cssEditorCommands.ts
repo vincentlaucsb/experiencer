@@ -1,5 +1,3 @@
-import ComponentTypes from '@/resume/schema/ComponentTypes';
-import type { LiveCssTreeName } from '@/shared/stores/LiveCssSyncCoordinator';
 import CssNode from "@/shared/CssTree";
 import { showToast } from "@/shared/stores/toastStore";
 import type { LiveCssTreeChange } from "@/shared/utils/liveCssSync";
@@ -7,7 +5,7 @@ import { getCssDeclarationError, validateAuthoredCssSelector } from "@/shared/ut
 
 export interface CssEditorCommands {
     addSelector(path: ReadonlyArray<string>, name: string, selector: string): void;
-    updateName(path: ReadonlyArray<string>, value: string): void;
+    updateDisplayName(path: ReadonlyArray<string>, value: string): void;
     updateProperty(path: ReadonlyArray<string>, key: string, value: string): void;
     updateDescription(path: ReadonlyArray<string>, value: string): void;
     updateSelector(path: ReadonlyArray<string>, selector: string): void;
@@ -52,8 +50,7 @@ export function declarationsKeepingUntouchedBlanks(change: LiveCssTreeChange): M
 /** Builds the complete mutation boundary used by every CSS editor view. */
 export function createCssEditorCommands(
     updateTree: CssTreeUpdater,
-    reportError: CssCommandErrorReporter = showToast,
-    treeName: LiveCssTreeName = "resume"
+    reportError: CssCommandErrorReporter = showToast
 ): CssEditorCommands {
     const acceptSelector = (selector: string): boolean => {
         try {
@@ -79,20 +76,12 @@ export function createCssEditorCommands(
             });
         },
 
-        updateName: (path, value) => {
-            // Registered components locate their rules by these names. Renaming
-            // them would sever selected-node editing and cause duplicate seeding.
-            if (treeName === "resume" && ComponentTypes.instance.ownsCssPath(path)) {
-                reportError('Component CSS rule names are fixed. Rename a custom rule instead.');
-                return;
-            }
+        updateDisplayName: (path, value) => {
             updateTree((cssTreeRoot) => {
                 const node = cssTreeRoot.mustFindNode(Array.from(path));
-                if (node.name !== value && node.ancestors[0]?.hasName(value)) {
-                    reportError(`Already have a child named ${value}`);
-                    return;
-                }
-                node.name = value;
+                const label = value.trim();
+                // Selectors and component lookup paths survive a label edit.
+                node.displayName = label && label !== node.name ? label : undefined;
             });
         },
 

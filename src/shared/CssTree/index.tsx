@@ -36,6 +36,8 @@ export default class CssNode {
     private _properties: Map<string, string>;
     private parent?: CssNode;
 
+    /** A user-facing label independent of the rule's lookup path. */
+    public displayName?: string;
     public description?: string;
 
     /**
@@ -260,6 +262,7 @@ export default class CssNode {
         let data: CssNodeDump = {
             children: this.children.map((elem) => elem.dump()),
             name: this.name,
+            ...(this.displayName === undefined ? {} : { displayName: this.displayName }),
             description: this.description,
             properties: Array.from(this.properties.entries()),
             selector: this.selector
@@ -335,6 +338,8 @@ export default class CssNode {
     static load(data: CssNodeDump): CssNode {
         let rootNode = new CssNode(data.name, {}, data.selector);
         rootNode.properties = new Map<string, string>(data.properties);
+        // Imported documents can carry extra metadata. Only a string label can be displayed.
+        if (typeof data.displayName === "string") rootNode.displayName = data.displayName;
         rootNode.description = data.description;
 
         // Load children
@@ -387,7 +392,7 @@ export default class CssNode {
         return rules.concat(this.children.flatMap(child => child.stylesheetRules()));
     }
 
-    /** Return the same ordered rules used by the raw CSS inspector. */
+    /** Serialize declarations in cascade order. */
     stylesheet(): string {
         return this.stylesheetRules().map(rule => rule.stylesheet).join('\n\n');
     }

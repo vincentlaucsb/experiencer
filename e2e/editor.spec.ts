@@ -397,34 +397,32 @@ test('reviews and imports live DevTools changes across CSS sections', async ({ p
   await expect(syncBanner).not.toBeVisible();
 
   const imageHeading = page.locator('h2.css-title-heading').filter({
-    has: page.locator('span.css-title', { hasText: /^Image$/ }),
+    has: page.locator('.css-title', { hasText: /^Image$/ }),
   });
-  await imageHeading.click();
 
   const imageSection = imageHeading.locator('..');
   const maxWidthRow = imageSection.locator('.property').filter({ hasText: 'max-width' });
-  await expect(maxWidthRow.locator('.property-value')).toHaveText('67%');
+  await expect(maxWidthRow.locator('.property-value')).toHaveText('67%;');
 
   const headerHeading = page.locator('h2.css-title-heading').filter({
-    has: page.locator('span.css-title', { hasText: /^Header$/ }),
+    has: page.locator('.css-title', { hasText: /^Header$/ }),
   });
-  await headerHeading.click();
   const headerSection = headerHeading.locator('..');
   const paddingTopRow = headerSection.locator('.property').filter({ hasText: 'padding-top' });
-  await expect(paddingTopRow.locator('.property-value')).toHaveText('13px');
+  await expect(paddingTopRow.locator('.property-value')).toHaveText('13px;');
 
   const undo = page.getByRole('button', { name: 'Undo' });
   const redo = page.getByRole('button', { name: 'Redo' });
   await expect(undo).toBeEnabled();
   await undo.click();
 
-  await expect(maxWidthRow.locator('.property-value')).toHaveText('100%');
+  await expect(maxWidthRow.locator('.property-value')).toHaveText('100%;');
   await expect(headerSection.locator('.property').filter({ hasText: 'padding-top' }))
     .toHaveCount(0);
   await expect(redo).toBeEnabled();
 
   await redo.click();
-  await expect(maxWidthRow.locator('.property-value')).toHaveText('67%');
+  await expect(maxWidthRow.locator('.property-value')).toHaveText('67%;');
   await expect(headerSection.locator('.property').filter({ hasText: 'padding-top' })
-    .locator('.property-value')).toHaveText('13px');
+    .locator('.property-value')).toHaveText('13px;');
 });

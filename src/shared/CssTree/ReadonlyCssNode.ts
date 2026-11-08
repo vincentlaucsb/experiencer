@@ -62,6 +62,10 @@ export class ReadonlyCssNode {
         return this.node.name;
     }
 
+    get displayName(): string {
+        return this.node.displayName ?? this.node.name;
+    }
+
     /**
      * Get a read-only copy of the CSS properties.
      * Returns a new Map instance to prevent external mutations.

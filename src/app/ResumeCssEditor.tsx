@@ -15,25 +15,19 @@ import { liveCssSyncCoordinator } from "@/shared/stores/LiveCssSyncCoordinator";
 
 import ComponentTypes from "@/resume/schema/ComponentTypes";
 import makeCssVarSuggestions from "@/shared/utils/makeCssVarSuggestions";
-import { resolveCssRuleTarget, type CssRuleTarget } from '@/shared/utils/cssRuleInspection';
 import findApplicableCssAncestors from "@/shared/utils/findApplicableCssAncestors";
+import { useEditorStore } from "@/shared/stores/editorStore";
 
 interface ResumeCssEditorProps {
     css: CssNode;
     rootCss: CssNode;
     selectedNode?: ResumeNode;
-    target?: CssRuleTarget;
     updateCss: (updater: (css: CssNode) => void) => void;
     updateRootCss: (updater: (rootCss: CssNode) => void) => void;
 }
 
 interface ResumeCssEditorWrapperProps {
     selectedNodeId?: string;
-    target?: CssRuleTarget;
-}
-
-function findCssRule(css: CssNode, htmlId: string) {
-    return css.findNodeBySelector(`#${htmlId}`);
 }
 
 function findParentCssRules(selectedNode: ResumeNode, css: CssNode) {
@@ -45,13 +39,14 @@ function findParentCssRules(selectedNode: ResumeNode, css: CssNode) {
     return findApplicableCssAncestors(ancestorNodes, css);
 }
 
-function ResumeCssEditor({ css, rootCss, selectedNode, target, updateCss, updateRootCss }: ResumeCssEditorProps) {
+function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss }: ResumeCssEditorProps) {
     const liveSync = useSyncExternalStore(
         liveCssSyncCoordinator.subscribe,
         liveCssSyncCoordinator.getSnapshot
     );
     const resumeCommands = createCssEditorCommands(updateCss);
-    const rootCommands = createCssEditorCommands(updateRootCss, undefined, "root");
+    const rootCommands = createCssEditorCommands(updateRootCss);
+    const varSuggestions = makeCssVarSuggestions(rootCss);
 
     useEffect(() => {
         return liveCssSyncCoordinator.connect();
@@ -82,57 +77,27 @@ function ResumeCssEditor({ css, rootCss, selectedNode, target, updateCss, update
         </>
     );
 
-    const focused = resolveCssRuleTarget(target, css, rootCss);
-    if (focused) {
-        return <>
-            {syncControls}
-            <CssEditor key={JSON.stringify([focused.tree, focused.expandedPath])}
-                cssNode={new ReadonlyCssNode(focused.node)}
-                expandedPath={focused.expandedPath}
-                isOpen showAncestors liveTree={focused.tree}
-                varSuggestions={makeCssVarSuggestions(rootCss)}
-                commands={focused.tree === 'root' ? rootCommands : resumeCommands} />
-        </>;
-    }
-
     if (selectedNode) {
-        let generalCssEditor = <></>
-        let specificCssEditor = <></>
         const parentCssRules = findParentCssRules(selectedNode, css);
-
-        const rootNode = css.findNode(
-            ComponentTypes.instance.cssName(selectedNode.type)) as CssNode;
-
-        if (rootNode) {
-            generalCssEditor = <CssEditor
-                key={`${selectedNode.uuid}-${rootNode.fullPath.join('-')}`}
-                cssNode={new ReadonlyCssNode(rootNode)}
-                isOpen={true}
-                showAncestors
-                additionalAncestors={parentCssRules}
-                liveTree="resume"
-                commands={resumeCommands}
-            />
-        }
-
-        if (selectedNode.htmlId) {
-            const specificRoot = findCssRule(css, selectedNode.htmlId);
-            if (specificRoot) {
-                specificCssEditor = <CssEditor
-                    key={`${selectedNode.uuid}-#${selectedNode.htmlId}`}
-                    cssNode={new ReadonlyCssNode(specificRoot)}
-                    isOpen={true}
-                    showAncestors
-                    additionalAncestors={parentCssRules}
-                    liveTree="resume"
-                    commands={resumeCommands} />
-            }
-        }
+        const componentRule = css.findNode(ComponentTypes.instance.cssName(selectedNode.type));
+        const nodeRule = selectedNode.htmlId ? css.findNodeBySelector(`#${selectedNode.htmlId}`) : undefined;
+        const rules = Array.from(new Set([nodeRule, componentRule]))
+            .filter((rule): rule is CssNode => Boolean(rule))
+            .map(rule => new ReadonlyCssNode(rule));
 
         return <>
             {syncControls}
-            {specificCssEditor}
-            {generalCssEditor}
+            {rules.map((rule, index) => <CssEditor
+                key={JSON.stringify([selectedNode.uuid, rule.fullPath])}
+                cssNode={rule}
+                isOpen
+                showAncestors={index === rules.length - 1}
+                additionalAncestors={[...(index > 0 ? rules[0].ancestors : []), ...parentCssRules]}
+                liveTree="resume"
+                varSuggestions={varSuggestions}
+                commands={resumeCommands}
+            />)}
+            {rules.length === 0 && <p>No CSS rules for this node.</p>}
         </>
     }
 
@@ -142,29 +107,39 @@ function ResumeCssEditor({ css, rootCss, selectedNode, target, updateCss, update
             cssNode={new ReadonlyCssNode(rootCss)}
             isOpen={true}
             liveTree="root"
+            varSuggestions={varSuggestions}
             commands={rootCommands} />
         <CssEditor
             cssNode={new ReadonlyCssNode(css)}
             isOpen={true}
             liveTree="resume"
-            varSuggestions={makeCssVarSuggestions(rootCss)}
+            varSuggestions={varSuggestions}
             commands={resumeCommands} />
     </>
 }
 
-function ResumeCssEditorWrapper({ selectedNodeId, target }: ResumeCssEditorWrapperProps) {
+function ResumeCssEditorWrapper({ selectedNodeId }: ResumeCssEditorWrapperProps) {
     const { css, rootCss, updateCss, updateRootCss } = useCssStore();
     const selectedNode = useResumeNodeByUuid(selectedNodeId || '');
+    const showAllCss = useEditorStore(state => state.showAllCss);
 
     return (
-        <ResumeCssEditor
-            css={css}
-            rootCss={rootCss}
-            selectedNode={selectedNode}
-            target={target}
-            updateCss={updateCss}
-            updateRootCss={updateRootCss}
-        />
+        <>
+            {selectedNode && <div className="css-scope app-gap-2 app-mb-4">
+                <span>Selected: {selectedNode.type}{selectedNode.htmlId && ` #${selectedNode.htmlId}`}</span>
+                <Button type="button" aria-pressed={showAllCss} variant={showAllCss ? 'primary' : undefined}
+                    onClick={() => useEditorStore.getState().setShowAllCss(!showAllCss)}>
+                    All CSS
+                </Button>
+            </div>}
+            <ResumeCssEditor
+                css={css}
+                rootCss={rootCss}
+                selectedNode={showAllCss ? undefined : selectedNode}
+                updateCss={updateCss}
+                updateRootCss={updateRootCss}
+            />
+        </>
     );
 }
 

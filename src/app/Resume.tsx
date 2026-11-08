@@ -131,7 +131,6 @@ export function Resume(props: ResumeProps) {
                     nodes={nodes}
                     pageSize={pageSize}
                     selectedNodeId={props.selectedNodeId}
-                    stylesheet={props.stylesheet}
                     extensions={extensions.editor}
                 />
             );

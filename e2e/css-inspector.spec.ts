@@ -11,7 +11,7 @@ test('one CSS view edits full rules and keeps renamed rules scoped after reopeni
     }).first();
     const value = nested.locator('.property-value-display').first();
     await value.press('Enter');
-    const draft = nested.locator('.property-value input');
+    const draft = nested.locator('.property-value').getByRole('textbox');
     await expect(draft).toBeFocused();
     await draft.press('Escape');
     await expect(value).toBeFocused();
@@ -110,4 +110,38 @@ test('long selectors wrap beside right-aligned actions and tooltips cross the pa
     await action.press('Escape');
     await expect(tooltip).toHaveCount(0);
     await expect(action).toBeFocused();
+});
+
+test('a pseudo-element can insert a variable inherited from the résumé body', async ({ page }) => {
+    await createResumeFromTemplate(page);
+    await page.getByRole('tab', { name: 'CSS', exact: true }).click();
+    const ruleFor = (selector: string) => page.locator('section.css-category').filter({
+        has: page.getByRole('button', { name: 'Selector: ' + selector, exact: true })
+    });
+    const addProperty = async (selector: string, name: string) => {
+        const rule = ruleFor(selector);
+        await rule.getByRole('button', { name: 'Add property', exact: true }).click();
+        const field = rule.getByLabel('New property name value');
+        await field.fill(name);
+        await field.press('Enter');
+        return rule.getByLabel(name + ' value', { exact: true });
+    };
+
+    const variable = await addProperty('body', '--picker-color');
+    await variable.fill('rebeccapurple');
+    await variable.press('Enter');
+    const entry = ruleFor('body .entry');
+    await entry.getByRole('button', { name: 'Add pseudo-class or pseudo-element to Entry', exact: true }).click();
+    await page.getByRole('button', { name: '::before', exact: true }).click();
+
+    const value = await addProperty('body .entry::before', 'color');
+    await ruleFor('body .entry::before').getByRole('button', { name: 'Insert variable', exact: true }).click();
+    const picker = page.getByRole('dialog', { name: 'Insert a CSS variable' });
+    await picker.getByRole('button', { name: 'var(--picker-color)', exact: true }).click();
+    await expect(value).toBeFocused();
+    await expect(value).toHaveValue('var(--picker-color)');
+    await value.press('Enter');
+    await expect.poll(() => page.locator('#resume article.entry').first().evaluate(
+        element => getComputedStyle(element, '::before').color
+    )).toBe('rgb(102, 51, 153)');
 });

@@ -23,7 +23,7 @@ interface CssRuleEditorProps {
     liveTree: LiveCssTreeName;
     onToggleHighlight(): void;
     onToggleOpen(): void;
-    varSuggestions?: Array<string>;
+    getVariableSuggestions?: (rule: ReadonlyCssNode) => string[];
 }
 
 /** Binds a CSS block and its quick actions to the rule's stable tree path. */
@@ -37,7 +37,7 @@ export default function CssRuleEditor({
     liveTree,
     onToggleHighlight,
     onToggleOpen,
-    varSuggestions
+    getVariableSuggestions
 }: CssRuleEditorProps) {
     const [showDescription, setShowDescription] = useState(false);
     const path = cssNode.fullPath;
@@ -123,7 +123,7 @@ export default function CssRuleEditor({
                 commands={commands}
                 cssNode={cssNode}
                 path={path}
-                varSuggestions={varSuggestions}
+                getVariables={() => getVariableSuggestions?.(cssNode) ?? []}
             />}
         </div>}
     </>;

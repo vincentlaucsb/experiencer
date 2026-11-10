@@ -101,8 +101,9 @@ test('Unicode custom properties keep balanced opaque values through save and rel
     await page.getByLabel('New property name value').fill('--色');
     await page.getByLabel('New property name value').press('Enter');
     const row = rules.locator('.property').filter({ has: page.locator('.property-key', { hasText: /^--色$/ }) });
-    await row.locator('.property-value').click();
-    await page.getByLabel('--色 value').fill('{ color: red; }');
+    const value = row.getByLabel('--色 value');
+    await expect(value).toBeFocused();
+    await value.fill('{ color: red; }');
     await page.getByLabel('--色 value').press('Enter');
     await expect(row).toContainText('--色: { color: red; };');
     await page.keyboard.press('Control+s');

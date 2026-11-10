@@ -7,6 +7,7 @@ export interface ModalProps {
     close: () => void;
     isOpen: boolean;
     title: string;
+    onAfterClose?: () => void;
 
     className?: string;
 }
@@ -28,6 +29,7 @@ export default function Modal(props: ModalProps) {
             role="dialog"
             aria={{ labelledby: titleId, modal: "true" }}
             onRequestClose={props.close}
+            onAfterClose={props.onAfterClose}
             shouldReturnFocusAfterClose
             appElement={appElement}
             ariaHideApp={Boolean(appElement)}

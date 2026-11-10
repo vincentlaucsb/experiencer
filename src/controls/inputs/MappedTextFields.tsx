@@ -3,6 +3,7 @@ import createUuid from "@/shared/utils/createUuid";
 import { nonCredentialInputAttributes } from "@/shared/ui/nonCredentialInputAttributes";
 import { localKeyboardScopeAttributes } from "@/shared/ui/localKeyboardScope";
 import { Button } from "@/controls/Buttons";
+import Modal from "@/controls/Modal";
 
 interface ValueFieldProps {
     label: string;
@@ -10,6 +11,9 @@ interface ValueFieldProps {
     isEditing: boolean;
     updateText: (value: string) => void;
     suggestions?: Array<string>;
+    getVariables?: () => string[];
+    multiline?: boolean;
+    isPropertyName?: boolean;
     delete?: () => void;
     validate?: (value: string) => string | undefined;
     /** Commit a blank value even when the field was never changed, then remove it. */
@@ -21,11 +25,15 @@ interface ValueFieldProps {
 
 interface ValueState {
     value: string;
+    variables?: string[];
 }
 
 /** Buffers one mapped value while it is being edited. */
 class ValueField extends React.Component<ValueFieldProps, ValueState> {
     private readonly errorId = createUuid();
+    private readonly suggestionsId = createUuid();
+    private readonly textarea = React.createRef<HTMLTextAreaElement>();
+    private insertionCaret?: number;
     private submittedValue: string;
     /** Escape cancels the in-progress draft. Unmount must not submit the text it replaced. */
     private cancelSubmit = false;
@@ -87,6 +95,7 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
         const blank = next.trim().length === 0;
         const unchanged = next === this.submittedValue;
         const blankRemoves = Boolean(this.props.delete) || Boolean(this.props.discardUnchangedBlank);
+        if (blank && this.props.isPropertyName) return;
         if (unchanged && !(blank && this.props.discardUnchangedBlank)) return;
         if (!(blank && blankRemoves) && this.props.validate?.(next)) return;
         // A parent update can unmount the field before new props arrive. Record
@@ -96,7 +105,12 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
     }
 
     keyDownHandler(event: React.KeyboardEvent) {
-        if (event.key === 'Enter' && this.props.validate?.(this.state.value)) {
+        if (this.state.variables || event.nativeEvent.isComposing) {
+            event.stopPropagation();
+            return;
+        }
+        if (event.key === 'Enter' && this.error) {
+            if (this.props.multiline) event.preventDefault();
             event.stopPropagation();
         }
         if (event.key === 'Escape') {
@@ -106,37 +120,93 @@ class ValueField extends React.Component<ValueFieldProps, ValueState> {
         }
     }
 
+    private get error() {
+        if (this.props.isPropertyName && !this.state.value.trim()) return;
+        return this.props.validate?.(this.state.value);
+    }
+
+    private insertSuggestion(value: string, insertAtSelection: boolean) {
+        const field = this.textarea.current;
+        if (!field) return;
+        const start = insertAtSelection ? field.selectionStart : 0;
+        const end = insertAtSelection ? field.selectionEnd : field.value.length;
+        const next = field.value.slice(0, start) + value + field.value.slice(end);
+        this.insertionCaret = start + value.length;
+        this.setState({ value: next, variables: undefined });
+    }
+
+    private renderSuggestions() {
+        const { variables } = this.state;
+        const suggestions = this.props.suggestions ?? [];
+        return <>
+            <Button type="button" aria-haspopup="dialog" onClick={() => this.setState({
+                variables: (this.props.getVariables?.() ?? [])
+                    .filter(value => value !== "var(" + this.props.label + ")")
+            })}>
+                Insert variable
+            </Button>
+            <Modal
+                isOpen={variables !== undefined}
+                title="Insert a CSS variable"
+                className="css-suggestions-modal"
+                close={() => this.setState({ variables: undefined })}
+                onAfterClose={() => {
+                    const caret = this.insertionCaret;
+                    this.insertionCaret = undefined;
+                    if (caret === undefined) return;
+                    // React Modal returns focus to the trigger before this callback.
+                    const field = this.textarea.current;
+                    field?.focus();
+                    field?.setSelectionRange(caret, caret);
+                }}
+            >
+                <div {...localKeyboardScopeAttributes}>
+                    {variables?.length ? <div className="css-suggestion-options app-gap-2">
+                        {variables.map(value => <Button type="button" key={value} onClick={() => this.insertSuggestion(value, true)}>
+                            <code>{value}</code>
+                        </Button>)}
+                    </div> : <p className="app-mt-0">No CSS variables are available for this rule.</p>}
+                    {suggestions.length > 0 && <>
+                        <h3 className="app-mb-2">Suggested values</h3>
+                        <div className="css-suggestion-options app-gap-2">
+                            {suggestions.map(value => <Button type="button" key={value} onClick={() => this.insertSuggestion(value, false)}>
+                                <code>{value}</code>
+                            </Button>)}
+                        </div>
+                    </>}
+                </div>
+            </Modal>
+        </>;
+    }
+
     render() {
-        const error = this.props.validate?.(this.state.value);
+        const error = this.error;
         const errorId = this.errorId;
         const feedback = error ? <span id={errorId} role="alert" className="input-validation-error">{error}</span> : null;
-        let suggestions = <></>
-        let suggestionId = "";
-        if (this.props.suggestions) {
-            suggestionId = createUuid();
-            suggestions = (<datalist id={suggestionId}>
-                {this.props.suggestions.map((value) =>
-                    <option key={value} value={value} />)}
+        const suggestions = this.props.suggestions && !this.props.multiline && (
+            <datalist id={this.suggestionsId}>
+                {this.props.suggestions.map(value => <option key={value} value={value} />)}
             </datalist>
-            );
-        }
+        );
 
         if (this.props.isEditing) {
-            // The wrapper, not only the text input, must see Escape. The delete
-            // button is in this field, and a row-level Escape ends editing.
+            const inputProps = {
+                ...nonCredentialInputAttributes,
+                autoFocus: true,
+                "aria-label": this.props.label + " value",
+                spellCheck: false,
+                "aria-invalid": Boolean(error),
+                "aria-describedby": error ? errorId : undefined,
+                onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+                    this.setState({ value: event.target.value }),
+                value: this.state.value
+            };
+            // Escape from the input or its action buttons cancels the draft.
             return <span className="property-value-editor" onKeyDown={this.keyDownHandler}>
-                <input
-                    {...nonCredentialInputAttributes}
-                    autoFocus
-                    aria-label={`${this.props.label} value`}
-                    spellCheck={false}
-                    aria-invalid={Boolean(error)}
-                    aria-describedby={error ? errorId : undefined}
-                    onChange={(event) => this.setState({ value: event.target.value })}
-                    value={this.state.value}
-                    list={suggestionId}
-                />
+                {this.props.multiline ? <textarea {...inputProps} ref={this.textarea} rows={1} /> :
+                    <input {...inputProps} list={suggestions ? this.suggestionsId : undefined} />}
                 {suggestions}
+                {this.props.getVariables && this.renderSuggestions()}
                 {this.deleter}
                 {feedback}
             </span>
@@ -171,7 +241,8 @@ interface MappedTextFieldsState {
 }
 
 export interface ContainerProps {
-    children?: any;
+    children?: React.ReactNode;
+    addButtonRef: React.Ref<HTMLButtonElement>;
     onClick: (event: React.MouseEvent) => void;
 }
 
@@ -187,6 +258,7 @@ export interface MappedTextFieldsProps {
 
     /** Value suggestions that apply to all keys */
     genericValueSuggestions?: Array<string>;
+    getVariables?: () => string[];
 
     /** Mapping of keys to their respective value suggestions */
     valueSuggestions?: Map<string, Array<string>>;
@@ -207,7 +279,8 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
      * editor unmounts its input; without this, focus falls to the document body,
      * where global résumé shortcuts would receive the next key.
      */
-    private focusAfterEdit: ReadonlyArray<string> = [];
+    private focusAfterEdit?: ReadonlyArray<string>;
+    private readonly addButton = React.createRef<HTMLButtonElement>();
 
     constructor(props) {
         super(props);
@@ -244,13 +317,13 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
         if (this.state.activeKey || this.state.isAddingKey) {
             // A newly opened editor supersedes the request; a stale one must not
             // pull focus away when that editor later closes by other means.
-            this.focusAfterEdit = [];
+            this.focusAfterEdit = undefined;
             return;
         }
-        if (this.focusAfterEdit.length === 0) return;
+        if (!this.focusAfterEdit) return;
         const target = this.focusAfterEdit.map(key => this.displays.get(key)).find(Boolean);
-        this.focusAfterEdit = [];
-        target?.focus();
+        this.focusAfterEdit = undefined;
+        (target ?? this.addButton.current)?.focus();
     }
 
     /** Rendered property names, including a staged name that has no value yet. */
@@ -269,7 +342,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
     }
 
     addNewKey(key: string) {
-        if (key.length === 0) {
+        if (!key.trim()) {
             this.setState({ isAddingKey: false });
             return;
         }
@@ -335,7 +408,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                 break;
             case 'Enter':
                 // Enter on a button (a value or Delete) is left to that button.
-                if (!(event.target instanceof HTMLInputElement)) break;
+                if (!(event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement)) break;
                 // Enter in an input closes the editor; the field commits its draft as
                 // it leaves edit mode. An invalid draft stops Enter before it gets here.
                 // Enter does not open the next declaration, but a new property name
@@ -365,6 +438,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
             const oldProps = { ...props };
             props.onClick = (event: React.MouseEvent) => {
                 oldProps.onClick(event);
+                if (!event.currentTarget.contains(event.target as Node)) return;
                 this.setState({ activeKey: key });
             }
         }
@@ -395,6 +469,8 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                         updateText={this.updateText.bind(this, key)}
                         value={value}
                         suggestions={this.suggestionsFor(key)}
+                        multiline={this.props.layout === "declarations"}
+                        getVariables={this.props.getVariables}
                         validate={draft => this.props.validateValue?.(key, draft)}
                         discardUnchangedBlank={pending}
                         displaySuffix={this.props.layout === "declarations" && !pending ? ";" : undefined}
@@ -417,6 +493,7 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
                 <Key {...this.inputContainerProps()}>
                     <ValueField
                         label="New property name"
+                        isPropertyName
                         isEditing={this.state.isAddingKey}
                         updateText={this.addNewKey}
                         suggestions={this.props.keySuggestions}
@@ -432,7 +509,8 @@ export default class MappedTextFields extends React.Component<MappedTextFieldsPr
         // every row, discarding the focus restored after an edit.
         return <React.Fragment>
             {this.props.container({
-                onClick: () => this.setState({ isAddingKey: true }),
+                onClick: () => this.setState({ activeKey: "", isAddingKey: true }),
+                addButtonRef: this.addButton,
                 children: <>
                     {/* A staged row shares the stored rows' list, so it keeps its
                         identity, and focus, when its first value is stored. */}

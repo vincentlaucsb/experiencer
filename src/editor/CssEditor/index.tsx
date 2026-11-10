@@ -23,7 +23,7 @@ export interface CssEditorProps {
     liveSync?: Pick<LiveCssSyncCoordinator, "importSection">;
     liveTree: LiveCssTreeName;
     showAncestors?: boolean;
-    varSuggestions?: Array<string>;
+    getVariableSuggestions?: (rule: ReadonlyCssNode) => string[];
 }
 
 /** Renders each subtree in stylesheet order with full selectors on sibling rules. */
@@ -47,7 +47,7 @@ export default function CssEditor(props: CssEditorProps) {
                     liveTree={props.liveTree}
                     onToggleHighlight={() => setHighlight((current) => !current)}
                     onToggleOpen={() => setIsOpen((current) => !current)}
-                    varSuggestions={props.varSuggestions}
+                    getVariableSuggestions={props.getVariableSuggestions}
                 />
             </section>
             {!props.isAncestor && props.cssNode.children.map(css => (
@@ -56,7 +56,7 @@ export default function CssEditor(props: CssEditorProps) {
                     commands={props.commands}
                     cssNode={css}
                     isOpen
-                    varSuggestions={props.varSuggestions}
+                    getVariableSuggestions={props.getVariableSuggestions}
                     liveSync={liveSync}
                     liveTree={props.liveTree}
                 />
@@ -71,7 +71,7 @@ export default function CssEditor(props: CssEditorProps) {
                         commands={props.commands}
                         cssNode={ancestor}
                         isAncestor
-                        varSuggestions={props.varSuggestions}
+                        getVariableSuggestions={props.getVariableSuggestions}
                         liveSync={liveSync}
                         liveTree={props.liveTree}
                     />

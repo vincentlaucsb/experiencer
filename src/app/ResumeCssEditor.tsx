@@ -46,7 +46,7 @@ function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss 
     );
     const resumeCommands = createCssEditorCommands(updateCss);
     const rootCommands = createCssEditorCommands(updateRootCss);
-    const varSuggestions = makeCssVarSuggestions(rootCss);
+    const getVariableSuggestions = (rule: ReadonlyCssNode) => makeCssVarSuggestions(rule, rootCss, css, document);
 
     useEffect(() => {
         return liveCssSyncCoordinator.connect();
@@ -94,7 +94,7 @@ function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss 
                 showAncestors={index === rules.length - 1}
                 additionalAncestors={[...(index > 0 ? rules[0].ancestors : []), ...parentCssRules]}
                 liveTree="resume"
-                varSuggestions={varSuggestions}
+                getVariableSuggestions={getVariableSuggestions}
                 commands={resumeCommands}
             />)}
             {rules.length === 0 && <p>No CSS rules for this node.</p>}
@@ -107,13 +107,13 @@ function ResumeCssEditor({ css, rootCss, selectedNode, updateCss, updateRootCss 
             cssNode={new ReadonlyCssNode(rootCss)}
             isOpen={true}
             liveTree="root"
-            varSuggestions={varSuggestions}
+            getVariableSuggestions={getVariableSuggestions}
             commands={rootCommands} />
         <CssEditor
             cssNode={new ReadonlyCssNode(css)}
             isOpen={true}
             liveTree="resume"
-            varSuggestions={varSuggestions}
+            getVariableSuggestions={getVariableSuggestions}
             commands={resumeCommands} />
     </>
 }

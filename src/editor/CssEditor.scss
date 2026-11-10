@@ -69,15 +69,13 @@
 
 .css-scope,
 .css-title-heading,
-.css-rule-actions,
-.css-rule-end {
+.css-rule-actions {
     display: flex;
     align-items: baseline;
     flex-wrap: wrap;
 }
 
-.css-scope,
-.css-rule-end {
+.css-scope {
     justify-content: space-between;
 }
 
@@ -116,8 +114,7 @@ section.css-category {
     }
 
     .css-title-trigger,
-    .css-rule-actions .pure-button,
-    .css-rule-end .pure-button {
+    .css-rule-actions .pure-button {
         // Tight icon controls keep the selectors readable in the sidebar.
         padding: var(--app-space-1) var(--app-space-2);
     }
@@ -128,6 +125,41 @@ section.css-category {
 
     input {
         max-width: 100%;
+    }
+
+    .css-rule-end {
+        // The closing-brace line is a single ghost button with a full-width hit area.
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 0;
+        background: none;
+        color: inherit;
+        font: inherit;
+    }
+
+    @media (hover: hover) {
+        .css-rule-end:not(:hover, :focus-visible) .css-add-property-icon {
+            opacity: 0;
+        }
+    }
+
+    .property-value-editor {
+        display: flex;
+        align-items: start;
+        flex-wrap: wrap;
+        // Keep the draft and its actions visually grouped.
+        gap: var(--app-space-1);
+
+        textarea {
+            box-sizing: border-box;
+            width: 100%;
+            field-sizing: content;
+            font: inherit;
+            resize: vertical;
+            overflow-wrap: anywhere;
+        }
     }
 
     .property-key {
@@ -168,6 +200,22 @@ section.css-category {
 .css-show-more-parents {
     font-size: 0.85em;
 }
+.css-suggestions-modal {
+    width: min(32rem, calc(100% - 2 * var(--app-space-4))) !important;
+    max-height: 88vh;
+}
+
+.css-suggestion-options {
+    display: flex;
+    flex-wrap: wrap;
+
+    .pure-button {
+        max-width: 100%;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+}
+
 /** || Popovers */
 .pseudo-options {
     display: flex;

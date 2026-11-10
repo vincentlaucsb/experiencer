@@ -169,21 +169,16 @@ describe("CssEditor views", () => {
                 isOpen
                 liveSync={createLiveSync()}
                 liveTree="resume"
-                varSuggestions={["var(--accent)"]}
+                getVariableSuggestions={() => ["var(--accent)"]}
             />
         );
         await screen.findAllByLabelText("Import live changes");
 
         fireEvent.click(screen.getByText("black"));
-        const valueInput = screen.getByLabelText("color value");
-        const datalist = document.getElementById(valueInput.getAttribute("list") || "");
-        const values = Array.from(datalist?.querySelectorAll("option") || [])
-            .map((option) => option.getAttribute("value"));
-
-        expect(values).toContain("var(--accent)");
-        expect(values).not.toContain("initial");
-        expect(values).not.toContain("inherit");
-        expect(values).not.toContain("unset");
+        fireEvent.click(screen.getByRole("button", { name: "Insert variable" }));
+        const dialog = screen.getByRole("dialog", { name: "Insert a CSS variable" });
+        expect(dialog.textContent).toContain("var(--accent)");
+        expect(dialog.textContent).not.toMatch(/\b(initial|inherit|unset)\b/);
     });
 
     test("resets open and highlight presentation when the keyed path changes", async () => {

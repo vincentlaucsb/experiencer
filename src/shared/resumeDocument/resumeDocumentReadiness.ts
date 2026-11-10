@@ -17,7 +17,7 @@ export async function waitForResumeDocumentAssets(doc: Document): Promise<void> 
             if (link.sheet) loaded();
         });
     }
-    await frame(doc);
+    settleLayout(doc);
     await doc.fonts?.ready;
     await Promise.all(Array.from(doc.images).map(async image => {
         if (!image.complete) await new Promise<void>(resolve => {
@@ -26,11 +26,13 @@ export async function waitForResumeDocumentAssets(doc: Document): Promise<void> 
         });
         try { await image.decode(); } catch { /* Optional broken images must not block capture. */ }
     }));
-    await frame(doc);
+    settleLayout(doc);
 }
 
-function frame(doc: Document): Promise<void> {
-    const view = doc.defaultView;
-    if (!view) return Promise.reject(new Error('The resume document is detached.'));
-    return new Promise(resolve => view.requestAnimationFrame(() => resolve()));
+function settleLayout(doc: Document): void {
+    if (!doc.defaultView) throw new Error('The resume document is detached.');
+    // Discover fonts through layout before awaiting fonts.ready, and flush image
+    // dimensions afterward. A paint callback can stop indefinitely when opening
+    // the print tab backgrounds the editor that owns the measurement iframe.
+    doc.body.getBoundingClientRect();
 }
